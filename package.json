@@ -1,0 +1,43 @@
+{
+  "name": "solidity-ts-example",
+  "version": "0.0.1",
+  "description": "",
+  "main": "buidler.config.ts",
+  "scripts": {
+    "build": "npm run compile && npx buidler typechain",
+    "coverage": "npx solidity-coverage",
+    "compile": "npx buidler compile",
+    "test": "npx buidler test"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "",
+  "license": "MIT",
+  "homepage": "",
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "@typescript-eslint/eslint-plugin": "^2.8.0"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "@nomiclabs/buidler": "^1.0.1",
+    "@nomiclabs/buidler-ethers": "^1.0.1",
+    "@nomiclabs/buidler-etherscan": "^1.0.1",
+    "@types/chai": "^4.2.4",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.11.7",
+    "buidler-typechain": "0.0.5",
+    "chai": "^4.2.0",
+    "ethereum-waffle": "^2.1.0",
+    "ethers": "^4.0.39",
+    "ts-generator": "0.0.8",
+    "ts-node": "^8.4.1",
+    "typechain": "^1.0.3",
+    "typechain-target-ethers": "^1.0.2",
+    "typechain-target-truffle": "^1.0.2",
+    "typechain-target-web3-v1": "^1.0.2",
+    "typescript": "^3.6.4"
+  }
+}
