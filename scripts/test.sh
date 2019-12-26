@@ -23,7 +23,7 @@ else
   echo "Starting our own ganache instance"
 
   if [ "$SOLIDITY_COVERAGE" = true ]; then
-    npx testrpc-sc -l 0xfffffffffff $accounts -p "$port" > ganache.log &
+    npx testrpc-sc -l 0xfffffffffff $accounts -p "$port" -f https://mainnet.infura.io/v3/$INFURA_API_KEY@9165725 > ganache.log &
   else
     npx ganache-cli $accounts -p "$port" -f https://mainnet.infura.io/v3/$INFURA_API_KEY@9165725 > ganache.log &
   fi

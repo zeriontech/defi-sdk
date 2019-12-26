@@ -114,3 +114,7 @@ This project uses Truffle and web3js for all Ethereum interactions and testing.
 ### Run all the migrations scripts
 
 `npm run deploy:network`, `network` is `development` or `mainnet`
+
+### Verify contract's code on Etherscan
+
+`truffle run verify ContractName@0xcontractAddress --network mainnet`

@@ -22,19 +22,20 @@
     "@babel/core": "7.6.0",
     "@babel/preset-env": "7.6.0",
     "@babel/register": "7.6.0",
+    "@truffle/hdwallet-provider": "1.0.18",
     "core-js": "3.2.1",
-    "regenerator-runtime": "0.13.3",
     "dotenv": "8.2.0",
+    "regenerator-runtime": "0.13.3",
     "truffle": "5.1.5",
-    "@truffle/hdwallet-provider": "1.0.18"
+    "truffle-plugin-verify": "^0.3.6"
   },
   "devDependencies": {
     "eslint": "^6.4.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
-    "solhint": "^2.2.0",
     "ethlint": "^1.2.5",
     "ganache-cli": "6.7.0",
-    "solidity-coverage": "0.6.7"
+    "solhint": "^2.2.0",
+    "solidity-coverage": "^0.7.0-beta.3"
   }
 }
