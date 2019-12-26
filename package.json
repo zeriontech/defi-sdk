@@ -1,43 +1,40 @@
 {
-  "name": "solidity-ts-example",
-  "version": "0.0.1",
-  "description": "",
-  "main": "buidler.config.ts",
-  "scripts": {
-    "build": "npm run compile && npx buidler typechain",
-    "coverage": "npx solidity-coverage",
-    "compile": "npx buidler compile",
-    "test": "npx buidler test"
+  "name": "truffle-template",
+  "version": "1.0.0",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
   },
-  "repository": {
-    "type": "git",
-    "url": ""
+  "scripts": {
+    "deploy:development": "npx truffle deploy --network development",
+    "deploy:mainnet": "npx truffle deploy --network mainnet",
+    "test": "scripts/test.sh",
+    "coverage": "scripts/coverage.sh",
+    "coverage:docker": "docker build -t cov . && docker run cov",
+    "lint:solhint": "npx solhint \"./contracts/**/*.sol\"",
+    "lint:ethlint": "npx solium --dir contracts/",
+    "lint:eslint": "eslint .",
+    "lint": "npm run lint:solhint && npm run lint:ethlint && npm run lint:eslint"
   },
   "author": "",
-  "license": "MIT",
-  "homepage": "",
-  "devDependencies": {
-    "eslint": "^6.6.0",
-    "@typescript-eslint/eslint-plugin": "^2.8.0"
-  },
+  "license": "ISC",
   "dependencies": {
-    "dotenv": "^8.2.0",
-    "@nomiclabs/buidler": "^1.0.1",
-    "@nomiclabs/buidler-ethers": "^1.0.1",
-    "@nomiclabs/buidler-etherscan": "^1.0.1",
-    "@types/chai": "^4.2.4",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^12.11.7",
-    "buidler-typechain": "0.0.5",
-    "chai": "^4.2.0",
-    "ethereum-waffle": "^2.1.0",
-    "ethers": "^4.0.39",
-    "ts-generator": "0.0.8",
-    "ts-node": "^8.4.1",
-    "typechain": "^1.0.3",
-    "typechain-target-ethers": "^1.0.2",
-    "typechain-target-truffle": "^1.0.2",
-    "typechain-target-web3-v1": "^1.0.2",
-    "typescript": "^3.6.4"
+    "@babel/core": "7.6.0",
+    "@babel/preset-env": "7.6.0",
+    "@babel/register": "7.6.0",
+    "core-js": "3.2.1",
+    "regenerator-runtime": "0.13.3",
+    "dotenv": "8.2.0",
+    "truffle": "5.1.5",
+    "@truffle/hdwallet-provider": "1.0.18"
+  },
+  "devDependencies": {
+    "eslint": "^6.4.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "solhint": "^2.2.0",
+    "ethlint": "^1.2.5",
+    "ganache-cli": "6.7.0",
+    "solidity-coverage": "0.6.7"
   }
 }

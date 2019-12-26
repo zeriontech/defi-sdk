@@ -1,7 +1,9 @@
 node_modules/
-cache/
+.idea/
+.vscode/
 build/
-typechain/
+coverage
+coverage.json
+ganache.log
 .env
-.idea
-.vscode
+package-lock.json
