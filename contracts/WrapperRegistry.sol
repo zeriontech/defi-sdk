@@ -4,6 +4,7 @@ pragma experimental ABIEncoderV2;
 import { ProtocolWrapper } from "./ProtocolWrapper.sol";
 import { ProtocolBalance, AssetBalance } from "./Structs.sol";
 
+
 /**
  * @title Registry for protocol wrappers.
  * @notice balance(address) function implements the main functionality.
@@ -19,7 +20,6 @@ contract WrapperRegistry {
     ProtocolWrapper[] internal protocolWrappers;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
 
     /**
      * @param _protocolWrappers Array with protocol wrappers supported by the registry.
@@ -57,7 +57,7 @@ contract WrapperRegistry {
      * The function is callable only by the owner.
      */
     function transferOwnership(address _owner) external onlyOwner {
-        require(_owner != address(0), "PW: new owner is the zero address");
+        require(_owner != address(0), "PW: new owner is the zero address!");
         emit OwnershipTransferred(owner, _owner);
         owner = _owner;
     }

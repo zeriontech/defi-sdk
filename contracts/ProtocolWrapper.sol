@@ -8,6 +8,7 @@ interface IERC20 {
     function decimals() external view returns(uint8);
 }
 
+
 /**
  * @title Base contract for protocol wrappers.
  * @dev protocolName() and assetAmount(address,address) functions must be implemented.
@@ -35,6 +36,37 @@ abstract contract ProtocolWrapper {
     }
 
     /**
+     * @notice Adds new asset to assets array.
+     * The function is callable only by the owner.
+     */
+    function addAsset(address asset) external onlyOwner {
+        assets.push(asset);
+    }
+
+    /**
+     * @notice Removes one of the assets by its index.
+     * The function is callable only by the owner.
+     */
+    function removeAsset(uint256 index) external onlyOwner {
+        uint256 length = assets.length;
+        require(index < length, "PW: index is too large!");
+        if (index != length - 1) {
+            assets[index] = assets[length - 1];
+        }
+        assets.pop();
+    }
+
+    /**
+     * @notice Transfers ownership to the desired address.
+     * The function is callable only by the owner.
+     */
+    function transferOwnership(address _owner) external onlyOwner {
+        require(_owner != address(0), "PW: new owner is the zero address!");
+        emit OwnershipTransferred(owner, _owner);
+        owner = _owner;
+    }
+
+    /**
      * @notice Returns all the amounts of supported assets locked on the protocol by the given user.
      */
     function getProtocolBalance(address user) external view returns (ProtocolBalance memory) {
@@ -53,37 +85,6 @@ abstract contract ProtocolWrapper {
             name: protocolName(),
             balances: assetBalances
         });
-    }
-
-    /**
-     * @notice Adds new asset to assets array.
-     * The function is callable only by the owner.
-     */
-    function addAsset(address asset) external onlyOwner {
-        assets.push(asset);
-    }
-
-    /**
-    * @notice Removes one of the assets by its index.
-    * The function is callable only by the owner.
-    */
-    function removeAsset(uint256 index) external onlyOwner {
-        uint256 length = assets.length;
-        require(index < length, "PW: index is too large!");
-        if (index != length -1) {
-            assets[index] = assets[length - 1];
-        }
-        assets.pop();
-    }
-
-    /**
-     * @notice Transfers ownership to the desired address.
-     * The function is callable only by the owner.
-     */
-    function transferOwnership(address _owner) external onlyOwner {
-        require(_owner != address(0), "PW: new owner is the zero address");
-        emit OwnershipTransferred(owner, _owner);
-        owner = _owner;
     }
 
     /**

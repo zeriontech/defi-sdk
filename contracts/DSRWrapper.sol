@@ -3,6 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import { ProtocolWrapper } from "./ProtocolWrapper.sol";
 
+
 /**
  * @dev Pot contract interface.
  * Only the functions required for DSRWrapper contract are added.
@@ -14,6 +15,7 @@ interface Pot {
     function rho() external view returns(uint256);
     function chi() external view returns(uint256);
 }
+
 
 /**
  * @title Wrapper for DSR protocol.
@@ -75,19 +77,19 @@ contract DSRWrapper is ProtocolWrapper {
                 switch mod(n, 2) case 0 { z := base } default { z := x }
                 let half := div(base, 2)  // for rounding.
                 for { n := div(n, 2) } n { n := div(n,2) } {
-                    let xx := mul(x, x)
-                    if iszero(eq(div(xx, x), x)) { revert(0,0) }
-                    let xxRound := add(xx, half)
-                    if lt(xxRound, xx) { revert(0,0) }
-                    x := div(xxRound, base)
-                    if mod(n,2) {
-                        let zx := mul(z, x)
-                        if and(iszero(iszero(x)), iszero(eq(div(zx, x), z))) { revert(0,0) }
-                        let zxRound := add(zx, half)
-                        if lt(zxRound, zx) { revert(0,0) }
-                        z := div(zxRound, base)
-                    }
+                let xx := mul(x, x)
+                if iszero(eq(div(xx, x), x)) { revert(0,0) }
+                let xxRound := add(xx, half)
+                if lt(xxRound, xx) { revert(0,0) }
+                x := div(xxRound, base)
+                if mod(n,2) {
+                    let zx := mul(z, x)
+                    if and(iszero(iszero(x)), iszero(eq(div(zx, x), z))) { revert(0,0) }
+                    let zxRound := add(zx, half)
+                    if lt(zxRound, zx) { revert(0,0) }
+                    z := div(zxRound, base)
                 }
+            }
             }
         }
     }
