@@ -44,8 +44,11 @@ contract WrapperRegistry {
      * The function is callable only by the owner.
      */
     function removeProtocolWrapper(uint256 index) external onlyOwner {
-        require(index < protocolWrappers.length, "WR: index is too large!");
-        protocolWrappers[index] = protocolWrappers[protocolWrappers.length - 1];
+        uint256 length = protocolWrappers.length;
+        require(index < length, "WR: index is too large!");
+        if (index != length - 1) {
+            protocolWrappers[index] = protocolWrappers[length - 1];
+        }
         protocolWrappers.pop();
     }
 

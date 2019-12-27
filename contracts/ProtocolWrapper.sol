@@ -68,10 +68,13 @@ abstract contract ProtocolWrapper {
     * The function is callable only by the owner.
     */
     function removeAsset(uint256 index) external onlyOwner {
-        require(index < assets.length, "PW: index is too large!");
-        assets[index] = assets[assets.length - 1];
-        assets.pop();
+        uint256 length = assets.length;
+        require(index < length, "PW: index is too large!");
+        if (index != length -1) {
+            assets[index] = assets[length - 1];
         }
+        assets.pop();
+    }
 
     /**
      * @notice Transfers ownership to the desired address.

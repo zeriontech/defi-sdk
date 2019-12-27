@@ -44,6 +44,6 @@ module.exports = {
     },
   },
   api_keys: {
-    etherscan: `${ETHERSCAN_API_KEY}`,
+    etherscan: `${process.env.ETHERSCAN_API_KEY}`,
   },
 };
