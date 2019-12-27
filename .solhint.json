@@ -1,3 +1,16 @@
 {
-  "extends": "solhint:all"
+  "extends": "solhint:all",
+  "rules": {
+    "mark-callable-contracts": [
+      "off"
+    ],
+    "reason-string": [
+      "error",
+      { "maxLength" : 50 }
+    ],
+    "compiler-version": [
+      "error",
+      "0.6.0"
+    ]
+  }
 }

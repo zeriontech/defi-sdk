@@ -15,6 +15,9 @@
     "linebreak-style": [
       "error",
       "unix"
+    ],
+    "security/no-block-members": [
+      "off"
     ]
   }
 }
