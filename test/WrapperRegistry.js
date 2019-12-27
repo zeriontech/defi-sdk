@@ -12,11 +12,11 @@ contract('WrapperRegistry', () => {
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await MockProtocolWrapper.new()
+    await MockProtocolWrapper.new({ from: accounts[0] })
       .then((result) => {
         mockProtocolWrapper = result.contract;
       });
-    await WrapperRegistry.new([mockProtocolWrapper.options.address])
+    await WrapperRegistry.new([mockProtocolWrapper.options.address], { from: accounts[0] })
       .then((result) => {
         wrapperRegistry = result.contract;
       });
@@ -49,10 +49,12 @@ contract('WrapperRegistry', () => {
   it('should add protocol by the owner', async () => {
     await wrapperRegistry.methods['addProtocolWrapper(address)']('0x1111111111111111111111111111111111111111')
       .send({ from: accounts[0] });
-    await wrapperRegistry.methods['getProtocolWrappers()']().call().then((result) => {
-      assert.equal(result.length, 2);
-      assert.equal(result[1], '0x1111111111111111111111111111111111111111');
-    });
+    await wrapperRegistry.methods['getProtocolWrappers()']()
+      .call()
+      .then((result) => {
+        assert.equal(result.length, 2);
+        assert.equal(result[1], '0x1111111111111111111111111111111111111111');
+      });
   });
 
   it('should not remove protocol not by the owner', async () => {
@@ -106,6 +108,30 @@ contract('WrapperRegistry', () => {
       .call()
       .then((result) => {
         assert.equal(result[0], '0x2222222222222222222222222222222222222222');
+      });
+  });
+
+  it('should not transfer ownership not by the owner', async () => {
+    await expectRevert(
+      wrapperRegistry.methods['transferOwnership(address)'](accounts[1])
+        .send({ from: accounts[1] }),
+    );
+  });
+
+  it('should not transfer ownership to the zero address', async () => {
+    await expectRevert(
+      wrapperRegistry.methods['transferOwnership(address)']('0x0000000000000000000000000000000000000000')
+        .send({ from: accounts[0] }),
+    );
+  });
+
+  it('should transfer ownership by the owner', async () => {
+    await wrapperRegistry.methods['transferOwnership(address)'](accounts[1])
+      .send({ from: accounts[0] });
+    await wrapperRegistry.methods['owner()']()
+      .call()
+      .then((result) => {
+        assert.equal(result, accounts[1]);
       });
   });
 
