@@ -22,6 +22,12 @@ contract('WrapperRegistry', () => {
       });
   });
 
+  it('should not deploy without protocol wrappers', async () => {
+    await expectRevert(
+      WrapperRegistry.new([], { from: accounts[0] }),
+    );
+  });
+
   it('should be correct owner', async () => {
     await wrapperRegistry.methods['owner()']()
       .call()

@@ -39,6 +39,18 @@ contract('DSRWrapper', () => {
       });
   });
 
+  it('should not deploy with bad argunemts', async () => {
+    await expectRevert(
+      DSRWrapper.new([], potAddress, { from: accounts[0] }),
+    );
+    await expectRevert(
+      DSRWrapper.new([daiAddress], '0x0000000000000000000000000000000000000000', { from: accounts[0] }),
+    );
+    await expectRevert(
+      DSRWrapper.new([daiAddress, daiAddress], potAddress, { from: accounts[0] }),
+    );
+  });
+
   it('should not add asset not by the owner', async () => {
     await expectRevert(
       dsrWrapper.methods['addAsset(address)']('0x1111111111111111111111111111111111111111')
