@@ -1,6 +1,3 @@
-// import { increaseTimeTo, increaseTime } from './helpers/increaseTime';
-// const { BN } = web3.utils;
-
 import expectRevert from './helpers/expectRevert';
 
 const WrapperRegistry = artifacts.require('./WrapperRegistry');
@@ -9,6 +6,9 @@ const DSRWrapper = artifacts.require('./DSRWrapper');
 contract('DSRWrapper', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const potAddress = '0x197E90f9FAD81970bA7976f33CbD77088E5D7cf7';
+  const ZERO = '0x0000000000000000000000000000000000000000';
+  const ONE = '0x1111111111111111111111111111111111111111';
+  const TWO = '0x2222222222222222222222222222222222222222';
 
   let accounts;
   let wrapperRegistry;
@@ -44,7 +44,10 @@ contract('DSRWrapper', () => {
       DSRWrapper.new([], potAddress, { from: accounts[0] }),
     );
     await expectRevert(
-      DSRWrapper.new([daiAddress], '0x0000000000000000000000000000000000000000', { from: accounts[0] }),
+      DSRWrapper.new([daiAddress], ZERO, { from: accounts[0] }),
+    );
+    await expectRevert(
+      DSRWrapper.new([ZERO], potAddress, { from: accounts[0] }),
     );
     await expectRevert(
       DSRWrapper.new([daiAddress, daiAddress], potAddress, { from: accounts[0] }),
@@ -53,18 +56,18 @@ contract('DSRWrapper', () => {
 
   it('should not add asset not by the owner', async () => {
     await expectRevert(
-      dsrWrapper.methods['addAsset(address)']('0x1111111111111111111111111111111111111111')
+      dsrWrapper.methods['addAsset(address)'](ONE)
         .send({ from: accounts[1] }),
     );
   });
 
   it('should add asset by the owner', async () => {
-    await dsrWrapper.methods['addAsset(address)']('0x1111111111111111111111111111111111111111')
+    await dsrWrapper.methods['addAsset(address)'](ONE)
       .send({ from: accounts[0] });
     await dsrWrapper.methods['assets(uint256)'](1)
       .call()
       .then((result) => {
-        assert.equal(result, '0x1111111111111111111111111111111111111111');
+        assert.equal(result, ONE);
       });
   });
 
@@ -84,13 +87,13 @@ contract('DSRWrapper', () => {
 
   it('should remove asset by the owner', async () => {
     // [daiAddress]
-    await dsrWrapper.methods['addAsset(address)']('0x2222222222222222222222222222222222222222')
+    await dsrWrapper.methods['addAsset(address)'](TWO)
       .send({ from: accounts[0] });
     // [daiAddress, '0x2...2']
     await dsrWrapper.methods['assets(uint256)'](1)
       .call()
       .then((result) => {
-        assert.equal(result, '0x2222222222222222222222222222222222222222');
+        assert.equal(result, TWO);
       });
     await dsrWrapper.methods['removeAsset(uint256)'](0)
       .send({ from: accounts[0] });
@@ -98,15 +101,15 @@ contract('DSRWrapper', () => {
     await dsrWrapper.methods['assets(uint256)'](0)
       .call()
       .then((result) => {
-        assert.equal(result, '0x2222222222222222222222222222222222222222');
+        assert.equal(result, TWO);
       });
-    await dsrWrapper.methods['addAsset(address)']('0x1111111111111111111111111111111111111111')
+    await dsrWrapper.methods['addAsset(address)'](ONE)
       .send({ from: accounts[0] });
     // ['0x2...2', '0x1...1']
     await dsrWrapper.methods['assets(uint256)'](1)
       .call()
       .then((result) => {
-        assert.equal(result, '0x1111111111111111111111111111111111111111');
+        assert.equal(result, ONE);
       });
     await dsrWrapper.methods['removeAsset(uint256)'](1)
       .send({ from: accounts[0] });
@@ -114,7 +117,7 @@ contract('DSRWrapper', () => {
     await dsrWrapper.methods['assets(uint256)'](0)
       .call()
       .then((result) => {
-        assert.equal(result, '0x2222222222222222222222222222222222222222');
+        assert.equal(result, TWO);
       });
     // []
     await expectRevert(
@@ -132,7 +135,7 @@ contract('DSRWrapper', () => {
 
   it('should not transfer ownership to the zero address', async () => {
     await expectRevert(
-      dsrWrapper.methods['transferOwnership(address)']('0x0000000000000000000000000000000000000000')
+      dsrWrapper.methods['transferOwnership(address)'](ZERO)
         .send({ from: accounts[0] }),
     );
   });
@@ -149,25 +152,25 @@ contract('DSRWrapper', () => {
 
   it('should not update pot not by the owner', async () => {
     await expectRevert(
-      dsrWrapper.methods['updatePot(address)']('0x1111111111111111111111111111111111111111')
+      dsrWrapper.methods['updatePot(address)'](ONE)
         .send({ from: accounts[1] }),
     );
   });
 
   it('should not update pot to the zero address', async () => {
     await expectRevert(
-      dsrWrapper.methods['updatePot(address)']('0x0000000000000000000000000000000000000000')
+      dsrWrapper.methods['updatePot(address)'](ZERO)
         .send({ from: accounts[0] }),
     );
   });
 
   it('should update pot by the owner', async () => {
-    await dsrWrapper.methods['updatePot(address)']('0x1111111111111111111111111111111111111111')
+    await dsrWrapper.methods['updatePot(address)'](ONE)
       .send({ from: accounts[0] });
     await dsrWrapper.methods['pot()']()
       .call()
       .then((result) => {
-        assert.equal(result, '0x1111111111111111111111111111111111111111');
+        assert.equal(result, ONE);
       });
   });
 });

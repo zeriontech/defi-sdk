@@ -1,4 +1,4 @@
-name: lint+test
+name: lint+coverage
 on:
   push
 
@@ -12,13 +12,13 @@ jobs:
       - name: setup-node
         uses: actions/setup-node@v1
         with:
-          node-version: '8.x'
+          node-version: '10.x'
       - name: install
         run: npm install
       - name: lint:eslint
         run: npm run lint:eslint
-  test:
-    name: test
+  coverage:
+    name: coverage
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -26,10 +26,10 @@ jobs:
       - name: setup-node
         uses: actions/setup-node@v1
         with:
-          node-version: '8.x'
+          node-version: '10.x'
       - name: install
         run: npm install
-      - name: test
-        run: npm run test
+      - name: test+coverage
+        run: npm run coverage
         env:
           INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}

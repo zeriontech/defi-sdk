@@ -15,14 +15,6 @@ module.exports = {
       host: '127.0.0.1',
       port: 8545,
       network_id: '*',
-      networkCheckTimeout: 20000,
-    },
-    coverage: {
-      host: '127.0.0.1',
-      network_id: '*',
-      port: 8555,
-      gas: 0xfffffffffff,
-      gasPrice: 1,
     },
     mainnet: {
       provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`, 0),
