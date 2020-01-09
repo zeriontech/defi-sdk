@@ -6,4 +6,3 @@ coverage
 coverage.json
 ganache.log
 .env
-package-lock.json
