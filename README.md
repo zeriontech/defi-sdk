@@ -1,8 +1,8 @@
 # Protocol Wrappers
 
-This is a project with protocol wrappers that looks for assets locked on different protocols.
+This is a project with protocol wrappers that look for assets locked on different protocols.
 
-![](https://github.com/zeriontech/protocol-wrappers/workflows/lint+test/badge.svg)
+![](https://github.com/zeriontech/protocol-wrappers/workflows/lint+coverage/badge.svg)
 
 ## `contract WrapperRegistry`
 
