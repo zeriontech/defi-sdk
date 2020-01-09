@@ -1,4 +1,4 @@
-pragma solidity 0.6.0;
+pragma solidity 0.6.1;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolWrapper } from "./ProtocolWrapper.sol";
