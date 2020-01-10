@@ -103,10 +103,6 @@ This project uses Truffle and web3js for all Ethereum interactions and testing.
 
 `npm run coverage`
 
-### Run Solidity code coverage in the docker container
-
-`npm run coverage:docker`
-
 ### Run Solidity and JS linters
 
 `npm run lint`

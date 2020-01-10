@@ -10,7 +10,6 @@
     "deploy:mainnet": "npx truffle deploy --network mainnet",
     "test": "scripts/test.sh",
     "coverage": "npx truffle run coverage",
-    "coverage:docker": "docker build -t cov . && docker run cov",
     "lint:solhint": "npx solhint \"./contracts/**/*.sol\"",
     "lint:ethlint": "npx solium --dir contracts/",
     "lint:eslint": "eslint .",
