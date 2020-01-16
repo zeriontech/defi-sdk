@@ -1,13 +1,15 @@
 pragma solidity 0.6.1;
 pragma experimental ABIEncoderV2;
 
-import { ProtocolWrapper } from "./ProtocolWrapper.sol";
+import { ProtocolWatcher } from "./ProtocolWatcher.sol";
+import { Component } from "../Structs.sol";
 
 
 /**
  * @dev Pot contract interface.
- * Only the functions required for DSRWrapper contract are added.
- * The Pot contract is available here https://github.com/makerdao/dss/blob/master/src/pot.sol.
+ * Only the functions required for DSRWatcher contract are added.
+ * The Pot contract is available here
+ * https://github.com/makerdao/dss/blob/master/src/pot.sol.
  */
 interface Pot {
     function pie(address) external view returns(uint256);
@@ -18,52 +20,43 @@ interface Pot {
 
 
 /**
- * @title Wrapper for DSR protocol.
- * @dev Implementation of ProtocolWrapper abstract contract.
+ * @title Watcher for DSR protocol.
+ * @dev Implementation of ProtocolWatcher abstract contract.
  */
-contract DSRWrapper is ProtocolWrapper {
+contract DSRWatcher is ProtocolWatcher {
 
-    Pot public pot;
+    Pot constant internal POT = Pot(0x197E90f9FAD81970bA7976f33CbD77088E5D7cf7);
     uint256 constant internal ONE = 10 ** 27;
 
     /**
-     * @param _assets Only DAI token address is supported in DSR.
-     * @param _pot Address of pot contract.
+     * @return Name of the protocol.
+     * @dev Implementation of ProtocolWatcher function.
      */
-    constructor(address[] memory _assets, Pot _pot) public ProtocolWrapper(_assets) {
-        require(address(_pot) != address(0), "DSRW: empty _pot address!");
-        require(_assets[0] == address(0x6B175474E89094C44Da98b954EedeAC495271d0F), "DSRW: wrong DAI address!");
-        require(_assets.length == 1, "DSRW: wrong assets number!");
-
-        pot = _pot;
-    }
-
-    /**
-     * @notice Updates Pot contract address in case it was changed.
-     * @param _pot New Pot contract address.
-     */
-    function updatePot(Pot _pot) external onlyOwner {
-        require(address(_pot) != address(0), "DSRW: empty _pot address!");
-
-        pot = _pot;
-    }
-
-    /**
-     * @notice Returns name of the protocol.
-     * @dev Implementation of ProtocolWrapper virtual function.
-     */
-    function protocolName() public pure override returns(string memory) {
+    function protocolName() external pure override returns (string memory) {
         return("DSR");
     }
 
     /**
-     * @notice Calculates the amount of DAI locked on DSR protocol.
-     * @dev Implementation of ProtocolWrapper virtual function.
+     * @return Amount of DAI locked on the protocol by the given user.
+     * @dev Implementation of ProtocolWatcher function.
      * This function repeats the calculations made in drip() function of Pot contract.
      */
-    function assetAmount(address, address user) internal view override returns(uint256) {
-        uint256 chi = rmultiply(rpower(pot.dsr(), now - pot.rho(), ONE), pot.chi());
-        return rmultiply(chi, pot.pie(user));
+    function balanceOf(address, address user) external view override returns (uint256) {
+        uint256 chi = rmultiply(rpower(POT.dsr(), now - POT.rho(), ONE), POT.chi());
+        return rmultiply(chi, POT.pie(user));
+    }
+
+    /**
+     * @return Struct with underlying assets rates for the given asset.
+     * @dev Implementation of ProtocolWatcher function.
+     */
+    function exchangeRate(address asset) external view override returns (Component[] memory) {
+        Component[] memory components = new Component[](1);
+        components[0] = Component({
+            underlying: asset,
+            rate: uint256(1e18)
+        });
+        return components;
     }
 
     /**

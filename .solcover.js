@@ -3,9 +3,12 @@ require('dotenv').config();
 module.exports = {
   skipFiles: [
     'Migrations.sol',
-    'ProtocolWrapperMock.sol',
-    'ProtocolWrapper.sol',
     'Structs.sol',
+    'IERC20.sol',
+    'Logic.sol',
+    'watchers/ProtocolWatcher.sol',
+    'wrappers',
+    'mock',
   ],
   providerOptions: {
     accounts: [
@@ -50,6 +53,6 @@ module.exports = {
         balance: '0x56BC75E2D63100000',
       },
     ],
-    fork: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}@9165725`,
+    fork: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}@9323924`,
   }
 };

@@ -19,8 +19,8 @@ module.exports = {
     mainnet: {
       provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`, 0),
       network_id: 1,
-      gas: 1000000,
-      gasPrice: 4000000000,
+      gas: 2000000,
+      gasPrice: 1000000000,
       timeoutBlocks: 200,
     },
   },
@@ -37,5 +37,12 @@ module.exports = {
   },
   api_keys: {
     etherscan: `${process.env.ETHERSCAN_API_KEY}`,
+  },
+  mocha: {
+    reporter: 'eth-gas-reporter',
+    reporterOptions: {
+      currency: 'USD',
+      gasPrice: 1,
+    }, // See options below
   },
 };

@@ -6,6 +6,7 @@
     "test": "test"
   },
   "scripts": {
+    "compile": "npx truffle compile",
     "deploy:development": "npx truffle deploy --network development",
     "deploy:mainnet": "npx truffle deploy --network mainnet",
     "test": "scripts/test.sh",
@@ -21,20 +22,24 @@
     "@babel/core": "7.6.4",
     "@babel/preset-env": "7.6.3",
     "@babel/register": "7.6.2",
-    "@truffle/hdwallet-provider": "1.0.19",
+    "@truffle/hdwallet-provider": "1.0.29",
     "core-js": "3.2.1",
     "dotenv": "8.2.0",
     "regenerator-runtime": "0.13.3",
-    "truffle": "5.1.7",
-    "truffle-plugin-verify": "0.3.6"
+    "truffle": "5.1.9",
+    "truffle-flattener": "1.4.2",
+    "truffle-plugin-verify": "0.3.8"
   },
   "devDependencies": {
+    "@codechecks/client": "0.1.10",
     "eslint": "6.4.0",
     "eslint-config-airbnb-base": "14.0.0",
     "eslint-plugin-import": "2.18.2",
+    "eth-gas-reporter": "0.2.14",
     "ethlint": "1.2.5",
-    "ganache-cli": "6.8.1",
-    "solhint": "2.2.0",
-    "solidity-coverage": "0.7.1"
+    "ganache-cli": "6.8.2",
+    "solhint": "2.3.0",
+    "solidity-coverage": "0.7.1",
+    "verify-on-etherscan": "^1.2.1"
   }
 }

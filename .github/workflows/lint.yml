@@ -1,0 +1,19 @@
+name: lint
+on:
+  push
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+      - name: setup-node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+      - name: install
+        run: npm install
+      - name: lint:eslint
+        run: npm run lint:eslint
