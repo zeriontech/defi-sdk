@@ -8,101 +8,113 @@ This is a project with Zerion Smart Contracts interacting with different DeFi pr
 
 ## Table of Contents
 
-  - [WatcherRegistry](#watcherregistry-is-protocolassetsmanager)
-  - [ProtocolAssetsManager](#protocolassetsmanager-is-ownable)
+  - [AdapterRegistry](#adapterregistry-is-AdapterAssetsManager)
+  - [AdapterAssetsManager](#AdapterAssetsManager-is-ownable)
   - [Ownable](#ownable)
-  - [watchers/DSRWatcher](#dsrwatcher-is-protocolwatcher)
-  - [watchers/SynthetixWatcher](#synthetixwatcher-is-protocolwatcher)
-  - [watchers/CurveWatcher](#curvewatcher-is-protocolwatcher)
-  - [watchers/ProtocolWatcher (abstract contract)](#protocolwatcher-abstract-contract)
+  - [adapters/DSRAdapter](#dsradapter-is-Adapter)
+  - [adapters/SynthetixAdapter](#synthetixadapter-is-Adapter)
+  - [adapters/CurveAdapter](#curveadapter-is-Adapter)
+  - [adapters/Adapter (abstract contract)](#Adapter-abstract-contract)
   - [Logic](#logic)
   - [TokenSpender](#tokenspender)
-  - [wrappers/ProtocolWrapper (abstract contract)](#protocolwrapper-is-protocolwatcher-abstract-contract)
+  - [interactiveAdapters/InteractiveAdapter (abstract contract)](#protocolwrapper-is-Adapter-abstract-contract)
   - [Use-cases for Logic contract](#use-cases-for-logic-contract)
     * [Swap cDAI to DSR (Chai)](#swap-cdai-to-dsr-chai)
   - [Dev notes](#dev-notes)
-    * [Adding new protocol wrapper](#adding-new-protocol-wrapper)
+    * [Adding new adapter](#adding-new-adapter)
     * [Available Functionality](#available-functionality)
 
-## WatcherRegistry is [ProtocolAssetsManager](#protocolassetsmanager-is-ownable)
+## AdapterRegistry is [AdapterAssetsManager](#AdapterAssetsManager-is-ownable)
 
-Registry holding array of protocol watchers and checking balances via these watchers.
+Registry holding array of protocol adapters and checking balances via these adapters.
 
 ### `view` functions
 
-#### `function balanceOf(address user) returns (ProtocolBalance[] memory)`
+#### `function getBalancesAndRates(address user) returns (ProtocolDetail[] memory)`
 
-Iterates over `protocolWatchers` and appends balances and rates.
+Iterates over `adapters` list and appends balances and rates.
 
-#### `function balanceOf(address user, address protocolWatcher) returns (AssetBalance[] memory)`
+#### `function getBalances(address user) returns (ProtocolBalance[] memory)`
 
-Iterates over `protocolWatcher`s assets and appends balances.
+Iterates over `adapters` list and appends balances.
 
-#### `function balanceOf(address user, address protocolWatcher, address[] memory assets) returns (AssetBalance[] memory)`
+#### `function getRates() returns (ProtocolRate[] memory)`
 
-Iterates over given assets for given `protocolWatcher` and appends balances.
+Iterates over `adapters` list and appends rates.
 
-#### `function exchangeRates(address protocolWatcher) returns (Rate[] memory)`
+#### `function getBalances(address user, address adapter) returns (AssetBalance[] memory)`
 
-Iterates over `protocolWatcher`s assets and appends rates.
+Iterates over `adapter`'s assets and appends balances.
 
-#### `function exchangeRates(address protocolWatcher, address[] memory assets) returns (Rate[] memory)`
+#### `function getRates(address adapter) returns (AssetRate[] memory)`
 
-Iterates over given assets for given `protocolWatcher` and appends rates.
+Iterates over `adapter`'s assets and appends rates.
 
-## ProtocolAssetsManager is [Ownable](#ownable)
+#### `function getBalances(address user, address adapter, address[] memory assets) returns (AssetBalance[] memory)`
 
-Base contract for `WatcherRegistry` contract.
-Implements logic connected with `protocolWatcher`s and their `assets` management.
+Iterates over given `assets` for given `adapter` and appends balances.
+
+#### `function getRates(address adapter, address[] memory assets) returns (AssetRate[] memory)`
+
+Iterates over given `assets` for given `adapter` and appends rates.
+s
+## AdapterAssetsManager is [Ownable](#ownable)
+
+Base contract for `AdapterRegistry` contract.
+Implements logic connected with `Adapter`s and their `assets` management.
 
 ### State variables
 
 ```
-address[] internal protocolWatchers;
+mapping(address => address) internal adapters;
 mapping(address => address[]) internal assets;
 ```
 
 ### `onlyOwner` functions
 
-#### `function addProtocolWatcher(address protocolWatcher, address[] calldata _assets)`
+#### `function addAdapter(address adapter, address[] calldata _assets)`
 
-#### `function removeProtocolWatcher(uint256 watcherIndex)`
+New adapter is added before the first existing adapter.
 
-#### `function addProtocolWatcherAsset(uint256 watcherIndex, address asset)`
+#### `function removeAdapter(address adapter)`
 
-#### `function removeProtocolWatcherAsset(uint256 watcherIndex, uint256 assetIndex)`
+#### `function addAdapterAsset(address adapter, address asset)`
+
+New asset is added after the last adapter's asset.
+
+#### `function removeAdapterAsset(address adapter, uint256 assetIndex)`
 
 ### `view` functions
 
-#### `function getProtocolWatcherAssets(address protocolWatcher) returns (address[] memory)`
+#### `function getAdapterAssets(address adapter) returns (address[] memory)`
 
-#### `function getProtocolWatchers() returns (address[] memory)`
+#### `function getAdapters() returns (address[] memory)`
 
 ## Ownable 
 
-Base contract for `ProtocolAssetsManager` and `Logic` contracts.
+Base contract for `AdapterAssetsManager` and `Logic` contracts.
 Implements `Ownable` logic.
 Includes `onlyOwner` modifier, `transferOwnership(address)` function, and public state variable `owner`. 
 
-## DSRWatcher is [ProtocolWatcher](#protocolwatcher-abstract-contract)
+## DSRAdapter is [Adapter](#Adapter-abstract-contract)
 
-Watcher for DSR protocol.
-There will be only watcher as DSR protocol is not tokenized.
+Adapter for DSR protocol.
+There will be only adapter as DSR protocol is not tokenized.
 
-## SynthetixWatcher is [ProtocolWatcher](#protocolwatcher-abstract-contract)
+## SynthetixAdapter is [Adapter](#Adapter-abstract-contract)
 
-Watcher for Synthetix protocol.
+Adapter for Synthetix protocol.
 Amount returned by `balanceOf()` function is the amount of tokens locked by minting sUSD tokens.
-There will be only watcher as debt at Synthetix protocol is not tokenized.
+There will be only adapter as debt at Synthetix protocol is not tokenized.
 
-## CurveWatcher is [ProtocolWatcher](#protocolwatcher-abstract-contract)
+## CurveAdapter is [Adapter](#Adapter-abstract-contract)
 
-Watcher for Curve.fi protocol.
+Adapter for Curve.fi protocol.
 Currently, there is the only pool with cDAI/cUSDC locked on it.
 
-## ProtocolWatcher (abstract contract)
+## Adapter (abstract contract)
 
-Base contract for protocol watchers.
+Base contract for protocol adapters.
 Includes all the functions required to be implemented.
 Should be stateless.
 Only `internal constant` state variables may be used.
@@ -131,22 +143,24 @@ Note: rates are scaled by `1e18` due to rounding issues.
 
 ## Logic
 
-1. Iterates over array of actions, checks whitelist, and calls corresponding ProtocolWrappers with asset, amount, and additional data as arguments (deposit, or withdraw).
-2. Finalization (returns all resulting tokens back to the user).
+0. (optional) Verifies the supplied signature and extracts the address of spender from it. 
+1. Iterates over array of actions, checks adapter in AdapterRegistry, and `delegatecall`s corresponding InteractiveAdapter with assets, amounts, and additional data as arguments (deposit, or withdraw).
+2. Returns all the resulting tokens back to the user.
 
 ```
 function executeActions(Action[] actions) external payable
+function executeActions(Action[] actions, Approval[] approvals, bytes signature) external payable
 ```
 
 ## TokenSpender
 
-Verifies the supplied signature and extracts the address of spender from it. Sends all the assets to the logic layer. Adds all the transferred assets to the list of withdrawable/toBeWithdrawn/resulting tokens.
+Sends all the assets under the request of Logic contract. Adds all the transferred assets to the list of withdrawable/toBeWithdrawn/resulting tokens.
 
 ```
-function transferApprovedAssets(Approval[] approvals, Action[] actions, bytes signature) external
+function transferApprovedAssets(Approval[] approvals) external returns (address[])
 ```
 
-## ProtocolWrapper is [ProtocolWatcher](#protocolwatcher-abstract-contract) (abstract contract)
+## InteractiveAdapter is [Adapter](#Adapter-abstract-contract) (abstract contract)
 
 Base contract for protocol wrappers.
 Includes all the functions required to be implemented.
@@ -175,7 +189,7 @@ The following actions array will be sent to `Logic` contract:
 [
     {
         actionType: ActionType.Withdraw,
-        protocolWrapper: <address of cDAI wrapper>,
+        InteractiveAdapter: <address of cDAI wrapper>,
         asset: 0x5d3a536e4d6dbd6114cc1ead35777bab948e3643,
         amount: Amount({
             amountType: AmountType.Relative,
@@ -185,7 +199,7 @@ The following actions array will be sent to `Logic` contract:
     },
     {
         actionType: ActionType.Deposit,
-        protocolWrapper: <address of chai wrapper>,
+        InteractiveAdapter: <address of chai wrapper>,
         asset: 0x5d3a536e4d6dbd6114cc1ead35777bab948e3643,
         amount: Amount({
             amountType: AmountType.Relative,
@@ -207,22 +221,21 @@ Logic layer should do the following:
 
 This project uses Truffle and web3js for all Ethereum interactions and testing.
 
-### Adding new protocol wrapper
+### Adding new adapter
 
-To add new protocol wrapper, you have to inherit from  `ProtocolWrapper` contract.
+To add new adapter, you have to inherit from `InteractiveAdapter` contract.
 Then implement `deposit()` and `withdraw()` functions.
-Both functions MUST return addresses of the assets sent beck to the `msg.sender`.
+Both functions MUST return addresses of the assets sent beck to the `msg.sender`, except for ETH.
 
-You also have to implement functions from  `ProtocolWatcher` contract as well.
+You have to implement functions from `Adapter` contract as well.
 `protocolName()`, `balanceOf()`, and `exchangeRate()` functions MUST be implemented.
 
 Note: only `internal constant` state variables and `internal` functions MUST be used.
 
 `protocolName()` function has no arguments and MUST return the name of protocol.
 
-`balanceOf(address,address)` function has two arguments of `address` type:
- the first one is asset address and the second one is user address.
- The function MUST return amount of given asset held on the protocol for given user.
+`balanceOf(address,address)` function has two arguments of `address` type: the first one is asset address and the second one is user address.
+The function MUST return amount of given asset held on the protocol for given user.
 
 `exchangeRate(address)` function has only one argument – asset address.
 The function MUST return all the underlying assets and their exchange rates scaled by `1e18`.

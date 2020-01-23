@@ -6,8 +6,8 @@ module.exports = {
     'Structs.sol',
     'IERC20.sol',
     'Logic.sol',
-    'watchers/ProtocolWatcher.sol',
-    'wrappers',
+    'adapters/Adapter.sol',
+    'interactiveAdapters',
     'mock',
   ],
   providerOptions: {
@@ -53,6 +53,6 @@ module.exports = {
         balance: '0x56BC75E2D63100000',
       },
     ],
-    fork: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}@9323924`,
+    fork: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
   }
 };

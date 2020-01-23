@@ -4,5 +4,5 @@ node_modules/
 build/
 coverage
 coverage.json
-ganache.log
+.log
 .env

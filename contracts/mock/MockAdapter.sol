@@ -2,12 +2,12 @@ pragma solidity 0.6.1;
 pragma experimental ABIEncoderV2;
 
 import { Component } from "../Structs.sol";
-import "../watchers/ProtocolWatcher.sol";
+import "../adapters/Adapter.sol";
 
 
-contract MockWatcher is ProtocolWatcher {
+contract MockAdapter is Adapter {
 
-    mapping (address => uint256) internal balances;
+    mapping (address => int128) internal balances;
 
     constructor() public {
         balances[msg.sender] = 1000;
@@ -17,7 +17,7 @@ contract MockWatcher is ProtocolWatcher {
         return("Mock");
     }
 
-    function balanceOf(address, address user) external view override returns(uint256) {
+    function balanceOf(address, address user) external view override returns(int128) {
         return balances[user];
     }
 
@@ -25,13 +25,13 @@ contract MockWatcher is ProtocolWatcher {
         Component[] memory components = new Component[](1);
         components[0] = Component({
             underlying: address(this),
-            rate: uint256(1)
+            rate: uint256(1e18)
             });
         return components;
     }
 
     /**
-     * @dev this function is here as this contract is mock for both watcher and asset
+     * @dev this function is here as this contract is mock for both adapter and asset
      */
     function decimals() external pure returns(uint256) {
         return 18;

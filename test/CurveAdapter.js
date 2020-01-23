@@ -1,35 +1,36 @@
 const { BN } = web3.utils;
-const WatcherRegistry = artifacts.require('./WatcherRegistry');
-const CurveWatcher = artifacts.require('./CurveWatcher');
+const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const CurveAdapter = artifacts.require('./CurveAdapter');
 
-contract('CurveWatcher', () => {
-  const ssTokenAddress = '0xDBe281E17540Da5305Eb2AeFB8CeF70E6dB1A0A9';
+contract('CurveAdapter', () => {
+  const ssTokenAddress = '0x3740fb63ab7a09891d7c0d4299442A551D06F5fD';
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
   const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
+  const testAddress = '0x98f365b8215189f547E0f77d84aF1A2Cb0820c72';
+  const incorrectAsset = '0x1C83501478f1320977047008496DACBD60Bb15ef';
 
   let accounts;
-  let watcherRegistry;
-  let curveWatcher;
+  let adapterRegistry;
+  let curveAdapter;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await CurveWatcher.new({ from: accounts[0] })
+    await CurveAdapter.new({ from: accounts[0] })
       .then((result) => {
-        curveWatcher = result.contract;
+        curveAdapter = result.contract;
       });
-    await WatcherRegistry.new(
-      [curveWatcher.options.address],
+    await AdapterRegistry.new(
+      [curveAdapter.options.address],
       [[ssTokenAddress]],
       { from: accounts[0] },
     )
       .then((result) => {
-        watcherRegistry = result.contract;
+        adapterRegistry = result.contract;
       });
   });
 
-  it('should be correct balance', async () => {
-    const testAddress = '0x98f365b8215189f547E0f77d84aF1A2Cb0820c72';
-    await watcherRegistry.methods['balanceOf(address)'](testAddress)
+  it('should return correct balances and rates', async () => {
+    await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
       .call()
       .then((result) => {
         const base = new BN(10).pow(new BN(24));
@@ -55,6 +56,33 @@ contract('CurveWatcher', () => {
         // eslint-disable-next-line no-console
         console.log(`Means its: ${cUSDCAmount} USDC locked`);
         assert.equal(result[0].name, 'Curve.fi');
+      });
+  });
+
+  it('should return empty rates for incorrect asset', async () => {
+    await adapterRegistry.methods['getRates(address,address[])'](
+      curveAdapter.options.address,
+      [incorrectAsset],
+    )
+      .call()
+      .then((result) => {
+        assert.equal(result.length, 1);
+        assert.equal(result[0].components.length, 0);
+      });
+  });
+
+  it('should return zero balances for incorrect asset', async () => {
+    await adapterRegistry.methods['getBalances(address,address,address[])'](
+      testAddress,
+      curveAdapter.options.address,
+      [incorrectAsset],
+    )
+      .call()
+      .then((result) => {
+        assert.equal(result.length, 1);
+        assert.equal(result[0].asset, incorrectAsset);
+        assert.equal(result[0].amount, 0);
+        assert.equal(result[0].decimals, 18);
       });
   });
 });

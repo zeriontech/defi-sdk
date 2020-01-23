@@ -1,13 +1,13 @@
 pragma solidity 0.6.1;
 pragma experimental ABIEncoderV2;
 
-import { ProtocolWatcher } from "./ProtocolWatcher.sol";
+import { Adapter } from "./Adapter.sol";
 import { Component } from "../Structs.sol";
 
 
 /**
  * @dev Pot contract interface.
- * Only the functions required for DSRWatcher contract are added.
+ * Only the functions required for DSRAdapter contract are added.
  * The Pot contract is available here
  * https://github.com/makerdao/dss/blob/master/src/pot.sol.
  */
@@ -20,17 +20,18 @@ interface Pot {
 
 
 /**
- * @title Watcher for DSR protocol.
- * @dev Implementation of ProtocolWatcher abstract contract.
+ * @title Adapter for DSR protocol.
+ * @dev Implementation of Adapter abstract contract.
  */
-contract DSRWatcher is ProtocolWatcher {
+contract DSRAdapter is Adapter {
 
     Pot constant internal POT = Pot(0x197E90f9FAD81970bA7976f33CbD77088E5D7cf7);
+    address constant internal DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     uint256 constant internal ONE = 10 ** 27;
 
     /**
      * @return Name of the protocol.
-     * @dev Implementation of ProtocolWatcher function.
+     * @dev Implementation of Adapter function.
      */
     function protocolName() external pure override returns (string memory) {
         return("DSR");
@@ -38,24 +39,35 @@ contract DSRWatcher is ProtocolWatcher {
 
     /**
      * @return Amount of DAI locked on the protocol by the given user.
-     * @dev Implementation of ProtocolWatcher function.
+     * @dev Implementation of Adapter function.
      * This function repeats the calculations made in drip() function of Pot contract.
      */
-    function balanceOf(address, address user) external view override returns (uint256) {
-        uint256 chi = rmultiply(rpower(POT.dsr(), now - POT.rho(), ONE), POT.chi());
-        return rmultiply(chi, POT.pie(user));
+    function balanceOf(address asset, address user) external view override returns (int128) {
+        if (asset == DAI) {
+            uint256 chi = rmultiply(rpower(POT.dsr(), now - POT.rho(), ONE), POT.chi());
+            return int128(rmultiply(chi, POT.pie(user)));
+        } else {
+            return int128(0);
+        }
     }
 
     /**
      * @return Struct with underlying assets rates for the given asset.
-     * @dev Implementation of ProtocolWatcher function.
+     * @dev Implementation of Adapter function.
      */
     function exchangeRate(address asset) external view override returns (Component[] memory) {
-        Component[] memory components = new Component[](1);
-        components[0] = Component({
-            underlying: asset,
-            rate: uint256(1e18)
-        });
+        Component[] memory components;
+
+        if (asset == DAI) {
+            components = new Component[](1);
+            components[0] = Component({
+                underlying: asset,
+                rate: uint256(1e18)
+            });
+        } else {
+            components = new Component[](0);
+        }
+
         return components;
     }
 

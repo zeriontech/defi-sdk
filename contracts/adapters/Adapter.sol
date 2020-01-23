@@ -5,10 +5,10 @@ import { Component } from "../Structs.sol";
 
 
 /**
- * @title Base contract for protocol watchers.
+ * @title Base contract for protocol adapters.
  * @dev protocolName(), balanceOf(), and exchangeRate() functions MUST be implemented.
  */
-abstract contract ProtocolWatcher {
+abstract contract Adapter {
 
     /**
      * @dev MUST return name of the protocol.
@@ -18,7 +18,7 @@ abstract contract ProtocolWatcher {
     /**
      * @dev MUST return amount of the given asset locked on the protocol by the given user.
      */
-    function balanceOf(address asset, address user) external view virtual returns (uint256);
+    function balanceOf(address asset, address user) external view virtual returns (int128);
 
     /**
      * @dev MUST return struct with underlying assets rates for the given asset.
