@@ -1,6 +1,7 @@
 pragma solidity 0.6.1;
 pragma experimental ABIEncoderV2;
 
+
 struct ProtocolDetail {
     string name;
     AssetBalance[] balances;

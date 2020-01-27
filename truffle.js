@@ -15,12 +15,14 @@ module.exports = {
       host: '127.0.0.1',
       port: 8545,
       network_id: '*',
+      gas: 2000000,
+      gasPrice: 1100000000,
     },
     mainnet: {
       provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`, 0),
       network_id: 1,
       gas: 2000000,
-      gasPrice: 1000000000,
+      gasPrice: 1100000000,
       timeoutBlocks: 200,
     },
   },
@@ -43,6 +45,6 @@ module.exports = {
     reporterOptions: {
       currency: 'USD',
       gasPrice: 1,
-    }, // See options below
+    },
   },
 };

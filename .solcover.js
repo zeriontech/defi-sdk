@@ -4,7 +4,7 @@ module.exports = {
   skipFiles: [
     'Migrations.sol',
     'Structs.sol',
-    'IERC20.sol',
+    'ERC20.sol',
     'Logic.sol',
     'adapters/Adapter.sol',
     'interactiveAdapters',

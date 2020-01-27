@@ -32,7 +32,7 @@ contract SynthetixAdapter is Adapter {
      * @return Name of the protocol.
      * @dev Implementation of Adapter function.
      */
-    function protocolName() external pure override returns (string memory) {
+    function getProtocolName() external pure override returns (string memory) {
         return("Synthetix");
     }
 
@@ -40,7 +40,7 @@ contract SynthetixAdapter is Adapter {
      * @return Amount of SNX locked on the protocol by the given user.
      * @dev Implementation of Adapter function.
      */
-    function balanceOf(address asset, address user) external view override returns (int128) {
+    function getAssetAmount(address asset, address user) external view override returns (int128) {
         Synthetix synthetix = Synthetix(SNX);
         if (asset == SNX) {
             return int128(synthetix.balanceOf(user) - synthetix.transferableSynthetix(user));
@@ -55,7 +55,7 @@ contract SynthetixAdapter is Adapter {
      * @return Struct with underlying assets rates for the given asset.
      * @dev Implementation of Adapter function.
      */
-    function exchangeRate(address asset) external view override returns (Component[] memory) {
+    function getUnderlyingRates(address asset) external view override returns (Component[] memory) {
         Component[] memory components;
 
         if (asset == SNX || asset == SUSD) {

@@ -33,7 +33,7 @@ contract DSRAdapter is Adapter {
      * @return Name of the protocol.
      * @dev Implementation of Adapter function.
      */
-    function protocolName() external pure override returns (string memory) {
+    function getProtocolName() external pure override returns (string memory) {
         return("DSR");
     }
 
@@ -42,8 +42,9 @@ contract DSRAdapter is Adapter {
      * @dev Implementation of Adapter function.
      * This function repeats the calculations made in drip() function of Pot contract.
      */
-    function balanceOf(address asset, address user) external view override returns (int128) {
+    function getAssetAmount(address asset, address user) external view override returns (int128) {
         if (asset == DAI) {
+            // solhint-disable-next-line not-rely-on-time
             uint256 chi = rmultiply(rpower(POT.dsr(), now - POT.rho(), ONE), POT.chi());
             return int128(rmultiply(chi, POT.pie(user)));
         } else {
@@ -55,7 +56,7 @@ contract DSRAdapter is Adapter {
      * @return Struct with underlying assets rates for the given asset.
      * @dev Implementation of Adapter function.
      */
-    function exchangeRate(address asset) external view override returns (Component[] memory) {
+    function getUnderlyingRates(address asset) external view override returns (Component[] memory) {
         Component[] memory components;
 
         if (asset == DAI) {
@@ -73,7 +74,8 @@ contract DSRAdapter is Adapter {
 
     /**
      * @dev The function was copied from Pot contract in order to repeat computations.
-     * The Pot contract is available here https://github.com/makerdao/dss/blob/master/src/pot.sol.
+     * The Pot contract is available here
+     * https://github.com/makerdao/dss/blob/master/src/pot.sol.
      */
     function rpower(uint x, uint n, uint base) internal pure returns (uint z) {
         assembly {
@@ -102,7 +104,8 @@ contract DSRAdapter is Adapter {
     /**
      * @dev The function was copied from Pot contract in order to repeat computations.
      * The function was renamed from rmul() in order to silence the compiler.
-     * The Pot contract is available here https://github.com/makerdao/dss/blob/master/src/pot.sol.
+     * The Pot contract is available here
+     * https://github.com/makerdao/dss/blob/master/src/pot.sol.
      */
     function rmultiply(uint x, uint y) internal pure returns (uint z) {
         z = multiply(x, y) / ONE;
@@ -111,7 +114,8 @@ contract DSRAdapter is Adapter {
     /**
      * @dev The function was copied from Pot contract in order to repeat computations.
      * The function was renamed from mul() in order to silence the compiler.
-     * The Pot contract is available here https://github.com/makerdao/dss/blob/master/src/pot.sol.
+     * The Pot contract is available here
+     * https://github.com/makerdao/dss/blob/master/src/pot.sol.
      */
     function multiply(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);

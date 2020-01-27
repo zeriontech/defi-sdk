@@ -18,6 +18,9 @@
     ],
     "security/no-block-members": [
       "off"
+    ],
+    "no-experimental": [
+      "off"
     ]
   }
 }

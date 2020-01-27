@@ -13,15 +13,15 @@ contract MockAdapter is Adapter {
         balances[msg.sender] = 1000;
     }
 
-    function protocolName() external pure override returns(string memory) {
+    function getProtocolName() external pure override returns(string memory) {
         return("Mock");
     }
 
-    function balanceOf(address, address user) external view override returns(int128) {
+    function getAssetAmount(address, address user) external view override returns(int128) {
         return balances[user];
     }
 
-    function exchangeRate(address) external view override returns (Component[] memory) {
+    function getUnderlyingRates(address) external view override returns (Component[] memory) {
         Component[] memory components = new Component[](1);
         components[0] = Component({
             underlying: address(this),

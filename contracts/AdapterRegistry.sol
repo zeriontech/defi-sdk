@@ -3,7 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import { Adapter } from "./adapters/Adapter.sol";
 import { AdapterAssetsManager } from "./AdapterAssetsManager.sol";
-import { IERC20 } from "./IERC20.sol";
+import { ERC20 } from "./ERC20.sol";
 import {
     ProtocolDetail,
     ProtocolBalance,
@@ -44,7 +44,7 @@ contract AdapterRegistry is AdapterAssetsManager {
 
         for (uint i = 0; i < adapters.length; i++) {
             protocolDetails[i] = ProtocolDetail({
-                name: Adapter(adapters[i]).protocolName(),
+                name: Adapter(adapters[i]).getProtocolName(),
                 balances: getBalances(user, adapters[i]),
                 rates: getRates(adapters[i])
             });
@@ -69,7 +69,7 @@ contract AdapterRegistry is AdapterAssetsManager {
 
         for (uint i = 0; i < adapters.length; i++) {
             protocolBalances[i] = ProtocolBalance({
-                name: Adapter(adapters[i]).protocolName(),
+                name: Adapter(adapters[i]).getProtocolName(),
                 balances: getBalances(user, adapters[i])
             });
         }
@@ -91,7 +91,7 @@ contract AdapterRegistry is AdapterAssetsManager {
 
         for (uint i = 0; i < adapters.length; i++) {
             protocolRates[i] = ProtocolRate({
-                name: Adapter(adapters[i]).protocolName(),
+                name: Adapter(adapters[i]).getProtocolName(),
                 rates: getRates(adapters[i])
             });
         }
@@ -136,8 +136,8 @@ contract AdapterRegistry is AdapterAssetsManager {
             address asset = assets[i];
             assetBalances[i] = AssetBalance({
                 asset: asset,
-                amount: Adapter(adapter).balanceOf(asset, user),
-                decimals: IERC20(asset).decimals()
+                amount: Adapter(adapter).getAssetAmount(asset, user),
+                decimals: ERC20(asset).decimals()
             });
         }
 
@@ -179,7 +179,7 @@ contract AdapterRegistry is AdapterAssetsManager {
             address asset = assets[i];
             rates[i] = AssetRate({
                 asset: asset,
-                components: Adapter(adapter).exchangeRate(asset)
+                components: Adapter(adapter).getUnderlyingRates(asset)
             });
         }
 

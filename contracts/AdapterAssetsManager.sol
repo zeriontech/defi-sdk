@@ -1,4 +1,5 @@
 pragma solidity 0.6.1;
+pragma experimental ABIEncoderV2;
 
 import { Ownable } from "./Ownable.sol";
 
@@ -65,7 +66,7 @@ contract AdapterAssetsManager is Ownable {
     function removeAdapter(
         address adapter
     )
-        external
+        public
         onlyOwner
     {
         require(isValidAdapter(adapter), "AAM: invalid adapter!");
@@ -93,7 +94,7 @@ contract AdapterAssetsManager is Ownable {
         address adapter,
         address asset
     )
-        external
+        public
         onlyOwner
     {
         require(isValidAdapter(adapter), "AAM: adapter is not valid!");
@@ -110,7 +111,7 @@ contract AdapterAssetsManager is Ownable {
         address adapter,
         uint256 assetIndex
     )
-        external
+        public
         onlyOwner
     {
         require(isValidAdapter(adapter), "AAM: adapter is not valid!");
@@ -118,9 +119,11 @@ contract AdapterAssetsManager is Ownable {
         address[] storage adapterAssets = assets[adapter];
         uint256 length = adapterAssets.length;
         require(assetIndex < length, "AAM: asset index is too large!");
+
         if (assetIndex != length - 1) {
             adapterAssets[assetIndex] = adapterAssets[length - 1];
         }
+
         adapterAssets.pop();
     }
 
@@ -141,7 +144,11 @@ contract AdapterAssetsManager is Ownable {
     /**
      * @return Array of adapters.
      */
-    function getAdapters() public view returns (address[] memory) {
+    function getAdapters()
+        public
+        view
+        returns (address[] memory)
+    {
         uint256 counter = 0;
         address currentAdapter = adapters[INITIAL_ADAPTER];
 
