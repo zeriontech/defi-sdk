@@ -56,17 +56,12 @@ contract SynthetixAdapter is Adapter {
      * @dev Implementation of Adapter function.
      */
     function getUnderlyingRates(address asset) external view override returns (Component[] memory) {
-        Component[] memory components;
+        Component[] memory components = new Component[](1);
 
-        if (asset == SNX || asset == SUSD) {
-            components = new Component[](1);
-            components[0] = Component({
-                underlying: asset,
-                rate: uint256(1e18)
-            });
-        } else {
-            components = new Component[](0);
-        }
+        components[0] = Component({
+            underlying: asset,
+            rate: uint256(1e18)
+        });
 
         return components;
     }

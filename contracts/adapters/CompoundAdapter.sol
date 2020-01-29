@@ -43,14 +43,8 @@ interface CToken {
 contract CompoundAdapter is Adapter {
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-    CToken internal constant CDAI = CToken(0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643);
-    CToken internal constant CBAT = CToken(0x6C8c6b02E7b2BE14d4fA6022Dfd6d75921D90E4E);
-    CToken internal constant CETH = CToken(0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5);
-    CToken internal constant CREP = CToken(0x158079Ee67Fce2f58472A96584A73C7Ab9AC95c1);
-    CToken internal constant CSAI = CToken(0xF5DCe57282A584D2746FaF1593d3121Fcac444dC);
-    CToken internal constant CZRX = CToken(0xB3319f5D18Bc0D84dD1b4825Dcde5d5f7266d407);
-    CToken internal constant CUSDC = CToken(0x39AA39c021dfbaE8faC545936693aC917d5E7563);
-    CToken internal constant CWBTC = CToken(0xC11b1268C1A384e55C48c2391d8d480264A3A7F4);
+    address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;
+
     /**
      * @return Name of the protocol.
      * @dev Implementation of Adapter function.
@@ -64,15 +58,7 @@ contract CompoundAdapter is Adapter {
      * @dev Implementation of Adapter function.
      */
     function getAssetAmount(address asset, address user) external view override returns (int128) {
-        CToken cToken = CToken(asset);
-        if (cToken == CDAI || cToken == CBAT || cToken == CETH ||
-            cToken == CREP || cToken == CSAI || cToken == CZRX ||
-            cToken == CUSDC || cToken == CWBTC
-        ) {
-            return int128(cToken.balanceOf(user));
-        } else {
-            return int128(0);
-        }
+        return int128(CToken(asset).balanceOf(user));
     }
 
     /**
@@ -81,30 +67,22 @@ contract CompoundAdapter is Adapter {
      * Repeats calculations made in CToken contract.
      */
     function getUnderlyingRates(address asset) external view override returns (Component[] memory) {
-        Component[] memory components;
-        CToken cToken = CToken(asset);
+        Component[] memory components = new Component[](1);
 
-        if (cToken == CDAI || cToken == CBAT || cToken == CETH ||
-            cToken == CREP || cToken == CSAI || cToken == CZRX ||
-            cToken == CUSDC || cToken == CWBTC
-        ) {
-            components = new Component[](1);
-            components[0] = Component({
-                underlying: getUnderlyingAsset(cToken),
-                rate: getExchangeRate(cToken)
-            });
-        } else {
-            components = new Component[](0);
-        }
+        components[0] = Component({
+            underlying: getUnderlyingAsset(asset),
+            rate: getExchangeRate(asset)
+        });
 
         return components;
     }
 
-    function getUnderlyingAsset(CToken cToken) internal view returns (address) {
-        return cToken == CETH ? ETH : cToken.underlying();
+    function getUnderlyingAsset(address asset) internal view returns (address) {
+        return asset == CETH ? ETH : CToken(asset).underlying();
     }
 
-    function getExchangeRate(CToken cToken) internal view returns (uint256) {
+    function getExchangeRate(address asset) internal view returns (uint256) {
+        CToken cToken = CToken(asset);
         uint256 totalCash = cToken.getCash();
         uint256 totalBorrows = cToken.totalBorrows();
         uint256 totalReserves = cToken.totalReserves();

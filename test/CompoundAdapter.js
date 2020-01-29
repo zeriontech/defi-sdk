@@ -12,7 +12,6 @@ contract('CompoundAdapter', () => {
   const cZRXAddress = '0xB3319f5D18Bc0D84dD1b4825Dcde5d5f7266d407';
   const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
   const cWBTCAddress = '0xC11b1268C1A384e55C48c2391d8d480264A3A7F4';
-  const incorrectAsset = '0x1C83501478f1320977047008496DACBD60Bb15ef';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
@@ -69,33 +68,6 @@ contract('CompoundAdapter', () => {
         assert.equal(result[0].rates[0].asset, cDAIAddress);
         assert.equal(result[0].rates[0].components[0].underlying, daiAddress);
         assert.equal(result[0].name, 'Compound');
-      });
-  });
-
-  it('should return empty rates for incorrect asset', async () => {
-    await adapterRegistry.methods['getRates(address,address[])'](
-      compoundAdapter.options.address,
-      [incorrectAsset],
-    )
-      .call()
-      .then((result) => {
-        assert.equal(result.length, 1);
-        assert.equal(result[0].components.length, 0);
-      });
-  });
-
-  it('should return zero balances for incorrect asset', async () => {
-    await adapterRegistry.methods['getBalances(address,address,address[])'](
-      testAddress,
-      compoundAdapter.options.address,
-      [incorrectAsset],
-    )
-      .call()
-      .then((result) => {
-        assert.equal(result.length, 1);
-        assert.equal(result[0].asset, incorrectAsset);
-        assert.equal(result[0].amount, 0);
-        assert.equal(result[0].decimals, 18);
       });
   });
 });

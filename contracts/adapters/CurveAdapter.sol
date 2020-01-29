@@ -26,7 +26,6 @@ interface stableswap {
 contract CurveAdapter is Adapter {
 
     address constant internal SS = 0x2e60CF74d81ac34eB21eEff58Db4D385920ef419;
-    address constant internal SS_TOKEN = 0x3740fb63ab7a09891d7c0d4299442A551D06F5fD;
 
     /**
      * @return Name of the protocol.
@@ -41,31 +40,23 @@ contract CurveAdapter is Adapter {
      * @dev Implementation of Adapter function.
      */
     function getAssetAmount(address asset, address user) external view override returns (int128) {
-        if (asset == SS_TOKEN) {
-            return int128(ERC20(SS_TOKEN).balanceOf(user));
-        } else {
-            return int128(0);
-        }
+        return int128(ERC20(asset).balanceOf(user));
     }
 
     /**
      * @return Struct with underlying assets rates for the given asset.
      * @dev Implementation of Adapter function.
-     * Repeats calculations made in swaprate contract.
+     * Repeats calculations made in stableswap contract.
      */
     function getUnderlyingRates(address asset) external view override returns (Component[] memory) {
-        Component[] memory components;
+        Component[] memory components = new Component[](2);
+        stableswap ss = stableswap(SS);
 
-        if (asset == SS_TOKEN) {
-            components = new Component[](2);
-            for (uint256 i = 0; i < 2; i++) {
-                components[i] = Component({
-                    underlying: stableswap(SS).coins(int128(i)),
-                    rate: stableswap(SS).balances(int128(i)) * 1e18 / ERC20(asset).totalSupply()
-                });
-            }
-        } else {
-            components = new Component[](0);
+        for (uint256 i = 0; i < 2; i++) {
+            components[i] = Component({
+                underlying: ss.coins(int128(i)),
+                rate: ss.balances(int128(i)) * 1e18 / ERC20(asset).totalSupply()
+            });
         }
 
         return components;

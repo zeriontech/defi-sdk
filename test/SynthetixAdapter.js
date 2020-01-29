@@ -5,7 +5,6 @@ contract('SynthetixAdapter', () => {
   const snxAddress = '0x7cB89c509001D25dA9938999ABFeA6740212E5f0';
   const susdAddress = '0x289e9a4674663decEE54f781AaDE5327304A32f8';
   const testAddress = '0xa5f7a39e55d7878bc5bd754ee5d6bd7a7662355b';
-  const incorrectAsset = '0x1C83501478f1320977047008496DACBD60Bb15ef';
 
   let accounts;
   let adapterRegistry;
@@ -46,33 +45,6 @@ contract('SynthetixAdapter', () => {
         assert.equal(result[0].rates[1].asset, susdAddress);
         assert.equal(result[0].rates[1].components[0].underlying, susdAddress);
         assert.equal(result[0].rates[1].components[0].rate, 1e18);
-      });
-  });
-
-  it('should return empty rates for incorrect asset', async () => {
-    await adapterRegistry.methods['getRates(address,address[])'](
-      snxAdapter.options.address,
-      [incorrectAsset],
-    )
-      .call()
-      .then((result) => {
-        assert.equal(result.length, 1);
-        assert.equal(result[0].components.length, 0);
-      });
-  });
-
-  it('should return zero balances for incorrect asset', async () => {
-    await adapterRegistry.methods['getBalances(address,address,address[])'](
-      testAddress,
-      snxAdapter.options.address,
-      [incorrectAsset],
-    )
-      .call()
-      .then((result) => {
-        assert.equal(result.length, 1);
-        assert.equal(result[0].asset, incorrectAsset);
-        assert.equal(result[0].amount, 0);
-        assert.equal(result[0].decimals, 18);
       });
   });
 });

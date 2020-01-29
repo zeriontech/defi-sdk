@@ -25,8 +25,7 @@ interface Pot {
  */
 contract DSRAdapter is Adapter {
 
-    Pot constant internal POT = Pot(0x197E90f9FAD81970bA7976f33CbD77088E5D7cf7);
-    address constant internal DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+    address constant internal POT = 0x197E90f9FAD81970bA7976f33CbD77088E5D7cf7;
     uint256 constant internal ONE = 10 ** 27;
 
     /**
@@ -42,14 +41,11 @@ contract DSRAdapter is Adapter {
      * @dev Implementation of Adapter function.
      * This function repeats the calculations made in drip() function of Pot contract.
      */
-    function getAssetAmount(address asset, address user) external view override returns (int128) {
-        if (asset == DAI) {
-            // solhint-disable-next-line not-rely-on-time
-            uint256 chi = rmultiply(rpower(POT.dsr(), now - POT.rho(), ONE), POT.chi());
-            return int128(rmultiply(chi, POT.pie(user)));
-        } else {
-            return int128(0);
-        }
+    function getAssetAmount(address, address user) external view override returns (int128) {
+        Pot pot = Pot(POT);
+        // solhint-disable-next-line not-rely-on-time
+        uint256 chi = rmultiply(rpower(pot.dsr(), now - pot.rho(), ONE), pot.chi());
+        return int128(rmultiply(chi, pot.pie(user)));
     }
 
     /**
@@ -57,17 +53,12 @@ contract DSRAdapter is Adapter {
      * @dev Implementation of Adapter function.
      */
     function getUnderlyingRates(address asset) external view override returns (Component[] memory) {
-        Component[] memory components;
+        Component[] memory components = new Component[](1);
 
-        if (asset == DAI) {
-            components = new Component[](1);
-            components[0] = Component({
-                underlying: asset,
-                rate: uint256(1e18)
-            });
-        } else {
-            components = new Component[](0);
-        }
+        components[0] = Component({
+            underlying: asset,
+            rate: uint256(1e18)
+        });
 
         return components;
     }
