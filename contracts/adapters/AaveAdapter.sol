@@ -78,7 +78,7 @@ contract AaveAdapter is Adapter {
 
         components[0] = Component({
             underlying: asset,
-            rate: 1e18
+            rate: uint256(1e18)
         });
 
         return components;
