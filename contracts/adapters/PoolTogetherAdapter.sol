@@ -13,6 +13,7 @@ import { Component } from "../Structs.sol";
  */
 interface BasePool {
     function totalBalanceOf(address) external view returns(uint256);
+    function token() external view returns (address);
 }
 
 
@@ -46,7 +47,7 @@ contract PoolTogetherAdapter is Adapter {
         Component[] memory components = new Component[](1);
 
         components[0] = Component({
-            underlying: asset,
+            underlying: BasePool(asset).token(),
             rate: uint256(1e18)
         });
 

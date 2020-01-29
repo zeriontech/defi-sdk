@@ -3,8 +3,8 @@ const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const PoolTogetherAdapter = artifacts.require('./PoolTogetherAdapter');
 
 contract('PoolTogetherAdapter', () => {
-  const daiAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
-  const saiAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
+  const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
+  const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
   const testAddress = '0xE10Fcdba98afebd0F2296a2c451034d4CA6D9079';
 
   let accounts;
@@ -19,7 +19,7 @@ contract('PoolTogetherAdapter', () => {
       });
     await AdapterRegistry.new(
       [poolAdapter.options.address],
-      [[daiPool, saiPool]],
+      [[daiPoolAddress, saiPoolAddress]],
       { from: accounts[0] },
     )
       .then((result) => {
@@ -38,9 +38,9 @@ contract('PoolTogetherAdapter', () => {
         console.log(`Deposited DAI amount: ${daiAmount}`);
         assert.equal(result[0].name, 'PoolTogether');
         assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].balances[0].asset, daiAddress);
+        assert.equal(result[0].balances[0].asset, daiPoolAddress);
         assert.equal(result[0].balances[1].decimals, 18);
-        assert.equal(result[0].balances[1].asset, saiAddress);
+        assert.equal(result[0].balances[1].asset, saiPoolAddress);
         assert.equal(result[0].rates[0].asset, daiAddress);
         assert.equal(result[0].rates[0].components[0].underlying, daiAddress);
         assert.equal(result[0].rates[0].components[0].rate, 1e18);
