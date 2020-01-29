@@ -41,10 +41,10 @@ contract PoolTogetherAdapter is Adapter {
      * @dev Implementation of Adapter function.
      */
     function getAssetAmount(address asset, address user) external view override returns (int128) {
-        if (asset == SAI) {
-            return int128(BasePool(POOL_SAI).totalBalanceOf(user));
-        } else if (asset == DAI) {
-             return int128(BasePool(POOL_DAI).totalBalanceOf(user));
+        if (asset == DAI) {
+            return int128(BasePool(POOL_DAI).totalBalanceOf(user));
+        } else if (asset == SAI) {
+             return int128(BasePool(POOL_SAI).totalBalanceOf(user));
         } else {
             return int128(0);
         }
