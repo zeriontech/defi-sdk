@@ -20,6 +20,8 @@ import {
 */
 contract AdapterRegistry is AdapterAssetsManager {
 
+    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+
     constructor(
         address[] memory _adapters,
         address[][] memory _assets
@@ -137,7 +139,7 @@ contract AdapterRegistry is AdapterAssetsManager {
             assetBalances[i] = AssetBalance({
                 asset: asset,
                 amount: Adapter(adapter).getAssetAmount(asset, user),
-                decimals: ERC20(asset).decimals()
+                decimals: getAssetDecimals(asset)
             });
         }
 
@@ -185,4 +187,15 @@ contract AdapterRegistry is AdapterAssetsManager {
 
         return rates;
     }
+
+    function getAssetDecimals(
+        address asset
+    )
+        internal
+        view
+        returns (uint8)
+    {
+        return asset == ETH ? uint8(18) : ERC20(asset).decimals();
+    }
+
 }
