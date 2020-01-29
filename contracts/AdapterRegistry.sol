@@ -44,7 +44,7 @@ contract AdapterRegistry is AdapterAssetsManager {
         address[] memory adapters = getAdapters();
         ProtocolDetail[] memory protocolDetails = new ProtocolDetail[](adapters.length);
 
-        for (uint i = 0; i < adapters.length; i++) {
+        for (uint256 i = 0; i < adapters.length; i++) {
             protocolDetails[i] = ProtocolDetail({
                 name: Adapter(adapters[i]).getProtocolName(),
                 balances: getBalances(user, adapters[i]),
@@ -69,7 +69,7 @@ contract AdapterRegistry is AdapterAssetsManager {
         address[] memory adapters = getAdapters();
         ProtocolBalance[] memory protocolBalances = new ProtocolBalance[](adapters.length);
 
-        for (uint i = 0; i < adapters.length; i++) {
+        for (uint256 i = 0; i < adapters.length; i++) {
             protocolBalances[i] = ProtocolBalance({
                 name: Adapter(adapters[i]).getProtocolName(),
                 balances: getBalances(user, adapters[i])
@@ -91,7 +91,7 @@ contract AdapterRegistry is AdapterAssetsManager {
         address[] memory adapters = getAdapters();
         ProtocolRate[] memory protocolRates = new ProtocolRate[](adapters.length);
 
-        for (uint i = 0; i < adapters.length; i++) {
+        for (uint256 i = 0; i < adapters.length; i++) {
             protocolRates[i] = ProtocolRate({
                 name: Adapter(adapters[i]).getProtocolName(),
                 rates: getRates(adapters[i])
