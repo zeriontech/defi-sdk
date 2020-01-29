@@ -3,9 +3,9 @@ const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const PoolTogetherAdapter = artifacts.require('./PoolTogetherAdapter');
 
 contract('PoolTogetherAdapter', () => {
-  const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
-  const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
-  const testAddress = '0xE10Fcdba98afebd0F2296a2c451034d4CA6D9079';
+  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+  const saiAddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
+  const testAddress = '0x7e5ce10826ee167de897d262fcc9976f609ecd2b';
 
   let accounts;
   let adapterRegistry;
@@ -19,7 +19,7 @@ contract('PoolTogetherAdapter', () => {
       });
     await AdapterRegistry.new(
       [poolAdapter.options.address],
-      [[daiPoolAddress, saiPoolAddress]],
+      [[daiAddress, saiAddress]],
       { from: accounts[0] },
     )
       .then((result) => {
@@ -32,15 +32,14 @@ contract('PoolTogetherAdapter', () => {
       .call()
       .then((result) => {
         const base = new BN(10).pow(new BN(16));
-        const cDAIAmount = new BN(result[0].balances[0].amount);
-        const daiAmount = cDAIAmount.div(base).toNumber() / 100;
+        const daiAmount = new BN(result[0].balances[0].amount).div(base) / 100;
         // eslint-disable-next-line no-console
         console.log(`Deposited DAI amount: ${daiAmount}`);
         assert.equal(result[0].name, 'PoolTogether');
         assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].balances[0].asset, daiPoolAddress);
+        assert.equal(result[0].balances[0].asset, daiAddress);
         assert.equal(result[0].balances[1].decimals, 18);
-        assert.equal(result[0].balances[1].asset, saiPoolAddress);
+        assert.equal(result[0].balances[1].asset, saiAddress);
         assert.equal(result[0].rates[0].asset, daiAddress);
         assert.equal(result[0].rates[0].components[0].underlying, daiAddress);
         assert.equal(result[0].rates[0].components[0].rate, 1e18);

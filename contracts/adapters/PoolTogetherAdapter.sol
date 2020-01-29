@@ -23,6 +23,11 @@ interface BasePool {
  */
 contract PoolTogetherAdapter is Adapter {
 
+    address internal constant SAI = 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359;
+    address internal constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+    address internal constant POOLSAI = 0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84;
+    address internal constant POOLDAI = 0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958;
+
     /**
      * @return Name of the protocol.
      * @dev Implementation of Adapter function.
@@ -36,7 +41,13 @@ contract PoolTogetherAdapter is Adapter {
      * @dev Implementation of Adapter function.
      */
     function getAssetAmount(address asset, address user) external view override returns (int128) {
-        return int128(BasePool(asset).totalBalanceOf(user));
+        if (asset == SAI) {
+            return int128(BasePool(POOL_SAI).totalBalanceOf(user));
+        } else if (asset == DAI) {
+             return int128(BasePool(POOL_DAI).totalBalanceOf(user));
+        } else {
+            return int128(0);
+        }
     }
 
     /**
@@ -47,7 +58,7 @@ contract PoolTogetherAdapter is Adapter {
         Component[] memory components = new Component[](1);
 
         components[0] = Component({
-            underlying: BasePool(asset).token(),
+            underlying: asset,
             rate: uint256(1e18)
         });
 
