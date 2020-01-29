@@ -25,8 +25,8 @@ contract PoolTogetherAdapter is Adapter {
 
     address internal constant SAI = 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359;
     address internal constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
-    address internal constant POOLSAI = 0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84;
-    address internal constant POOLDAI = 0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958;
+    address internal constant POOL_SAI = 0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84;
+    address internal constant POOL_DAI = 0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958;
 
     /**
      * @return Name of the protocol.
