@@ -15,6 +15,7 @@ interface LendingPoolAddressesProvider {
     function getLendingPool() external view returns (LendingPool);
 }
 
+
 /**
  * @dev LendingPool contract interface.
  * Only the functions required for AaveAdapter contract are added.
@@ -41,7 +42,7 @@ interface LendingPool {
 
 
 /**
- * @title Adapter for Compound protocol.
+ * @title Adapter for Aave protocol.
  * @dev Implementation of Adapter abstract contract.
  */
 contract AaveAdapter is Adapter {
@@ -57,7 +58,7 @@ contract AaveAdapter is Adapter {
     }
 
     /**
-     * @return Amount of AToken locked on the protocol by the given user.
+     * @return Amount of asset locked on the protocol by the given user.
      * @dev Implementation of Adapter function.
      */
     function getAssetAmount(address asset, address user) external view override returns (int128) {
