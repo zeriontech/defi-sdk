@@ -11,9 +11,14 @@ This is a project with Zerion Smart Contracts interacting with different DeFi pr
   - [AdapterRegistry](#adapterregistry-is-AdapterAssetsManager)
   - [AdapterAssetsManager](#AdapterAssetsManager-is-ownable)
   - [Ownable](#ownable)
-  - [adapters/DSRAdapter](#dsradapter-is-Adapter)
-  - [adapters/SynthetixAdapter](#synthetixadapter-is-Adapter)
+  - [adapters/AaveAdapter](#aaveadapter-is-Adapter)
+  - [adapters/CompoundAdapter](#compoundadapter-is-Adapter)
   - [adapters/CurveAdapter](#curveadapter-is-Adapter)
+  - [adapters/DSRAdapter](#dsradapter-is-Adapter)
+  - [adapters/MCDAdapter](#mcdadapter-is-Adapter)
+  - [adapters/MKRAdapter (abstract contract)](#mkradapter-abstract-contract)
+  - [adapters/PoolTogetherAdapter](#pooltogetheradapter-is-Adapter)
+  - [adapters/SynthetixAdapter](#synthetixadapter-is-Adapter)
   - [adapters/Adapter (abstract contract)](#Adapter-abstract-contract)
   - [Logic](#logic)
   - [TokenSpender](#tokenspender)
@@ -96,11 +101,35 @@ Base contract for `AdapterAssetsManager` and `Logic` contracts.
 Implements `Ownable` logic.
 Includes `onlyOwner` modifier, `transferOwnership()` function, and public state variable `owner`. 
 
+## AaveAdapter is [Adapter](#Adapter-abstract-contract)
+
+Adapter for Aave protocol.
+
+## CompoundAdapter is [Adapter](#Adapter-abstract-contract)
+
+Adapter for Compound protocol.
+
+## CurveAdapter is [Adapter](#Adapter-abstract-contract)
+
+Adapter for [curve.fi](https://compound.curve.fi/) protocol.
+Currently, there is the only pool with cDAI/cUSDC locked on it.
+
 ## DSRAdapter is [Adapter](#Adapter-abstract-contract)
 
 Adapter for DSR protocol.
 
-Interactive adapter will not be implemented.
+## MCDAdapter is [Adapter](#Adapter-abstract-contract)
+
+Adapter for MCD vaults.
+
+## MKRAdapter (abstract contract)
+
+Base contract for Maker adapters.
+It includes all the required constants and `pure` functions with calculations.
+
+## PoolTogetherAdapter is [Adapter](#Adapter-abstract-contract)
+
+Adapter for PoolTogether protocol.
 
 ## SynthetixAdapter is [Adapter](#Adapter-abstract-contract)
 
@@ -109,13 +138,6 @@ Adapter for Synthetix protocol.
 `getAssetAmount()` function returns the following amounts:
 - amount of SNX tokens locked by minting sUSD tokens (positive);
 - amount of sUSD that should be burned to unlock SNX tokens (negative).
-
-Interactive adapter will not be implemented.
-
-## CurveAdapter is [Adapter](#Adapter-abstract-contract)
-
-Adapter for [curve.fi](https://compound.curve.fi/) protocol.
-Currently, there is the only pool with cDAI/cUSDC locked on it.
 
 ## Adapter (abstract contract)
 
