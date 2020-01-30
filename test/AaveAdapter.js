@@ -56,7 +56,7 @@ contract('AaveAdapter', () => {
       });
   });
 
-  it('should be correct balance', async () => {
+  it('should be correct balances and rates', async () => {
     await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
       .call()
       .then((result) => {
