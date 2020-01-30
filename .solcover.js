@@ -7,6 +7,7 @@ module.exports = {
     'ERC20.sol',
     'Logic.sol',
     'adapters/Adapter.sol',
+    'adapters/MKRAdapter.sol',
     'interactiveAdapters',
     'mock',
   ],

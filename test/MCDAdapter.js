@@ -5,7 +5,7 @@ contract('MCDAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F'; // for debt
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const batAddress = '0x0D8775F648430679A709E98d2b0Cb6250d2887EF';
-  const testAddress = '0x29604c784102D453B476fB099b8DCfc83b508F55'; // MKR proxy
+  const testAddress = '0xdcfed10513ba89380a9aa31e6f263b6592cbb06a'; // MKR proxy
   const incorrectAsset = '0x1C83501478f1320977047008496DACBD60Bb15ef';
 
   let accounts;
@@ -28,7 +28,7 @@ contract('MCDAdapter', () => {
       });
   });
 
-  it('should return correct balances and rates', async () => {
+  it.only('should return correct balances and rates', async () => {
     await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
       .call()
       .then((result) => {

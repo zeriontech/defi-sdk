@@ -69,7 +69,6 @@ contract MCDAdapter is Adapter, MKRAdapter {
         address urn;
         bytes32 ilk;
         int128 amount;
-        uint256 rate;
         int128 totalAmount = 0;
 
         if (asset == DAI) {
@@ -91,7 +90,7 @@ contract MCDAdapter is Adapter, MKRAdapter {
                 base = jug.base();
                 // solhint-disable-next-line not-rely-on-time
                 currentRate = rmultiply(rpower(addition(base, duty), now - rho, ONE), storedRate);
-                amount = -1 * int128(rmultiply(art, rate));
+                amount = -1 * int128(rmultiply(art, currentRate));
 
                 totalAmount = totalAmount + amount;
             }
