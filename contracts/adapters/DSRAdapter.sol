@@ -3,6 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import { Adapter } from "./Adapter.sol";
 import { Component } from "../Structs.sol";
+import { MKRAdapter } from "./MKRAdapter.sol";
 
 
 /**
@@ -23,10 +24,7 @@ interface Pot {
  * @title Adapter for DSR protocol.
  * @dev Implementation of Adapter abstract contract.
  */
-contract DSRAdapter is Adapter {
-
-    address constant internal POT = 0x197E90f9FAD81970bA7976f33CbD77088E5D7cf7;
-    uint256 constant internal ONE = 10 ** 27;
+contract DSRAdapter is Adapter, MKRAdapter {
 
     /**
      * @return Name of the protocol.
@@ -61,54 +59,5 @@ contract DSRAdapter is Adapter {
         });
 
         return components;
-    }
-
-    /**
-     * @dev The function was copied from Pot contract in order to repeat computations.
-     * The Pot contract is available here
-     * https://github.com/makerdao/dss/blob/master/src/pot.sol.
-     */
-    function rpower(uint x, uint n, uint base) internal pure returns (uint z) {
-        assembly {
-            switch x case 0 {switch n case 0 {z := base} default {z := 0}}
-            default {
-                switch mod(n, 2) case 0 { z := base } default { z := x }
-                let half := div(base, 2)  // for rounding.
-                for { n := div(n, 2) } n { n := div(n,2) } {
-                let xx := mul(x, x)
-                if iszero(eq(div(xx, x), x)) { revert(0,0) }
-                let xxRound := add(xx, half)
-                if lt(xxRound, xx) { revert(0,0) }
-                x := div(xxRound, base)
-                if mod(n,2) {
-                    let zx := mul(z, x)
-                    if and(iszero(iszero(x)), iszero(eq(div(zx, x), z))) { revert(0,0) }
-                    let zxRound := add(zx, half)
-                    if lt(zxRound, zx) { revert(0,0) }
-                    z := div(zxRound, base)
-                }
-            }
-            }
-        }
-    }
-
-    /**
-     * @dev The function was copied from Pot contract in order to repeat computations.
-     * The function was renamed from rmul() in order to silence the compiler.
-     * The Pot contract is available here
-     * https://github.com/makerdao/dss/blob/master/src/pot.sol.
-     */
-    function rmultiply(uint x, uint y) internal pure returns (uint z) {
-        z = multiply(x, y) / ONE;
-    }
-
-    /**
-     * @dev The function was copied from Pot contract in order to repeat computations.
-     * The function was renamed from mul() in order to silence the compiler.
-     * The Pot contract is available here
-     * https://github.com/makerdao/dss/blob/master/src/pot.sol.
-     */
-    function multiply(uint x, uint y) internal pure returns (uint z) {
-        require(y == 0 || (z = x * y) / y == x);
     }
 }
