@@ -1,4 +1,4 @@
-pragma solidity 0.6.1;
+pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
 import { Adapter } from "./Adapter.sol";
@@ -44,7 +44,7 @@ contract PoolTogetherAdapter is Adapter {
         if (asset == DAI) {
             return int128(BasePool(POOL_DAI).totalBalanceOf(user));
         } else if (asset == SAI) {
-             return int128(BasePool(POOL_SAI).totalBalanceOf(user));
+            return int128(BasePool(POOL_SAI).totalBalanceOf(user));
         } else {
             return int128(0);
         }

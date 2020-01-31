@@ -1,14 +1,15 @@
-pragma solidity 0.6.1;
+pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
 import { Adapter } from "../adapters/Adapter.sol";
+
 
 /**
  * @title Base contract for interactive protocol adapters.
  * @dev deposit() and withdraw() functions MUST be implemented
  * as well as all the functions from Adapter abstract contract.
  */
-abstract contract InteractiveAdapter is Adapter {
+interface InteractiveAdapter is Adapter {
 
     /**
      * @dev The function must deposit assets to the protocol.
@@ -21,7 +22,6 @@ abstract contract InteractiveAdapter is Adapter {
     )
         external
         payable
-        virtual
         returns (address[] memory);
 
     /**
@@ -35,6 +35,5 @@ abstract contract InteractiveAdapter is Adapter {
     )
         external
         payable
-        virtual
         returns (address[] memory);
 }

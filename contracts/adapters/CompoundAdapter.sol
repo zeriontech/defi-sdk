@@ -1,4 +1,4 @@
-pragma solidity 0.6.1;
+pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
 import { Adapter } from "./Adapter.sol";
