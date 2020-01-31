@@ -19,6 +19,7 @@ This is a project with Zerion Smart Contracts interacting with different DeFi pr
   - [adapters/MKRAdapter (abstract contract)](#mkradapter-abstract-contract)
   - [adapters/PoolTogetherAdapter](#pooltogetheradapter-is-Adapter)
   - [adapters/SynthetixAdapter](#synthetixadapter-is-Adapter)
+  - [adapters/ZrxAdapter](#zrxadapter-is-Adapter)
   - [adapters/Adapter (abstract contract)](#Adapter-abstract-contract)
   - [Logic](#logic)
   - [TokenSpender](#tokenspender)
@@ -138,6 +139,10 @@ Adapter for Synthetix protocol.
 `getAssetAmount()` function returns the following amounts:
 - amount of SNX tokens locked by minting sUSD tokens (positive);
 - amount of sUSD that should be burned to unlock SNX tokens (negative).
+
+## ZrxAdapter is [Adapter](#Adapter-abstract-contract)
+
+Adapter for Zrx protocol.
 
 ## Adapter (abstract contract)
 
