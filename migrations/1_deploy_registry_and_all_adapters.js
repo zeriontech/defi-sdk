@@ -43,6 +43,57 @@ module.exports = (deployer, network, accounts) => {
 
   const snxAddress = '0x7cB89c509001D25dA9938999ABFeA6740212E5f0';
 
+  const aaveAdapterAssets = [
+    daiAddress,
+    tusdAddress,
+    usdcAddress,
+    usdtAddress,
+    susdAddress,
+    lendAddress,
+    batAddress,
+    ethAddress,
+    linkAddress,
+    kncAddress,
+    repAddress,
+    mkrAddress,
+    manaAddress,
+    zrxAddress,
+    snxProxyAddress,
+    wbtcAddress,
+  ];
+  const compoundAdapterAssets = [
+    cDAIAddress,
+    cBATAddress,
+    cETHAddress,
+    cREPAddress,
+    cSAIAddress,
+    cZRXAddress,
+    cUSDCAddress,
+    cWBTCAddress,
+  ];
+  const curveAdapterAssets = [
+    ssTokenAddress,
+  ];
+  const dsrAdapterAssets = [
+    daiAddress,
+  ];
+  const mcdAdapterAssets = [
+    daiAddress,
+    wethAddress,
+    batAddress,
+  ];
+  const poolTogetherAdapterAssets = [
+    daiAddress,
+    saiAddress,
+  ];
+  const synthetixAdapterAssets = [
+    snxAddress,
+    susdAddress,
+  ];
+  const zrxAdapterAssets = [
+    zrxAddress,
+  ];
+
   deployer.deploy(AaveAdapter, { from: accounts[0] })
     .then(() => deployer.deploy(CompoundAdapter, { from: accounts[0] })
       .then(() => deployer.deploy(CurveAdapter, { from: accounts[0] })
@@ -64,56 +115,14 @@ module.exports = (deployer, network, accounts) => {
                       ZrxAdapter.address,
                     ],
                     [
-                      [
-                        daiAddress,
-                        tusdAddress,
-                        usdcAddress,
-                        usdtAddress,
-                        susdAddress,
-                        lendAddress,
-                        batAddress,
-                        ethAddress,
-                        linkAddress,
-                        kncAddress,
-                        repAddress,
-                        mkrAddress,
-                        manaAddress,
-                        zrxAddress,
-                        snxProxyAddress,
-                        wbtcAddress,
-                      ],
-                      [
-                        cDAIAddress,
-                        cBATAddress,
-                        cETHAddress,
-                        cREPAddress,
-                        cSAIAddress,
-                        cZRXAddress,
-                        cUSDCAddress,
-                        cWBTCAddress,
-                      ],
-                      [
-                        ssTokenAddress,
-                      ],
-                      [
-                        daiAddress,
-                      ],
-                      [
-                        daiAddress,
-                        wethAddress,
-                        batAddress,
-                      ],
-                      [
-                        daiAddress,
-                        saiAddress,
-                      ],
-                      [
-                        snxAddress,
-                        susdAddress,
-                      ],
-                      [
-                        zrxAddress,
-                      ],
+                      aaveAdapterAssets,
+                      compoundAdapterAssets,
+                      curveAdapterAssets,
+                      dsrAdapterAssets,
+                      mcdAdapterAssets,
+                      poolTogetherAdapterAssets,
+                      synthetixAdapterAssets,
+                      zrxAdapterAssets,
                     ],
                     { from: accounts[0] },
                   )))))))));
