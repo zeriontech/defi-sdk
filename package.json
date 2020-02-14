@@ -9,6 +9,7 @@
     "compile": "npx truffle compile",
     "deploy:development": "npx truffle deploy --network development",
     "deploy:mainnet": "npx truffle deploy --network mainnet",
+    "deploy:kovan": "npx truffle deploy --network kovan",
     "test": "scripts/test.sh",
     "coverage": "npx truffle run coverage",
     "lint:solhint": "npx solhint \"./contracts/**/*.sol\"",
