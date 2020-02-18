@@ -18,7 +18,7 @@ interface Adapter {
     /**
      * @dev MUST return amount of the given asset locked on the protocol by the given user.
      */
-    function getAssetAmount(address asset, address user) external view returns (int128);
+    function getAssetAmount(address asset, address user) external view returns (int256);
 
     /**
      * @dev MUST return struct with underlying assets rates for the given asset.

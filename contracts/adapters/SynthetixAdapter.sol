@@ -40,14 +40,14 @@ contract SynthetixAdapter is Adapter {
      * @return Amount of SNX locked on the protocol by the given user.
      * @dev Implementation of Adapter function.
      */
-    function getAssetAmount(address asset, address user) external view override returns (int128) {
+    function getAssetAmount(address asset, address user) external view override returns (int256) {
         Synthetix synthetix = Synthetix(SNX);
         if (asset == SNX) {
-            return int128(synthetix.balanceOf(user) - synthetix.transferableSynthetix(user));
+            return int256(synthetix.balanceOf(user) - synthetix.transferableSynthetix(user));
         } else if (asset == SUSD) {
-            return -int128(synthetix.debtBalanceOf(user, "sUSD"));
+            return -int256(synthetix.debtBalanceOf(user, "sUSD"));
         } else {
-            return int128(0);
+            return int256(0);
         }
     }
 

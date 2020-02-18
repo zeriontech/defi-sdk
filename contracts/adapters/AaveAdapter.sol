@@ -61,13 +61,13 @@ contract AaveAdapter is Adapter {
      * @return Amount of asset locked on the protocol by the given user.
      * @dev Implementation of Adapter function.
      */
-    function getAssetAmount(address asset, address user) external view override returns (int128) {
+    function getAssetAmount(address asset, address user) external view override returns (int256) {
         LendingPool pool = LendingPoolAddressesProvider(PROVIDER).getLendingPool();
 
         (uint256 depositAmount, uint256 debtAmount, , , , , , , , ) =
             pool.getUserReserveData(asset, user);
 
-        return depositAmount > 0 ? int128(depositAmount) : -int128(debtAmount);
+        return depositAmount > 0 ? int256(depositAmount) : -int256(debtAmount);
     }
 
     /**

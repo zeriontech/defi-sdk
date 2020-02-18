@@ -7,7 +7,7 @@ import "../adapters/Adapter.sol";
 
 contract MockAdapter is Adapter {
 
-    mapping (address => int128) internal balances;
+    mapping (address => int256) internal balances;
 
     constructor() public {
         balances[msg.sender] = 1000;
@@ -17,7 +17,7 @@ contract MockAdapter is Adapter {
         return("Mock");
     }
 
-    function getAssetAmount(address, address user) external view override returns(int128) {
+    function getAssetAmount(address, address user) external view override returns(int256) {
         return balances[user];
     }
 

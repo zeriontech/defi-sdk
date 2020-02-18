@@ -57,8 +57,8 @@ contract CompoundAdapter is Adapter {
      * @return Amount of CToken locked on the protocol by the given user.
      * @dev Implementation of Adapter function.
      */
-    function getAssetAmount(address asset, address user) external view override returns (int128) {
-        return int128(CToken(asset).balanceOf(user));
+    function getAssetAmount(address asset, address user) external view override returns (int256) {
+        return int256(CToken(asset).balanceOf(user));
     }
 
     /**

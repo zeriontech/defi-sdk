@@ -62,14 +62,14 @@ contract MCDAdapter is Adapter, MKRAdapter {
      * @return Amount of collateral/debt locked on the protocol by the given user.
      * @dev Implementation of Adapter function.
      */
-    function getAssetAmount(address asset, address user) external view override returns (int128) {
+    function getAssetAmount(address asset, address user) external view override returns (int256) {
         DssCdpManager manager = DssCdpManager(MANAGER);
         Vat vat = Vat(VAT);
         uint256 id = manager.first(user);
         address urn;
         bytes32 ilk;
-        int128 amount;
-        int128 totalAmount = 0;
+        int256 amount;
+        int256 totalAmount = 0;
 
         if (asset == DAI) {
             Jug jug = Jug(JUG);
@@ -90,7 +90,7 @@ contract MCDAdapter is Adapter, MKRAdapter {
                 base = jug.base();
                 // solhint-disable-next-line not-rely-on-time
                 currentRate = mkrRmul(mkrRpow(mkrAdd(base, duty), now - rho, ONE), storedRate);
-                amount = -int128(mkrRmul(art, currentRate));
+                amount = -int256(mkrRmul(art, currentRate));
 
                 totalAmount = totalAmount + amount;
             }
@@ -104,7 +104,7 @@ contract MCDAdapter is Adapter, MKRAdapter {
                 (ink, ) = vat.urns(ilk, urn);
 
                 if (asset == WETH && ilk == "ETH-A" || asset == BAT && ilk == "BAT-A") {
-                    amount = int128(ink);
+                    amount = int256(ink);
                 } else {
                     amount = 0;
                 }

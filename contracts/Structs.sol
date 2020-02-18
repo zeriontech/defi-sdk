@@ -23,7 +23,7 @@ struct ProtocolRate {
 
 struct AssetBalance {
     address asset;
-    int128 amount;
+    int256 amount;
     uint8 decimals;
 }
 

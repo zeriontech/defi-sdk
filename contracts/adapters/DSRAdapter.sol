@@ -39,11 +39,11 @@ contract DSRAdapter is Adapter, MKRAdapter {
      * @dev Implementation of Adapter function.
      * This function repeats the calculations made in drip() function of Pot contract.
      */
-    function getAssetAmount(address, address user) external view override returns (int128) {
+    function getAssetAmount(address, address user) external view override returns (int256) {
         Pot pot = Pot(POT);
         // solhint-disable-next-line not-rely-on-time
         uint256 chi = mkrRmul(mkrRpow(pot.dsr(), now - pot.rho(), ONE), pot.chi());
-        return int128(mkrRmul(chi, pot.pie(user)));
+        return int256(mkrRmul(chi, pot.pie(user)));
     }
 
     /**

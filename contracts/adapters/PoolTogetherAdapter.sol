@@ -40,13 +40,13 @@ contract PoolTogetherAdapter is Adapter {
      * @return Amount of DAI/SAI locked on the protocol by the given user.
      * @dev Implementation of Adapter function.
      */
-    function getAssetAmount(address asset, address user) external view override returns (int128) {
+    function getAssetAmount(address asset, address user) external view override returns (int256) {
         if (asset == DAI) {
-            return int128(BasePool(POOL_DAI).totalBalanceOf(user));
+            return int256(BasePool(POOL_DAI).totalBalanceOf(user));
         } else if (asset == SAI) {
-            return int128(BasePool(POOL_SAI).totalBalanceOf(user));
+            return int256(BasePool(POOL_SAI).totalBalanceOf(user));
         } else {
-            return int128(0);
+            return int256(0);
         }
     }
 

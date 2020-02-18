@@ -36,8 +36,8 @@ contract ZrxAdapter is Adapter {
      * @return Amount of ZRX locked on the protocol by the given user.
      * @dev Implementation of Adapter function.
      */
-    function getAssetAmount(address, address user) external view override returns (int128) {
-        return int128(Staking(STAKING).getTotalStake(user));
+    function getAssetAmount(address, address user) external view override returns (int256) {
+        return int256(Staking(STAKING).getTotalStake(user));
     }
 
     /**
