@@ -21,7 +21,7 @@ interface Synthetix {
 
 /**
  * @title Adapter for Synthetix protocol.
- * @dev Implementation of Adapter abstract contract.
+ * @dev Implementation of Adapter interface.
  */
 contract SynthetixAdapter is Adapter {
 

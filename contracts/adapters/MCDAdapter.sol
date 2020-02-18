@@ -46,7 +46,7 @@ interface DssCdpManager {
 
 /**
  * @title Adapter for MCD protocol.
- * @dev Implementation of Adapter abstract contract.
+ * @dev Implementation of Adapter interface.
  */
 contract MCDAdapter is Adapter, MKRAdapter {
 

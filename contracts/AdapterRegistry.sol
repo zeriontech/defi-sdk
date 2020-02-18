@@ -15,7 +15,7 @@ import {
 
 /**
 * @title Registry for protocol adapters.
-* @notice balance() and exchangeRates() functions
+* @notice getBalances() and getRates() functions
 * with different arguments implement the main functionality.
 */
 contract AdapterRegistry is AdapterAssetsManager {

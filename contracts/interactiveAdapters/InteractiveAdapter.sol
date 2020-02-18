@@ -7,7 +7,7 @@ import { Adapter } from "../adapters/Adapter.sol";
 /**
  * @title Base contract for interactive protocol adapters.
  * @dev deposit() and withdraw() functions MUST be implemented
- * as well as all the functions from Adapter abstract contract.
+ * as well as all the functions from Adapter interface.
  */
 interface InteractiveAdapter is Adapter {
 

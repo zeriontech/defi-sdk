@@ -43,7 +43,7 @@ interface LendingPool {
 
 /**
  * @title Adapter for Aave protocol.
- * @dev Implementation of Adapter abstract contract.
+ * @dev Implementation of Adapter interface.
  */
 contract AaveAdapter is Adapter {
 

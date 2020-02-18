@@ -22,7 +22,7 @@ interface Pot {
 
 /**
  * @title Adapter for DSR protocol.
- * @dev Implementation of Adapter abstract contract.
+ * @dev Implementation of Adapter interface.
  */
 contract DSRAdapter is Adapter, MKRAdapter {
 

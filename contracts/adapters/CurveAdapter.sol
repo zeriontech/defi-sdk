@@ -21,7 +21,7 @@ interface stableswap {
 
 /**
  * @title Adapter for Curve.fi protocol.
- * @dev Implementation of Adapter abstract contract.
+ * @dev Implementation of Adapter interface.
  */
 contract CurveAdapter is Adapter {
 

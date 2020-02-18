@@ -19,7 +19,7 @@ interface BasePool {
 
 /**
  * @title Adapter for PoolTogether protocol.
- * @dev Implementation of Adapter abstract contract.
+ * @dev Implementation of Adapter interface.
  */
 contract PoolTogetherAdapter is Adapter {
 

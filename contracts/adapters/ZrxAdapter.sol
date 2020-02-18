@@ -18,7 +18,7 @@ interface Staking {
 
 /**
  * @title Adapter for 0x protocol.
- * @dev Implementation of Adapter abstract contract.
+ * @dev Implementation of Adapter interface.
  */
 contract ZrxAdapter is Adapter {
 
