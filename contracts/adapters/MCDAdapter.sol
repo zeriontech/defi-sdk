@@ -90,7 +90,7 @@ contract MCDAdapter is Adapter, MKRAdapter {
                 base = jug.base();
                 // solhint-disable-next-line not-rely-on-time
                 currentRate = mkrRmul(mkrRpow(mkrAdd(base, duty), now - rho, ONE), storedRate);
-                amount = -1 * int128(mkrRmul(art, currentRate));
+                amount = -int128(mkrRmul(art, currentRate));
 
                 totalAmount = totalAmount + amount;
             }

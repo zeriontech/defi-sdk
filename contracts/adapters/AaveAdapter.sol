@@ -67,7 +67,7 @@ contract AaveAdapter is Adapter {
         (uint256 depositAmount, uint256 debtAmount, , , , , , , , ) =
             pool.getUserReserveData(asset, user);
 
-        return depositAmount > 0 ? int128(depositAmount) : -1 * int128(debtAmount);
+        return depositAmount > 0 ? int128(depositAmount) : -int128(debtAmount);
     }
 
     /**

@@ -45,7 +45,7 @@ contract SynthetixAdapter is Adapter {
         if (asset == SNX) {
             return int128(synthetix.balanceOf(user) - synthetix.transferableSynthetix(user));
         } else if (asset == SUSD) {
-            return -1 * int128(synthetix.debtBalanceOf(user, "sUSD"));
+            return -int128(synthetix.debtBalanceOf(user, "sUSD"));
         } else {
             return int128(0);
         }
