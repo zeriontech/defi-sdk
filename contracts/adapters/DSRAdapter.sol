@@ -42,8 +42,8 @@ contract DSRAdapter is Adapter, MKRAdapter {
     function getAssetAmount(address, address user) external view override returns (int128) {
         Pot pot = Pot(POT);
         // solhint-disable-next-line not-rely-on-time
-        uint256 chi = rmultiply(rpower(pot.dsr(), now - pot.rho(), ONE), pot.chi());
-        return int128(rmultiply(chi, pot.pie(user)));
+        uint256 chi = mkrRmul(mkrRpow(pot.dsr(), now - pot.rho(), ONE), pot.chi());
+        return int128(mkrRmul(chi, pot.pie(user)));
     }
 
     /**
