@@ -25,8 +25,8 @@ interface Synthetix {
  */
 contract SynthetixAdapter is Adapter {
 
-    address internal constant SNX = 0x7cB89c509001D25dA9938999ABFeA6740212E5f0;
-    address internal constant SUSD = 0x289e9a4674663decEE54f781AaDE5327304A32f8;
+    address internal constant SNX = 0x153C3148A0a285A6f9F6d1996E1348832249bF7e;
+    address internal constant SUSD = 0x2A020C1ad728f1C12735bC4877CEECa4491A4a3D;
 
     /**
      * @return Name of the protocol.

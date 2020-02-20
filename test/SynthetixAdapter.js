@@ -2,8 +2,8 @@ const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const SynthetixAdapter = artifacts.require('./SynthetixAdapter');
 
 contract('SynthetixAdapter', () => {
-  const snxAddress = '0x7cB89c509001D25dA9938999ABFeA6740212E5f0';
-  const susdAddress = '0x289e9a4674663decEE54f781AaDE5327304A32f8';
+  const snxAddress = '0x153C3148A0a285A6f9F6d1996E1348832249bF7e';
+  const susdAddress = '0x2A020C1ad728f1C12735bC4877CEECa4491A4a3D';
   const testAddress = '0xa5f7a39e55d7878bc5bd754ee5d6bd7a7662355b';
   const incorrectAsset = '0x1C83501478f1320977047008496DACBD60Bb15ef';
 
