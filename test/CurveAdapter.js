@@ -7,7 +7,6 @@ contract('CurveAdapter', () => {
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
   const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
   const testAddress = '0x98f365b8215189f547E0f77d84aF1A2Cb0820c72';
-  const incorrectAsset = '0x1C83501478f1320977047008496DACBD60Bb15ef';
 
   let accounts;
   let adapterRegistry;
@@ -56,33 +55,6 @@ contract('CurveAdapter', () => {
         // eslint-disable-next-line no-console
         console.log(`Means its: ${cUSDCAmount} USDC locked`);
         assert.equal(result[0].name, 'Curve.fi');
-      });
-  });
-
-  it('should return empty rates for incorrect asset', async () => {
-    await adapterRegistry.methods['getRates(address,address[])'](
-      curveAdapter.options.address,
-      [incorrectAsset],
-    )
-      .call()
-      .then((result) => {
-        assert.equal(result.length, 1);
-        assert.equal(result[0].components.length, 0);
-      });
-  });
-
-  it('should return zero balances for incorrect asset', async () => {
-    await adapterRegistry.methods['getBalances(address,address,address[])'](
-      testAddress,
-      curveAdapter.options.address,
-      [incorrectAsset],
-    )
-      .call()
-      .then((result) => {
-        assert.equal(result.length, 1);
-        assert.equal(result[0].asset, incorrectAsset);
-        assert.equal(result[0].amount, 0);
-        assert.equal(result[0].decimals, 18);
       });
   });
 });

@@ -1,23 +1,23 @@
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const DSRAdapter = artifacts.require('./DSRAdapter');
+const ZrxAdapter = artifacts.require('./ZrxAdapter');
 
-contract('DSRAdapter', () => {
-  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-  const testAddress = '0x5DbC6c9Bf22f78eecDb74275810403416C4F2CA0';
+contract('ZrxAdapter', () => {
+  const zrxAddress = '0xE41d2489571d322189246DaFA5ebDe1F4699F498';
+  const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
   let adapterRegistry;
-  let dsrAdapter;
+  let zrxAdapter;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await DSRAdapter.new({ from: accounts[0] })
+    await ZrxAdapter.new({ from: accounts[0] })
       .then((result) => {
-        dsrAdapter = result.contract;
+        zrxAdapter = result.contract;
       });
     await AdapterRegistry.new(
-      [dsrAdapter.options.address],
-      [[daiAddress]],
+      [zrxAdapter.options.address],
+      [[zrxAddress]],
       { from: accounts[0] },
     )
       .then((result) => {
@@ -30,12 +30,12 @@ contract('DSRAdapter', () => {
       .call()
       .then((result) => {
         // eslint-disable-next-line no-console
-        console.log(`Deposited DAI amount: ${result[0].balances[0].amount.toString()}`);
-        assert.equal(result[0].name, 'DSR');
+        console.log(`Deposited ZRX amount: ${result[0].balances[0].amount.toString()}`);
+        assert.equal(result[0].name, '0x');
         assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].balances[0].asset, daiAddress);
-        assert.equal(result[0].rates[0].asset, daiAddress);
-        assert.equal(result[0].rates[0].components[0].underlying, daiAddress);
+        assert.equal(result[0].balances[0].asset, zrxAddress);
+        assert.equal(result[0].rates[0].asset, zrxAddress);
+        assert.equal(result[0].rates[0].components[0].underlying, zrxAddress);
         assert.equal(result[0].rates[0].components[0].rate, 1e18);
       });
   });

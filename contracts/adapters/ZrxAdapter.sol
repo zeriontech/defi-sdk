@@ -3,47 +3,41 @@ pragma experimental ABIEncoderV2;
 
 import { Adapter } from "./Adapter.sol";
 import { Component } from "../Structs.sol";
-import { MKRAdapter } from "./MKRAdapter.sol";
 
 
 /**
- * @dev Pot contract interface.
- * Only the functions required for DSRAdapter contract are added.
- * The Pot contract is available here
- * https://github.com/makerdao/dss/blob/master/src/pot.sol.
+ * @dev Staking contract interface.
+ * Only the functions required for ZrxAdapter contract are added.
+ * The Staking contract is available here
+ * .
  */
-interface Pot {
-    function pie(address) external view returns(uint256);
-    function dsr() external view returns(uint256);
-    function rho() external view returns(uint256);
-    function chi() external view returns(uint256);
+interface Staking {
+    function getTotalStake(address) external view returns (uint256);
 }
 
 
 /**
- * @title Adapter for DSR protocol.
+ * @title Adapter for 0x protocol.
  * @dev Implementation of Adapter interface.
  */
-contract DSRAdapter is Adapter, MKRAdapter {
+contract ZrxAdapter is Adapter {
+
+    address internal constant STAKING = 0xa26e80e7Dea86279c6d778D702Cc413E6CFfA777;
 
     /**
      * @return Name of the protocol.
      * @dev Implementation of Adapter function.
      */
     function getProtocolName() external pure override returns (string memory) {
-        return("DSR");
+        return("0x");
     }
 
     /**
-     * @return Amount of DAI locked on the protocol by the given user.
+     * @return Amount of ZRX locked on the protocol by the given user.
      * @dev Implementation of Adapter function.
-     * This function repeats the calculations made in drip() function of Pot contract.
      */
     function getAssetAmount(address, address user) external view override returns (int256) {
-        Pot pot = Pot(POT);
-        // solhint-disable-next-line not-rely-on-time
-        uint256 chi = mkrRmul(mkrRpow(pot.dsr(), now - pot.rho(), ONE), pot.chi());
-        return int256(mkrRmul(chi, pot.pie(user)));
+        return int256(Staking(STAKING).getTotalStake(user));
     }
 
     /**

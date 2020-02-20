@@ -1,4 +1,4 @@
-pragma solidity 0.6.1;
+pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
 import { Adapter } from "./adapters/Adapter.sol";
@@ -15,10 +15,12 @@ import {
 
 /**
 * @title Registry for protocol adapters.
-* @notice balance() and exchangeRates() functions
+* @notice getBalances() and getRates() functions
 * with different arguments implement the main functionality.
 */
 contract AdapterRegistry is AdapterAssetsManager {
+
+    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     constructor(
         address[] memory _adapters,
@@ -42,7 +44,7 @@ contract AdapterRegistry is AdapterAssetsManager {
         address[] memory adapters = getAdapters();
         ProtocolDetail[] memory protocolDetails = new ProtocolDetail[](adapters.length);
 
-        for (uint i = 0; i < adapters.length; i++) {
+        for (uint256 i = 0; i < adapters.length; i++) {
             protocolDetails[i] = ProtocolDetail({
                 name: Adapter(adapters[i]).getProtocolName(),
                 balances: getBalances(user, adapters[i]),
@@ -67,7 +69,7 @@ contract AdapterRegistry is AdapterAssetsManager {
         address[] memory adapters = getAdapters();
         ProtocolBalance[] memory protocolBalances = new ProtocolBalance[](adapters.length);
 
-        for (uint i = 0; i < adapters.length; i++) {
+        for (uint256 i = 0; i < adapters.length; i++) {
             protocolBalances[i] = ProtocolBalance({
                 name: Adapter(adapters[i]).getProtocolName(),
                 balances: getBalances(user, adapters[i])
@@ -89,7 +91,7 @@ contract AdapterRegistry is AdapterAssetsManager {
         address[] memory adapters = getAdapters();
         ProtocolRate[] memory protocolRates = new ProtocolRate[](adapters.length);
 
-        for (uint i = 0; i < adapters.length; i++) {
+        for (uint256 i = 0; i < adapters.length; i++) {
             protocolRates[i] = ProtocolRate({
                 name: Adapter(adapters[i]).getProtocolName(),
                 rates: getRates(adapters[i])
@@ -137,7 +139,7 @@ contract AdapterRegistry is AdapterAssetsManager {
             assetBalances[i] = AssetBalance({
                 asset: asset,
                 amount: Adapter(adapter).getAssetAmount(asset, user),
-                decimals: ERC20(asset).decimals()
+                decimals: getAssetDecimals(asset)
             });
         }
 
@@ -185,4 +187,15 @@ contract AdapterRegistry is AdapterAssetsManager {
 
         return rates;
     }
+
+    function getAssetDecimals(
+        address asset
+    )
+        internal
+        view
+        returns (uint8)
+    {
+        return asset == ETH ? uint8(18) : ERC20(asset).decimals();
+    }
+
 }

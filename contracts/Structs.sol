@@ -1,4 +1,4 @@
-pragma solidity 0.6.1;
+pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
 
@@ -23,7 +23,7 @@ struct ProtocolRate {
 
 struct AssetBalance {
     address asset;
-    int128 amount;
+    int256 amount;
     uint8 decimals;
 }
 

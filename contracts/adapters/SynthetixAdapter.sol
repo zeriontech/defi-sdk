@@ -1,4 +1,4 @@
-pragma solidity 0.6.1;
+pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
 import { Adapter } from "./Adapter.sol";
@@ -21,12 +21,12 @@ interface Synthetix {
 
 /**
  * @title Adapter for Synthetix protocol.
- * @dev Implementation of Adapter abstract contract.
+ * @dev Implementation of Adapter interface.
  */
 contract SynthetixAdapter is Adapter {
 
-    address internal constant SNX = 0x7cB89c509001D25dA9938999ABFeA6740212E5f0;
-    address internal constant SUSD = 0x289e9a4674663decEE54f781AaDE5327304A32f8;
+    address internal constant SNX = 0x153C3148A0a285A6f9F6d1996E1348832249bF7e;
+    address internal constant SUSD = 0x2A020C1ad728f1C12735bC4877CEECa4491A4a3D;
 
     /**
      * @return Name of the protocol.
@@ -40,14 +40,14 @@ contract SynthetixAdapter is Adapter {
      * @return Amount of SNX locked on the protocol by the given user.
      * @dev Implementation of Adapter function.
      */
-    function getAssetAmount(address asset, address user) external view override returns (int128) {
+    function getAssetAmount(address asset, address user) external view override returns (int256) {
         Synthetix synthetix = Synthetix(SNX);
         if (asset == SNX) {
-            return int128(synthetix.balanceOf(user) - synthetix.transferableSynthetix(user));
+            return int256(synthetix.balanceOf(user) - synthetix.transferableSynthetix(user));
         } else if (asset == SUSD) {
-            return -1 * int128(synthetix.debtBalanceOf(user, "sUSD"));
+            return -int256(synthetix.debtBalanceOf(user, "sUSD"));
         } else {
-            return int128(0);
+            return int256(0);
         }
     }
 
@@ -56,17 +56,12 @@ contract SynthetixAdapter is Adapter {
      * @dev Implementation of Adapter function.
      */
     function getUnderlyingRates(address asset) external view override returns (Component[] memory) {
-        Component[] memory components;
+        Component[] memory components = new Component[](1);
 
-        if (asset == SNX || asset == SUSD) {
-            components = new Component[](1);
-            components[0] = Component({
-                underlying: asset,
-                rate: uint256(1e18)
-            });
-        } else {
-            components = new Component[](0);
-        }
+        components[0] = Component({
+            underlying: asset,
+            rate: uint256(1e18)
+        });
 
         return components;
     }
