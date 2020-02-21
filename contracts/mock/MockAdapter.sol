@@ -1,7 +1,7 @@
 pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
-import { Component } from "../Structs.sol";
+import { Protocol, AssetBalance, AssetRate, Component, Asset } from "../Structs.sol";
 import "../adapters/Adapter.sol";
 
 
@@ -13,27 +13,53 @@ contract MockAdapter is Adapter {
         balances[msg.sender] = 1000;
     }
 
-    function getProtocolName() external pure override returns(string memory) {
-        return("Mock");
+    function getProtocol() external pure override returns (Protocol memory) {
+        return Protocol({
+            name: "Mock",
+            description: "Mock protocol",
+            pic: "mock.png",
+            version: uint256(1)
+        });
     }
 
-    function getAssetAmount(address, address user) external view override returns(int256) {
-        return balances[user];
+    function getAssetBalance(
+        address asset,
+        address user
+    )
+        external
+        view
+        override
+        returns (AssetBalance memory)
+    {
+        return AssetBalance({
+            asset: getAsset(asset),
+            balance: balances[user]
+        });
     }
 
-    function getUnderlyingRates(address) external view override returns (Component[] memory) {
+    function getAssetRate(address asset) external view override returns (AssetRate memory) {
         Component[] memory components = new Component[](1);
+
         components[0] = Component({
-            underlying: address(this),
+            underlying: getAsset(address(this)),
             rate: uint256(1e18)
-            });
-        return components;
+        });
+
+        return AssetRate({
+            asset: getAsset(asset),
+            components: components
+        });
     }
 
     /**
-     * @dev this function is here as this contract is mock for both adapter and asset
+     * @return Asset struct with asset info for the given asset.
+     * @dev Implementation of Adapter interface function.
      */
-    function decimals() external pure returns(uint256) {
-        return 18;
+    function getAsset(address asset) public view override returns (Asset memory) {
+        return Asset({
+            contractAddress: asset,
+            decimals: uint8(18),
+            symbol: "MOCK"
+        });
     }
 }

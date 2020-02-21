@@ -2,7 +2,7 @@ pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
 import { Adapter } from "./Adapter.sol";
-import { Component } from "../Structs.sol";
+import { Protocol, AssetBalance, AssetRate, Component, Asset } from "../Structs.sol";
 import { ERC20 } from "../ERC20.sol";
 
 
@@ -10,7 +10,7 @@ import { ERC20 } from "../ERC20.sol";
  * @dev stableswap contract interface.
  * Only the functions required for CurveAdapter contract are added.
  * The stableswap contract is available here
- * https://github.com/curvefi/curve-contract/blob/compounded/vyper/stableswap.vy.
+ * github.com/curvefi/curve-contract/blob/compounded/vyper/stableswap.vy.
  */
 // solhint-disable-next-line contract-name-camelcase
 interface stableswap {
@@ -28,37 +28,75 @@ contract CurveAdapter is Adapter {
     address constant internal SS = 0x2e60CF74d81ac34eB21eEff58Db4D385920ef419;
 
     /**
-     * @return Name of the protocol.
-     * @dev Implementation of Adapter function.
+     * @return Protocol struct with protocol info.
+     * @dev Implementation of Adapter interface function.
      */
-    function getProtocolName() external pure override returns (string memory) {
-        return("Curve.fi");
+    function getProtocol() external pure override returns (Protocol memory) {
+        return Protocol({
+            name: "Curve.fi",
+            description: "",
+            pic: "",
+            version: uint256(1)
+        });
     }
 
     /**
      * @return Amount of stableswapToken locked on the protocol by the given user.
-     * @dev Implementation of Adapter function.
+     * @dev Implementation of Adapter interface function.
      */
-    function getAssetAmount(address asset, address user) external view override returns (int256) {
-        return int256(ERC20(asset).balanceOf(user));
+    function getAssetBalance(
+        address asset,
+        address user
+    )
+        external
+        view
+        override
+        returns (AssetBalance memory)
+    {
+        return AssetBalance({
+            asset: getAsset(asset),
+            balance: int256(ERC20(asset).balanceOf(user))
+        });
     }
 
     /**
      * @return Struct with underlying assets rates for the given asset.
-     * @dev Implementation of Adapter function.
+     * @dev Implementation of Adapter interface function.
      * Repeats calculations made in stableswap contract.
      */
-    function getUnderlyingRates(address asset) external view override returns (Component[] memory) {
+    function getAssetRate(
+        address asset
+    )
+        external
+        view
+        override
+        returns (AssetRate memory)
+    {
         Component[] memory components = new Component[](2);
         stableswap ss = stableswap(SS);
 
         for (uint256 i = 0; i < 2; i++) {
             components[i] = Component({
-                underlying: ss.coins(int128(i)),
+                underlying: getAsset(ss.coins(int128(i))),
                 rate: ss.balances(int128(i)) * 1e18 / ERC20(asset).totalSupply()
             });
         }
 
-        return components;
+        return AssetRate({
+            asset: getAsset(asset),
+            components: components
+        });
+    }
+
+    /**
+     * @return Asset struct with asset info for the given asset.
+     * @dev Implementation of Adapter interface function.
+     */
+    function getAsset(address asset) public view override returns (Asset memory) {
+        return Asset({
+            contractAddress: asset,
+            decimals: ERC20(asset).decimals(),
+            symbol: ERC20(asset).symbol()
+        });
     }
 }

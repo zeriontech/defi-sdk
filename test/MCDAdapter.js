@@ -6,7 +6,7 @@ contract('MCDAdapter', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const batAddress = '0x0D8775F648430679A709E98d2b0Cb6250d2887EF';
   const testAddress = '0xD5Ef552f5AE424b14E5a726eBf7E56FC4067Cd32'; // MKR proxy
-  const incorrectAsset = '0x1C83501478f1320977047008496DACBD60Bb15ef';
+  const incorrectAssetAddress = '0x1C83501478f1320977047008496DACBD60Bb15ef';
 
   let accounts;
   let adapterRegistry;
@@ -29,46 +29,71 @@ contract('MCDAdapter', () => {
   });
 
   it('should return correct balances and rates', async () => {
-    await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
+    await adapterRegistry.methods['getProtocolsBalancesAndRates(address)'](testAddress)
       .call()
       .then((result) => {
         // eslint-disable-next-line no-console
-        console.log(`DAI debt amount: ${result[0].balances[0].amount.toString()}`);
+        console.log(`DAI debt amount: ${result[0].balances[0].balance.toString()}`);
         // eslint-disable-next-line no-console
-        console.log(`ETH collateral amount: ${result[0].balances[1].amount.toString()}`);
+        console.log(`ETH collateral amount: ${result[0].balances[1].balance.toString()}`);
         // eslint-disable-next-line no-console
-        console.log(`BAT collateral amount: ${result[0].balances[2].amount.toString()}`);
-        assert.equal(result[0].name, 'MCD');
-        assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].balances[0].asset, daiAddress);
-        assert.equal(result[0].balances[1].decimals, 18);
-        assert.equal(result[0].balances[1].asset, wethAddress);
-        assert.equal(result[0].balances[2].decimals, 18);
-        assert.equal(result[0].balances[2].asset, batAddress);
-        assert.equal(result[0].rates[0].asset, daiAddress);
-        assert.equal(result[0].rates[0].components[0].underlying, daiAddress);
+        console.log(`BAT collateral amount: ${result[0].balances[2].balance.toString()}`);
+
+        const mcd = [
+          'MCD',
+          '',
+          '',
+          '1',
+        ];
+        const dai = [
+          daiAddress,
+          '18',
+          'DAI',
+        ];
+        const weth = [
+          wethAddress,
+          '18',
+          'WETH',
+        ];
+        const bat = [
+          batAddress,
+          '18',
+          'BAT',
+        ];
+
+        assert.deepEqual(result[0].protocol, mcd);
+        assert.deepEqual(result[0].balances[0].asset, dai);
+        assert.deepEqual(result[0].balances[1].asset, weth);
+        assert.deepEqual(result[0].balances[2].asset, bat);
+        assert.deepEqual(result[0].rates[0].asset, dai);
+        assert.deepEqual(result[0].rates[0].components[0].underlying, dai);
         assert.equal(result[0].rates[0].components[0].rate, 1e18);
-        assert.equal(result[0].rates[1].asset, wethAddress);
-        assert.equal(result[0].rates[1].components[0].underlying, wethAddress);
+        assert.deepEqual(result[0].rates[1].asset, weth);
+        assert.deepEqual(result[0].rates[1].components[0].underlying, weth);
         assert.equal(result[0].rates[1].components[0].rate, 1e18);
-        assert.equal(result[0].rates[2].asset, batAddress);
-        assert.equal(result[0].rates[2].components[0].underlying, batAddress);
+        assert.deepEqual(result[0].rates[2].asset, bat);
+        assert.deepEqual(result[0].rates[2].components[0].underlying, bat);
         assert.equal(result[0].rates[2].components[0].rate, 1e18);
       });
   });
 
   it('should return zero balances for incorrect asset', async () => {
-    await adapterRegistry.methods['getBalances(address,address,address[])'](
+    await adapterRegistry.methods['getAssetBalances(address,address,address[])'](
       testAddress,
       mcdAdapter.options.address,
-      [incorrectAsset],
+      [incorrectAssetAddress],
     )
       .call()
       .then((result) => {
+        const incorrectAsset = [
+          incorrectAssetAddress,
+          '18',
+          'DGTX',
+        ];
+
         assert.equal(result.length, 1);
-        assert.equal(result[0].asset, incorrectAsset);
-        assert.equal(result[0].amount, 0);
-        assert.equal(result[0].decimals, 18);
+        assert.deepEqual(result[0].asset, incorrectAsset);
+        assert.equal(result[0].balance, 0);
       });
   });
 });

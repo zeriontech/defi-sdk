@@ -12,6 +12,7 @@ contract('CompoundAdapter', () => {
   const cZRXAddress = '0xB3319f5D18Bc0D84dD1b4825Dcde5d5f7266d407';
   const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
   const cWBTCAddress = '0xC11b1268C1A384e55C48c2391d8d480264A3A7F4';
+  const saiAddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
@@ -43,11 +44,11 @@ contract('CompoundAdapter', () => {
   });
 
   it('should be correct balances and rates', async () => {
-    await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
+    await adapterRegistry.methods['getProtocolsBalancesAndRates(address)'](testAddress)
       .call()
       .then((result) => {
         const base = new BN(10).pow(new BN(34));
-        const cDAIAmount = new BN(result[0].balances[0].amount);
+        const cDAIAmount = new BN(result[0].balances[0].balance);
         const cDAIRate = new BN(result[0].rates[0].components[0].rate);
         const daiAmount = cDAIRate.mul(cDAIAmount).div(base).toNumber() / 100;
         // eslint-disable-next-line no-console
@@ -57,17 +58,39 @@ contract('CompoundAdapter', () => {
         // eslint-disable-next-line no-console
         console.log(`Means its: ${daiAmount} DAI locked`);
         // eslint-disable-next-line no-console
-        console.log(`Deposited cREP amount: ${result[0].balances[3].amount.toString()}`);
+        console.log(`Deposited cREP amount: ${result[0].balances[3].balance.toString()}`);
         // eslint-disable-next-line no-console
-        console.log(`Deposited cSAI amount: ${result[0].balances[4].amount.toString()}`);
+        console.log(`Deposited cSAI amount: ${result[0].balances[4].balance.toString()}`);
         // eslint-disable-next-line no-console
-        console.log(`Deposited cUSDC amount: ${result[0].balances[6].amount.toString()}`);
+        console.log(`Deposited cUSDC amount: ${result[0].balances[6].balance.toString()}`);
 
-        assert.equal(result[0].balances[0].decimals, 8);
-        assert.equal(result[0].balances[0].asset, cDAIAddress);
-        assert.equal(result[0].rates[0].asset, cDAIAddress);
-        assert.equal(result[0].rates[0].components[0].underlying, daiAddress);
-        assert.equal(result[0].name, 'Compound');
+        const compound = [
+          'Compound',
+          '',
+          '',
+          '1',
+        ];
+        const cDAI = [
+          cDAIAddress,
+          '8',
+          'cDAI',
+        ];
+        const DAI = [
+          daiAddress,
+          '18',
+          'DAI',
+        ];
+        const SAI = [
+          saiAddress,
+          '18',
+          'SAI',
+        ];
+
+        assert.deepEqual(result[0].protocol, compound);
+        assert.deepEqual(result[0].balances[0].asset, cDAI);
+        assert.deepEqual(result[0].rates[0].asset, cDAI);
+        assert.deepEqual(result[0].rates[0].components[0].underlying, DAI);
+        assert.deepEqual(result[0].rates[4].components[0].underlying, SAI);
       });
   });
 });

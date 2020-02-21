@@ -26,16 +26,28 @@ contract('DSRAdapter', () => {
   });
 
   it('should return correct balances and rates', async () => {
-    await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
+    await adapterRegistry.methods['getProtocolsBalancesAndRates(address)'](testAddress)
       .call()
       .then((result) => {
         // eslint-disable-next-line no-console
-        console.log(`Deposited DAI amount: ${result[0].balances[0].amount.toString()}`);
-        assert.equal(result[0].name, 'DSR');
-        assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].balances[0].asset, daiAddress);
-        assert.equal(result[0].rates[0].asset, daiAddress);
-        assert.equal(result[0].rates[0].components[0].underlying, daiAddress);
+        console.log(`Deposited DAI amount: ${result[0].balances[0].balance.toString()}`);
+
+        const dsr = [
+          'DSR',
+          '',
+          '',
+          '1',
+        ];
+        const DAI = [
+          daiAddress,
+          '18',
+          'DAI',
+        ];
+
+        assert.deepEqual(result[0].protocol, dsr);
+        assert.deepEqual(result[0].balances[0].asset, DAI);
+        assert.deepEqual(result[0].rates[0].asset, DAI);
+        assert.deepEqual(result[0].rates[0].components[0].underlying, DAI);
         assert.equal(result[0].rates[0].components[0].rate, 1e18);
       });
   });

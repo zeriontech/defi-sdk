@@ -2,10 +2,9 @@ const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const SynthetixAdapter = artifacts.require('./SynthetixAdapter');
 
 contract('SynthetixAdapter', () => {
-  const snxAddress = '0x153C3148A0a285A6f9F6d1996E1348832249bF7e';
-  const susdAddress = '0x2A020C1ad728f1C12735bC4877CEECa4491A4a3D';
+  const snxAddress = '0xC011A72400E58ecD99Ee497CF89E3775d4bd732F';
+  const susdAddress = '0x57Ab1E02fEE23774580C119740129eAC7081e9D3';
   const testAddress = '0xa5f7a39e55d7878bc5bd754ee5d6bd7a7662355b';
-  const incorrectAsset = '0x1C83501478f1320977047008496DACBD60Bb15ef';
 
   let accounts;
   let adapterRegistry;
@@ -28,39 +27,40 @@ contract('SynthetixAdapter', () => {
   });
 
   it('should return correct balances and rates', async () => {
-    await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
+    await adapterRegistry.methods['getProtocolsBalancesAndRates(address)'](testAddress)
       .call()
       .then((result) => {
         // eslint-disable-next-line no-console
-        console.log(`Locked SNX amount: ${result[0].balances[0].amount.toString()}`);
+        console.log(`Locked SNX amount: ${result[0].balances[0].balance.toString()}`);
         // eslint-disable-next-line no-console
-        console.log(`sUSD debt amount: ${result[0].balances[1].amount.toString()}`);
-        assert.equal(result[0].name, 'Synthetix');
-        assert.equal(result[0].balances[0].asset, snxAddress);
-        assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].balances[1].asset, susdAddress);
-        assert.equal(result[0].balances[1].decimals, 18);
-        assert.equal(result[0].rates[0].asset, snxAddress);
-        assert.equal(result[0].rates[0].components[0].underlying, snxAddress);
-        assert.equal(result[0].rates[0].components[0].rate, 1e18);
-        assert.equal(result[0].rates[1].asset, susdAddress);
-        assert.equal(result[0].rates[1].components[0].underlying, susdAddress);
-        assert.equal(result[0].rates[1].components[0].rate, 1e18);
-      });
-  });
+        console.log(`sUSD debt amount: ${result[0].balances[1].balance.toString()}`);
 
-  it('should return zero balances for incorrect asset', async () => {
-    await adapterRegistry.methods['getBalances(address,address,address[])'](
-      testAddress,
-      snxAdapter.options.address,
-      [incorrectAsset],
-    )
-      .call()
-      .then((result) => {
-        assert.equal(result.length, 1);
-        assert.equal(result[0].asset, incorrectAsset);
-        assert.equal(result[0].amount, 0);
-        assert.equal(result[0].decimals, 18);
+        const synthetix = [
+          'Synthetix',
+          '',
+          '',
+          '1',
+        ];
+        const snx = [
+          snxAddress,
+          '18',
+          'SNX',
+        ];
+        const susd = [
+          susdAddress,
+          '18',
+          'sUSD',
+        ];
+
+        assert.deepEqual(result[0].protocol, synthetix);
+        assert.deepEqual(result[0].balances[0].asset, snx);
+        assert.deepEqual(result[0].balances[1].asset, susd);
+        assert.deepEqual(result[0].rates[0].asset, snx);
+        assert.deepEqual(result[0].rates[0].components[0].underlying, snx);
+        assert.equal(result[0].rates[0].components[0].rate, 1e18);
+        assert.deepEqual(result[0].rates[1].asset, susd);
+        assert.deepEqual(result[0].rates[1].components[0].underlying, susd);
+        assert.equal(result[0].rates[1].components[0].rate, 1e18);
       });
   });
 });

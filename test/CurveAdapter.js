@@ -29,11 +29,11 @@ contract('CurveAdapter', () => {
   });
 
   it('should return correct balances and rates', async () => {
-    await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
+    await adapterRegistry.methods['getProtocolsBalancesAndRates(address)'](testAddress)
       .call()
       .then((result) => {
         const base = new BN(10).pow(new BN(24));
-        const ssTokenAmount = new BN(result[0].balances[0].amount);
+        const ssTokenAmount = new BN(result[0].balances[0].baance);
         const cDAIRate = new BN(result[0].rates[0].components[0].rate);
         const cDAIAmount = cDAIRate.mul(ssTokenAmount).div(base).toNumber() / 100;
         const cUSDCRate = new BN(result[0].rates[0].components[1].rate);
@@ -41,20 +41,42 @@ contract('CurveAdapter', () => {
 
         // eslint-disable-next-line no-console
         console.log(`Deposited ssToken amount: ${ssTokenAmount.toString()}`);
-        assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].balances[0].asset, ssTokenAddress);
-        assert.equal(result[0].rates[0].asset, ssTokenAddress);
-        assert.equal(result[0].rates[0].components[0].underlying, cDAIAddress);
+
+        const curve = [
+          'Curve.fi',
+          '',
+          '',
+          '1',
+        ];
+        const ssToken = [
+          ssTokenAddress,
+          '18',
+          'cDAIUSDC',
+        ];
+        const cDAI = [
+          cDAIAddress,
+          '8',
+          'cDAI',
+        ];
+        const cUSDC = [
+          cUSDCAddress,
+          '8',
+          'cUSDC',
+        ];
+
+        assert.deepEqual(result[0].protocol, curve);
+        assert.deepEqual(result[0].balances[0].asset, ssToken);
+        assert.deepEqual(result[0].rates[0].asset, ssToken);
+        assert.deepEqual(result[0].rates[0].components[0].underlying, cDAI);
         // eslint-disable-next-line no-console
         console.log(`cDAI rate: ${cDAIRate.toString()}`);
         // eslint-disable-next-line no-console
         console.log(`Means its: ${cDAIAmount} DAI locked`);
-        assert.equal(result[0].rates[0].components[1].underlying, cUSDCAddress);
+        assert.deepEqual(result[0].rates[0].components[1].underlying, cUSDC);
         // eslint-disable-next-line no-console
         console.log(`cUSDC rate: ${cUSDCRate.toString()}`);
         // eslint-disable-next-line no-console
         console.log(`Means its: ${cUSDCAmount} USDC locked`);
-        assert.equal(result[0].name, 'Curve.fi');
       });
   });
 });
