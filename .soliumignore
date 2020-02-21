@@ -1,2 +1,7 @@
 node_modules
 ./contracts/Migrations.sol
+./contracts/Structs.sol
+./contracts/AdapterRegistry.sol
+./contracts/AdapterAssetsManager.sol
+./contracts/adapters/MKRAdapter.sol
+contracts/interactiveAdapters/InteractiveAdapter.sol

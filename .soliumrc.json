@@ -21,6 +21,9 @@
     ],
     "no-experimental": [
       "off"
+    ],
+    "operator-whitespace": [
+      "warning"
     ]
   }
 }
