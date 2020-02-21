@@ -8,6 +8,7 @@ const MockAdapter = artifacts.require('./MockAdapter');
 const ZERO = '0x0000000000000000000000000000000000000000';
 const ONE = '0x1111111111111111111111111111111111111111';
 const TWO = '0x2222222222222222222222222222222222222222';
+const THREE = '0x3333333333333333333333333333333333333333';
 const INITIAL_ADAPTER = '0x0000000000000000000000000000000000000001';
 
 contract('AdapterRegistry', () => {
@@ -15,6 +16,8 @@ contract('AdapterRegistry', () => {
   let adapterRegistry;
   let mockAdapter;
   let mockAdapterAddress;
+  let mockProtocol;
+  let mockAsset;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -31,6 +34,17 @@ contract('AdapterRegistry', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
+    mockProtocol = [
+      'Mock',
+      'Mock protocol',
+      'mock.png',
+      '1',
+    ];
+    mockAsset = [
+      mockAdapterAddress,
+      '18',
+      'MOCK',
+    ];
   });
 
   it('should not deploy with wrong parameters', async () => {
@@ -180,6 +194,125 @@ contract('AdapterRegistry', () => {
         gasLimit: '300000',
       });
     await adapterRegistry.methods['getAdapters()']()
+      .call()
+      .then((result) => {
+        assert.equal(result[0], ONE);
+      });
+  });
+
+  it('should not replace adapter not by the owner', async () => {
+    await expectRevert(
+      adapterRegistry.methods['replaceAdapter(address,address,address[])'](mockAdapterAddress, ONE, [])
+        .send({ from: accounts[1] }),
+    );
+  });
+
+  it('should not replace adapter with wrong address', async () => {
+    await expectRevert(
+      adapterRegistry.methods['replaceAdapter(address,address,address[])'](ONE, TWO, [])
+        .send({
+          from: accounts[0],
+          gasLimit: '300000',
+        }),
+    );
+  });
+
+  it('should not replace for ZERO adapter', async () => {
+    await expectRevert(
+      adapterRegistry.methods['replaceAdapter(address,address,address[])'](mockAdapterAddress, ZERO, [])
+        .send({ from: accounts[0] }),
+    );
+  });
+
+  it('should not replace for INITIAL_ADAPTER adapter', async () => {
+    await expectRevert(
+      adapterRegistry.methods['replaceAdapter(address,address,address[])'](mockAdapterAddress, INITIAL_ADAPTER, [])
+        .send({ from: accounts[0] }),
+    );
+  });
+
+  it('should not replace for existing adapter', async () => {
+    await expectRevert(
+      adapterRegistry.methods['replaceAdapter(address,address,address[])'](mockAdapterAddress, mockAdapterAddress, [])
+        .send({ from: accounts[0] }),
+    );
+  });
+
+  it('should replace adapter by the owner', async () => {
+    await adapterRegistry.methods['removeAdapter(address)'](mockAdapterAddress)
+      .send({
+        from: accounts[0],
+        gasLimit: '300000',
+      });
+    await adapterRegistry.methods['getAdapters()']()
+      .call()
+      .then((result) => {
+        assert.equal(result.length, 0);
+      });
+    await adapterRegistry.methods['addAdapter(address,address[])'](TWO, [TWO])
+      .send({
+        from: accounts[0],
+        gasLimit: '300000',
+      });
+    await adapterRegistry.methods['addAdapter(address,address[])'](ONE, [TWO])
+      .send({
+        from: accounts[0],
+        gasLimit: '300000',
+      });
+    await adapterRegistry.methods['getAdapters()']()
+      .call()
+      .then((result) => {
+        assert.equal(result.length, 2);
+        assert.equal(result[0], ONE);
+        assert.equal(result[1], TWO);
+      });
+    await adapterRegistry.methods['replaceAdapter(address,address,address[])'](ONE, THREE, [THREE])
+      .send({
+        from: accounts[0],
+        gasLimit: '300000',
+      });
+    await adapterRegistry.methods['getAdapters()']()
+      .call()
+      .then((result) => {
+        assert.equal(result.length, 2);
+        assert.equal(result[0], THREE);
+        assert.equal(result[1], TWO);
+      });
+    await adapterRegistry.methods['getAdapterAssets(address)'](THREE)
+      .call()
+      .then((result) => {
+        assert.equal(result[0], THREE);
+      });
+    await adapterRegistry.methods['removeAdapter(address)'](THREE)
+      .send({
+        from: accounts[0],
+        gasLimit: '300000',
+      });
+    await adapterRegistry.methods['addAdapter(address,address[])'](ONE, [ONE])
+      .send({
+        from: accounts[0],
+        gasLimit: '300000',
+      });
+    await adapterRegistry.methods['getAdapters()']()
+      .call()
+      .then((result) => {
+        assert.equal(result.length, 2);
+        assert.equal(result[0], ONE);
+        assert.equal(result[1], TWO);
+      });
+    await adapterRegistry.methods['replaceAdapter(address,address,address[])'](ONE, THREE, [])
+      .send({
+        from: accounts[0],
+        gasLimit: '300000',
+      });
+    await adapterRegistry.methods['getAdapters()']()
+      .call()
+      .then((result) => {
+        assert.equal(result.length, 2);
+        assert.equal(result[0], THREE);
+        assert.equal(result[1], TWO);
+      });
+    await adapterRegistry.methods['getAdapterAssets(address)'](THREE)
       .call()
       .then((result) => {
         assert.equal(result[0], ONE);
@@ -337,48 +470,45 @@ contract('AdapterRegistry', () => {
   });
 
   it('should be correct balances and rates non-null', async () => {
-    await adapterRegistry.methods['getBalancesAndRates(address)'](accounts[0])
+    await adapterRegistry.methods['getProtocolsBalancesAndRates(address)'](accounts[0])
       .call()
       .then((result) => {
-        assert.equal(result[0].name, 'Mock');
-        assert.equal(result[0].balances[0].asset, mockAdapterAddress);
-        assert.equal(result[0].balances[0].amount, new BN(1000));
-        assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].rates[0].components[0].underlying, mockAdapterAddress);
+        assert.deepEqual(result[0].protocol, mockProtocol);
+        assert.deepEqual(result[0].balances[0].asset, mockAsset);
+        assert.equal(result[0].balances[0].balance, new BN(1000));
+        assert.deepEqual(result[0].rates[0].components[0].underlying, mockAsset);
         assert.equal(result[0].rates[0].components[0].rate, 1e18);
       });
   });
 
   it('should be correct balances non-null', async () => {
-    await adapterRegistry.methods['getBalances(address)'](accounts[0])
+    await adapterRegistry.methods['getProtocolsBalances(address)'](accounts[0])
       .call()
       .then((result) => {
-        assert.equal(result[0].name, 'Mock');
-        assert.equal(result[0].balances[0].asset, mockAdapterAddress);
-        assert.equal(result[0].balances[0].amount, new BN(1000));
-        assert.equal(result[0].balances[0].decimals, 18);
+        assert.deepEqual(result[0].protocol, mockProtocol);
+        assert.deepEqual(result[0].balances[0].asset, mockAsset);
+        assert.equal(result[0].balances[0].balance, new BN(1000));
       });
   });
 
   it('should be correct rates non-null', async () => {
-    await adapterRegistry.methods['getRates()']()
+    await adapterRegistry.methods['getProtocolsRates()']()
       .call()
       .then((result) => {
-        assert.equal(result[0].name, 'Mock');
-        assert.equal(result[0].rates[0].components[0].underlying, mockAdapterAddress);
+        assert.deepEqual(result[0].protocol, mockProtocol);
+        assert.deepEqual(result[0].rates[0].components[0].underlying, mockAsset);
         assert.equal(result[0].rates[0].components[0].rate, 1e18);
       });
   });
 
   it('should be correct balance null', async () => {
-    await adapterRegistry.methods['getBalancesAndRates(address)'](accounts[1])
+    await adapterRegistry.methods['getProtocolsBalancesAndRates(address)'](accounts[1])
       .call()
       .then((result) => {
-        assert.equal(result[0].name, 'Mock');
-        assert.equal(result[0].balances[0].asset, mockAdapterAddress);
-        assert.equal(result[0].balances[0].amount, new BN(0));
-        assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].rates[0].components[0].underlying, mockAdapterAddress);
+        assert.deepEqual(result[0].protocol, mockProtocol);
+        assert.deepEqual(result[0].balances[0].asset, mockAsset);
+        assert.equal(result[0].balances[0].balance, new BN(0));
+        assert.deepEqual(result[0].rates[0].components[0].underlying, mockAsset);
         assert.equal(result[0].rates[0].components[0].rate, 1e18);
       });
   });

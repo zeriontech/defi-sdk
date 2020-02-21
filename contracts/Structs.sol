@@ -2,61 +2,53 @@ pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
 
-struct ProtocolDetail {
-    string name;
+struct ProtocolBalancesAndRates {
+    Protocol protocol;
     AssetBalance[] balances;
     AssetRate[] rates;
 }
 
 
-struct ProtocolBalance {
-    string name;
+struct ProtocolBalances {
+    Protocol protocol;
     AssetBalance[] balances;
 }
 
 
-struct ProtocolRate {
-    string name;
+struct ProtocolRates {
+    Protocol protocol;
     AssetRate[] rates;
+}
+
+
+struct Protocol {
+    string name;
+    string description;
+    string pic;
+    uint256 version;
 }
 
 
 struct AssetBalance {
-    address asset;
-    int256 amount;
-    uint8 decimals;
+    Asset asset;
+    int256 balance;
 }
 
 
 struct AssetRate {
-    address asset;
+    Asset asset;
     Component[] components;
 }
 
 
 struct Component {
-    address underlying;
+    Asset underlying;
     uint256 rate;
 }
 
 
-struct Action {
-    ActionType actionType;
-    address adapter;
-    address[] assets;
-    uint256[] amounts;
-    AmountType[] amountTypes;
-    bytes data;
+struct Asset {
+    address contractAddress;
+    uint8 decimals;
+    string symbol;
 }
-
-
-struct Approval {
-    address asset;
-    uint256 amount;
-}
-
-
-enum ActionType { None, Deposit, Withdraw }
-
-
-enum AmountType { None, Relative, Absolute }

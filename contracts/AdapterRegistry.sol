@@ -3,19 +3,20 @@ pragma experimental ABIEncoderV2;
 
 import { Adapter } from "./adapters/Adapter.sol";
 import { AdapterAssetsManager } from "./AdapterAssetsManager.sol";
-import { ERC20 } from "./ERC20.sol";
 import {
-    ProtocolDetail,
-    ProtocolBalance,
-    ProtocolRate,
+    ProtocolBalancesAndRates,
+    ProtocolBalances,
+    ProtocolRates,
     AssetBalance,
-    AssetRate
+    AssetRate,
+    Component,
+    Asset
 } from "./Structs.sol";
 
 
 /**
 * @title Registry for protocol adapters.
-* @notice getBalances() and getRates() functions
+* @notice getAssetBalances() and getAssetRates() functions
 * with different arguments implement the main functionality.
 */
 contract AdapterRegistry is AdapterAssetsManager {
@@ -28,84 +29,86 @@ contract AdapterRegistry is AdapterAssetsManager {
     )
         public
         AdapterAssetsManager(_adapters, _assets)
+    // solhint-disable-next-line no-empty-blocks
     {}
 
     /**
      * @return All the amounts and rates of supported assets
      * via supported adapters by the given user.
      */
-    function getBalancesAndRates(
+    function getProtocolsBalancesAndRates(
         address user
     )
         external
         view
-        returns(ProtocolDetail[] memory)
+        returns(ProtocolBalancesAndRates[] memory)
     {
         address[] memory adapters = getAdapters();
-        ProtocolDetail[] memory protocolDetails = new ProtocolDetail[](adapters.length);
+        ProtocolBalancesAndRates[] memory protocolBalancesAndRates =
+            new ProtocolBalancesAndRates[](adapters.length);
 
         for (uint256 i = 0; i < adapters.length; i++) {
-            protocolDetails[i] = ProtocolDetail({
-                name: Adapter(adapters[i]).getProtocolName(),
-                balances: getBalances(user, adapters[i]),
-                rates: getRates(adapters[i])
+            protocolBalancesAndRates[i] = ProtocolBalancesAndRates({
+                protocol: Adapter(adapters[i]).getProtocol(),
+                balances: getAssetBalances(user, adapters[i]),
+                rates: getAssetRates(adapters[i])
             });
         }
 
-        return protocolDetails;
+        return protocolBalancesAndRates;
     }
 
     /**
      * @return All the amounts of supported assets
      * via supported adapters by the given user.
      */
-    function getBalances(
+    function getProtocolsBalances(
         address user
     )
         external
         view
-        returns(ProtocolBalance[] memory)
+        returns(ProtocolBalances[] memory)
     {
         address[] memory adapters = getAdapters();
-        ProtocolBalance[] memory protocolBalances = new ProtocolBalance[](adapters.length);
+        ProtocolBalances[] memory protocolsBalances = new ProtocolBalances[](adapters.length);
 
         for (uint256 i = 0; i < adapters.length; i++) {
-            protocolBalances[i] = ProtocolBalance({
-                name: Adapter(adapters[i]).getProtocolName(),
-                balances: getBalances(user, adapters[i])
+            protocolsBalances[i] = ProtocolBalances({
+                protocol: Adapter(adapters[i]).getProtocol(),
+                balances: getAssetBalances(user, adapters[i])
             });
         }
 
-        return protocolBalances;
+        return protocolsBalances;
     }
 
     /**
      * @return All the exchange rates for supported assets
      * via the supported adapters.
      */
-    function getRates()
+    function getProtocolsRates()
         external
         view
-        returns (ProtocolRate[] memory)
+        returns (ProtocolRates[] memory)
     {
         address[] memory adapters = getAdapters();
-        ProtocolRate[] memory protocolRates = new ProtocolRate[](adapters.length);
+        ProtocolRates[] memory protocolsRates = new ProtocolRates[](adapters.length);
 
         for (uint256 i = 0; i < adapters.length; i++) {
-            protocolRates[i] = ProtocolRate({
-                name: Adapter(adapters[i]).getProtocolName(),
-                rates: getRates(adapters[i])
+            protocolsRates[i] = ProtocolRates({
+                protocol: Adapter(adapters[i]).getProtocol(),
+                rates: getAssetRates(adapters[i])
             });
         }
 
-        return protocolRates;
+        return protocolsRates;
     }
 
     /**
      * @return All the amounts of supported assets
      * via the given adapter by the given user.
      */
-    function getBalances(
+    function getAssetBalances(
         address user,
         address adapter
     )
@@ -115,14 +118,14 @@ contract AdapterRegistry is AdapterAssetsManager {
     {
         address[] memory adapterAssets = getAdapterAssets(adapter);
 
-        return getBalances(user, adapter, adapterAssets);
+        return getAssetBalances(user, adapter, adapterAssets);
     }
 
     /**
      * @return All the amounts of the given assets
      * via the given adapter by the given user.
      */
-    function getBalances(
+    function getAssetBalances(
         address user,
         address adapter,
         address[] memory assets
@@ -136,11 +139,12 @@ contract AdapterRegistry is AdapterAssetsManager {
 
         for (uint256 i = 0; i < length; i++) {
             address asset = assets[i];
-            assetBalances[i] = AssetBalance({
-                asset: asset,
-                amount: Adapter(adapter).getAssetAmount(asset, user),
-                decimals: getAssetDecimals(asset)
-            });
+
+            try Adapter(adapter).getAssetBalance(asset, user) returns (AssetBalance memory result) {
+                assetBalances[i] = result;
+            } catch {
+                continue;
+            }
         }
 
         return assetBalances;
@@ -150,7 +154,7 @@ contract AdapterRegistry is AdapterAssetsManager {
      * @return All the exchange rates for supported assets
      * via the given adapter.
      */
-    function getRates(
+    function getAssetRates(
         address adapter
     )
         public
@@ -159,14 +163,14 @@ contract AdapterRegistry is AdapterAssetsManager {
     {
         address[] memory adapterAssets = assets[adapter];
 
-        return getRates(adapter, adapterAssets);
+        return getAssetRates(adapter, adapterAssets);
     }
 
     /**
      * @return All the exchange rates for the given assets
      * via the given adapter.
      */
-    function getRates(
+    function getAssetRates(
         address adapter,
         address[] memory assets
     )
@@ -179,23 +183,14 @@ contract AdapterRegistry is AdapterAssetsManager {
 
         for (uint256 i = 0; i < length; i++) {
             address asset = assets[i];
-            rates[i] = AssetRate({
-                asset: asset,
-                components: Adapter(adapter).getUnderlyingRates(asset)
-            });
+
+            try Adapter(adapter).getAssetRate(asset) returns (AssetRate memory result) {
+                rates[i] = result;
+            } catch {
+                continue;
+            }
         }
 
         return rates;
     }
-
-    function getAssetDecimals(
-        address asset
-    )
-        internal
-        view
-        returns (uint8)
-    {
-        return asset == ETH ? uint8(18) : ERC20(asset).decimals();
-    }
-
 }

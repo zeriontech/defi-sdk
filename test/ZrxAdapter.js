@@ -26,16 +26,28 @@ contract('ZrxAdapter', () => {
   });
 
   it('should return correct balances and rates', async () => {
-    await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
+    await adapterRegistry.methods['getProtocolsBalancesAndRates(address)'](testAddress)
       .call()
       .then((result) => {
         // eslint-disable-next-line no-console
-        console.log(`Deposited ZRX amount: ${result[0].balances[0].amount.toString()}`);
-        assert.equal(result[0].name, '0x');
-        assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].balances[0].asset, zrxAddress);
-        assert.equal(result[0].rates[0].asset, zrxAddress);
-        assert.equal(result[0].rates[0].components[0].underlying, zrxAddress);
+        console.log(`Deposited ZRX amount: ${result[0].balances[0].balance.toString()}`);
+
+        const zrxProtocol = [
+          '0x',
+          '',
+          '',
+          '1',
+        ];
+        const zrx = [
+          zrxAddress,
+          '18',
+          'ZRX',
+        ];
+
+        assert.deepEqual(result[0].protocol, zrxProtocol);
+        assert.deepEqual(result[0].balances[0].asset, zrx);
+        assert.deepEqual(result[0].rates[0].asset, zrx);
+        assert.deepEqual(result[0].rates[0].components[0].underlying, zrx);
         assert.equal(result[0].rates[0].components[0].rate, 1e18);
       });
   });

@@ -2,7 +2,8 @@ pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
 import { Adapter } from "./Adapter.sol";
-import { Component } from "../Structs.sol";
+import { Protocol, AssetBalance, AssetRate, Component, Asset } from "../Structs.sol";
+import { ERC20 } from "../ERC20.sol";
 
 
 /**
@@ -18,7 +19,7 @@ interface InterestRateModel {
  * @dev CToken contract interface.
  * Only the functions required for CompoundAdapter contract are added.
  * The CToken contract is available here
- * https://github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
+ * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
  */
 interface CToken {
     function mint(uint256) external returns (uint256);
@@ -44,40 +45,93 @@ contract CompoundAdapter is Adapter {
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;
+    address internal constant SAI = 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359;
 
     /**
-     * @return Name of the protocol.
-     * @dev Implementation of Adapter function.
+     * @return Protocol struct with protocol info.
+     * @dev Implementation of Adapter interface function.
      */
-    function getProtocolName() external pure override returns (string memory) {
-        return("Compound");
+    function getProtocol() external pure override returns (Protocol memory) {
+        return Protocol({
+            name: "Compound",
+            description: "",
+            pic: "",
+            version: uint256(1)
+        });
     }
 
     /**
      * @return Amount of CToken locked on the protocol by the given user.
-     * @dev Implementation of Adapter function.
+     * @dev Implementation of Adapter interface function.
      */
-    function getAssetAmount(address asset, address user) external view override returns (int256) {
-        return int256(CToken(asset).balanceOf(user));
+    function getAssetBalance(
+        address asset,
+        address user
+    )
+        external
+        view
+        override
+        returns (AssetBalance memory)
+    {
+        return AssetBalance({
+            asset: getAsset(asset),
+            balance: int256(CToken(asset).balanceOf(user))
+        });
     }
 
     /**
      * @return Struct with underlying assets rates for the given asset.
-     * @dev Implementation of Adapter function.
+     * @dev Implementation of Adapter interface function.
      * Repeats calculations made in CToken contract.
      */
-    function getUnderlyingRates(address asset) external view override returns (Component[] memory) {
+    function getAssetRate(
+        address asset
+    )
+        external
+        view
+        override
+        returns (AssetRate memory)
+    {
         Component[] memory components = new Component[](1);
 
         components[0] = Component({
-            underlying: getUnderlyingAsset(asset),
+            underlying: getAsset(getUnderlying(asset)),
             rate: getExchangeRate(asset)
         });
 
-        return components;
+        return AssetRate({
+            asset: getAsset(asset),
+            components: components
+        });
     }
 
-    function getUnderlyingAsset(address asset) internal view returns (address) {
+    /**
+     * @return Asset struct with asset info for the given asset.
+     * @dev Implementation of Adapter interface function.
+     */
+    function getAsset(address asset) public view override returns (Asset memory) {
+        if (asset == ETH) {
+            return Asset({
+                contractAddress: ETH,
+                decimals: uint8(18),
+                symbol: "ETH"
+            });
+        } else if (asset == SAI) {
+            return Asset({
+                contractAddress: SAI,
+                decimals: uint8(18),
+                symbol: "SAI"
+            });
+        } else {
+            return Asset({
+                contractAddress: asset,
+                decimals: ERC20(asset).decimals(),
+                symbol: ERC20(asset).symbol()
+            });
+        }
+    }
+
+    function getUnderlying(address asset) internal view returns (address) {
         return asset == CETH ? ETH : CToken(asset).underlying();
     }
 

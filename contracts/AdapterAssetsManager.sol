@@ -7,11 +7,12 @@ import { Ownable } from "./Ownable.sol";
 /**
  * @title Base contract for AdapterRegistry.
  */
-contract AdapterAssetsManager is Ownable {
+abstract contract AdapterAssetsManager is Ownable {
 
     address internal constant INITIAL_ADAPTER = address(1);
 
     mapping(address => address) internal adapters;
+    mapping(address => uint256) public addedAt;
 
     mapping(address => address[]) internal assets;
 
@@ -39,11 +40,11 @@ contract AdapterAssetsManager is Ownable {
      * @notice Adds new adapter to adapters list.
      * The function is callable only by the owner.
      * @param newAdapter Address of new adapter.
-     * @param _assets Addresses of adapter's assets.
+     * @param newAssets Addresses of adapter's assets.
      */
     function addAdapter(
         address newAdapter,
-        address[] memory _assets
+        address[] memory newAssets
     )
         public
         onlyOwner
@@ -55,33 +56,77 @@ contract AdapterAssetsManager is Ownable {
         adapters[newAdapter] = adapters[INITIAL_ADAPTER];
         adapters[INITIAL_ADAPTER] = newAdapter;
 
-        assets[newAdapter] = _assets;
+        addedAt[newAdapter] = block.number;
+        assets[newAdapter] = newAssets;
     }
 
     /**
      * @notice Removes one of adapters from adapters list.
      * The function is callable only by the owner.
-     * @param adapter Address of adapter to be removed.
+     * @param oldAdapter Address of adapter to be removed.
      */
     function removeAdapter(
-        address adapter
+        address oldAdapter
     )
         public
         onlyOwner
     {
-        require(isValidAdapter(adapter), "AAM: invalid adapter!");
+        require(isValidAdapter(oldAdapter), "AAM: invalid adapter!");
 
         address prevAdapter;
-        address currentAdapter = adapters[adapter];
-        while (currentAdapter != adapter) {
+        address currentAdapter = adapters[oldAdapter];
+        while (currentAdapter != oldAdapter) {
             prevAdapter = currentAdapter;
             currentAdapter = adapters[currentAdapter];
         }
 
-        delete assets[adapter];
+        delete addedAt[oldAdapter];
+        delete assets[oldAdapter];
 
-        adapters[prevAdapter] = adapters[adapter];
-        adapters[adapter] = address(0);
+        adapters[prevAdapter] = adapters[oldAdapter];
+        delete adapters[oldAdapter];
+    }
+
+    /**
+     * @notice Replaces one of adapters from adapters list with the new one.
+     * The function is callable only by the owner.
+     * @param oldAdapter Address of adapter to be removed.
+     * @param newAdapter Address of adapter to be added instead.
+     * @param newAssets New assets for updated adapter. If empty, assets will remain the same.
+     */
+    function replaceAdapter(
+        address oldAdapter,
+        address newAdapter,
+        address[] memory newAssets
+    )
+        public
+        onlyOwner
+    {
+        require(isValidAdapter(oldAdapter), "AAM: invalid adapter!");
+        require(newAdapter != address(0), "AAM: zero adapter!");
+        require(newAdapter != INITIAL_ADAPTER, "AAM: initial adapter!");
+        require(adapters[newAdapter] == address(0), "AAM: adapter exists!");
+
+        address prevAdapter;
+        address currentAdapter = adapters[oldAdapter];
+        while (currentAdapter != oldAdapter) {
+            prevAdapter = currentAdapter;
+            currentAdapter = adapters[currentAdapter];
+        }
+
+        adapters[newAdapter] = adapters[oldAdapter];
+        adapters[prevAdapter] = newAdapter;
+        delete adapters[oldAdapter];
+
+        addedAt[newAdapter] = block.number;
+        if (newAssets.length > 0) {
+            assets[newAdapter] = newAssets;
+        } else {
+            assets[newAdapter] = assets[oldAdapter];
+        }
+
+        delete assets[oldAdapter];
+        delete addedAt[oldAdapter];
     }
 
     /**

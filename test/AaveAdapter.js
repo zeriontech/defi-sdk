@@ -57,20 +57,31 @@ contract('AaveAdapter', () => {
   });
 
   it('should be correct balances and rates', async () => {
-    await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
+    await adapterRegistry.methods['getProtocolsBalancesAndRates(address)'](testAddress)
       .call()
       .then((result) => {
         // eslint-disable-next-line no-console
-        console.log(`Deposited BAT amount: ${result[0].balances[6].amount.toString()}`);
+        console.log(`Deposited BAT amount: ${result[0].balances[6].balance.toString()}`);
         // eslint-disable-next-line no-console
-        console.log(`Deposited KNC amount: ${result[0].balances[9].amount.toString()}`);
+        console.log(`Deposited KNC amount: ${result[0].balances[9].balance.toString()}`);
 
-        assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].balances[0].asset, daiAddress);
-        assert.equal(result[0].rates[0].asset, daiAddress);
-        assert.equal(result[0].rates[0].components[0].underlying, daiAddress);
+        const aave = [
+          'Aave',
+          '',
+          '',
+          '1',
+        ];
+        const DAI = [
+          daiAddress,
+          '18',
+          'DAI',
+        ];
+
+        assert.deepEqual(result[0].protocol, aave);
+        assert.deepEqual(result[0].balances[0].asset, DAI);
+        assert.deepEqual(result[0].rates[0].asset, DAI);
+        assert.deepEqual(result[0].rates[0].components[0].underlying, DAI);
         assert.equal(result[0].rates[0].components[0].rate, 1e18);
-        assert.equal(result[0].name, 'Aave');
       });
   });
 });
