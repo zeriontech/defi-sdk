@@ -13,7 +13,7 @@
     "test": "scripts/test.sh",
     "coverage": "npx truffle run coverage",
     "lint:solhint": "npx solhint \"./contracts/**/*.sol\"",
-    "lint:ethlint": "npx solium --dir contracts/",
+    "lint:ethlint": "npx ethlint --dir contracts/",
     "lint:eslint": "eslint .",
     "lint": "npm run lint:solhint && npm run lint:ethlint && npm run lint:eslint"
   },
