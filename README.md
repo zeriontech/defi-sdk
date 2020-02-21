@@ -4,67 +4,68 @@ This is a project with Zerion Smart Contracts interacting with different DeFi pr
 
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/lint/badge.svg)
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/build/badge.svg)
+![](https://github.com/zeriontech/protocol-wrappers/workflows/test/badge.svg)
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/coverage/badge.svg)
 
 ## Table of Contents
 
-  - [AdapterRegistry](#adapterregistry-is-AdapterAssetsManager)
-  - [AdapterAssetsManager](#AdapterAssetsManager-is-ownable)
+  - [AdapterRegistry](#adapterregistry-is-adapterassetsmanager)
+  - [AdapterAssetsManager (abstract contract)](#adapterassetsmanager-is-ownable-abstract-contract)
   - [Ownable](#ownable)
-  - [adapters/AaveAdapter](#aaveadapter-is-Adapter)
-  - [adapters/CompoundAdapter](#compoundadapter-is-Adapter)
-  - [adapters/CurveAdapter](#curveadapter-is-Adapter)
-  - [adapters/DSRAdapter](#dsradapter-is-Adapter)
-  - [adapters/MCDAdapter](#mcdadapter-is-Adapter)
+  - [adapters/AaveAdapter](#aaveadapter-is-adapter)
+  - [adapters/CompoundAdapter](#compoundadapter-is-adapter)
+  - [adapters/CurveAdapter](#curveadapter-is-adapter)
+  - [adapters/DSRAdapter](#dsradapter-is-adapter)
+  - [adapters/MCDAdapter](#mcdadapter-is-adapter)
   - [adapters/MKRAdapter (abstract contract)](#mkradapter-abstract-contract)
-  - [adapters/PoolTogetherAdapter](#pooltogetheradapter-is-Adapter)
-  - [adapters/SynthetixAdapter](#synthetixadapter-is-Adapter)
-  - [adapters/ZrxAdapter](#zrxadapter-is-Adapter)
-  - [adapters/Adapter (abstract contract)](#Adapter-abstract-contract)
+  - [adapters/PoolTogetherAdapter](#pooltogetheradapter-is-adapter)
+  - [adapters/SynthetixAdapter](#synthetixadapter-is-adapter)
+  - [adapters/ZrxAdapter](#zrxadapter-is-adapter)
+  - [adapters/Adapter (interface)](#adapter-interface)
   - [Logic](#logic)
   - [TokenSpender](#tokenspender)
-  - [interactiveAdapters/InteractiveAdapter (abstract contract)](#protocolwrapper-is-Adapter-abstract-contract)
+  - [interactiveAdapters/InteractiveAdapter (interface)](#interactiveadapter-is-adapter-interface)
   - [Use-cases for Logic contract](#use-cases-for-logic-contract)
     * [Swap cDAI to DSR (Chai)](#swap-cdai-to-dsr-chai)
   - [Dev notes](#dev-notes)
     * [Adding new adapter](#adding-new-adapter)
     * [Available Functionality](#available-functionality)
 
-## AdapterRegistry is [AdapterAssetsManager](#AdapterAssetsManager-is-ownable)
+## AdapterRegistry is [AdapterAssetsManager](#adapterassetsmanager-is-ownable-abstract-contract)
 
-Registry holding array of protocol adapters and checking balances via these adapters.
+Registry holding array of protocol adapters and checking balances and rates via these adapters.
 
 ### `view` functions
 
-#### `function getBalancesAndRates(address user) returns (ProtocolDetail[] memory)`
+#### `function getProtocolsBalancesAndRates(address user) returns (ProtocolBalancesAndRates[] memory)`
 
-Iterates over `adapters` list and appends balances and rates.
+Iterates over `adapters` list and appends balances and rates for all the supported assets.
 
-#### `function getBalances(address user) returns (ProtocolBalance[] memory)`
+#### `function getProtocolsBalances(address user) returns (ProtocolBalances[] memory)`
 
-Iterates over `adapters` list and appends balances.
+Iterates over `adapters` list and appends balances for all the supported assets.
 
-#### `function getRates() returns (ProtocolRate[] memory)`
+#### `function getProtocolsRates() returns (ProtocolRates[] memory)`
 
-Iterates over `adapters` list and appends rates.
+Iterates over `adapters` list and appends rates for all the supported assets.
 
-#### `function getBalances(address user, address adapter) returns (AssetBalance[] memory)`
+#### `function getAssetBalances(address user, address adapter) returns (AssetBalance[] memory)`
 
 Iterates over `adapter`'s assets and appends balances.
 
-#### `function getRates(address adapter) returns (AssetRate[] memory)`
+#### `function getAssetRates(address adapter) returns (AssetRate[] memory)`
 
 Iterates over `adapter`'s assets and appends rates.
 
-#### `function getBalances(address user, address adapter, address[] memory assets) returns (AssetBalance[] memory)`
+#### `function getAssetBalances(address user, address adapter, address[] memory assets) returns (AssetBalance[] memory)`
 
-Iterates over given `assets` for given `adapter` and appends balances.
+Iterates over the given `assets` for the given `adapter` and appends balances.
 
-#### `function getRates(address adapter, address[] memory assets) returns (AssetRate[] memory)`
+#### `function getAssetRates(address adapter, address[] memory assets) returns (AssetRate[] memory)`
 
-Iterates over given `assets` for given `adapter` and appends rates.
-s
-## AdapterAssetsManager is [Ownable](#ownable)
+Iterates over the given `assets` for the given `adapter` and appends rates.
+
+## AdapterAssetsManager is [Ownable](#ownable) (abstract contract)
 
 Base contract for `AdapterRegistry` contract.
 Implements logic connected with `Adapter`s and their `assets` management.
@@ -73,16 +74,21 @@ Implements logic connected with `Adapter`s and their `assets` management.
 
 ```
 mapping(address => address) internal adapters;
+mapping(address => uint256) public addedAt;
 mapping(address => address[]) internal assets;
 ```
 
 ### `onlyOwner` functions
 
-#### `function addAdapter(address adapter, address[] calldata _assets)`
+#### `function addAdapter(address newAdapter, address[] calldata newAssets)`
 
 New adapter is added before the first existing adapter.
 
-#### `function removeAdapter(address adapter)`
+#### `function removeAdapter(address oldAdapter)`
+
+#### `function replaceAdapter(address oldAdapter, address newAdapter, address[] newAssets)`
+
+`newAssets` array is optional parameter. If empty, assets will remain unchanged.
 
 #### `function addAdapterAsset(address adapter, address asset)`
 
@@ -102,37 +108,37 @@ Base contract for `AdapterAssetsManager` and `Logic` contracts.
 Implements `Ownable` logic.
 Includes `onlyOwner` modifier, `transferOwnership()` function, and public state variable `owner`. 
 
-## AaveAdapter is [Adapter](#Adapter-abstract-contract)
+## AaveAdapter is [Adapter](#Adapter-interface)
 
 Adapter for Aave protocol.
 
-## CompoundAdapter is [Adapter](#Adapter-abstract-contract)
+## CompoundAdapter is [Adapter](#Adapter-interface)
 
 Adapter for Compound protocol.
 
-## CurveAdapter is [Adapter](#Adapter-abstract-contract)
+## CurveAdapter is [Adapter](#Adapter-interface)
 
 Adapter for [curve.fi](https://compound.curve.fi/) protocol.
 Currently, there is the only pool with cDAI/cUSDC locked on it.
 
-## DSRAdapter is [Adapter](#Adapter-abstract-contract)
+## DSRAdapter is [Adapter](#Adapter-interface)
 
 Adapter for DSR protocol.
 
-## MCDAdapter is [Adapter](#Adapter-abstract-contract)
+## MCDAdapter is [Adapter](#Adapter-interface)
 
 Adapter for MCD vaults.
 
 ## MKRAdapter (abstract contract)
 
 Base contract for Maker adapters.
-It includes all the required constants and `pure` functions with calculations.
+Includes all the required constants and `pure` functions with calculations.
 
-## PoolTogetherAdapter is [Adapter](#Adapter-abstract-contract)
+## PoolTogetherAdapter is [Adapter](#Adapter-interface)
 
-Adapter for PoolTogether protocol.
+Adapter for PoolTogether protocol. Supports DAI and SAI pools.
 
-## SynthetixAdapter is [Adapter](#Adapter-abstract-contract)
+## SynthetixAdapter is [Adapter](#Adapter-interface)
 
 Adapter for Synthetix protocol.
 
@@ -140,20 +146,20 @@ Adapter for Synthetix protocol.
 - amount of SNX tokens locked by minting sUSD tokens (positive);
 - amount of sUSD that should be burned to unlock SNX tokens (negative).
 
-## ZrxAdapter is [Adapter](#Adapter-abstract-contract)
+## ZrxAdapter is [Adapter](#Adapter-interface)
 
-Adapter for Zrx protocol.
+Adapter for 0x Staking protocol.
 
-## Adapter (abstract contract)
+## Adapter (interface)
 
-Base contract for protocol adapters.
+Interface for protocol adapters.
 Includes all the functions required to be implemented.
-Should be stateless.
+Adapters inheriting this interface should be stateless.
 Only `internal constant` state variables may be used.
 
 ### Functions
 
-#### `function getProtocolName() external pure virtual returns (string memory)`
+#### `function getProtocol() external pure virtual returns (string memory)`
 
 MUST return name of the protocol.
 
@@ -161,7 +167,7 @@ MUST return name of the protocol.
 
 MUST return amount of the given asset locked on the protocol by the given user.
 
-#### `function getUnderlyingRates(address asset) external view virtual returns (Component[] memory)`
+#### `function getAssetRate(address asset) external view virtual returns (Component[] memory)`
 
 MUST return struct with underlying assets exchange rates for the given asset.
 
@@ -192,9 +198,9 @@ Sends all the assets under the request of Logic contract. Adds all the transferr
 function transferApprovedAssets(Approval[] approvals) external returns (address[])
 ```
 
-## InteractiveAdapter is [Adapter](#Adapter-abstract-contract) (abstract contract)
+## InteractiveAdapter is [Adapter](#Adapter-interface) (interface)
 
-Base contract for protocol wrappers.
+Interface for protocol wrappers.
 Includes all the functions required to be implemented.
 Should be stateless.
 Only `internal constant` state variables may be used.
@@ -213,7 +219,7 @@ MUST return addresses of the assets sent back to the `msg.sender`.
 
 ## Use-cases for Logic contract
 
-### Swap cDAI to DSR (Chai)
+### Swap cDAI to DSR (Chai) and vice versa
 
 The following actions array will be sent to `Logic` contract:
 
@@ -256,23 +262,29 @@ This project uses Truffle and web3js for all Ethereum interactions and testing.
 ### Adding new adapter
 
 To add new adapter with read-only functionality, one have to inherit from `Adapter` contract.
-`getProtocolName()`, `getAssetAmount()`, and `getUnderlyingRates()` functions MUST be implemented.
+`getProtocol()`, `getAssetBalance()`, `getAssetRate()`, and `getAsset()` functions MUST be
+ implemented.
 
 Note: only `internal constant` state variables and `internal` functions MUST be used.
 
-`getProtocolName()` function has no arguments and MUST return the name of protocol.
+`getProtocol()` function has no arguments and MUST return the protocol info, namely:
 
-`getAssetAmount(address,address)` function has two arguments of `address` type: the first one is asset address and the second one is user address.
-The function MUST return amount of given asset held on the protocol for given user.
+- `name`: `string` with protocol name,
+- `description`: `string` with short protocol description,
+- `icon`: `string` with icon link,
+- `version`: `uint256` number with adapter version.
 
-`getUnderlyingRates(address)` function has only one argument – asset address.
+`getAssetAmount(address,address)` function has two arguments of `address` type:
+the first one is asset address and the second one is user address.
+The function MUST return balance of given asset held on the protocol for the given user.
+
+`getAssetRate(address)` function has the only argument – asset address.
 The function MUST return all the underlying assets and their exchange rates scaled by `1e18`.
 
-To add new adapter with deposit/withdraw functionality, one have to inherit from
- `InteractiveAdapter` contract.
+To add new adapter with deposit/withdraw functionality, one have to inherit `InteractiveAdapter` interface.
 Then, implement `deposit()` and `withdraw()` functions.
 Both functions MUST return addresses of the assets sent back to the `msg.sender`, except for ETH.
-Functions from `Adapter` contract MUST be implemented as well.
+Functions from `Adapter` interface MUST be implemented as well.
 
 ### Available Functionality
 
