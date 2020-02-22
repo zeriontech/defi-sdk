@@ -31,9 +31,9 @@ contract ZrxAdapter is Adapter {
      */
     function getProtocol() external pure override returns (Protocol memory) {
         return Protocol({
-            name: "0x",
+            name: "0x Staking",
             description: "",
-            pic: "",
+            icon: "https://protocol-icons.s3.amazonaws.com/0x-staking.png",
             version: uint256(1)
         });
     }

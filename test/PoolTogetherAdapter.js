@@ -39,7 +39,7 @@ contract('PoolTogetherAdapter', () => {
         const poolTogether = [
           'PoolTogether',
           '',
-          '',
+          'https://protocol-icons.s3.amazonaws.com/pooltogether.png',
           '1',
         ];
         const dai = [

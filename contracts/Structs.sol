@@ -24,7 +24,7 @@ struct ProtocolRates {
 struct Protocol {
     string name;
     string description;
-    string pic;
+    string icon;
     uint256 version;
 }
 

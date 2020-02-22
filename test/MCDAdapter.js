@@ -40,9 +40,9 @@ contract('MCDAdapter', () => {
         console.log(`BAT collateral amount: ${result[0].balances[2].balance.toString()}`);
 
         const mcd = [
-          'MCD',
+          'Multi-Collateral Dai',
           '',
-          '',
+          'https://protocol-icons.s3.amazonaws.com/maker.png',
           '1',
         ];
         const dai = [

@@ -47,7 +47,7 @@ contract SynthetixAdapter is Adapter {
         return Protocol({
             name: "Synthetix",
             description: "",
-            pic: "",
+            icon: "https://protocol-icons.s3.amazonaws.com/synthetix.png",
             version: uint256(1)
         });
     }

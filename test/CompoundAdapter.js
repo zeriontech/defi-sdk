@@ -67,7 +67,7 @@ contract('CompoundAdapter', () => {
         const compound = [
           'Compound',
           '',
-          '',
+          'https://protocol-icons.s3.amazonaws.com/compound.png',
           '1',
         ];
         const cDAI = [

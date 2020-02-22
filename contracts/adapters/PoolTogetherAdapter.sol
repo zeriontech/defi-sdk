@@ -37,7 +37,7 @@ contract PoolTogetherAdapter is Adapter {
         return Protocol({
             name: "PoolTogether",
             description: "",
-            pic: "",
+            icon: "https://protocol-icons.s3.amazonaws.com/pooltogether.png",
             version: uint256(1)
         });
     }

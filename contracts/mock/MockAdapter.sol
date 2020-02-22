@@ -17,7 +17,7 @@ contract MockAdapter is Adapter {
         return Protocol({
             name: "Mock",
             description: "Mock protocol",
-            pic: "mock.png",
+            icon: "mock.png",
             version: uint256(1)
         });
     }

@@ -33,9 +33,9 @@ contract('DSRAdapter', () => {
         console.log(`Deposited DAI amount: ${result[0].balances[0].balance.toString()}`);
 
         const dsr = [
-          'DSR',
-          '',
-          '',
+          'Dai Savings Rate',
+          'Decentralized Lending Protocol',
+          'https://protocol-icons.s3.amazonaws.com/dai.png',
           '1',
         ];
         const DAI = [

@@ -33,9 +33,9 @@ contract('ZrxAdapter', () => {
         console.log(`Deposited ZRX amount: ${result[0].balances[0].balance.toString()}`);
 
         const zrxProtocol = [
-          '0x',
+          '0x Staking',
           '',
-          '',
+          'https://protocol-icons.s3.amazonaws.com/0x-staking.png',
           '1',
         ];
         const zrx = [

@@ -68,7 +68,7 @@ contract('AaveAdapter', () => {
         const aave = [
           'Aave',
           '',
-          '',
+          'https://protocol-icons.s3.amazonaws.com/aave.png',
           '1',
         ];
         const DAI = [
