@@ -57,9 +57,9 @@ contract MCDAdapter is Adapter, MKRAdapter {
      */
     function getProtocol() external pure override returns (Protocol memory) {
         return Protocol({
-            name: "MCD",
+            name: "Multi-Collateral Dai",
             description: "",
-            pic: "",
+            icon: "https://protocol-icons.s3.amazonaws.com/maker.png",
             version: uint256(1)
         });
     }

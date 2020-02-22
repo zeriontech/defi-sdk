@@ -71,7 +71,7 @@ contract AaveAdapter is Adapter {
         return Protocol({
             name: "Aave",
             description: "",
-            pic: "",
+            icon: "https://protocol-icons.s3.amazonaws.com/aave.png",
             version: uint256(1)
         });
     }

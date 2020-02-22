@@ -55,7 +55,7 @@ contract CompoundAdapter is Adapter {
         return Protocol({
             name: "Compound",
             description: "",
-            pic: "",
+            icon: "https://protocol-icons.s3.amazonaws.com/compound.png",
             version: uint256(1)
         });
     }
