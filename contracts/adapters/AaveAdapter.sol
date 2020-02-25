@@ -70,7 +70,7 @@ contract AaveAdapter is Adapter {
     function getProtocol() external pure override returns (Protocol memory) {
         return Protocol({
             name: "Aave",
-            description: "",
+            description: "Decentralized lending & borrowing protocol",
             icon: "https://protocol-icons.s3.amazonaws.com/aave.png",
             version: uint256(1)
         });

@@ -37,7 +37,7 @@ contract('SynthetixAdapter', () => {
 
         const synthetix = [
           'Synthetix',
-          '',
+          'Synthetic assets protocol',
           'https://protocol-icons.s3.amazonaws.com/synthetix.png',
           '1',
         ];

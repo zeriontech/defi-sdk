@@ -46,7 +46,7 @@ contract SynthetixAdapter is Adapter {
     function getProtocol() external pure override returns (Protocol memory) {
         return Protocol({
             name: "Synthetix",
-            description: "",
+            description: "Synthetic assets protocol",
             icon: "https://protocol-icons.s3.amazonaws.com/synthetix.png",
             version: uint256(1)
         });

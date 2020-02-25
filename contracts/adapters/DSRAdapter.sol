@@ -34,7 +34,7 @@ contract DSRAdapter is Adapter, MKRAdapter {
     function getProtocol() external pure override returns (Protocol memory) {
         return Protocol({
             name: "Dai Savings Rate",
-            description: "Decentralized Lending Protocol",
+            description: "Decentralized lending protocol",
             icon: "https://protocol-icons.s3.amazonaws.com/dai.png",
             version: uint256(1)
         });

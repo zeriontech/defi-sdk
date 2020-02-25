@@ -44,7 +44,7 @@ contract('CurveAdapter', () => {
 
         const curve = [
           'Curve.fi',
-          '',
+          'Exchange liquidity pool for stablecoin trading',
           'https://protocol-icons.s3.amazonaws.com/curve.fi.png',
           '1',
         ];

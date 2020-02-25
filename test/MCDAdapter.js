@@ -41,7 +41,7 @@ contract('MCDAdapter', () => {
 
         const mcd = [
           'Multi-Collateral Dai',
-          '',
+          'Collateralized loans on Maker',
           'https://protocol-icons.s3.amazonaws.com/maker.png',
           '1',
         ];

@@ -36,7 +36,7 @@ contract PoolTogetherAdapter is Adapter {
     function getProtocol() external pure override returns (Protocol memory) {
         return Protocol({
             name: "PoolTogether",
-            description: "",
+            description: "Decentralized no-loss lottery",
             icon: "https://protocol-icons.s3.amazonaws.com/pooltogether.png",
             version: uint256(1)
         });

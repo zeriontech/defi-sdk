@@ -34,7 +34,7 @@ contract CurveAdapter is Adapter {
     function getProtocol() external pure override returns (Protocol memory) {
         return Protocol({
             name: "Curve.fi",
-            description: "",
+            description: "Exchange liquidity pool for stablecoin trading",
             icon: "https://protocol-icons.s3.amazonaws.com/curve.fi.png",
             version: uint256(1)
         });
