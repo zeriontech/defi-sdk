@@ -34,7 +34,7 @@ contract('ZrxAdapter', () => {
 
         const zrxProtocol = [
           '0x Staking',
-          '',
+          'Liquidity rewards with ZRX',
           'https://protocol-icons.s3.amazonaws.com/0x-staking.png',
           '1',
         ];

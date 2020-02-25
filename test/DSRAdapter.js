@@ -34,7 +34,7 @@ contract('DSRAdapter', () => {
 
         const dsr = [
           'Dai Savings Rate',
-          'Decentralized Lending Protocol',
+          'Decentralized lending protocol',
           'https://protocol-icons.s3.amazonaws.com/dai.png',
           '1',
         ];

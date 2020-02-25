@@ -58,7 +58,7 @@ contract MCDAdapter is Adapter, MKRAdapter {
     function getProtocol() external pure override returns (Protocol memory) {
         return Protocol({
             name: "Multi-Collateral Dai",
-            description: "",
+            description: "Collateralized loans on Maker",
             icon: "https://protocol-icons.s3.amazonaws.com/maker.png",
             version: uint256(1)
         });

@@ -67,7 +67,7 @@ contract('AaveAdapter', () => {
 
         const aave = [
           'Aave',
-          '',
+          'Decentralized lending & borrowing protocol',
           'https://protocol-icons.s3.amazonaws.com/aave.png',
           '1',
         ];
