@@ -62,6 +62,7 @@ contract AaveAdapter is Adapter {
     address internal constant PROVIDER = 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant SNX = 0xC011A72400E58ecD99Ee497CF89E3775d4bd732F;
+    address internal constant MKR = 0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2;
 
     /**
      * @return Protocol struct with protocol info.
@@ -141,6 +142,12 @@ contract AaveAdapter is Adapter {
                 contractAddress: asset,
                 decimals: ERC20(Proxy(asset).target()).decimals(),
                 symbol: ERC20(Proxy(asset).target()).symbol()
+            });
+        } else if (asset == MKR) {
+            return Asset({
+                contractAddress: asset,
+                decimals: uint8(18),
+                symbol: "MKR"
             });
         } else {
             return Asset({

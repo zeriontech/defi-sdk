@@ -9,7 +9,7 @@ import { ERC20 } from "../ERC20.sol";
 /**
  * @dev Proxy contract interface.
  * Only the functions required for SynthetixAdapter contract are added.
- * The Synthetix contract is available here
+ * The Proxy contract is available here
  * github.com/Synthetixio/synthetix/blob/master/contracts/Proxy.sol.
  */
 interface Proxy {
