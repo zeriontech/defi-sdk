@@ -24,13 +24,13 @@ interface InterestRateModel {
 interface CToken {
     function mint(uint256) external returns (uint256);
     function redeem(uint256) external returns (uint256);
+    function getCash() external view returns(uint256);
     function isCToken() external returns (bool);
     function balanceOf(address) external view returns (uint256);
     function underlying() external view returns (address);
-    function getCash() external view returns(uint256);
+    function totalSupply() external view returns(uint256);
     function totalBorrows() external view returns(uint256);
     function totalReserves() external view returns(uint256);
-    function totalSupply() external view returns(uint256);
     function interestRateModel() external view returns(InterestRateModel);
     function accrualBlockNumber() external view returns(uint256);
     function reserveFactorMantissa() external view returns(uint256);
