@@ -2,13 +2,13 @@ pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
 import { Adapter } from "./Adapter.sol";
-import { Protocol, AssetBalance, AssetRate, Component, Asset } from "../Structs.sol";
+import { AssetRate, Component, Asset } from "../Structs.sol";
 import { ERC20 } from "../ERC20.sol";
 
 
 /**
  * @dev Proxy contract interface.
- * Only the functions required for SynthetixAdapter contract are added.
+ * Only the functions required for SynthetixDepositAdapter contract are added.
  * The Proxy contract is available here
  * github.com/Synthetixio/synthetix/blob/master/contracts/Proxy.sol.
  */
@@ -19,7 +19,7 @@ interface Proxy {
 
 /**
  * @dev Synthetix contract interface.
- * Only the functions required for SynthetixAdapter contract are added.
+ * Only the functions required for SynthetixDepositAdapter contract are added.
  * The Synthetix contract is available here
  * github.com/Synthetixio/synthetix/blob/master/contracts/Synthetix.sol.
  */
@@ -34,50 +34,9 @@ interface Synthetix {
  * @title Adapter for Synthetix protocol.
  * @dev Implementation of Adapter interface.
  */
-contract SynthetixAdapter is Adapter {
+abstract contract SynthetixAdapter is Adapter {
 
     address internal constant SNX = 0xC011A72400E58ecD99Ee497CF89E3775d4bd732F;
-    address internal constant SUSD = 0x57Ab1E02fEE23774580C119740129eAC7081e9D3;
-
-    /**
-     * @return Protocol struct with protocol info.
-     * @dev Implementation of Adapter interface function.
-     */
-    function getProtocol() external pure override returns (Protocol memory) {
-        return Protocol({
-            name: "Synthetix",
-            description: "Synthetic assets protocol",
-            icon: "https://protocol-icons.s3.amazonaws.com/synthetix.png",
-            version: uint256(1)
-        });
-    }
-
-    /**
-     * @return Amount of SNX locked on the protocol by the given user.
-     * @dev Implementation of Adapter interface function.
-     */
-    function getAssetBalance(
-        address asset,
-        address user
-    )
-        external
-        view
-        override
-        returns (AssetBalance memory)
-    {
-        Synthetix synthetix = Synthetix(Proxy(SNX).target());
-        if (asset == SUSD) {
-            return AssetBalance({
-                asset: getAsset(asset),
-                balance: -int256(synthetix.debtBalanceOf(user, "sUSD"))
-            });
-        } else {
-            return AssetBalance({
-                asset: getAsset(asset),
-                balance: int256(synthetix.balanceOf(user) - synthetix.transferableSynthetix(user))
-            });
-        }
-    }
 
     /**
      * @return Struct with underlying assets rates for the given asset.

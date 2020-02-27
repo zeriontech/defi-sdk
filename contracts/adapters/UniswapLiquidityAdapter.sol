@@ -62,6 +62,7 @@ contract UniswapLiquidityAdapter is Adapter {
         return Protocol({
             name: "Uniswap Liquidity",
             description: "Exchange liquidity pool for tokens trading",
+            class: "Pool",
             icon: "https://protocol-icons.s3.amazonaws.com/uniswap.png",
             version: uint256(1)
         });
@@ -82,7 +83,7 @@ contract UniswapLiquidityAdapter is Adapter {
     {
         return AssetBalance({
             asset: getAsset(asset),
-            balance: int256(Exchange(asset).balanceOf(user))
+            balance: uint256(Exchange(asset).balanceOf(user))
         });
     }
 

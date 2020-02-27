@@ -24,6 +24,7 @@ struct ProtocolRates {
 struct Protocol {
     string name;
     string description;
+    string class;
     string icon;
     uint256 version;
 }
@@ -31,7 +32,7 @@ struct Protocol {
 
 struct AssetBalance {
     Asset asset;
-    int256 balance;
+    uint256 balance;
 }
 
 

@@ -35,6 +35,7 @@ contract DSRAdapter is Adapter, MKRAdapter {
         return Protocol({
             name: "Dai Savings Rate",
             description: "Decentralized lending protocol",
+            class: "Deposit",
             icon: "https://protocol-icons.s3.amazonaws.com/dai.png",
             version: uint256(1)
         });
@@ -59,7 +60,7 @@ contract DSRAdapter is Adapter, MKRAdapter {
         uint256 chi = mkrRmul(mkrRpow(pot.dsr(), now - pot.rho(), ONE), pot.chi());
         return AssetBalance({
             asset: getAsset(asset),
-            balance: int256(mkrRmul(chi, pot.pie(user)))
+            balance: mkrRmul(chi, pot.pie(user))
         });
     }
 

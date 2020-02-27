@@ -39,6 +39,7 @@ contract('PoolTogetherAdapter', () => {
         const poolTogether = [
           'PoolTogether',
           'Decentralized no-loss lottery',
+          'Deposit',
           'https://protocol-icons.s3.amazonaws.com/pooltogether.png',
           '1',
         ];

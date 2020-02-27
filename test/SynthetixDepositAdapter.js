@@ -1,24 +1,23 @@
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const SynthetixAdapter = artifacts.require('./SynthetixAdapter');
+const SynthetixDepositAdapter = artifacts.require('./SynthetixDepositAdapter');
 
-contract('SynthetixAdapter', () => {
+contract('SynthetixDepositAdapter', () => {
   const snxAddress = '0xC011A72400E58ecD99Ee497CF89E3775d4bd732F';
-  const susdAddress = '0x57Ab1E02fEE23774580C119740129eAC7081e9D3';
   const testAddress = '0xa5f7a39e55d7878bc5bd754ee5d6bd7a7662355b';
 
   let accounts;
   let adapterRegistry;
-  let snxAdapter;
+  let snxDepositAdapter;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await SynthetixAdapter.new({ from: accounts[0] })
+    await SynthetixDepositAdapter.new({ from: accounts[0] })
       .then((result) => {
-        snxAdapter = result.contract;
+        snxDepositAdapter = result.contract;
       });
     await AdapterRegistry.new(
-      [snxAdapter.options.address],
-      [[snxAddress, susdAddress]],
+      [snxDepositAdapter.options.address],
+      [[snxAddress]],
       { from: accounts[0] },
     )
       .then((result) => {
@@ -32,12 +31,11 @@ contract('SynthetixAdapter', () => {
       .then((result) => {
         // eslint-disable-next-line no-console
         console.log(`Locked SNX amount: ${result[0].balances[0].balance.toString()}`);
-        // eslint-disable-next-line no-console
-        console.log(`sUSD debt amount: ${result[0].balances[1].balance.toString()}`);
 
         const synthetix = [
           'Synthetix',
           'Synthetic assets protocol',
+          'Lock',
           'https://protocol-icons.s3.amazonaws.com/synthetix.png',
           '1',
         ];
@@ -46,21 +44,12 @@ contract('SynthetixAdapter', () => {
           '18',
           'SNX',
         ];
-        const susd = [
-          susdAddress,
-          '18',
-          'sUSD',
-        ];
 
         assert.deepEqual(result[0].protocol, synthetix);
         assert.deepEqual(result[0].balances[0].asset, snx);
-        assert.deepEqual(result[0].balances[1].asset, susd);
         assert.deepEqual(result[0].rates[0].asset, snx);
         assert.deepEqual(result[0].rates[0].components[0].underlying, snx);
         assert.equal(result[0].rates[0].components[0].rate, 1e18);
-        assert.deepEqual(result[0].rates[1].asset, susd);
-        assert.deepEqual(result[0].rates[1].components[0].underlying, susd);
-        assert.equal(result[0].rates[1].components[0].rate, 1e18);
       });
   });
 });

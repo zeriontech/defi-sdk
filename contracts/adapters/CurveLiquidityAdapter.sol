@@ -8,7 +8,7 @@ import { ERC20 } from "../ERC20.sol";
 
 /**
  * @dev stableswap contract interface.
- * Only the functions required for CurveAdapter contract are added.
+ * Only the functions required for CurveLiquidityAdapter contract are added.
  * The stableswap contract is available here
  * github.com/curvefi/curve-contract/blob/compounded/vyper/stableswap.vy.
  */
@@ -23,7 +23,7 @@ interface stableswap {
  * @title Adapter for Curve.fi protocol.
  * @dev Implementation of Adapter interface.
  */
-contract CurveAdapter is Adapter {
+contract CurveLiquidityAdapter is Adapter {
 
     address constant internal SS = 0x2e60CF74d81ac34eB21eEff58Db4D385920ef419;
 
@@ -33,8 +33,9 @@ contract CurveAdapter is Adapter {
      */
     function getProtocol() external pure override returns (Protocol memory) {
         return Protocol({
-            name: "Curve.fi",
+            name: "Curve Liquidity",
             description: "Exchange liquidity pool for stablecoin trading",
+            class: "Pool",
             icon: "https://protocol-icons.s3.amazonaws.com/curve.fi.png",
             version: uint256(1)
         });
@@ -55,7 +56,7 @@ contract CurveAdapter is Adapter {
     {
         return AssetBalance({
             asset: getAsset(asset),
-            balance: int256(ERC20(asset).balanceOf(user))
+            balance: ERC20(asset).balanceOf(user)
         });
     }
 
@@ -72,10 +73,19 @@ contract CurveAdapter is Adapter {
         override
         returns (AssetRate memory)
     {
-        Component[] memory components = new Component[](2);
         stableswap ss = stableswap(SS);
+        uint256 length = 0;
+        while (length < 2 ** 64) {
+            try ss.coins(int128(length)) {
+                length++;
+            } catch {
+                continue;
+            }
+        }
 
-        for (uint256 i = 0; i < 2; i++) {
+        Component[] memory components = new Component[](length);
+
+        for (uint256 i = 0; i < length; i++) {
             components[i] = Component({
                 underlying: getAsset(ss.coins(int128(i))),
                 rate: ss.balances(int128(i)) * 1e18 / ERC20(asset).totalSupply()

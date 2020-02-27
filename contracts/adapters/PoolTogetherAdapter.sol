@@ -37,6 +37,7 @@ contract PoolTogetherAdapter is Adapter {
         return Protocol({
             name: "PoolTogether",
             description: "Decentralized no-loss lottery",
+            class: "Deposit",
             icon: "https://protocol-icons.s3.amazonaws.com/pooltogether.png",
             version: uint256(1)
         });
@@ -57,7 +58,7 @@ contract PoolTogetherAdapter is Adapter {
     {
         return AssetBalance({
             asset: getAsset(asset),
-            balance: int256(getPool(asset).totalBalanceOf(user))
+            balance: uint256(getPool(asset).totalBalanceOf(user))
         });
     }
 

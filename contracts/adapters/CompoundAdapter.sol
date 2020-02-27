@@ -2,82 +2,33 @@ pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
 import { Adapter } from "./Adapter.sol";
-import { Protocol, AssetBalance, AssetRate, Component, Asset } from "../Structs.sol";
+import { CompoundRegistry } from "./CompoundRegistry.sol";
+import { AssetRate, Component, Asset } from "../Structs.sol";
 import { ERC20 } from "../ERC20.sol";
 
 
 /**
- * @dev InterestRateModel interface.
- * Only the functions required for CompoundAdapter contract are added.
- */
-interface InterestRateModel {
-    function getBorrowRate(uint256, uint256, uint256) external view returns (uint);
-}
-
-
-/**
  * @dev CToken contract interface.
- * Only the functions required for CompoundAdapter contract are added.
+ * Only the functions required for CompoundBorrowAdapter contract are added.
  * The CToken contract is available here
  * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
  */
 interface CToken {
-    function mint(uint256) external returns (uint256);
-    function redeem(uint256) external returns (uint256);
-    function getCash() external view returns(uint256);
-    function isCToken() external returns (bool);
-    function balanceOf(address) external view returns (uint256);
+    function exchangeRateStored() external view returns (uint256);
     function underlying() external view returns (address);
-    function totalSupply() external view returns(uint256);
-    function totalBorrows() external view returns(uint256);
-    function totalReserves() external view returns(uint256);
-    function interestRateModel() external view returns(InterestRateModel);
-    function accrualBlockNumber() external view returns(uint256);
-    function reserveFactorMantissa() external view returns(uint256);
 }
 
 
 /**
  * @title Adapter for Compound protocol.
- * @dev Implementation of Adapter abstract contract.
+ * @dev Implementation of Adapter interface.
  */
-contract CompoundAdapter is Adapter {
+abstract contract CompoundAdapter is Adapter {
 
+    address internal constant REGISTRY = 0xE6881a7d699d3A350Ce5bba0dbD59a9C36778Cb7;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;
     address internal constant SAI = 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359;
-
-    /**
-     * @return Protocol struct with protocol info.
-     * @dev Implementation of Adapter interface function.
-     */
-    function getProtocol() external pure override returns (Protocol memory) {
-        return Protocol({
-            name: "Compound",
-            description: "",
-            icon: "https://protocol-icons.s3.amazonaws.com/compound.png",
-            version: uint256(1)
-        });
-    }
-
-    /**
-     * @return Amount of CToken locked on the protocol by the given user.
-     * @dev Implementation of Adapter interface function.
-     */
-    function getAssetBalance(
-        address asset,
-        address user
-    )
-        external
-        view
-        override
-        returns (AssetBalance memory)
-    {
-        return AssetBalance({
-            asset: getAsset(asset),
-            balance: int256(CToken(asset).balanceOf(user))
-        });
-    }
 
     /**
      * @return Struct with underlying assets rates for the given asset.
@@ -94,15 +45,29 @@ contract CompoundAdapter is Adapter {
     {
         Component[] memory components = new Component[](1);
 
-        components[0] = Component({
-            underlying: getAsset(getUnderlying(asset)),
-            rate: getExchangeRate(asset)
-        });
+        if (CompoundRegistry(REGISTRY).getCToken(asset) == address(0)) {
+            components[0] = Component({
+                underlying: getAsset(getUnderlying(asset)),
+                rate: CToken(asset).exchangeRateStored()
+            });
 
-        return AssetRate({
-            asset: getAsset(asset),
-            components: components
-        });
+            return AssetRate({
+                asset: getAsset(asset),
+                components: components
+            });
+        } else {
+            components[0] = Component({
+                underlying: getAsset(asset),
+                rate: uint256(1e18)
+            });
+
+            return AssetRate({
+                asset: getAsset(asset),
+                components: components
+            });
+        }
+
+
     }
 
     /**
@@ -133,25 +98,5 @@ contract CompoundAdapter is Adapter {
 
     function getUnderlying(address asset) internal view returns (address) {
         return asset == CETH ? ETH : CToken(asset).underlying();
-    }
-
-    function getExchangeRate(address asset) internal view returns (uint256) {
-        CToken cToken = CToken(asset);
-        uint256 totalCash = cToken.getCash();
-        uint256 totalBorrows = cToken.totalBorrows();
-        uint256 totalReserves = cToken.totalReserves();
-        uint256 totalSupply = cToken.totalSupply();
-        uint256 reserveFactorMantissa = cToken.reserveFactorMantissa();
-        uint256 borrowRateMantissa = cToken.interestRateModel().getBorrowRate(
-            totalCash,
-            totalBorrows,
-            totalReserves
-        );
-        uint256 blockDelta = block.number - cToken.accrualBlockNumber();
-        uint256 interestAccumulated = borrowRateMantissa * blockDelta * totalBorrows / 1e18;
-        totalBorrows = totalBorrows + interestAccumulated;
-        totalReserves = totalReserves + reserveFactorMantissa * interestAccumulated / 1e18;
-        uint256 cashPlusBorrowsMinusReserves = totalCash + totalBorrows - totalReserves;
-        return cashPlusBorrowsMinusReserves * 1e18 / totalSupply;
     }
 }

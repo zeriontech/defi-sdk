@@ -33,6 +33,7 @@ contract ZrxAdapter is Adapter {
         return Protocol({
             name: "0x Staking",
             description: "Liquidity rewards with ZRX",
+            class: "Deposit",
             icon: "https://protocol-icons.s3.amazonaws.com/0x-staking.png",
             version: uint256(1)
         });
@@ -53,7 +54,7 @@ contract ZrxAdapter is Adapter {
     {
         return AssetBalance({
             asset: getAsset(asset),
-            balance: int256(Staking(STAKING).getTotalStake(user))
+            balance: uint256(Staking(STAKING).getTotalStake(user))
         });
     }
 

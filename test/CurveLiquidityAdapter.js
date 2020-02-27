@@ -1,8 +1,8 @@
 const { BN } = web3.utils;
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const CurveAdapter = artifacts.require('./CurveAdapter');
+const CurveLiquidityAdapter = artifacts.require('./CurveLiquidityAdapter');
 
-contract('CurveAdapter', () => {
+contract('CurveLiquidityAdapter', () => {
   const ssTokenAddress = '0x3740fb63ab7a09891d7c0d4299442A551D06F5fD';
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
   const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
@@ -10,16 +10,16 @@ contract('CurveAdapter', () => {
 
   let accounts;
   let adapterRegistry;
-  let curveAdapter;
+  let curveLiquidityAdapter;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await CurveAdapter.new({ from: accounts[0] })
+    await CurveLiquidityAdapter.new({ from: accounts[0] })
       .then((result) => {
-        curveAdapter = result.contract;
+        curveLiquidityAdapter = result.contract;
       });
     await AdapterRegistry.new(
-      [curveAdapter.options.address],
+      [curveLiquidityAdapter.options.address],
       [[ssTokenAddress]],
       { from: accounts[0] },
     )

@@ -38,7 +38,7 @@ contract('UniswapLiquidityAdapter', () => {
       });
   });
 
-  it.only('should be correct balances and rates', async () => {
+  it('should be correct balances and rates', async () => {
     await adapterRegistry.methods['getProtocolsBalancesAndRates(address)'](testAddress)
       .call()
       .then((result) => {
@@ -54,6 +54,7 @@ contract('UniswapLiquidityAdapter', () => {
         const uni = [
           'Uniswap Liquidity',
           'Exchange liquidity pool for tokens trading',
+          'Pool',
           'https://protocol-icons.s3.amazonaws.com/uniswap.png',
           '1',
         ];
