@@ -37,6 +37,7 @@ contract('AdapterRegistry', () => {
     mockProtocol = [
       'Mock',
       'Mock protocol',
+      'Deposit',
       'mock.png',
       '1',
     ];

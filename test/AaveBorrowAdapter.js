@@ -1,7 +1,7 @@
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const AaveAdapter = artifacts.require('./AaveAdapter');
+const AaveBorrowAdapter = artifacts.require('./AaveBorrowAdapter');
 
-contract('AaveAdapter', () => {
+contract('AaveBorrowAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const tusdAddress = '0x0000000000085d4780B73119b644AE5ecd22b376';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
@@ -22,16 +22,16 @@ contract('AaveAdapter', () => {
 
   let accounts;
   let adapterRegistry;
-  let aaveAdapter;
+  let aaveBorrowAdapter;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await AaveAdapter.new({ from: accounts[0] })
+    await AaveBorrowAdapter.new({ from: accounts[0] })
       .then((result) => {
-        aaveAdapter = result.contract;
+        aaveBorrowAdapter = result.contract;
       });
     await AdapterRegistry.new(
-      [aaveAdapter.options.address],
+      [aaveBorrowAdapter.options.address],
       [[daiAddress,
         tusdAddress,
         usdcAddress,
@@ -61,13 +61,14 @@ contract('AaveAdapter', () => {
       .call()
       .then((result) => {
         // eslint-disable-next-line no-console
-        console.log(`Deposited BAT amount: ${result[0].balances[6].balance.toString()}`);
+        console.log(`Borrowed BAT amount: ${result[0].balances[6].balance.toString()}`);
         // eslint-disable-next-line no-console
-        console.log(`Deposited KNC amount: ${result[0].balances[9].balance.toString()}`);
+        console.log(`Borrowed KNC amount: ${result[0].balances[9].balance.toString()}`);
 
         const aave = [
           'Aave',
           'Decentralized lending & borrowing protocol',
+          'Borrow',
           'https://protocol-icons.s3.amazonaws.com/aave.png',
           '1',
         ];

@@ -3,7 +3,7 @@ const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const IearnAdapter = artifacts.require('./IearnAdapter');
 
 contract('IearnAdapter', () => {
-  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+  const DAIAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const yDAIAddress = '0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01';
   const yUSDCAddress = '0xd6aD7a6750A7593E092a9B218d66C0A814a3436e';
   const yUSDTAddress = '0x83f798e925BcD4017Eb265844FDDAbb448f1707D';
@@ -43,7 +43,7 @@ contract('IearnAdapter', () => {
       .call()
       .then((result) => {
         const base = new BN(10).pow(new BN(34));
-        const yDAIAmount = new BN(result[0].balances[0].amount);
+        const yDAIAmount = new BN(result[0].balances[0].balance);
         const yDAIRate = new BN(result[0].rates[0].components[0].rate);
         const daiAmount = yDAIRate.mul(yDAIAmount).div(base).toNumber() / 100;
         // eslint-disable-next-line no-console
@@ -53,15 +53,25 @@ contract('IearnAdapter', () => {
         // eslint-disable-next-line no-console
         console.log(`Means its: ${daiAmount} DAI locked`);
         // eslint-disable-next-line no-console
-        console.log(`Deposited yUSDC amount: ${result[0].balances[1].amount.toString()}`);
+        console.log(`Deposited yUSDC amount: ${result[0].balances[1].balance.toString()}`);
         // eslint-disable-next-line no-console
-        console.log(`Deposited yUSDT amount: ${result[0].balances[2].amount.toString()}`);
+        console.log(`Deposited yUSDT amount: ${result[0].balances[2].balance.toString()}`);
+        const yDAI = [
+          yDAIAddress,
+          '18',
+          'yDAI',
+        ];
+        const DAI = [
+          DAIAddress,
+          '18',
+          'DAI',
+        ];
 
-        assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].balances[0].asset, yDAIAddress);
-        assert.equal(result[0].rates[0].asset, yDAIAddress);
-        assert.equal(result[0].rates[0].components[0].underlying, daiAddress);
+
         assert.equal(result[0].name, 'iearn.finance');
+        assert.equal(result[0].balances[0].asset, yDAI);
+        assert.equal(result[0].rates[0].asset, yDAI);
+        assert.equal(result[0].rates[0].components[0].underlying, DAI);
       });
   });
 });

@@ -3,14 +3,14 @@
   - [AdapterRegistry](#adapterregistry-is-adapterassetsmanager)
   - [AdapterAssetsManager (abstract contract)](#adapterassetsmanager-is-ownable-abstract-contract)
   - [Ownable](#ownable)
-  - [adapters/AaveAdapter](#aaveadapter-is-adapter)
-  - [adapters/CompoundAdapter](#compoundadapter-is-adapter)
-  - [adapters/CurveAdapter](#curveadapter-is-adapter)
+  - [adapters/AaveDepositAdapter](#aaveadapter-is-adapter)
+  - [adapters/CompoundBorrowAdapter](#compoundadapter-is-adapter)
+  - [adapters/CurveLiquidityAdapter](#curveadapter-is-adapter)
   - [adapters/DSRAdapter](#dsradapter-is-adapter)
-  - [adapters/MCDAdapter](#mcdadapter-is-adapter)
+  - [adapters/MCDDepositAdapter](#mcdadapter-is-adapter)
   - [adapters/MKRAdapter (abstract contract)](#mkradapter-abstract-contract)
   - [adapters/PoolTogetherAdapter](#pooltogetheradapter-is-adapter)
-  - [adapters/SynthetixAdapter](#synthetixadapter-is-adapter)
+  - [adapters/SynthetixDepositAdapter](#synthetixadapter-is-adapter)
   - [adapters/ZrxAdapter](#zrxadapter-is-adapter)
   - [adapters/Adapter (interface)](#adapter-interface)
 
@@ -91,15 +91,15 @@ Base contract for `AdapterAssetsManager` and `Logic` contracts.
 Implements `Ownable` logic.
 Includes `onlyOwner` modifier, `transferOwnership()` function, and public state variable `owner`. 
 
-## AaveAdapter is [Adapter](#Adapter-interface)
+## AaveDepositAdapter is [Adapter](#Adapter-interface)
 
 Adapter for Aave protocol.
 
-## CompoundAdapter is [Adapter](#Adapter-interface)
+## CompoundBorrowAdapter is [Adapter](#Adapter-interface)
 
 Adapter for Compound protocol.
 
-## CurveAdapter is [Adapter](#Adapter-interface)
+## CurveLiquidityAdapter is [Adapter](#Adapter-interface)
 
 Adapter for [curve.fi](https://compound.curve.fi/) protocol.
 Currently, there is the only pool with cDAI/cUSDC locked on it.
@@ -108,7 +108,7 @@ Currently, there is the only pool with cDAI/cUSDC locked on it.
 
 Adapter for DSR protocol.
 
-## MCDAdapter is [Adapter](#Adapter-interface)
+## MCDDepositAdapter is [Adapter](#Adapter-interface)
 
 Adapter for MCD vaults.
 
@@ -121,7 +121,7 @@ Includes all the required constants and `pure` functions with calculations.
 
 Adapter for PoolTogether protocol. Supports DAI and SAI pools.
 
-## SynthetixAdapter is [Adapter](#Adapter-interface)
+## SynthetixDepositAdapter is [Adapter](#Adapter-interface)
 
 Adapter for Synthetix protocol.
 

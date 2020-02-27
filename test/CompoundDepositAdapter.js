@@ -1,8 +1,8 @@
 const { BN } = web3.utils;
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const CompoundAdapter = artifacts.require('./CompoundAdapter');
+const CompoundDepositAdapter = artifacts.require('./CompoundDepositAdapter');
 
-contract('CompoundAdapter', () => {
+contract('CompoundDepositAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
   const cBATAddress = '0x6C8c6b02E7b2BE14d4fA6022Dfd6d75921D90E4E';
@@ -17,16 +17,16 @@ contract('CompoundAdapter', () => {
 
   let accounts;
   let adapterRegistry;
-  let compoundAdapter;
+  let compoundDepositAdapter;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await CompoundAdapter.new({ from: accounts[0] })
+    await CompoundDepositAdapter.new({ from: accounts[0] })
       .then((result) => {
-        compoundAdapter = result.contract;
+        compoundDepositAdapter = result.contract;
       });
     await AdapterRegistry.new(
-      [compoundAdapter.options.address],
+      [compoundDepositAdapter.options.address],
       [[cDAIAddress,
         cBATAddress,
         cETHAddress,
@@ -67,6 +67,7 @@ contract('CompoundAdapter', () => {
         const compound = [
           'Compound',
           '',
+          'Deposit',
           'https://protocol-icons.s3.amazonaws.com/compound.png',
           '1',
         ];

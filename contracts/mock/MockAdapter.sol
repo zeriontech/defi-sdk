@@ -7,7 +7,7 @@ import "../adapters/Adapter.sol";
 
 contract MockAdapter is Adapter {
 
-    mapping (address => int256) internal balances;
+    mapping (address => uint256) internal balances;
 
     constructor() public {
         balances[msg.sender] = 1000;
@@ -17,6 +17,7 @@ contract MockAdapter is Adapter {
         return Protocol({
             name: "Mock",
             description: "Mock protocol",
+            class: "Deposit",
             icon: "mock.png",
             version: uint256(1)
         });

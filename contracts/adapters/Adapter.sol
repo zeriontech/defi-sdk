@@ -7,7 +7,7 @@ import { Protocol, AssetBalance, AssetRate, Asset } from "../Structs.sol";
 /**
  * @title Base contract for protocol adapters.
  * @dev getProtocol(), getAsset(), getAssetBalance(),
-  and getAssetRate() functions MUST be implemented.
+ * and getAssetRate() functions MUST be implemented.
  */
 interface Adapter {
 

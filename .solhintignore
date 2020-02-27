@@ -4,3 +4,8 @@ node_modules
 ./contracts/AdapterRegistry.sol
 ./contracts/AdapterAssetsManager.sol
 ./contracts/adapters/MKRAdapter.sol
+./contracts/adapters/AaveAdapter.sol
+./contracts/adapters/CompoundAdapter.sol
+./contracts/adapters/MCDAdapter.sol
+./contracts/adapters/SynthetixAdapter.sol
+./contracts/adapters/CurveLiquidityAdapter.sol
