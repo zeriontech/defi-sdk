@@ -7,8 +7,20 @@ import { ERC20 } from "../ERC20.sol";
 
 
 /**
+ * @dev CToken contract interface.
+ * Only the functions required for CurveCompoundAdapter contract are added.
+ * The CToken contract is available here
+ * https://github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
+ */
+interface CToken {
+    function underlying() external view returns (address);
+    function exchangeRateStored() external view returns (uint256);
+}
+
+
+/**
  * @dev stableswap contract interface.
- * Only the functions required for CurveAdapter contract are added.
+ * Only the functions required for CurveCompoundAdapter contract are added.
  * The stableswap contract is available here
  * https://github.com/curvefi/curve-contract/blob/compounded/vyper/stableswap.vy.
  */
@@ -20,10 +32,10 @@ interface stableswap {
 
 
 /**
- * @title Adapter for Curve.fi protocol.
+ * @title Adapter for Curve protocol.
  * @dev Implementation of Adapter interface.
  */
-contract CurveAdapter is Adapter {
+contract CurveCompoundAdapter is Adapter {
 
     address constant internal SS = 0x2e60CF74d81ac34eB21eEff58Db4D385920ef419;
 
@@ -32,7 +44,7 @@ contract CurveAdapter is Adapter {
      * @dev Implementation of Adapter function.
      */
     function getProtocolName() external pure override returns (string memory) {
-        return("Curve.fi");
+        return("Curve ∙ Compound pool");
     }
 
     /**
@@ -53,9 +65,10 @@ contract CurveAdapter is Adapter {
         stableswap ss = stableswap(SS);
 
         for (uint256 i = 0; i < 2; i++) {
+            CToken cToken = CToken(ss.coins(int128(i)));
             components[i] = Component({
-                underlying: ss.coins(int128(i)),
-                rate: ss.balances(int128(i)) * 1e18 / ERC20(asset).totalSupply()
+                underlying: cToken.underlying(),
+                rate: ss.balances(int128(i)) * cToken.exchangeRateStored() / ERC20(asset).totalSupply()
             });
         }
 

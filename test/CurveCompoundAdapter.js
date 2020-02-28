@@ -1,12 +1,12 @@
 const { BN } = web3.utils;
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const CurveAdapter = artifacts.require('./CurveAdapter');
+const CurveAdapter = artifacts.require('./CurveCompoundAdapter');
 
-contract('CurveAdapter', () => {
+contract('CurveCompoundAdapter', () => {
   const ssTokenAddress = '0x3740fb63ab7a09891d7c0d4299442A551D06F5fD';
-  const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
-  const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
-  const testAddress = '0x98f365b8215189f547E0f77d84aF1A2Cb0820c72';
+  const DAIAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+  const USDCAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+  const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
   let adapterRegistry;
@@ -32,29 +32,29 @@ contract('CurveAdapter', () => {
     await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
       .call()
       .then((result) => {
-        const base = new BN(10).pow(new BN(24));
+        const base = new BN(10).pow(new BN(18));
         const ssTokenAmount = new BN(result[0].balances[0].amount);
-        const cDAIRate = new BN(result[0].rates[0].components[0].rate);
-        const cDAIAmount = cDAIRate.mul(ssTokenAmount).div(base).toNumber() / 100;
-        const cUSDCRate = new BN(result[0].rates[0].components[1].rate);
-        const cUSDCAmount = cUSDCRate.mul(ssTokenAmount).div(base).toNumber() / 100;
+        const DAIRate = new BN(result[0].rates[0].components[0].rate);
+        const DAIAmount = DAIRate.mul(ssTokenAmount).div(base).toString();
+        const USDCRate = new BN(result[0].rates[0].components[1].rate);
+        const USDCAmount = USDCRate.mul(ssTokenAmount).div(base).toString();
 
         // eslint-disable-next-line no-console
         console.log(`Deposited ssToken amount: ${ssTokenAmount.toString()}`);
         assert.equal(result[0].balances[0].decimals, 18);
         assert.equal(result[0].balances[0].asset, ssTokenAddress);
         assert.equal(result[0].rates[0].asset, ssTokenAddress);
-        assert.equal(result[0].rates[0].components[0].underlying, cDAIAddress);
+        assert.equal(result[0].rates[0].components[0].underlying, DAIAddress);
         // eslint-disable-next-line no-console
-        console.log(`cDAI rate: ${cDAIRate.toString()}`);
+        console.log(`DAI rate: ${DAIRate.toString()}`);
         // eslint-disable-next-line no-console
-        console.log(`Means its: ${cDAIAmount} DAI locked`);
-        assert.equal(result[0].rates[0].components[1].underlying, cUSDCAddress);
+        console.log(`Means its: ${DAIAmount} DAI locked`);
+        assert.equal(result[0].rates[0].components[1].underlying, USDCAddress);
         // eslint-disable-next-line no-console
-        console.log(`cUSDC rate: ${cUSDCRate.toString()}`);
+        console.log(`USDC rate: ${USDCRate.toString()}`);
         // eslint-disable-next-line no-console
-        console.log(`Means its: ${cUSDCAmount} USDC locked`);
-        assert.equal(result[0].name, 'Curve.fi');
+        console.log(`Means its: ${USDCAmount} USDC locked`);
+        assert.equal(result[0].name, 'Curve ∙ Compound pool');
       });
   });
 });
