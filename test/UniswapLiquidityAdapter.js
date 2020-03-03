@@ -7,10 +7,12 @@ contract('UniswapLiquidityAdapter', () => {
   const mkrUniAddress = '0x2C4Bd064b998838076fa341A83d007FC2FA50957';
   const daiUniAddress = '0x2a1530C4C41db0B0b2bB646CB5Eb1A67b7158667';
   const usdcUniAddress = '0x97deC872013f6B5fB443861090ad931542878126';
+  const snxUniAddress = '0x3958B4eC427F8fa24eB60F42821760e88d485f7F';
   const batAddress = '0x0D8775F648430679A709E98d2b0Cb6250d2887EF';
   const mkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+  const snxAddress = '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
@@ -30,6 +32,7 @@ contract('UniswapLiquidityAdapter', () => {
         mkrUniAddress,
         daiUniAddress,
         usdcUniAddress,
+        snxUniAddress,
       ]],
       { from: accounts[0] },
     )
@@ -38,7 +41,7 @@ contract('UniswapLiquidityAdapter', () => {
       });
   });
 
-  it('should be correct balances and rates', async () => {
+  it.only('should be correct balances and rates', async () => {
     await adapterRegistry.methods['getProtocolsBalancesAndRates(address)'](testAddress)
       .call()
       .then((result) => {
@@ -50,6 +53,8 @@ contract('UniswapLiquidityAdapter', () => {
         console.log(`Deposited DAI-uni amount: ${result[0].balances[2].balance.toString()}`);
         // eslint-disable-next-line no-console
         console.log(`Deposited USDC-uni amount: ${result[0].balances[3].balance.toString()}`);
+        // eslint-disable-next-line no-console
+        console.log(`Deposited SNX-uni amount: ${result[0].balances[4].balance.toString()}`);
 
         const uni = [
           'Uniswap Liquidity',
@@ -75,6 +80,11 @@ contract('UniswapLiquidityAdapter', () => {
         ];
         const usdcUni = [
           usdcUniAddress,
+          '18',
+          'UNI-V1',
+        ];
+        const snxUni = [
+          snxUniAddress,
           '18',
           'UNI-V1',
         ];
@@ -104,6 +114,11 @@ contract('UniswapLiquidityAdapter', () => {
           '6',
           'USDC',
         ];
+        const SNX = [
+          snxAddress,
+          '18',
+          'SNX',
+        ];
 
         assert.deepEqual(result[0].protocol, uni);
         assert.deepEqual(result[0].balances[0].asset, batUni);
@@ -114,6 +129,8 @@ contract('UniswapLiquidityAdapter', () => {
         assert.deepEqual(result[0].rates[2].asset, daiUni);
         assert.deepEqual(result[0].balances[3].asset, usdcUni);
         assert.deepEqual(result[0].rates[3].asset, usdcUni);
+        assert.deepEqual(result[0].balances[4].asset, snxUni);
+        assert.deepEqual(result[0].rates[4].asset, snxUni);
         assert.deepEqual(result[0].rates[0].components[0].underlying, ETH);
         assert.deepEqual(result[0].rates[0].components[1].underlying, BAT);
         assert.deepEqual(result[0].rates[1].components[0].underlying, ETH);
@@ -122,6 +139,8 @@ contract('UniswapLiquidityAdapter', () => {
         assert.deepEqual(result[0].rates[2].components[1].underlying, DAI);
         assert.deepEqual(result[0].rates[3].components[0].underlying, ETH);
         assert.deepEqual(result[0].rates[3].components[1].underlying, USDC);
+        assert.deepEqual(result[0].rates[4].components[0].underlying, ETH);
+        assert.deepEqual(result[0].rates[4].components[1].underlying, SNX);
         const base = new BN(10).pow(new BN(32));
         const daiUniAmount = new BN(result[0].balances[2].balance);
         const ethRate = new BN(result[0].rates[2].components[0].rate);

@@ -1,9 +1,9 @@
 pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
-import { AaveAdapter } from "./AaveAdapter.sol";
-import { Protocol, AssetBalance } from "../Structs.sol";
-import { ERC20 } from "../ERC20.sol";
+import { Adapter } from "../Adapter.sol";
+import { ProtocolInfo, Token } from "../../Structs.sol";
+import { ERC20 } from "../../ERC20.sol";
 
 
 /**
@@ -24,49 +24,42 @@ interface LendingPoolAddressesProvider {
  * github.com/aave/aave-protocol/blob/master/contracts/lendingpool/LendingPool.sol.
  */
 interface LendingPool {
-    function getUserReserveData(address, address) external view returns (uint256);
+    function getUserReserveData(address, address) external view returns (uint256, uint256);
 }
 
 
 /**
- * @title Adapter for Aave protocol (deposit).
+ * @title Adapter for Aave protocol (debt).
  * @dev Implementation of Adapter interface.
  */
-contract AaveDepositAdapter is AaveAdapter {
+contract AaveDebtAdapter is Adapter {
+
+    address internal constant PROVIDER = 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8;
 
     /**
-     * @return Protocol struct with protocol info.
+     * @return ProtocolInfo struct with protocol info.
      * @dev Implementation of Adapter interface function.
      */
-    function getProtocol() external pure override returns (Protocol memory) {
-        return Protocol({
+    function getInfo() external pure override returns (ProtocolInfo memory) {
+        return ProtocolInfo({
             name: "Aave",
             description: "Decentralized lending & borrowing protocol",
-            class: "Deposit",
-            icon: "https://protocol-icons.s3.amazonaws.com/aave.png",
+            protocolType: "Debt",
+            tokenType: "ERC20",
+            iconURL: "protocol-icons.s3.amazonaws.com/aave.png",
             version: uint256(1)
         });
     }
 
     /**
-     * @return Amount of the given asset locked on the protocol by the given user.
+     * @return Amount of debt of the given user for the protocol.
      * @dev Implementation of Adapter interface function.
      */
-    function getAssetBalance(
-        address asset,
-        address user
-    )
-        external
-        view
-        override
-        returns (AssetBalance memory)
-    {
+    function getBalance(address token, address user) external view override returns (uint256) {
         LendingPool pool = LendingPoolAddressesProvider(PROVIDER).getLendingPool();
-        (uint256 depositAmount) = pool.getUserReserveData(asset, user);
 
-        return AssetBalance({
-            asset: getAsset(asset),
-            balance: depositAmount
-        });
+        (, uint256 debtAmount) = pool.getUserReserveData(token, user);
+
+        return debtAmount;
     }
 }

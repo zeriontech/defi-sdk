@@ -1,66 +1,34 @@
 pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
-import { Protocol, AssetBalance, AssetRate, Component, Asset } from "../Structs.sol";
+import { ProtocolInfo, Token } from "../Structs.sol";
 import "../adapters/Adapter.sol";
 
 
 contract MockAdapter is Adapter {
 
-    mapping (address => uint256) internal balances;
+    mapping (address => uint256) internal balanceOf;
 
     constructor() public {
-        balances[msg.sender] = 1000;
+        balanceOf[msg.sender] = 1000;
     }
 
-    function getProtocol() external pure override returns (Protocol memory) {
-        return Protocol({
+    function getInfo() external pure override returns (ProtocolInfo memory) {
+        return ProtocolInfo({
             name: "Mock",
             description: "Mock protocol",
-            class: "Deposit",
-            icon: "mock.png",
+            protocolType: "Asset",
+            tokenType: "Mock",
+            iconURL: "mock.png",
             version: uint256(1)
         });
     }
 
-    function getAssetBalance(
-        address asset,
-        address user
-    )
-        external
-        view
-        override
-        returns (AssetBalance memory)
-    {
-        return AssetBalance({
-            asset: getAsset(asset),
-            balance: balances[user]
-        });
-    }
-
-    function getAssetRate(address asset) external view override returns (AssetRate memory) {
-        Component[] memory components = new Component[](1);
-
-        components[0] = Component({
-            underlying: getAsset(address(this)),
-            rate: uint256(1e18)
-        });
-
-        return AssetRate({
-            asset: getAsset(asset),
-            components: components
-        });
-    }
-
     /**
-     * @return Asset struct with asset info for the given asset.
+     * @return Amount of ZRX locked on the protocol by the given user.
      * @dev Implementation of Adapter interface function.
      */
-    function getAsset(address asset) public view override returns (Asset memory) {
-        return Asset({
-            contractAddress: asset,
-            decimals: uint8(18),
-            symbol: "MOCK"
-        });
+    function getBalance(address, address user) external view override returns (uint256) {
+        return balanceOf[user];
     }
 }

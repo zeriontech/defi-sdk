@@ -11,7 +11,6 @@ abstract contract MKRAdapter {
     address internal constant JUG = 0x19c0976f590D67707E62397C87829d896Dc0f1F1;
     address internal constant MANAGER = 0x5ef30b9986345249bc32d8928B7ee64DE9435E39;
 
-    address internal constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     address internal constant BAT = 0x0D8775F648430679A709E98d2b0Cb6250d2887EF;
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 

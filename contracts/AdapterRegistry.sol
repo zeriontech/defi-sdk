@@ -1,17 +1,11 @@
 pragma solidity 0.6.2;
 pragma experimental ABIEncoderV2;
 
+import { ProtocolAdapterManager } from "./ProtocolAdapterManager.sol";
+import { TokenAdapterManager } from "./TokenAdapterManager.sol";
 import { Adapter } from "./adapters/Adapter.sol";
-import { AdapterAssetsManager } from "./AdapterAssetsManager.sol";
-import {
-    ProtocolBalancesAndRates,
-    ProtocolBalances,
-    ProtocolRates,
-    AssetBalance,
-    AssetRate,
-    Component,
-    Asset
-} from "./Structs.sol";
+import { TokenAdapter } from "./adapters/TokenAdapter.sol";
+import { ProtocolAdapter, ProtocolBalance, TokenBalanceAndComponents, TokenBalance, Token } from "./Structs.sol";
 
 
 /**
@@ -19,178 +13,152 @@ import {
 * @notice getAssetBalances() and getAssetRates() functions
 * with different arguments implement the main functionality.
 */
-contract AdapterRegistry is AdapterAssetsManager {
-
-    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+contract AdapterRegistry is ProtocolAdapterManager {
 
     constructor(
-        address[] memory _adapters,
-        address[][] memory _assets
+        string[] memory protocolAdapterNames,
+        ProtocolAdapter[] memory protocolAdapters,
+        string[] memory tokenAdapterNames,
+        address[] memory tokenAdapters
     )
         public
-        AdapterAssetsManager(_adapters, _assets)
+        ProtocolAdapterManager(protocolAdapterNames, protocolAdapters)
+        TokenAdapterManager(tokenAdapterNames, tokenAdapters)
     // solhint-disable-next-line no-empty-blocks
     {}
 
     /**
-     * @return All the amounts and rates of supported assets
+     * @return All the amounts of supported tokens
      * via supported adapters by the given user.
      */
-    function getProtocolsBalancesAndRates(
+    function getProtocolBalances(
         address user
     )
         external
         view
-        returns(ProtocolBalancesAndRates[] memory)
+        returns (ProtocolBalance[] memory)
     {
-        address[] memory adapters = getAdapters();
-        ProtocolBalancesAndRates[] memory protocolBalancesAndRates =
-            new ProtocolBalancesAndRates[](adapters.length);
+        string[] memory protocolAdapterNames = getProtocolAdapters();
+        uint256 length = protocolAdapterNames.length;
+        ProtocolBalance[] memory protocolBalances =
+            new ProtocolBalance[](length);
 
-        for (uint256 i = 0; i < adapters.length; i++) {
-            protocolBalancesAndRates[i] = ProtocolBalancesAndRates({
-                protocol: Adapter(adapters[i]).getProtocol(),
-                balances: getAssetBalances(user, adapters[i]),
-                rates: getAssetRates(adapters[i])
-            });
+        for (uint256 i = 0; i < length; i++) {
+            protocolBalances[i] = getProtocolBalance(user, protocolAdapterNames[i]);
         }
 
-        return protocolBalancesAndRates;
+        return protocolBalances;
     }
 
     /**
-     * @return All the amounts of supported assets
-     * via supported adapters by the given user.
+     * @return All the amounts of supported tokens
+     * by the given adapter by the given user.
      */
-    function getProtocolsBalances(
-        address user
+    function getProtocolBalance(
+        address user,
+        string memory protocolAdapterName
+    )
+        public
+        view
+        returns (ProtocolBalance memory)
+    {
+        return getProtocolBalance(
+            user,
+            protocolAdapterName,
+            protocolAdapter[protocolAdapterName].supportedTokens
+        );
+    }
+
+    /**
+     * @return All the amounts and rates of the given tokens
+     * by the given adapter by the given user.
+     */
+    function getProtocolBalance(
+        address user,
+        string memory protocolAdapterName,
+        address[] memory supportedTokens
+    )
+        public
+        view
+        returns (ProtocolBalance memory)
+    {
+        Adapter adapter = Adapter(protocolAdapter[protocolAdapterName].adapter);
+        ProtocolBalance memory protocolBalance;
+        protocolBalance.info = adapter.getInfo();
+
+        TokenBalanceAndComponents[] memory tokenBalancesAndComponents = new TokenBalanceAndComponents[](supportedTokens.length);
+        uint256 balance;
+
+        for (uint256 i = 0; i < supportedTokens.length; i++) {
+            balance = adapter.getBalance(user, supportedTokens[i]); // TODO try-catch
+            tokenBalancesAndComponents[i] = getTokenBalanceAndComponents(
+                supportedTokens[i],
+                protocolBalance.info.tokenType,
+                balance
+            );
+        }
+
+        protocolBalance.balances = tokenBalancesAndComponents;
+        return protocolBalance;
+    }
+
+    /**
+     * @return All the exchange rates of the given tokens by the given adapter.
+     */
+    function getUnderlyingTokens(
+        string calldata tokenAdapterName,
+        address token
     )
         external
         view
-        returns(ProtocolBalances[] memory)
+        returns (Token[] memory)
     {
-        address[] memory adapters = getAdapters();
-        ProtocolBalances[] memory protocolsBalances = new ProtocolBalances[](adapters.length);
+        return TokenAdapter(tokenAdapter[tokenAdapterName]).getUnderlyingTokens(token);
 
-        for (uint256 i = 0; i < adapters.length; i++) {
-            protocolsBalances[i] = ProtocolBalances({
-                protocol: Adapter(adapters[i]).getProtocol(),
-                balances: getAssetBalances(user, adapters[i])
-            });
+    }
+
+    function getTokenBalanceAndComponents(
+        address token,
+        string memory tokenType,
+        uint256 balance
+    )
+        internal
+        view
+        returns (TokenBalanceAndComponents memory)
+    {
+        TokenAdapter tokenAdapter = TokenAdapter(getTokenAdapter(tokenType));
+        Token[] memory components = tokenAdapter.getUnderlyingTokens(token); // TODO try-catch
+        TokenBalance[] memory componentsBalances = new TokenBalance[](components.length);
+
+        for (uint i = 0; i < components.length; i++) {
+            componentsBalances[i] = getTokenBalance(
+                components[i].tokenAddress,
+                components[i].tokenType,
+                components[i].value * balance
+            );
         }
 
-        return protocolsBalances;
+        return TokenBalanceAndComponents({
+            info: tokenAdapter.getInfo(token),
+            balance: balance,
+            components: componentsBalances
+        });
     }
 
-    /**
-     * @return All the exchange rates for supported assets
-     * via the supported adapters.
-     */
-    function getProtocolsRates()
-        external
-        view
-        returns (ProtocolRates[] memory)
-    {
-        address[] memory adapters = getAdapters();
-        ProtocolRates[] memory protocolsRates = new ProtocolRates[](adapters.length);
-
-        for (uint256 i = 0; i < adapters.length; i++) {
-            protocolsRates[i] = ProtocolRates({
-                protocol: Adapter(adapters[i]).getProtocol(),
-                rates: getAssetRates(adapters[i])
-            });
-        }
-
-        return protocolsRates;
-    }
-
-    /**
-     * @return All the amounts of supported assets
-     * via the given adapter by the given user.
-     */
-    function getAssetBalances(
-        address user,
-        address adapter
+    function getTokenBalance(
+        address token,
+        string memory tokenType,
+        uint256 balance
     )
-        public
+        internal
         view
-        returns (AssetBalance[] memory)
+        returns (TokenBalance memory)
     {
-        address[] memory adapterAssets = getAdapterAssets(adapter);
+        TokenAdapter tokenAdapter = TokenAdapter(getTokenAdapter(tokenType));
 
-        return getAssetBalances(user, adapter, adapterAssets);
-    }
-
-    /**
-     * @return All the amounts of the given assets
-     * via the given adapter by the given user.
-     */
-    function getAssetBalances(
-        address user,
-        address adapter,
-        address[] memory assets
-    )
-        public
-        view
-        returns (AssetBalance[] memory)
-    {
-        uint256 length = assets.length;
-        AssetBalance[] memory assetBalances = new AssetBalance[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            address asset = assets[i];
-
-            try Adapter(adapter).getAssetBalance(asset, user) returns (AssetBalance memory result) {
-                assetBalances[i] = result;
-            } catch {
-                continue;
-            }
-        }
-
-        return assetBalances;
-    }
-
-    /**
-     * @return All the exchange rates for supported assets
-     * via the given adapter.
-     */
-    function getAssetRates(
-        address adapter
-    )
-        public
-        view
-        returns (AssetRate[] memory)
-    {
-        address[] memory adapterAssets = assets[adapter];
-
-        return getAssetRates(adapter, adapterAssets);
-    }
-
-    /**
-     * @return All the exchange rates for the given assets
-     * via the given adapter.
-     */
-    function getAssetRates(
-        address adapter,
-        address[] memory assets
-    )
-        public
-        view
-        returns (AssetRate[] memory)
-    {
-        uint256 length = assets.length;
-        AssetRate[] memory rates = new AssetRate[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            address asset = assets[i];
-
-            try Adapter(adapter).getAssetRate(asset) returns (AssetRate memory result) {
-                rates[i] = result;
-            } catch {
-                continue;
-            }
-        }
-
-        return rates;
+        return TokenBalance({
+            info: tokenAdapter.getInfo(token),
+            balance: balance
+        });
     }
 }
