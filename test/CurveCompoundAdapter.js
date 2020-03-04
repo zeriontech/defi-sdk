@@ -3,7 +3,7 @@ const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const CurveAdapter = artifacts.require('./CurveCompoundAdapter');
 
 contract('CurveCompoundAdapter', () => {
-  const ssTokenAddress = '0x3740fb63ab7a09891d7c0d4299442A551D06F5fD';
+  const ssTokenAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
   const DAIAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const USDCAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';

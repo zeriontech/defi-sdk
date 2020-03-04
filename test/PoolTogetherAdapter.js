@@ -5,7 +5,9 @@ const PoolTogetherAdapter = artifacts.require('./PoolTogetherAdapter');
 contract('PoolTogetherAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const saiAddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
-  const testAddress = '0x7e5ce10826ee167de897d262fcc9976f609ecd2b';
+  const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+
+  const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
   const incorrectAsset = '0x1C83501478f1320977047008496DACBD60Bb15ef';
 
   let accounts;
@@ -20,7 +22,7 @@ contract('PoolTogetherAdapter', () => {
       });
     await AdapterRegistry.new(
       [poolAdapter.options.address],
-      [[daiAddress, saiAddress]],
+      [[daiAddress, saiAddress, usdcAddress]],
       { from: accounts[0] },
     )
       .then((result) => {
@@ -37,16 +39,26 @@ contract('PoolTogetherAdapter', () => {
         // eslint-disable-next-line no-console
         console.log(`Deposited DAI amount: ${daiAmount}`);
         assert.equal(result[0].name, 'PoolTogether');
+        const usdcBase = new BN(10).pow(new BN(4));
+        const usdcAmount = new BN(result[0].balances[2].amount).div(usdcBase) / 100;
+        // eslint-disable-next-line no-console
+        console.log(`Deposited USDC amount: ${usdcAmount}`);
+        assert.equal(result[0].name, 'PoolTogether');
         assert.equal(result[0].balances[0].decimals, 18);
         assert.equal(result[0].balances[0].asset, daiAddress);
         assert.equal(result[0].balances[1].decimals, 18);
         assert.equal(result[0].balances[1].asset, saiAddress);
+        assert.equal(result[0].balances[2].decimals, 6);
+        assert.equal(result[0].balances[2].asset, usdcAddress);
         assert.equal(result[0].rates[0].asset, daiAddress);
         assert.equal(result[0].rates[0].components[0].underlying, daiAddress);
         assert.equal(result[0].rates[0].components[0].rate, 1e18);
         assert.equal(result[0].rates[1].asset, saiAddress);
         assert.equal(result[0].rates[1].components[0].underlying, saiAddress);
         assert.equal(result[0].rates[1].components[0].rate, 1e18);
+        assert.equal(result[0].rates[2].asset, usdcAddress);
+        assert.equal(result[0].rates[2].components[0].underlying, usdcAddress);
+        assert.equal(result[0].rates[2].components[0].rate, 1e18);
       });
   });
 

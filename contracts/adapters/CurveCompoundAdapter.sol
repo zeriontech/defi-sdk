@@ -37,7 +37,7 @@ interface stableswap {
  */
 contract CurveCompoundAdapter is Adapter {
 
-    address constant internal SS = 0x2e60CF74d81ac34eB21eEff58Db4D385920ef419;
+    address constant internal SS = 0xA2B47E3D5c44877cca798226B7B8118F9BFb7A56;
 
     /**
      * @return Name of the protocol.
