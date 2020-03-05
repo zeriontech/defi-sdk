@@ -1,5 +1,5 @@
 {
-  "name": "truffle-template",
+  "name": "zerion-defi-sdk",
   "version": "1.0.0",
   "main": "truffle.js",
   "directories": {
@@ -11,7 +11,7 @@
     "deploy:mainnet": "npx truffle deploy --network mainnet",
     "deploy:kovan": "npx truffle deploy --network kovan",
     "test": "scripts/test.sh",
-    "coverage": "npx truffle run coverage",
+    "coverage": "node --max-old-space-size=4096 ./node_modules/.bin/truffle run coverage",
     "lint:solhint": "npx solhint \"./contracts/**/*.sol\"",
     "lint:ethlint": "npx ethlint --dir contracts/",
     "lint:eslint": "eslint .",
@@ -27,19 +27,18 @@
     "core-js": "3.6.4",
     "dotenv": "8.2.0",
     "regenerator-runtime": "0.13.3",
-    "truffle": "5.1.15",
-    "truffle-flattener": "1.4.2",
+    "truffle": "5.1.18",
     "truffle-plugin-verify": "0.3.9"
   },
   "devDependencies": {
     "@codechecks/client": "0.1.10",
-    "eslint": "6.4.0",
+    "eslint": "6.8.0",
     "eslint-config-airbnb-base": "14.0.0",
-    "eslint-plugin-import": "2.18.2",
+    "eslint-plugin-import": "2.20.1",
     "eth-gas-reporter": "0.2.15",
     "ethlint": "1.2.5",
-    "ganache-cli": "6.8.2",
-    "solhint": "2.3.0",
+    "ganache-cli": "6.9.1",
+    "solhint": "3.0.0-rc.6",
     "solidity-coverage": "0.7.2"
   }
 }

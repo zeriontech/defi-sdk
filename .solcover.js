@@ -6,8 +6,12 @@ module.exports = {
     'Structs.sol',
     'ERC20.sol',
     'Logic.sol',
-    'adapters/Adapter.sol',
-    'adapters/MKRAdapter.sol',
+    'adapters/ProtocolAdapter.sol',
+    'adapters/TokenAdapter.sol',
+    'adapters/maker/MKRAdapter.sol',
+    'adapters/adapters/dydx/DyDxAssetAdapter.sol',
+    'adapters/adapters/dydx/DyDxDebtAdapter.sol',
+    'adapters/compound/CompoundRegistry.sol',
     'interactiveAdapters',
     'mock',
   ],
@@ -55,5 +59,9 @@ module.exports = {
       },
     ],
     fork: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    gasLimit: 50000000,
+  },
+  mocha: {
+    enableTimeouts: false,
   }
 };

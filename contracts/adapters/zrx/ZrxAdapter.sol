@@ -1,8 +1,7 @@
-pragma solidity 0.6.2;
+pragma solidity 0.6.3;
 pragma experimental ABIEncoderV2;
 
-import { Adapter } from "../Adapter.sol";
-import { ProtocolInfo, Token } from "../../Structs.sol";
+import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { ERC20 } from "../../ERC20.sol";
 
 
@@ -19,32 +18,31 @@ interface Staking {
 
 /**
  * @title Adapter for 0x protocol.
- * @dev Implementation of Adapter interface.
+ * @dev Implementation of ProtocolAdapter interface.
  */
-contract ZrxAdapter is Adapter {
+contract ZrxAdapter is ProtocolAdapter {
 
     address internal constant STAKING = 0xa26e80e7Dea86279c6d778D702Cc413E6CFfA777;
 
     /**
-     * @return ProtocolInfo struct with protocol info.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the adapter.
      */
-    function getInfo() external pure override returns (ProtocolInfo memory) {
-        return ProtocolInfo({
-            name: "0x Staking",
-            description: "Liquidity rewards with ZRX",
-            protocolType: "Asset",
-            tokenType: "ERC20",
-            iconURL: "protocol-icons.s3.amazonaws.com/0x-staking.png",
-            version: uint256(1)
-        });
+    function adapterType() external pure override returns (string memory) {
+        return "Asset";
     }
 
     /**
-     * @return Amount of ZRX locked on the protocol by the given user.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the token used in adapter.
      */
-    function getBalance(address, address user) external view override returns (uint256) {
-        return Staking(STAKING).getTotalStake(user);
+    function tokenType() external pure override returns (string memory) {
+        return "ERC20";
+    }
+
+    /**
+     * @return Amount of ZRX locked on the protocol by the given account.
+     * @dev Implementation of ProtocolAdapter interface function.
+     */
+    function getBalance(address, address account) external view override returns (uint256) {
+        return Staking(STAKING).getTotalStake(account);
     }
 }

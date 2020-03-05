@@ -1,11 +1,10 @@
-pragma solidity 0.6.2;
+pragma solidity 0.6.3;
 pragma experimental ABIEncoderV2;
 
-import { ProtocolInfo, Token } from "../Structs.sol";
-import "../adapters/Adapter.sol";
+import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
 
 
-contract MockAdapter is Adapter {
+contract MockAdapter is ProtocolAdapter {
 
     mapping (address => uint256) internal balanceOf;
 
@@ -13,22 +12,24 @@ contract MockAdapter is Adapter {
         balanceOf[msg.sender] = 1000;
     }
 
-    function getInfo() external pure override returns (ProtocolInfo memory) {
-        return ProtocolInfo({
-            name: "Mock",
-            description: "Mock protocol",
-            protocolType: "Asset",
-            tokenType: "Mock",
-            iconURL: "mock.png",
-            version: uint256(1)
-        });
+    /**
+     * @return Type of the adapter.
+     */
+    function adapterType() external pure override returns (string memory) {
+        return "Asset";
     }
 
     /**
-     * @return Amount of ZRX locked on the protocol by the given user.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the token used in adapter.
      */
-    function getBalance(address, address user) external view override returns (uint256) {
-        return balanceOf[user];
+    function tokenType() external pure override returns (string memory) {
+        return "ERC20";
+    }
+
+    /**
+     * @return Mock balance.
+     */
+    function getBalance(address, address account) external view override returns (uint256) {
+        return balanceOf[account];
     }
 }

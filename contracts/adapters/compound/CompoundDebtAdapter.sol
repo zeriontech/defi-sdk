@@ -1,15 +1,13 @@
-pragma solidity 0.6.2;
+pragma solidity 0.6.3;
 pragma experimental ABIEncoderV2;
 
-import { Adapter } from "../Adapter.sol";
-import { CompoundRegistry } from "./CompoundRegistry.sol";
-import { ProtocolInfo, Token } from "../../Structs.sol";
+import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { ERC20 } from "../../ERC20.sol";
 
 
 /**
  * @dev CToken contract interface.
- * Only the functions required for CompoundBorrowAdapter contract are added.
+ * Only the functions required for CompoundDebtAdapter contract are added.
  * The CToken contract is available here
  * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
  */
@@ -19,35 +17,44 @@ interface CToken {
 
 
 /**
- * @title Adapter for Compound protocol (debt).
+ * @dev CompoundRegistry contract interface.
+ * Only the functions required for CompoundDebtAdapter contract are added.
+ * The CompoundRegistry contract is available in this repository.
+ */
+interface CompoundRegistry {
+    function getCToken(address) external view returns (address);
+}
+
+
+/**
+ * @title Debt adapter for Compound protocol.
  * @dev Implementation of Adapter interface.
  */
-contract CompoundDebtAdapter is Adapter {
+contract CompoundDebtAdapter is ProtocolAdapter {
 
     address internal constant REGISTRY = 0xE6881a7d699d3A350Ce5bba0dbD59a9C36778Cb7;
 
     /**
-     * @return ProtocolInfo struct with protocol info.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the adapter.
      */
-    function getInfo() external pure override returns (ProtocolInfo memory) {
-        return ProtocolInfo({
-            name: "Compound",
-            description: "",
-            protocolType: "Debt",
-            tokenType: "ERC20",
-            iconURL: "protocol-icons.s3.amazonaws.com/compound.png",
-            version: uint256(1)
-        });
+    function adapterType() external pure override returns (string memory) {
+        return "Debt";
     }
 
     /**
-     * @return Amount of debt of the given user for the protocol.
+     * @return Type of the token used in adapter.
+     */
+    function tokenType() external pure override returns (string memory) {
+        return "ERC20";
+    }
+
+    /**
+     * @return Amount of debt of the given account for the protocol.
      * @dev Implementation of Adapter interface function.
      */
-    function getBalance(address token, address user) external view override returns (uint256) {
+    function getBalance(address token, address account) external view override returns (uint256) {
         CToken cToken = CToken(CompoundRegistry(REGISTRY).getCToken(token));
 
-        return cToken.borrowBalanceStored(user);
+        return cToken.borrowBalanceStored(account);
     }
 }

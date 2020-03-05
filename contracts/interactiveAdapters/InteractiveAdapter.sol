@@ -1,7 +1,7 @@
-pragma solidity 0.6.2;
+pragma solidity 0.6.3;
 pragma experimental ABIEncoderV2;
 
-import { Adapter } from "../adapters/Adapter.sol";
+import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
 
 
 /**
@@ -9,7 +9,7 @@ import { Adapter } from "../adapters/Adapter.sol";
  * @dev deposit() and withdraw() functions MUST be implemented
  * as well as all the functions from Adapter interface.
  */
-interface InteractiveAdapter is Adapter {
+interface InteractiveAdapter is ProtocolAdapter {
 
     /**
      * @dev The function must deposit assets to the protocol.

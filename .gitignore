@@ -3,6 +3,8 @@ node_modules/
 .vscode/
 build/
 coverage
+artifacts
+cache
 coverage.json
 .log
 .env

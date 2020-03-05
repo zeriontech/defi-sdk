@@ -8,18 +8,15 @@
       "error",
       { "maxLength" : 50 }
     ],
-    "bracket-align": [
-      "off"
-    ],
     "function-max-lines": [
       "error", 60
     ],
-    "indent": [
-      "warn"
-    ],
     "compiler-version": [
       "error",
-      "0.6.2"
+      "0.6.3"
+    ],
+    "private-vars-leading-underscore": [
+      "off"
     ]
   }
 }

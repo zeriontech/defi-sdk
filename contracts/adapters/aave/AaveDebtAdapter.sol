@@ -1,14 +1,13 @@
-pragma solidity 0.6.2;
+pragma solidity 0.6.3;
 pragma experimental ABIEncoderV2;
 
-import { Adapter } from "../Adapter.sol";
-import { ProtocolInfo, Token } from "../../Structs.sol";
+import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { ERC20 } from "../../ERC20.sol";
 
 
 /**
  * @dev LendingPoolAddressesProvider contract interface.
- * Only the functions required for AaveDepositAdapter contract are added.
+ * Only the functions required for AaveDebtAdapter contract are added.
  * The LendingPoolAddressesProvider contract is available here
  * github.com/aave/aave-protocol/blob/master/contracts/configuration/LendingPoolAddressesProvider.sol.
  */
@@ -19,7 +18,7 @@ interface LendingPoolAddressesProvider {
 
 /**
  * @dev LendingPool contract interface.
- * Only the functions required for AaveDepositAdapter contract are added.
+ * Only the functions required for AaveDebtAdapter contract are added.
  * The LendingPool contract is available here
  * github.com/aave/aave-protocol/blob/master/contracts/lendingpool/LendingPool.sol.
  */
@@ -29,36 +28,35 @@ interface LendingPool {
 
 
 /**
- * @title Adapter for Aave protocol (debt).
- * @dev Implementation of Adapter interface.
+ * @title Debt adapter for Aave protocol.
+ * @dev Implementation of ProtocolAdapter interface.
  */
-contract AaveDebtAdapter is Adapter {
+contract AaveDebtAdapter is ProtocolAdapter {
 
     address internal constant PROVIDER = 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8;
 
     /**
-     * @return ProtocolInfo struct with protocol info.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the adapter.
      */
-    function getInfo() external pure override returns (ProtocolInfo memory) {
-        return ProtocolInfo({
-            name: "Aave",
-            description: "Decentralized lending & borrowing protocol",
-            protocolType: "Debt",
-            tokenType: "ERC20",
-            iconURL: "protocol-icons.s3.amazonaws.com/aave.png",
-            version: uint256(1)
-        });
+    function adapterType() external pure override returns (string memory) {
+        return "Debt";
     }
 
     /**
-     * @return Amount of debt of the given user for the protocol.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the token used in adapter.
      */
-    function getBalance(address token, address user) external view override returns (uint256) {
+    function tokenType() external pure override returns (string memory) {
+        return "ERC20";
+    }
+
+    /**
+     * @return Amount of debt of the given account for the protocol.
+     * @dev Implementation of ProtocolAdapter interface function.
+     */
+    function getBalance(address token, address account) external view override returns (uint256) {
         LendingPool pool = LendingPoolAddressesProvider(PROVIDER).getLendingPool();
 
-        (, uint256 debtAmount) = pool.getUserReserveData(token, user);
+        (, uint256 debtAmount) = pool.getUserReserveData(token, account);
 
         return debtAmount;
     }

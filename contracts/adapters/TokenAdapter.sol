@@ -1,33 +1,33 @@
-pragma solidity 0.6.2;
+pragma solidity 0.6.3;
 pragma experimental ABIEncoderV2;
 
-import { TokenInfo, Token } from "../Structs.sol";
+import { TokenMetadata, Component } from "../Structs.sol";
 
 
 /**
  * @title Base contract for token adapters.
- * @dev getInfo() and getUnderlyingTokens() functions MUST be implemented.
+ * @dev getMetadata() and getComponents() functions MUST be implemented.
  */
 interface TokenAdapter {
 
     /**
-     * @dev MUST return TokenInfo struct with ERC20-style token info.
-     * struct TokenInfo {
-     *     address tokenAddress;
+     * @dev MUST return TokenMetadata struct with ERC20-style token info.
+     * struct TokenMetadata {
+     *     address token;
      *     string name;
      *     string symbol;
      *     uint8 decimals;
      * }
      */
-    function getInfo(address token) external view returns (TokenInfo memory);
+    function getMetadata(address token) external view returns (TokenMetadata memory);
 
     /**
-    * @dev MUST return array of Token structs with underlying tokens rates for the given asset.
-    * struct Token {
-    *     address tokenAddress; // Address of token contract
-    *     string tokenType;     // "ERC20" by default
-    *     uint256 value;        // Exchange rate
+    * @dev MUST return array of Component structs with underlying tokens rates for the given token.
+    * struct Component {
+    *     address token; // Address of token contract
+    *     string tokenType;     // Token type ("ERC20" by default)
+    *     uint256 rate;        // Price per share (1e18)
     * }
     */
-    function getUnderlyingTokens(address token) external view returns (Token[] memory);
+    function getComponents(address token) external view returns (Component[] memory);
 }

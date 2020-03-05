@@ -1,39 +1,35 @@
-pragma solidity 0.6.2;
+pragma solidity 0.6.3;
 pragma experimental ABIEncoderV2;
 
-import { Adapter } from "../Adapter.sol";
-import { ProtocolInfo, Token } from "../../Structs.sol";
+import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { ERC20 } from "../../ERC20.sol";
 
 
 /**
- * @title Adapter for Aave protocol (asset).
- * @dev Implementation of Adapter interface.
+ * @title Asset adapter for Aave protocol.
+ * @dev Implementation of ProtocolAdapter interface.
  */
-contract AaveAssetAdapter is Adapter {
-
-    address internal constant PROVIDER = 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8;
+contract AaveAssetAdapter is ProtocolAdapter {
 
     /**
-     * @return ProtocolInfo struct with protocol info.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the adapter.
      */
-    function getInfo() external pure override returns (ProtocolInfo memory) {
-        return ProtocolInfo({
-            name: "Aave",
-            description: "Decentralized lending & borrowing protocol",
-            protocolType: "Asset",
-            tokenType: "AToken",
-            iconURL: "protocol-icons.s3.amazonaws.com/aave.png",
-            version: uint256(1)
-        });
+    function adapterType() external pure override returns (string memory) {
+        return "Asset";
     }
 
     /**
-     * @return Amount of ATokens held by the given user.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the token used in adapter.
      */
-    function getBalance(address token, address user) external view override returns (uint256) {
-        return ERC20(token).balanceOf(user);
+    function tokenType() external pure override returns (string memory) {
+        return "AToken";
+    }
+
+    /**
+     * @return Amount of ATokens held by the given account.
+     * @dev Implementation of ProtocolAdapter interface function.
+     */
+    function getBalance(address token, address account) external view override returns (uint256) {
+        return ERC20(token).balanceOf(account);
     }
 }

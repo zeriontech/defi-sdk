@@ -1,9 +1,8 @@
-pragma solidity 0.6.2;
+pragma solidity 0.6.3;
 pragma experimental ABIEncoderV2;
 
-import { Adapter } from "../Adapter.sol";
+import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { MKRAdapter } from "./MKRAdapter.sol";
-import { ProtocolInfo, Token } from "../../Structs.sol";
 
 
 /**
@@ -22,35 +21,34 @@ interface Pot {
 
 /**
  * @title Adapter for DSR protocol.
- * @dev Implementation of Adapter interface.
+ * @dev Implementation of ProtocolAdapter interface.
  */
-contract DSRAdapter is Adapter, MKRAdapter {
+contract DSRAdapter is ProtocolAdapter, MKRAdapter {
 
     /**
-     * @return ProtocolInfo struct with protocol info.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the adapter.
      */
-    function getInfo() external pure override returns (ProtocolInfo memory) {
-        return ProtocolInfo({
-            name: "Dai Savings Rate",
-            description: "Decentralized lending protocol",
-            protocolType: "Asset",
-            tokenType: "ERC20",
-            iconURL: "protocol-icons.s3.amazonaws.com/dai.png",
-            version: uint256(1)
-        });
+    function adapterType() external pure override returns (string memory) {
+        return "Asset";
     }
 
     /**
-     * @return Amount of DAI locked on the protocol by the given user.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the token used in adapter.
+     */
+    function tokenType() external pure override returns (string memory) {
+        return "ERC20";
+    }
+
+    /**
+     * @return Amount of DAI locked on the protocol by the given account.
+     * @dev Implementation of ProtocolAdapter interface function.
      * This function repeats the calculations made in drip() function of Pot contract.
      */
-    function getBalance(address, address user) external view override returns (uint256) {
+    function getBalance(address, address account) external view override returns (uint256) {
         Pot pot = Pot(POT);
         // solhint-disable-next-line not-rely-on-time
         uint256 chi = mkrRmul(mkrRpow(pot.dsr(), now - pot.rho(), ONE), pot.chi());
 
-        return mkrRmul(chi, pot.pie(user));
+        return mkrRmul(chi, pot.pie(account));
     }
 }

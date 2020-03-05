@@ -1,14 +1,13 @@
-pragma solidity 0.6.2;
+pragma solidity 0.6.3;
 pragma experimental ABIEncoderV2;
 
-import { Adapter } from "../Adapter.sol";
+import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { MKRAdapter } from "./MKRAdapter.sol";
-import { ProtocolInfo, Token } from "../../Structs.sol";
 
 
 /**
  * @dev Vat contract interface.
- * Only the functions required for MCDDepositAdapter contract are added.
+ * Only the functions required for MCDAssetAdapter contract are added.
  * The Vat contract is available here
  * github.com/makerdao/dss/blob/master/src/vat.sol.
  */
@@ -20,7 +19,7 @@ interface Vat {
 
 /**
  * @dev Jug contract interface.
- * Only the functions required for MCDDepositAdapter contract are added.
+ * Only the functions required for MCDAssetAdapter contract are added.
  * The Jug contract is available here
  * github.com/makerdao/dss/blob/master/src/jug.sol.
  */
@@ -32,7 +31,7 @@ interface Jug {
 
 /**
  * @dev DssCdpManager contract interface.
- * Only the functions required for MCDDepositAdapter contract are added.
+ * Only the functions required for MCDAssetAdapter contract are added.
  * The DssCdpManager contract is available here
  * github.com/makerdao/dss-cdp-manager/blob/master/src/DssCdpManager.sol.
  */
@@ -45,34 +44,33 @@ interface DssCdpManager {
 
 
 /**
- * @title Adapter for MCD protocol (asset).
- * @dev Implementation of Adapter interface.
+ * @title Asset adapter for MCD protocol.
+ * @dev Implementation of ProtocolAdapter interface.
  */
-contract MCDAssetAdapter is Adapter, MKRAdapter {
+contract MCDAssetAdapter is ProtocolAdapter, MKRAdapter {
 
     /**
-     * @return ProtocolInfo struct with protocol info.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the adapter.
      */
-    function getInfo() external pure override returns (ProtocolInfo memory) {
-        return ProtocolInfo({
-            name: "Multi-Collateral Dai",
-            description: "Collateralized loans on Maker",
-            protocolType: "Asset",
-            tokenType: "ERC20",
-            iconURL: "protocol-icons.s3.amazonaws.com/maker.png",
-            version: uint256(1)
-        });
+    function adapterType() external pure override returns (string memory) {
+        return "Asset";
     }
 
     /**
-     * @return Amount of collateral locked on the protocol by the given user.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the token used in adapter.
      */
-    function getBalance(address token, address user) external view override returns (uint256) {
+    function tokenType() external pure override returns (string memory) {
+        return "ERC20";
+    }
+
+    /**
+     * @return Amount of collateral locked on the protocol by the given account.
+     * @dev Implementation of ProtocolAdapter interface function.
+     */
+    function getBalance(address token, address account) external view override returns (uint256) {
         DssCdpManager manager = DssCdpManager(MANAGER);
         Vat vat = Vat(VAT);
-        uint256 id = manager.first(user);
+        uint256 id = manager.first(account);
         address urn;
         bytes32 ilk;
         uint256 value;

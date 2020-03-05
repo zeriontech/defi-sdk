@@ -1,11 +1,4 @@
 node_modules
 ./contracts/Migrations.sol
 ./contracts/Structs.sol
-./contracts/AdapterRegistry.sol
-./contracts/AdapterAssetsManager.sol
-./contracts/adapters/MKRAdapter.sol
-./contracts/adapters/AaveAdapter.sol
-./contracts/adapters/CompoundAdapter.sol
-./contracts/adapters/MCDAdapter.sol
-./contracts/adapters/SynthetixAdapter.sol
-./contracts/adapters/CurveLiquidityAdapter.sol
+./contracts/adapters/maker/MKRAdapter.sol

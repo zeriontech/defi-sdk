@@ -1,5 +1,8 @@
+import displayToken from './helpers/displayToken';
+
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ZrxAdapter = artifacts.require('./ZrxAdapter');
+const ProtocolAdapter = artifacts.require('./ZrxAdapter');
+const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
 contract('ZrxAdapter', () => {
   const zrxAddress = '0xE41d2489571d322189246DaFA5ebDe1F4699F498';
@@ -7,49 +10,66 @@ contract('ZrxAdapter', () => {
 
   let accounts;
   let adapterRegistry;
-  let zrxAdapter;
+  let protocolAdapterAddress;
+  let tokenAdapterAddress;
+  const zrx = [
+    zrxAddress,
+    '0x Protocol Token',
+    'ZRX',
+    '18',
+  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await ZrxAdapter.new({ from: accounts[0] })
+    await ProtocolAdapter.new({ from: accounts[0] })
       .then((result) => {
-        zrxAdapter = result.contract;
+        protocolAdapterAddress = result.address;
       });
-    await AdapterRegistry.new(
-      [zrxAdapter.options.address],
-      [[zrxAddress]],
-      { from: accounts[0] },
-    )
+    await TokenAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        tokenAdapterAddress = result.address;
+      });
+    await AdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
         adapterRegistry = result.contract;
       });
+    await adapterRegistry.methods.addProtocols(
+      ['Zrx'],
+      [[
+        'Mock Protocol Name',
+        'Mock protocol description',
+        'Mock website',
+        'Mock icon',
+        '0',
+      ]],
+      [[
+        protocolAdapterAddress,
+      ]],
+      [[[
+        zrxAddress,
+      ]]],
+    )
+      .send({
+        from: accounts[0],
+        gas: '1000000',
+      });
+    await adapterRegistry.methods.addTokenAdapters(
+      ['ERC20'],
+      [tokenAdapterAddress],
+    )
+      .send({
+        from: accounts[0],
+        gas: '1000000',
+      });
   });
 
-  it('should return correct balances and rates', async () => {
-    await adapterRegistry.methods['getProtocolsBalancesAndRates(address)'](testAddress)
+  it('should return correct balances', async () => {
+    await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then((result) => {
-        // eslint-disable-next-line no-console
-        console.log(`Deposited ZRX amount: ${result[0].balances[0].balance.toString()}`);
-
-        const zrxProtocol = [
-          '0x Staking',
-          'Liquidity rewards with ZRX',
-          'Deposit',
-          'https://protocol-icons.s3.amazonaws.com/0x-staking.png',
-          '1',
-        ];
-        const zrx = [
-          zrxAddress,
-          '18',
-          'ZRX',
-        ];
-
-        assert.deepEqual(result[0].protocol, zrxProtocol);
-        assert.deepEqual(result[0].balances[0].asset, zrx);
-        assert.deepEqual(result[0].rates[0].asset, zrx);
-        assert.deepEqual(result[0].rates[0].components[0].underlying, zrx);
-        assert.equal(result[0].rates[0].components[0].rate, 1e18);
+        displayToken(result[0].adapterBalances[0].balances[0].base);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, zrx);
+        assert.equal(result[0].adapterBalances[0].balances[0].underlying.length, 0);
       });
   });
 });

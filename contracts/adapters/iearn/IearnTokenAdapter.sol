@@ -1,8 +1,8 @@
-pragma solidity 0.6.2;
+pragma solidity 0.6.3;
 pragma experimental ABIEncoderV2;
 
 import { TokenAdapter } from "../TokenAdapter.sol";
-import { TokenInfo, Token } from "../../Structs.sol";
+import { TokenMetadata, Component } from "../../Structs.sol";
 import { ERC20 } from "../../ERC20.sol";
 
 
@@ -20,17 +20,17 @@ interface YToken {
 
 /**
  * @title Adapter for YTokens.
- * @dev Implementation of Adapter interface.
+ * @dev Implementation of TokenAdapter interface.
  */
 contract IearnTokenAdapter is TokenAdapter {
 
     /**
-     * @return TokenInfo struct with ERC20-style token info.
-     * @dev Implementation of Adapter interface function.
+     * @return TokenMetadata struct with ERC20-style token info.
+     * @dev Implementation of TokenAdapter interface function.
      */
-    function getInfo(address token) external view override returns (TokenInfo memory) {
-        return TokenInfo({
-            tokenAddress: token,
+    function getMetadata(address token) external view override returns (TokenMetadata memory) {
+        return TokenMetadata({
+            token: token,
             name: ERC20(token).name(),
             symbol: ERC20(token).symbol(),
             decimals: ERC20(token).decimals()
@@ -38,16 +38,16 @@ contract IearnTokenAdapter is TokenAdapter {
     }
 
     /**
-     * @return Array of Token structs with underlying tokens rates for the given asset.
-     * @dev Implementation of Adapter interface function.
+     * @return Array of Component structs with underlying tokens rates for the given asset.
+     * @dev Implementation of TokenAdapter interface function.
      */
-    function getUnderlyingTokens(address token) external view override returns (Token[] memory) {
-        Token[] memory underlyingTokens = new Token[](1);
+    function getComponents(address token) external view override returns (Component[] memory) {
+        Component[] memory underlyingTokens = new Component[](1);
 
-        underlyingTokens[0] = Token({
-            tokenAddress: YToken(token).token(),
+        underlyingTokens[0] = Component({
+            token: YToken(token).token(),
             tokenType: "ERC20",
-            value: YToken(token).getPricePerFullShare()
+            rate: YToken(token).getPricePerFullShare()
         });
 
         return underlyingTokens;

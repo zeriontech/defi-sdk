@@ -1,8 +1,7 @@
-pragma solidity 0.6.2;
+pragma solidity 0.6.3;
 pragma experimental ABIEncoderV2;
 
-import { Adapter } from "../Adapter.sol";
-import { ProtocolInfo, Token } from "../../Structs.sol";
+import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
@@ -28,35 +27,34 @@ interface Synthetix {
 
 
 /**
- * @title Adapter for Synthetix protocol (debt).
- * @dev Implementation of Adapter interface.
+ * @title Debt adapter for Synthetix protocol.
+ * @dev Implementation of ProtocolAdapter interface.
  */
-contract SynthetixDebtAdapter is Adapter {
+contract SynthetixDebtAdapter is ProtocolAdapter {
 
     address internal constant SNX = 0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F;
 
     /**
-     * @return ProtocolInfo struct with protocol info.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the adapter.
      */
-    function getInfo() external pure override returns (ProtocolInfo memory) {
-        return ProtocolInfo({
-            name: "Synthetix",
-            description: "Synthetic assets protocol",
-            protocolType: "Debt",
-            tokenType: "ERC20",
-            iconURL: "protocol-icons.s3.amazonaws.com/synthetix.png",
-            version: uint256(1)
-        });
+    function adapterType() external pure override returns (string memory) {
+        return "Debt";
     }
 
     /**
-     * @return Amount of debt of the given user for the protocol.
-     * @dev Implementation of Adapter interface function.
+     * @return Type of the token used in adapter.
      */
-    function getBalance(address, address user) external view override returns (uint256) {
+    function tokenType() external pure override returns (string memory) {
+        return "ERC20";
+    }
+
+    /**
+     * @return Amount of debt of the given account for the protocol.
+     * @dev Implementation of ProtocolAdapter interface function.
+     */
+    function getBalance(address, address account) external view override returns (uint256) {
         Synthetix synthetix = Synthetix(Proxy(SNX).target());
 
-        return synthetix.debtBalanceOf(user, "sUSD");
+        return synthetix.debtBalanceOf(account, "sUSD");
     }
 }
