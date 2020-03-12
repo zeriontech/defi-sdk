@@ -1,207 +1,177 @@
-# Zerion Smart Contracts
-
-This is a project with Zerion Smart Contracts interacting with different DeFi protocols.
+# DeFi SDK
 
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/lint/badge.svg)
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/build/badge.svg)
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/test/badge.svg)
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/coverage/badge.svg)
 
-## Summary
-This is a system of smart contracts created for intercting with the different DeFi protocols.
-In the current implementation, one can check balances of assets locked on the [supported](#list-of-supported-protocols) protocols.
-There is a special **Adapter** contract for every protocol.
-All the adapters are kept and managed in **AdapterRegistry** contact.
-All the interactions are done via **AdapterRegistry** contract as well.
+![](./images/1.png)
 
-## Table of Contents
+**DeFi SDK** is an open-source system of smart contracts designed for precise DeFi portfolio accounting. To put it simply, DeFi SDK is the on-chain *balanceOf* for DeFi protocols. 
 
-  - [Addresses of deployed contracts](#addresses-of-deployed-contracts)
-  - [Interacting with AdapterManager](#interacting-with-adaptermanager)
-  - [List of supported protocols](#list-of-supported-protocols)
-  - [Creating and adding new adapters](#creating-and-adding-new-adapters)
-  - [What's next](#whats-next)
+If you have any questions about DeFi SDK, feel free to reach out to us on our [Discord server](https://go.zerion.io/discord).
 
-## Addresses of deployed contracts
+## Features
 
-[AdapterRegistry](https://etherscan.io/address/0xaf51e57d3c78ce8495219ceb6d559b85e62f680e#code) is currently the only contract with verified source code.
+#### 💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, Curve*, etc. 
+  > How much debt does `0xdead..beef` have on Curve Y pool?
+#### 📊Get the underlying components of complex derivative ERC20 tokens 
+> How much `cUSDC` vs `ETH` does `ETHMACOAPY` have?
+#### ✨Interact with multiple DeFi protocols in a unified way (coming soon)
+> See [What’s next for DeFi SDK](#whats-next-for-defi-sdk-)
 
-## Interacting with AdapterManager
+## Table of Contents 
 
-### Functions description
+  - [Examples](#examples)
+  - [DeFi SDK architecture](#defi-sdk-architecture)
+  - [Supported protocols](#supported-protocols)
+  - [How to add your adapter](#how-to-add-your-adapter)
+  - [What’s next for DeFi SDK](#whats-next-for-defi-sdk-)
+  - [Security vulnerabilities](#security-vulnerabilities-)
 
-AdapterManager is the contract managing the list of supported adapters and their assets.
+## Examples 
 
-`getAdapters()` function returns the list of adapters supported by the **AdapterManager** contract.
+### Fetch Compound debt and collateral
 
-`getAdapterAssets(address adapter)` function returns the list of assets supported for the given adapter.
+As of now, to get all cTokens along with a user's debt on Compound you need to perform over 10 calls to the Ethereum node to different contracts or rely on a centralized API. With DeFi SDK, you can call one function `getProtocolBalances(account, ["Compound"])` on the `api.zerion.eth` smart contract to get all borrowed and supplied tokens.
 
-This contract is also used for checking balances and exchange rates. 
-`getProtocolsBalancesAndRates(address user)`, `getProtocolsBalances(address user)`, `getProtocolsRates()` functions iterate over supported adapters and return balances and/or rates of the assets locked on the supported protocols.
-
-In case adapter or asset is not supported by **AdapterManager** contract, functions with adapters (and assets) being function's arguments may be used.
-
-More detailed information about adapters may be found in [adapters documentation](./docs/ADAPTERS.md).
-
-### Output description
-
-All the functions returns arrays of structs that are defined in [Structs.sol](./contracts/Structs.sol).
-
-Three functions listed above return arrays of the `ProtocolBalancesAndRates`, `ProtocolBalances`, or `ProtocolRates` structs respectively.
-All these structs have protocol metadata as the first field. After that, balances and/or rates are added.
-The following object is the example of `getProtocolsBalancesAndRates(address user)` function response:
-
-```javascript
-{
-  protocol: {
-    name: "Curve.fi",
-    description: "Exchange liquidity pool for stablecoin trading",
-    icon: "https://protocol-icons.s3.amazonaws.com/curve.fi.png",
-    version: 1
+```solidity
+getBalances('0xdead...beef', ['Compound'])
+```
+```jsonld=1
+[{
+  metadata: {
+    name: 'Compound',
+    description: 'Decentralized Lending & Borrowing Protocol',
+    websiteURL: 'compound.finance',
+    iconURL: 'protocol-icons.s3.amazonaws.com/compound.png',
+    version: '0'
   },
-  balances: [
-    {
-      asset: {
-        contractAddress: 0x3740fb63ab7a09891d7c0d4299442A551D06F5fD,
-        decimals: 18,
-        symbol: "cDAIUSDC"
-      },
-      balance: 348612565020359685
-    }
-  ],
-  rates: [
-    {
-      asset: {
-        contractAddress: 0x3740fb63ab7a09891d7c0d4299442A551D06F5fD,
-          decimals: 18,
-          symbol: "cDAIUSDC"
-      },
-      components: [
-        {
-          asset: {
-            contractAddress: 0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643,
-            decimals: 8,
-            symbol: "cDAI"
-          },
-          rate: 2369927755
+  adapterBalances: [{
+    metadata: {
+      adapterAddress: '0x90F0Ed76cfCf75Ccab31A9b4E51782F230aA0747',
+      adapterType: 'Asset'
+    },
+    balances: [{
+      base: {
+        metadata: {
+          token: '0x6C8c6b02E7b2BE14d4fA6022Dfd6d75921D90E4E',
+          name: 'Compound Basic Attention Token',
+          symbol: 'cBAT',
+          decimals: '8'
         },
-        {
-          asset: {
-            contractAddress: 0x39AA39c021dfbaE8faC545936693aC917d5E7563,
-            decimals: 8,
-            symbol: "cUSDC"
+        amount: '0'
+      },
+      underlying: [{
+        metadata: {
+          token: '0x0D8775F648430679A709E98d2b0Cb6250d2887EF',
+          name: 'Basic Attention Token',
+          symbol: 'BAT',
+          decimals: '18'
+        },
+        amount: '0'
+      }]
+    }]
+  },{
+      metadata: {
+        adapterAddress: '0xD0646777520Aff625F976a8D81b95B5B42cDa1B9',
+        adapterType: 'Debt'
+      },
+      balances: [{
+        base: {
+          metadata: {
+            token: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+            name: 'Dai Stablecoin',
+            symbol: 'DAI',
+            decimals: '18'
           },
-          rate: 2528831163
-        }
-      ]
+          amount: '0'
+        },
+        underlying: []
+      }]
     }
   ]
-}
+}]
 ```
 
-## List of supported protocols
+### Make sense of tokens like `UNI-V1 ETH-cDAI`
 
-The following protocols are currently supported:
+<p align="center">
+  <img src="https://i.ibb.co/ZHq39S3/derivatives.png" width="650">
+</p>
 
-- Aave
-- Compound
-- Curve
-- DSR
-- MCD
-- Pool Together
-- Synthetix
-- 0x Staking
-
-## Creating and adding new adapters
-
-To create new adapter, one have to implement `Adapter` interface.
-`getProtocol()`, `getAssetBalance()`, `getAssetRate()`, and `getAsset()` functions MUST be implemented.
-
-> **NOTE**: only `internal constant` state variables MUST be used, i.e. adapter MUST be stateless.
-Only `internal` functions SHOULD be used, as all the other functions will not be accessible by **AdapterRegistry** contract.
-
-`getProtocol()` function has no arguments and MUST return the protocol info, namely:
-
-- `name`: `string` with protocol name,
-- `description`: `string` with short protocol description,
-- `icon`: `string` with icon link,
-- `version`: `uint256` number with adapter version.
-
-`getAssetAmount(address,address)` function has two arguments of `address` type:
-the first one is asset address and the second one is user address.
-The function MUST return balance of given asset held on the protocol for the given user.
-
-`getAssetRate(address)` function has the only argument – asset address.
-The function MUST return all the underlying assets and their exchange rates scaled by `1e18`.
-
-`getAsset(address)` function has the only argument – asset address.
-The function MUST return the asset info, namely:
-
-- `contractAddress`: `address` of the asset contract,
-- `decimals`: `uint8` number with asset decimals,
-- `symbol`: `string` with asset symbol.
-
-After the adapter is deployed and tested, one can contact Zerion team in order to add the adapter to the **AdapterRegistry** contract – balances will automatically appear in Zerion interface.
-
-## What's next
-
-We are currently developing interactive part of our system.
-All the interactions will be separated into parts – actions.
-Actions will be of two kinds – deposit and withdraw.
-The actions will be sent to the interactive adapters – adapters interacting with the supported protocols.
-
-The system will consist of the following parts:
-  - **Logic** contract. 
-The main contract that receives an array of actions, conducts all the calculations, redirects actions to the corresponding interactive adapters.
-  - **TokenSpender** contract.
-The contract that holds all the approvals from users.
-It transfers all the required assets under the request of Logic contract.
-
-### Use-cases for Logic contract
-
-#### Swap cDAI to DSR (Chai)
-
-The following actions array will be sent to `Logic` contract:
-
+Sometimes, a DeFi token contains several other tokens, and to calculate their price, you need to know their underlying assets. For example, a `Uniswap V1 cDAI pool` consists of `ETH` and `cDAI`. `cDAI`, in turn, has `DAI` as an underlying token. With DeFi SDK you can call
+```solidity 
+// Uniswap V1 cDAI pool
+getFinalFullTokenBalance('0x34E89740adF97C3A9D3f63Cc2cE4a914382c230b', "Uniswap V1 pool token")
 ```
-[
-    {
-        actionType: ActionType.Withdraw,
-        InteractiveAdapter: <address of cDAI wrapper>,
-        asset: 0x5d3a536e4d6dbd6114cc1ead35777bab948e3643,
-        amount: Amount({
-            amountType: AmountType.Relative,
-            value: RELATIVE_AMOUNT_BASE
-        }),
-        data: ""
-    },
-    {
-        actionType: ActionType.Deposit,
-        InteractiveAdapter: <address of chai wrapper>,
-        asset: 0x5d3a536e4d6dbd6114cc1ead35777bab948e3643,
-        amount: Amount({
-            amountType: AmountType.Relative,
-            value: RELATIVE_AMOUNT_BASE
-        }),
-        data: ""
-    }
-]
+```jsonld=
+100 ETH
+0.1 DAI 
+``` 
+ and fetch the decomposition of UNI-token into ERC20 tokens, like `ETH` and `DAI`.
+
+### Get account balances across all supported DeFi protocols
+
+In case you want to get account balances across all supported DeFi protocols, you can call 
+```solidity 
+// bankless.zerion.eth portfolio 
+getBalances('0x0ef51b7dac3933b8109482e7d910c21848e45da0f') 
 ```
+```jsonld=
+100 DAI // collateral on Compound
+0.1 ETH // debt on Compound  
+100 USDC // locked in PoolTogether
+213 TUSD + 201 USDC + 82 USDT + 11 DAI // Curve Y pool
+...
+```
+and obtain all balances for a given account. The response from the smart-contract will contain information about each of the protocols.
 
-Logic layer should do the following:
+## DeFi SDK architecture
 
-1. Call `redeem()` function with `getAssetAmount(address(this))` argument.
-2. Approve all the DAI to `Chai` contract.
-3. Call `join()` function with `address(this)` and `getAssetAmount(address(this))` arguments.
-4. Withdraw Chai tokens to the user.
+- **ProtocolAdapter** is a special contract for every protocol. Its main purpose is to wrap all the protocol interactions. 
+There are different types of protocol adapters: "Asset" adapter returns the amount of the account's tokens held on the protocol and the "Debt" adapter returns the amount of the account's debt to the protocol. Some protocols do not use "simple" ERC20 tokens but instead have complex derivatives, for example the Compound protocol has CTokens. The **ProtocolAdapter** contract also provides information about the type of tokens used within it.
+- **TokenAdapter** is a contract for every derivative token type (e.g cTokens, aTokens, yTokens, etc.) 
+Its main purpose is to provide ERC20-style token metadata as well as information about the underlying ERC20 tokens (like DAI for cDAI). Namely, it provides addresses, types and rates of underlying tokens.
+- **AdapterRegistry** is a contract that a) maintains a list of *ProtocolAdapters* and *TokenAdapters* and b) is called to fetch user balances. 
 
-More detailed information about interactive adapters may be found in [interactive adapters documentation](./docs/INTERACTIVE_ADAPTERS.md).
+More detailed documentation about contracts can be found in [adapters](../../wiki/Adapters) and [AdapterRegistry](../../wiki/AdapterRegistry) documentation.
+
+## Supported protocols 
+
+| Protocol Name | Description | Protocol Adapters | Token Adapters |
+| :-----------: | :---------: | :---------------: | :------------: |
+| [Aave](./contracts/adapters/aave) | Decentralized lending & borrowing protocol. | [Asset adapter](./contracts/adapters/aave/AaveAssetAdapter.sol) <br> [Debt adapter](contracts/adapters/aave/AaveDebtAdapter.sol) | ["AToken"](./contracts/adapters/aave/AaveTokenAdapter.sol) |
+| [Compound](./contracts/adapters/compound) | Decentralized lending & borrowing protocol. | [Asset adapter](./contracts/adapters/compound/CompoundAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/compound/CompoundDebtAdapter.sol) | ["CToken"](./contracts/adapters/compound/CompoundTokenAdapter.sol) |
+| [Curve](./contracts/adapters/curve) | Exchange liquidity pool for stablecoin trading. Supports Compound, Y, and BUSD pools. | [Asset adapter](./contracts/adapters/curve/CurveAdapter.sol) | ["Curve pool token"](contracts/adapters/curve/CurveTokenAdapter.sol) |
+| [dYdX](./contracts/adapters/dydx) | Decentralized trading platform. All 4 markets (WETH, SAI, USDC, DAI) are supported. | [Asset adapter](./contracts/adapters/dydx/DyDxAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/dydx/DyDxDebtAdapter.sol) | — |
+| [iearn.finance (v2/v3)](./contracts/adapters/iearn) | Yield aggregator for lending platforms. Protocol adapter is duplicated for v2 and v3 versions of protocol. | [Asset adapter](./contracts/adapters/iearn/IearnAdapter.sol) | ["YToken"](./contracts/adapters/iearn/IearnTokenAdapter.sol) |
+| [Chai](./contracts/adapters/maker) | A simple ERC20 wrapper over the Dai Savings Rate. | [Asset adapter](./contracts/adapters/maker/ChaiAdapter.sol) | ["Chai token"](./contracts/adapters/maker/ChaiTokenAdapter.sol) |
+| [DSR](./contracts/adapters/maker) | Decentralized lending protocol by MakerDAO. | [Asset adapter](./contracts/adapters/maker/DSRAdapter.sol) | — |
+| [MCD](./contracts/adapters/maker) | Collateralized loans on Maker. | [Asset adapter](./contracts/adapters/maker/MCDAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/maker/MCDDebtAdapter.sol) | — | 
+| [PoolTogether](./contracts/adapters/poolTogether) | Decentralized no-loss lottery. Supports SAI, DAI, and USDC pools. | [Asset adapter](./contracts/adapters/poolTogether/PoolTogetherAdapter.sol) | ["PoolTogether pool"](./contracts/adapters/poolTogether/PoolTogetherTokenAdapter.sol) |
+| [Synthetix](./contracts/adapters/synthetix) | Synthetic assets protocol. Asset adapter returns amount of SNX locked as collateral. | [Asset adapter](./contracts/adapters/synthetix/SynthetixAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/synthetix/SynthetixDebtAdapter.sol) | — |
+| [Uniswap V1](./contracts/adapters/uniswap) | Automated liquidity protocol. Top 30 pools are added to the **AdapterRegistry** contract, however  adapter supports all Uniswap pools. | [Asset adapter](./contracts/adapters/uniswap/UniswapV1Adapter.sol) supports all Uniswap pools | ["Uniswap V1 pool token"](./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol) |
+| [0x Staking](./contracts/adapters/zrx) | Liquidity rewards for staking ZRX. | [Asset adapter](./contracts/adapters/zrx/ZrxAdapter.sol) | — |
+
+## How to add your adapter
+
+The full instructions on how to add a custom adapter to the **AdapterRegistry** contract may be found in our [wiki](../../wiki/Adding-new-adapters).
+
+If you have questions and/or want to add your adapter to Zerion reach out to us on our [Discord server](https://go.zerion.io/discord).
+
+
+## What’s next for DeFi SDK? 🚀
+
+This first version of DeFi SDK is for read-only accounting purposes. Our next step is to introduce Interactive Adapters that allow users to make cross-protocol transactions from a single interface. We are incredibly excited to work with developers, users and the wider DeFi community to make these integrations as secure and accessible as possible. Watch this space, because the “De” in DeFi is about to get a whole lot more user-friendly!
+
+## Security Vulnerabilities 🛡
+
+If you discover a security vulnerability within DeFi SDK, please send us an e-mail at inbox@zerion.io. All security vulnerabilities will be promptly addressed.
 
 ## Dev notes
 
 This project uses Truffle and web3js for all Ethereum interactions and testing.
-
-### Available Functionality
 
 #### Compile contracts
 
@@ -215,9 +185,13 @@ This project uses Truffle and web3js for all Ethereum interactions and testing.
 
 `npm run coverage`
 
+Currently, unsupported files are ignored.
+
 #### Run Solidity and JS linters
 
 `npm run lint`
+
+Currently, unsupported files are ignored.
 
 #### Run all the migrations scripts
 
@@ -225,4 +199,8 @@ This project uses Truffle and web3js for all Ethereum interactions and testing.
 
 #### Verify contract's code on Etherscan
 
-`truffle run verify ContractName@0xcontractAddress –network mainnet`
+`truffle run verify ContractName@0xcontractAddress --network mainnet`
+
+## License
+
+All smart contracts are released under LGPL v.3.
