@@ -23,7 +23,7 @@ module.exports = (deployer, network, accounts) => {
   const mkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2';
   const manaAddress = '0x0F5D2fB29fb7d3CFeE444a200298f468908cC942';
   const zrxAddress = '0xE41d2489571d322189246DaFA5ebDe1F4699F498';
-  const snxProxyAddress = '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F';
+  const snxAddress = '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F';
   const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
 
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
@@ -40,8 +40,6 @@ module.exports = (deployer, network, accounts) => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
   const saiAddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
-
-  const snxAddress = '0x7cB89c509001D25dA9938999ABFeA6740212E5f0';
 
   const aaveAdapterAssets = [
     daiAddress,

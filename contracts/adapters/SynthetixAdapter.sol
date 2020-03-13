@@ -6,6 +6,17 @@ import { Component } from "../Structs.sol";
 
 
 /**
+ * @dev Proxy contract interface.
+ * Only the functions required for SynthetixAdapter contract are added.
+ * The Proxy contract is available here
+ * https://github.com/Synthetixio/synthetix/blob/master/contracts/Proxy.sol.
+ */
+interface Proxy {
+    function target() external view returns (address);
+}
+
+
+/**
  * @dev Synthetix contract interface.
  * Only the functions required for SynthetixAdapter contract are added.
  * The Synthetix contract is available here
@@ -25,8 +36,8 @@ interface Synthetix {
  */
 contract SynthetixAdapter is Adapter {
 
-    address internal constant SNX = 0x153C3148A0a285A6f9F6d1996E1348832249bF7e;
-    address internal constant SUSD = 0x2A020C1ad728f1C12735bC4877CEECa4491A4a3D;
+    address internal constant SNX = 0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F;
+    address internal constant SUSD = 0x57Ab1ec28D129707052df4dF418D58a2D46d5f51;
 
     /**
      * @return Name of the protocol.
@@ -41,7 +52,7 @@ contract SynthetixAdapter is Adapter {
      * @dev Implementation of Adapter function.
      */
     function getAssetAmount(address asset, address user) external view override returns (int256) {
-        Synthetix synthetix = Synthetix(SNX);
+        Synthetix synthetix = Synthetix(Proxy(SNX).target());
         if (asset == SNX) {
             return int256(synthetix.balanceOf(user) - synthetix.transferableSynthetix(user));
         } else if (asset == SUSD) {
