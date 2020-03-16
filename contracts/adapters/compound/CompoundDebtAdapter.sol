@@ -28,7 +28,7 @@ interface CompoundRegistry {
 
 /**
  * @title Debt adapter for Compound protocol.
- * @dev Implementation of Adapter interface.
+ * @dev Implementation of ProtocolAdapter interface.
  */
 contract CompoundDebtAdapter is ProtocolAdapter {
 
@@ -36,6 +36,7 @@ contract CompoundDebtAdapter is ProtocolAdapter {
 
     /**
      * @return Type of the adapter.
+     * @dev Implementation of ProtocolAdapter interface function.
      */
     function adapterType() external pure override returns (string memory) {
         return "Debt";
@@ -43,6 +44,7 @@ contract CompoundDebtAdapter is ProtocolAdapter {
 
     /**
      * @return Type of the token used in adapter.
+     * @dev Implementation of ProtocolAdapter interface function.
      */
     function tokenType() external pure override returns (string memory) {
         return "ERC20";
@@ -50,7 +52,7 @@ contract CompoundDebtAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of debt of the given account for the protocol.
-     * @dev Implementation of Adapter interface function.
+     * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
         CToken cToken = CToken(CompoundRegistry(REGISTRY).getCToken(token));

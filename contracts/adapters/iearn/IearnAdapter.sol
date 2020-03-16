@@ -7,12 +7,13 @@ import { ERC20 } from "../../ERC20.sol";
 
 /**
  * @title Adapter for iearn.finance protocol.
- * @dev Implementation of Adapter interface.
+ * @dev Implementation of ProtocolAdapter interface.
  */
 contract IearnAdapter is ProtocolAdapter {
 
     /**
      * @return Type of the adapter.
+     * @dev Implementation of ProtocolAdapter interface function.
      */
     function adapterType() external pure override returns (string memory) {
         return "Asset";
@@ -20,6 +21,7 @@ contract IearnAdapter is ProtocolAdapter {
 
     /**
      * @return Type of the token used in adapter.
+     * @dev Implementation of ProtocolAdapter interface function.
      */
     function tokenType() external pure override returns (string memory) {
         return "YToken";
@@ -27,7 +29,7 @@ contract IearnAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of YTokens held by the given account.
-     * @dev Implementation of Adapter function.
+     * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
         return ERC20(token).balanceOf(account);

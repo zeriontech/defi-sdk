@@ -20,12 +20,13 @@ interface stableswap {
 
 /**
  * @title Adapter for Curve protocol.
- * @dev Implementation of Adapter interface.
+ * @dev Implementation of ProtocolAdapter interface.
  */
 contract CurveAdapter is ProtocolAdapter {
 
     /**
      * @return Type of the adapter.
+     * @dev Implementation of ProtocolAdapter interface function.
      */
     function adapterType() external pure override returns (string memory) {
         return "Asset";
@@ -33,6 +34,7 @@ contract CurveAdapter is ProtocolAdapter {
 
     /**
      * @return Type of the token used in adapter.
+     * @dev Implementation of ProtocolAdapter interface function.
      */
     function tokenType() external pure override returns (string memory) {
         return "Curve pool token";
@@ -41,7 +43,7 @@ contract CurveAdapter is ProtocolAdapter {
     /**
      * @return Amount of Curve pool tokens held by the given account.
      * @param token Address of the pool token!
-     * @dev Implementation of Adapter interface function.
+     * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
         return ERC20(token).balanceOf(account);

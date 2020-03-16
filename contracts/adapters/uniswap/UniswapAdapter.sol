@@ -24,6 +24,7 @@ contract UniswapAdapter is ProtocolAdapter {
 
     /**
      * @return Type of the adapter.
+     * @dev Implementation of ProtocolAdapter interface function.
      */
     function adapterType() external pure override returns (string memory) {
         return "Asset";
@@ -31,6 +32,7 @@ contract UniswapAdapter is ProtocolAdapter {
 
     /**
      * @return Type of the token used in adapter.
+     * @dev Implementation of ProtocolAdapter interface function.
      */
     function tokenType() external pure override returns (string memory) {
         return "Uniswap pool token";
