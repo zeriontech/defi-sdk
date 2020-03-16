@@ -1,7 +1,6 @@
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
-contract('AdapterRegistry deployed', () => {
+contract.skip('AdapterRegistry deployed', () => {
   let adapterRegistry;
 
   beforeEach(async () => {
@@ -50,12 +49,6 @@ contract('AdapterRegistry deployed', () => {
             'ERC20',
           ],
         );
-      });
-    await adapterRegistry.methods['getBalances(address)'](testAddress)
-      .call()
-      .then((result) => {
-        // eslint-disable-next-line no-console
-        console.dir(result, { depth: null });
       });
   });
 });

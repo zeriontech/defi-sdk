@@ -220,7 +220,7 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('Aave');
   metadata.push([
     'Aave',
-    'Decentralized Lending & Borrowing Protocol',
+    'Decentralized lending & borrowing protocol',
     'aave.com',
     'protocol-icons.s3.amazonaws.com/aave.png',
     '0',
@@ -238,7 +238,7 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('Compound');
   metadata.push([
     'Compound',
-    'Decentralized Lending & Borrowing Protocol',
+    'Decentralized lending & borrowing protocol',
     'compound.finance',
     'protocol-icons.s3.amazonaws.com/compound.png',
     '0',
@@ -269,9 +269,9 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('dYdX');
   metadata.push([
     'dYdX',
-    '',
+    'Decentralized trading platform',
     'dydx.exchange',
-    'protocol-icons.s3.amazonaws.com/dydx.png',
+    'protocol-icons.s3.amazonaws.com/dYdX.png',
     '0',
   ]);
   await deployer.deploy(IearnAdapter, { from: accounts[0] })
@@ -282,9 +282,9 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('iearn.finance (v2)');
   metadata.push([
     'iearn.finance (v2)',
-    '',
+    'Yield aggregator for lending platforms',
     'iearn.finance',
-    '',
+    'protocol-icons.s3.amazonaws.com/iearn.png',
     '0',
   ]);
   await deployer.deploy(IearnAdapter, { from: accounts[0] })
@@ -295,9 +295,9 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('iearn.finance (v3)');
   metadata.push([
     'iearn.finance (v3)',
-    '',
+    'Yield aggregator for lending platforms',
     'iearn.finance',
-    '',
+    'protocol-icons.s3.amazonaws.com/iearn.png',
     '0',
   ]);
   await deployer.deploy(ChaiAdapter, { from: accounts[0] })
@@ -310,7 +310,7 @@ module.exports = async (deployer, network, accounts) => {
     'Chai',
     'A simple ERC20 wrapper over the Dai Savings Rate',
     'chai.money',
-    '',
+    'protocol-icons.s3.amazonaws.com/chai.png',
     '0',
   ]);
   await deployer.deploy(DSRAdapter, { from: accounts[0] })
@@ -321,7 +321,7 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('Dai Savings Rate');
   metadata.push([
     'Dai Savings Rate',
-    'Decentralized Lending Protocol',
+    'Decentralized lending protocol',
     'makerdao.com',
     'protocol-icons.s3.amazonaws.com/dai.png',
     '0',
@@ -370,7 +370,7 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('Synthetix');
   metadata.push([
     'Synthetix',
-    'Synthetic Assets Protocol',
+    'Synthetic assets protocol',
     'synthetix.io',
     'protocol-icons.s3.amazonaws.com/synthetix.png',
     '0',
@@ -383,9 +383,9 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('Uniswap');
   metadata.push([
     'Uniswap',
-    '',
-    'uniswap.io',
-    '',
+    'Automated liquidity protocol',
+    'uniswap.org',
+    'protocol-icons.s3.amazonaws.com/Uniswap.png',
     '0',
   ]);
   await deployer.deploy(ZrxAdapter, { from: accounts[0] })
@@ -459,7 +459,7 @@ module.exports = async (deployer, network, accounts) => {
       )
         .send({
           from: accounts[0],
-          gas: '5000000',
+          gasLimit: '5000000',
         });
       await registry.contract.methods.addTokenAdapters(
         [
@@ -476,7 +476,7 @@ module.exports = async (deployer, network, accounts) => {
       )
         .send({
           from: accounts[0],
-          gas: '5000000',
+          gasLimit: '5000000',
         });
     });
 };

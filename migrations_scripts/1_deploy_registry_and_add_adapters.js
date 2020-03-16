@@ -13,7 +13,7 @@ const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
-const UniswapAdapter = artifacts.require('UniswapAdapter');
+const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const AaveTokenAdapter = artifacts.require('AaveTokenAdapter');
@@ -22,7 +22,7 @@ const CurveTokenAdapter = artifacts.require('CurveTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
-const UniswapTokenAdapter = artifacts.require('UniswapTokenAdapter');
+const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 
 const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
@@ -165,7 +165,7 @@ const synthetixAssetAdapterTokens = [
 const synthetixDebtAdapterTokens = [
   susdAddress,
 ];
-const uniswapAdapterTokens = [ // top 30 pools
+const uniswapV1AdapterTokens = [ // top 30 pools
   '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb',
   '0x2b591e99afe9f32eaa6214f7b7629768c40eeb39',
   '0x6b175474e89094c44da98b954eedeac495271d0f',
@@ -220,7 +220,7 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('Aave');
   metadata.push([
     'Aave',
-    'Decentralized Lending & Borrowing Protocol',
+    'Decentralized lending & borrowing protocol',
     'aave.com',
     'protocol-icons.s3.amazonaws.com/aave.png',
     '0',
@@ -238,7 +238,7 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('Compound');
   metadata.push([
     'Compound',
-    'Decentralized Lending & Borrowing Protocol',
+    'Decentralized lending & borrowing protocol',
     'compound.finance',
     'protocol-icons.s3.amazonaws.com/compound.png',
     '0',
@@ -269,9 +269,9 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('dYdX');
   metadata.push([
     'dYdX',
-    '',
+    'Decentralized trading platform',
     'dydx.exchange',
-    'protocol-icons.s3.amazonaws.com/dydx.png',
+    'protocol-icons.s3.amazonaws.com/dYdX.png',
     '0',
   ]);
   await deployer.deploy(IearnAdapter, { from: accounts[0] })
@@ -282,9 +282,9 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('iearn.finance (v2)');
   metadata.push([
     'iearn.finance (v2)',
-    '',
+    'Yield aggregator for lending platforms',
     'iearn.finance',
-    '',
+    'protocol-icons.s3.amazonaws.com/iearn.png',
     '0',
   ]);
   await deployer.deploy(IearnAdapter, { from: accounts[0] })
@@ -295,9 +295,9 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('iearn.finance (v3)');
   metadata.push([
     'iearn.finance (v3)',
-    '',
+    'Yield aggregator for lending platforms',
     'iearn.finance',
-    '',
+    'protocol-icons.s3.amazonaws.com/iearn.png',
     '0',
   ]);
   await deployer.deploy(ChaiAdapter, { from: accounts[0] })
@@ -310,7 +310,7 @@ module.exports = async (deployer, network, accounts) => {
     'Chai',
     'A simple ERC20 wrapper over the Dai Savings Rate',
     'chai.money',
-    '',
+    'protocol-icons.s3.amazonaws.com/chai.png',
     '0',
   ]);
   await deployer.deploy(DSRAdapter, { from: accounts[0] })
@@ -321,7 +321,7 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('Dai Savings Rate');
   metadata.push([
     'Dai Savings Rate',
-    'Decentralized Lending Protocol',
+    'Decentralized lending protocol',
     'makerdao.com',
     'protocol-icons.s3.amazonaws.com/dai.png',
     '0',
@@ -370,22 +370,22 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('Synthetix');
   metadata.push([
     'Synthetix',
-    'Synthetic Assets Protocol',
+    'Synthetic assets protocol',
     'synthetix.io',
     'protocol-icons.s3.amazonaws.com/synthetix.png',
     '0',
   ]);
-  await deployer.deploy(UniswapAdapter, { from: accounts[0] })
+  await deployer.deploy(UniswapV1Adapter, { from: accounts[0] })
     .then(() => {
-      adapters[11].push(UniswapAdapter.address);
-      tokens[11].push(uniswapAdapterTokens);
+      adapters[11].push(UniswapV1Adapter.address);
+      tokens[11].push(uniswapV1AdapterTokens);
     });
-  protocolNames.push('Uniswap');
+  protocolNames.push('Uniswap V1');
   metadata.push([
-    'Uniswap',
-    '',
-    'uniswap.io',
-    '',
+    'Uniswap V1',
+    'Automated liquidity protocol',
+    'uniswap.org',
+    'protocol-icons.s3.amazonaws.com/Uniswap.png',
     '0',
   ]);
   await deployer.deploy(ZrxAdapter, { from: accounts[0] })
@@ -443,10 +443,10 @@ module.exports = async (deployer, network, accounts) => {
         PoolTogetherTokenAdapter.address,
       );
     });
-  await deployer.deploy(UniswapTokenAdapter, { from: accounts[0] })
+  await deployer.deploy(UniswapV1TokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
-        UniswapTokenAdapter.address,
+        UniswapV1TokenAdapter.address,
       );
     });
   await deployer.deploy(AdapterRegistry, { from: accounts[0] })
@@ -470,7 +470,7 @@ module.exports = async (deployer, network, accounts) => {
           'YToken',
           'Chai token',
           'PoolTogether pool',
-          'Uniswap pool token',
+          'Uniswap V1 pool token',
         ],
         tokenAdapters,
       )
