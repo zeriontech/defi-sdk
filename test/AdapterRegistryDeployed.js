@@ -18,7 +18,7 @@ contract.skip('AdapterRegistry deployed', () => {
           result,
           [
             '0x Staking',
-            'Uniswap',
+            'Uniswap V1',
             'Synthetix',
             'PoolTogether',
             'Multi-Collateral Dai',
@@ -39,7 +39,7 @@ contract.skip('AdapterRegistry deployed', () => {
         assert.deepEqual(
           result,
           [
-            'Uniswap pool token',
+            'Uniswap V1 pool token',
             'PoolTogether pool',
             'Chai token',
             'YToken',

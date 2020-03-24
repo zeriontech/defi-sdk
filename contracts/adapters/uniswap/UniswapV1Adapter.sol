@@ -17,10 +17,10 @@ interface Factory {
 
 
 /**
- * @title Adapter for Uniswap protocol.
+ * @title Adapter for Uniswap V1 protocol.
  * @dev Implementation of ProtocolAdapter interface.
  */
-contract UniswapAdapter is ProtocolAdapter {
+contract UniswapV1Adapter is ProtocolAdapter {
 
     /**
      * @return Type of the adapter.
@@ -35,7 +35,7 @@ contract UniswapAdapter is ProtocolAdapter {
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function tokenType() external pure override returns (string memory) {
-        return "Uniswap pool token";
+        return "Uniswap V1 pool token";
     }
 
     /**

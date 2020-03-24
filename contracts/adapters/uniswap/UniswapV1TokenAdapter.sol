@@ -31,10 +31,10 @@ interface Factory {
 
 
 /**
- * @title TokenAdapter for Uniswap pool tokens.
+ * @title TokenAdapter for Uniswap V1 pool tokens.
  * @dev Implementation of TokenAdapter interface.
  */
-contract UniswapTokenAdapter is TokenAdapter {
+contract UniswapV1TokenAdapter is TokenAdapter {
 
     address internal constant FACTORY = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -48,7 +48,7 @@ contract UniswapTokenAdapter is TokenAdapter {
         return TokenMetadata({
             token: token,
             name: getPoolName(token),
-            symbol: "UNI",
+            symbol: "UNI-V1",
             decimals: uint8(Exchange(token).decimals())
         });
     }

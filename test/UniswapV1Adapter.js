@@ -1,8 +1,8 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./UniswapAdapter');
-const TokenAdapter = artifacts.require('./UniswapTokenAdapter');
+const ProtocolAdapter = artifacts.require('./UniswapV1Adapter');
+const TokenAdapter = artifacts.require('./UniswapV1TokenAdapter');
 const CompoundTokenAdapter = artifacts.require('./CompoundTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
@@ -33,43 +33,43 @@ contract('UniswapAdapter', () => {
   const batUni = [
     batUniAddress,
     'BAT pool',
-    'UNI',
+    'UNI-V1',
     '18',
   ];
   const mkrUni = [
     mkrUniAddress,
     'MKR pool',
-    'UNI',
+    'UNI-V1',
     '18',
   ];
   const daiUni = [
     daiUniAddress,
     'DAI pool',
-    'UNI',
+    'UNI-V1',
     '18',
   ];
   const usdcUni = [
     usdcUniAddress,
     'USDC pool',
-    'UNI',
+    'UNI-V1',
     '18',
   ];
   const snxUni = [
     snxUniAddress,
     'SNX pool',
-    'UNI',
+    'UNI-V1',
     '18',
   ];
   const saiUni = [
     saiUniAddress,
     'SAI pool',
-    'UNI',
+    'UNI-V1',
     '18',
   ];
   const cDaiUni = [
     cDaiUniAddress,
     'cDAI pool',
-    'UNI',
+    'UNI-V1',
     '18',
   ];
   const dai = [
@@ -144,7 +144,7 @@ contract('UniswapAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Uniswap'],
+      ['Uniswap V1'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -170,7 +170,7 @@ contract('UniswapAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20', 'Uniswap pool token', 'CToken'],
+      ['ERC20', 'Uniswap V1 pool token', 'CToken'],
       [erc20TokenAdapterAddress, tokenAdapterAddress, cTokenAdapterAddress],
     )
       .send({

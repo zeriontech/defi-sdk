@@ -13,7 +13,7 @@ const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
-const UniswapAdapter = artifacts.require('UniswapAdapter');
+const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const AaveTokenAdapter = artifacts.require('AaveTokenAdapter');
@@ -22,7 +22,7 @@ const CurveTokenAdapter = artifacts.require('CurveTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
-const UniswapTokenAdapter = artifacts.require('UniswapTokenAdapter');
+const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 
 const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
@@ -165,7 +165,7 @@ const synthetixAssetAdapterTokens = [
 const synthetixDebtAdapterTokens = [
   susdAddress,
 ];
-const uniswapAdapterTokens = [ // top 50 pools
+const uniswapV1AdapterTokens = [ // top 50 pools
   '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb',
   '0x2b591e99afe9f32eaa6214f7b7629768c40eeb39',
   '0x6b175474e89094c44da98b954eedeac495271d0f',
@@ -375,14 +375,14 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/synthetix.png',
     '0',
   ]);
-  await deployer.deploy(UniswapAdapter, { from: accounts[0] })
+  await deployer.deploy(UniswapV1Adapter, { from: accounts[0] })
     .then(() => {
-      adapters[11].push(UniswapAdapter.address);
-      tokens[11].push(uniswapAdapterTokens);
+      adapters[11].push(UniswapV1Adapter.address);
+      tokens[11].push(uniswapV1AdapterTokens);
     });
-  protocolNames.push('Uniswap');
+  protocolNames.push('Uniswap V1');
   metadata.push([
-    'Uniswap',
+    'Uniswap V1',
     'Automated liquidity protocol',
     'uniswap.org',
     'protocol-icons.s3.amazonaws.com/Uniswap.png',
@@ -443,10 +443,10 @@ module.exports = async (deployer, network, accounts) => {
         PoolTogetherTokenAdapter.address,
       );
     });
-  await deployer.deploy(UniswapTokenAdapter, { from: accounts[0] })
+  await deployer.deploy(UniswapV1TokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
-        UniswapTokenAdapter.address,
+        UniswapV1TokenAdapter.address,
       );
     });
   await AdapterRegistry.at('0x9A2FB998c6bd001B8D4f235a260640136159e496') // kovan
@@ -470,7 +470,7 @@ module.exports = async (deployer, network, accounts) => {
           'YToken',
           'Chai token',
           'PoolTogether pool',
-          'Uniswap pool token',
+          'Uniswap V1 pool token',
         ],
         tokenAdapters,
       )
