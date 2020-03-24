@@ -1,6 +1,9 @@
-const { BN } = web3.utils;
+import displayToken from './helpers/displayToken';
+
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const IearnAdapter = artifacts.require('./IearnAdapter');
+const ProtocolAdapter = artifacts.require('./IearnAdapter');
+const TokenAdapter = artifacts.require('./IearnTokenAdapter');
+const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
 contract('IearnAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
@@ -14,54 +17,75 @@ contract('IearnAdapter', () => {
 
   let accounts;
   let adapterRegistry;
-  let iearnAdapter;
+  let protocolAdapterAddress;
+  let tokenAdapterAddress;
+  let erc20TokenAdapterAddress;
+  const dai = [
+    daiAddress,
+    'Dai Stablecoin',
+    'DAI',
+    '18',
+  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await IearnAdapter.new({ from: accounts[0] })
+    await ProtocolAdapter.new({ from: accounts[0] })
       .then((result) => {
-        iearnAdapter = result.contract;
+        protocolAdapterAddress = result.address;
       });
-    await AdapterRegistry.new(
-      [iearnAdapter.options.address],
-      [[yDAIAddress,
+    await TokenAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        tokenAdapterAddress = result.address;
+      });
+    await ERC20TokenAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        erc20TokenAdapterAddress = result.address;
+      });
+    await AdapterRegistry.new({ from: accounts[0] })
+      .then((result) => {
+        adapterRegistry = result.contract;
+      });
+    await adapterRegistry.methods.addProtocols(
+      ['Iearn'],
+      [[
+        'Mock Protocol Name',
+        'Mock protocol description',
+        'Mock website',
+        'Mock icon',
+        '0',
+      ]],
+      [[
+        protocolAdapterAddress,
+      ]],
+      [[[
+        yDAIAddress,
         yUSDCAddress,
         yUSDTAddress,
         ySUSDAddress,
         yTUSDAddress,
         yWBTCAddress,
-      ]],
-      { from: accounts[0] },
+      ]]],
     )
-      .then((result) => {
-        adapterRegistry = result.contract;
+      .send({
+        from: accounts[0],
+        gas: '1000000',
+      });
+    await adapterRegistry.methods.addTokenAdapters(
+      ['ERC20', 'YToken'],
+      [erc20TokenAdapterAddress, tokenAdapterAddress],
+    )
+      .send({
+        from: accounts[0],
+        gas: '1000000',
       });
   });
 
-  it('should be correct balances and rates', async () => {
-    await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
+  it('should return correct balances', async () => {
+    await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then((result) => {
-        const base = new BN(10).pow(new BN(34));
-        const yDAIAmount = new BN(result[0].balances[0].amount);
-        const yDAIRate = new BN(result[0].rates[0].components[0].rate);
-        const daiAmount = yDAIRate.mul(yDAIAmount).div(base).toNumber() / 100;
-        // eslint-disable-next-line no-console
-        console.log(`Deposited yDAI amount: ${yDAIAmount.toString()}`);
-        // eslint-disable-next-line no-console
-        console.log(`yDAI rate: ${yDAIRate.toString()}`);
-        // eslint-disable-next-line no-console
-        console.log(`Means its: ${daiAmount} DAI locked`);
-        // eslint-disable-next-line no-console
-        console.log(`Deposited yUSDC amount: ${result[0].balances[1].amount.toString()}`);
-        // eslint-disable-next-line no-console
-        console.log(`Deposited yUSDT amount: ${result[0].balances[2].amount.toString()}`);
-
-        assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].balances[0].asset, yDAIAddress);
-        assert.equal(result[0].rates[0].asset, yDAIAddress);
-        assert.equal(result[0].rates[0].components[0].underlying, daiAddress);
-        assert.equal(result[0].name, 'iearn.finance');
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, dai);
       });
   });
 });

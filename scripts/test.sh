@@ -15,9 +15,9 @@ if ganache_running 8545; then
 else
   echo "Starting our own ganache instance"
 
-  npx ganache-cli $accounts -p 8545 -l 10000000 -g 10000000 \
+  npx ganache-cli $accounts -p 8545 -l 10000000 -g 1000000000 \
   -f https://mainnet.infura.io/v3/$INFURA_API_KEY > ganache.log & ganache_pid=$!
 fi
 
 # Run the truffle test or the solidity-coverage suite.
-npx truffle test "$@"
+node --max-old-space-size=4096 ./node_modules/.bin/truffle test "$@" --debug

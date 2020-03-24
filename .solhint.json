@@ -8,9 +8,15 @@
       "error",
       { "maxLength" : 50 }
     ],
+    "function-max-lines": [
+      "error", 60
+    ],
     "compiler-version": [
       "error",
-      "0.6.2"
+      "0.6.4"
+    ],
+    "private-vars-leading-underscore": [
+      "off"
     ]
   }
 }

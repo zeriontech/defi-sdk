@@ -1,79 +1,126 @@
-const { BN } = web3.utils;
+import displayToken from './helpers/displayToken';
+
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const PoolTogetherAdapter = artifacts.require('./PoolTogetherAdapter');
+const ProtocolAdapter = artifacts.require('./PoolTogetherAdapter');
+const TokenAdapter = artifacts.require('./PoolTogetherTokenAdapter');
+const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
 contract('PoolTogetherAdapter', () => {
-  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const saiAddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
+  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 
+  const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
+  const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
+  const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
+
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
-  const incorrectAsset = '0x1C83501478f1320977047008496DACBD60Bb15ef';
 
   let accounts;
   let adapterRegistry;
-  let poolAdapter;
+  let protocolAdapterAddress;
+  let erc20TokenAdapterAddress;
+  let tokenAdapterAddress;
+  const dai = [
+    daiAddress,
+    'Dai Stablecoin',
+    'DAI',
+    '18',
+  ];
+  const sai = [
+    saiAddress,
+    'Sai Stablecoin v1.0',
+    'SAI',
+    '18',
+  ];
+  const usdc = [
+    usdcAddress,
+    'USD//C',
+    'USDC',
+    '6',
+  ];
+  const daiPool = [
+    daiPoolAddress,
+    'DAI pool',
+    'PLT',
+    '18',
+  ];
+  const saiPool = [
+    saiPoolAddress,
+    'SAI pool',
+    'PLT',
+    '18',
+  ];
+  const usdcPool = [
+    usdcPoolAddress,
+    'USDC pool',
+    'PLT',
+    '6',
+  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await PoolTogetherAdapter.new({ from: accounts[0] })
+    await ProtocolAdapter.new({ from: accounts[0] })
       .then((result) => {
-        poolAdapter = result.contract;
+        protocolAdapterAddress = result.address;
       });
-    await AdapterRegistry.new(
-      [poolAdapter.options.address],
-      [[daiAddress, saiAddress, usdcAddress]],
-      { from: accounts[0] },
-    )
+    await ERC20TokenAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        erc20TokenAdapterAddress = result.address;
+      });
+    await TokenAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        tokenAdapterAddress = result.address;
+      });
+    await AdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
         adapterRegistry = result.contract;
       });
-  });
-
-  it('should return correct balances and rates', async () => {
-    await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
-      .call()
-      .then((result) => {
-        const base = new BN(10).pow(new BN(16));
-        const daiAmount = new BN(result[0].balances[0].amount).div(base) / 100;
-        // eslint-disable-next-line no-console
-        console.log(`Deposited DAI amount: ${daiAmount}`);
-        assert.equal(result[0].name, 'PoolTogether');
-        const usdcBase = new BN(10).pow(new BN(4));
-        const usdcAmount = new BN(result[0].balances[2].amount).div(usdcBase) / 100;
-        // eslint-disable-next-line no-console
-        console.log(`Deposited USDC amount: ${usdcAmount}`);
-        assert.equal(result[0].name, 'PoolTogether');
-        assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].balances[0].asset, daiAddress);
-        assert.equal(result[0].balances[1].decimals, 18);
-        assert.equal(result[0].balances[1].asset, saiAddress);
-        assert.equal(result[0].balances[2].decimals, 6);
-        assert.equal(result[0].balances[2].asset, usdcAddress);
-        assert.equal(result[0].rates[0].asset, daiAddress);
-        assert.equal(result[0].rates[0].components[0].underlying, daiAddress);
-        assert.equal(result[0].rates[0].components[0].rate, 1e18);
-        assert.equal(result[0].rates[1].asset, saiAddress);
-        assert.equal(result[0].rates[1].components[0].underlying, saiAddress);
-        assert.equal(result[0].rates[1].components[0].rate, 1e18);
-        assert.equal(result[0].rates[2].asset, usdcAddress);
-        assert.equal(result[0].rates[2].components[0].underlying, usdcAddress);
-        assert.equal(result[0].rates[2].components[0].rate, 1e18);
+    await adapterRegistry.methods.addProtocols(
+      ['PoolTogether'],
+      [[
+        'Mock Protocol Name',
+        'Mock protocol description',
+        'Mock website',
+        'Mock icon',
+        '0',
+      ]],
+      [[
+        protocolAdapterAddress,
+      ]],
+      [[[
+        saiPoolAddress,
+        daiPoolAddress,
+        usdcPoolAddress,
+      ]]],
+    )
+      .send({
+        from: accounts[0],
+        gasLimit: '1000000',
+      });
+    await adapterRegistry.methods.addTokenAdapters(
+      ['ERC20', 'PoolTogether pool'],
+      [erc20TokenAdapterAddress, tokenAdapterAddress],
+    )
+      .send({
+        from: accounts[0],
+        gasLimit: '300000',
       });
   });
 
-  it('should return zero balances for incorrect asset', async () => {
-    await adapterRegistry.methods['getBalances(address,address,address[])'](
-      testAddress,
-      poolAdapter.options.address,
-      [incorrectAsset],
-    )
+  it.only('should return correct balances', async () => {
+    await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then((result) => {
-        assert.equal(result.length, 1);
-        assert.equal(result[0].asset, incorrectAsset);
-        assert.equal(result[0].amount, 0);
-        assert.equal(result[0].decimals, 18);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
+        displayToken(result[0].adapterBalances[0].balances[1].underlying[0]);
+        displayToken(result[0].adapterBalances[0].balances[2].underlying[0]);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, saiPool);
+        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, daiPool);
+        assert.deepEqual(result[0].adapterBalances[0].balances[2].base.metadata, usdcPool);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, sai);
+        assert.deepEqual(result[0].adapterBalances[0].balances[1].underlying[0].metadata, dai);
+        assert.deepEqual(result[0].adapterBalances[0].balances[2].underlying[0].metadata, usdc);
       });
   });
 });

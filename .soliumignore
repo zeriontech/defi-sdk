@@ -1,2 +1,11 @@
 node_modules
 ./contracts/Migrations.sol
+./contracts/Structs.sol
+./contracts/AdapterRegistry.sol
+./contracts/interactiveAdapters/InteractiveAdapter.sol
+./contracts/TokenAdapterManager.sol
+./contracts/ProtocolManager.sol
+./contracts/Ownable.sol
+./contracts/adapters/maker/MKRAdapter.sol
+./contracts/adapters/uniswap/UniswapTokenAdapter.sol
+./contracts/adapters/dydx

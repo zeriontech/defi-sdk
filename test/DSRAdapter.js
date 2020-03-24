@@ -1,42 +1,76 @@
+import displayToken from './helpers/displayToken';
+
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const DSRAdapter = artifacts.require('./DSRAdapter');
+const ProtocolAdapter = artifacts.require('./DSRAdapter');
+const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
 contract('DSRAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-  const testAddress = '0x5DbC6c9Bf22f78eecDb74275810403416C4F2CA0';
+  // DSProxy of '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990'
+  const testAddress = '0x29604c784102D453B476fB099b8DCfc83b508F55';
 
   let accounts;
   let adapterRegistry;
-  let dsrAdapter;
+  let protocolAdapterAddress;
+  let tokenAdapterAddress;
+  const dai = [
+    daiAddress,
+    'Dai Stablecoin',
+    'DAI',
+    '18',
+  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await DSRAdapter.new({ from: accounts[0] })
+    await ProtocolAdapter.new({ from: accounts[0] })
       .then((result) => {
-        dsrAdapter = result.contract;
+        protocolAdapterAddress = result.address;
       });
-    await AdapterRegistry.new(
-      [dsrAdapter.options.address],
-      [[daiAddress]],
-      { from: accounts[0] },
-    )
+    await TokenAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        tokenAdapterAddress = result.address;
+      });
+    await AdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
         adapterRegistry = result.contract;
       });
+    await adapterRegistry.methods.addProtocols(
+      ['DSR'],
+      [[
+        'Mock Protocol Name',
+        'Mock protocol description',
+        'Mock website',
+        'Mock icon',
+        '0',
+      ]],
+      [[
+        protocolAdapterAddress,
+      ]],
+      [[[
+        daiAddress,
+      ]]],
+    )
+      .send({
+        from: accounts[0],
+        gas: '1000000',
+      });
+    await adapterRegistry.methods.addTokenAdapters(
+      ['ERC20'],
+      [tokenAdapterAddress],
+    )
+      .send({
+        from: accounts[0],
+        gas: '1000000',
+      });
   });
 
-  it('should return correct balances and rates', async () => {
-    await adapterRegistry.methods['getBalancesAndRates(address)'](testAddress)
+  it('should return correct balances', async () => {
+    await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then((result) => {
-        // eslint-disable-next-line no-console
-        console.log(`Deposited DAI amount: ${result[0].balances[0].amount.toString()}`);
-        assert.equal(result[0].name, 'DSR');
-        assert.equal(result[0].balances[0].decimals, 18);
-        assert.equal(result[0].balances[0].asset, daiAddress);
-        assert.equal(result[0].rates[0].asset, daiAddress);
-        assert.equal(result[0].rates[0].components[0].underlying, daiAddress);
-        assert.equal(result[0].rates[0].components[0].rate, 1e18);
+        displayToken(result[0].adapterBalances[0].balances[0].base);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, dai);
+        assert.equal(result[0].adapterBalances[0].balances[0].underlying.length, 0);
       });
   });
 });

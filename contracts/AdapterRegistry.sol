@@ -1,78 +1,116 @@
-pragma solidity 0.6.2;
+// Copyright (C) 2020 Igor Sobolev <sobolev@zerion.io>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+pragma solidity 0.6.4;
 pragma experimental ABIEncoderV2;
 
-import { Adapter } from "./adapters/Adapter.sol";
-import { AdapterAssetsManager } from "./AdapterAssetsManager.sol";
-import { ERC20 } from "./ERC20.sol";
+import { Ownable } from "./Ownable.sol";
+import { ProtocolManager } from "./ProtocolManager.sol";
+import { TokenAdapterManager } from "./TokenAdapterManager.sol";
+import { ProtocolAdapter } from "./adapters/ProtocolAdapter.sol";
+import { TokenAdapter } from "./adapters/TokenAdapter.sol";
+import { Strings } from "./Strings.sol";
 import {
-    ProtocolDetail,
     ProtocolBalance,
-    ProtocolRate,
-    AssetBalance,
-    AssetRate
+    ProtocolMetadata,
+    AdapterBalance,
+    AdapterMetadata,
+    FullTokenBalance,
+    TokenBalance,
+    TokenMetadata,
+    Component
 } from "./Structs.sol";
 
 
 /**
-* @title Registry for protocol adapters.
-* @notice getBalances() and getRates() functions
-* with different arguments implement the main functionality.
+* @title Registry for protocols, protocol adapters, and token adapters.
+* @notice getBalances() function implements the main functionality.
 */
-contract AdapterRegistry is AdapterAssetsManager {
+contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
 
-    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-
-    constructor(
-        address[] memory _adapters,
-        address[][] memory _assets
-    )
-        public
-        AdapterAssetsManager(_adapters, _assets)
-    {}
+    using Strings for string;
 
     /**
-     * @return All the amounts and rates of supported assets
-     * via supported adapters by the given user.
+     * @param tokenType String with type of the token.
+     * @param token Address of the token.
+     * @return Full token balance by token type and token address.
      */
-    function getBalancesAndRates(
-        address user
+    function getFullTokenBalance(
+        string calldata tokenType,
+        address token
     )
         external
         view
-        returns(ProtocolDetail[] memory)
+        returns (FullTokenBalance memory)
     {
-        address[] memory adapters = getAdapters();
-        ProtocolDetail[] memory protocolDetails = new ProtocolDetail[](adapters.length);
-
-        for (uint256 i = 0; i < adapters.length; i++) {
-            protocolDetails[i] = ProtocolDetail({
-                name: Adapter(adapters[i]).getProtocolName(),
-                balances: getBalances(user, adapters[i]),
-                rates: getRates(adapters[i])
-            });
-        }
-
-        return protocolDetails;
+        Component[] memory components = getComponents(tokenType, token, 1e18);
+        return getFullTokenBalance(tokenType, token, 1e18, components);
     }
 
     /**
-     * @return All the amounts of supported assets
-     * via supported adapters by the given user.
+     * @param tokenType String with type of the token.
+     * @param token Address of the token.
+     * @return Final full token balance by token type and token address.
      */
-    function getBalances(
-        address user
+    function getFinalFullTokenBalance(
+        string calldata tokenType,
+        address token
     )
         external
         view
-        returns(ProtocolBalance[] memory)
+        returns (FullTokenBalance memory)
     {
-        address[] memory adapters = getAdapters();
-        ProtocolBalance[] memory protocolBalances = new ProtocolBalance[](adapters.length);
+        Component[] memory finalComponents = getFinalComponents(tokenType, token, 1e18);
+        return getFullTokenBalance(tokenType, token, 1e18, finalComponents);
+    }
 
-        for (uint256 i = 0; i < adapters.length; i++) {
+    /**
+     * @param account Address of the account.
+     * @return ProtocolBalance array by the given account.
+     */
+    function getBalances(
+        address account
+    )
+        external
+        view
+        returns (ProtocolBalance[] memory)
+    {
+        string[] memory protocolNames = getProtocolNames();
+
+        return getProtocolBalances(account, protocolNames);
+    }
+
+    /**
+     * @param account Address of the account.
+     * @param protocolNames Array of the protocols' names.
+     * @return ProtocolBalance array by the given account and names of protocols.
+     */
+    function getProtocolBalances(
+        address account,
+        string[] memory protocolNames
+    )
+        public
+        view
+        returns (ProtocolBalance[] memory)
+    {
+        ProtocolBalance[] memory protocolBalances = new ProtocolBalance[](protocolNames.length);
+
+        for (uint256 i = 0; i < protocolNames.length; i++) {
             protocolBalances[i] = ProtocolBalance({
-                name: Adapter(adapters[i]).getProtocolName(),
-                balances: getBalances(user, adapters[i])
+                metadata: protocolMetadata[protocolNames[i]],
+                adapterBalances: getAdapterBalances(account, protocolAdapters[protocolNames[i]])
             });
         }
 
@@ -80,122 +118,256 @@ contract AdapterRegistry is AdapterAssetsManager {
     }
 
     /**
-     * @return All the exchange rates for supported assets
-     * via the supported adapters.
+     * @param account Address of the account.
+     * @param adapters Array of the protocol adapters' addresses.
+     * @return AdapterBalance array by the given parameters.
      */
-    function getRates()
-        external
-        view
-        returns (ProtocolRate[] memory)
-    {
-        address[] memory adapters = getAdapters();
-        ProtocolRate[] memory protocolRates = new ProtocolRate[](adapters.length);
-
-        for (uint256 i = 0; i < adapters.length; i++) {
-            protocolRates[i] = ProtocolRate({
-                name: Adapter(adapters[i]).getProtocolName(),
-                rates: getRates(adapters[i])
-            });
-        }
-
-        return protocolRates;
-    }
-
-    /**
-     * @return All the amounts of supported assets
-     * via the given adapter by the given user.
-     */
-    function getBalances(
-        address user,
-        address adapter
+    function getAdapterBalances(
+        address account,
+        address[] memory adapters
     )
         public
         view
-        returns (AssetBalance[] memory)
+        returns (AdapterBalance[] memory)
     {
-        address[] memory adapterAssets = getAdapterAssets(adapter);
+        AdapterBalance[] memory adapterBalances = new AdapterBalance[](adapters.length);
 
-        return getBalances(user, adapter, adapterAssets);
+        for (uint256 i = 0; i < adapterBalances.length; i++) {
+            adapterBalances[i] = getAdapterBalance(
+                account,
+                adapters[i],
+                supportedTokens[adapters[i]]
+            );
+        }
+
+        return adapterBalances;
     }
 
     /**
-     * @return All the amounts of the given assets
-     * via the given adapter by the given user.
+     * @param account Address of the account.
+     * @param adapter Address of the protocol adapter.
+     * @param tokens Array with tokens' addresses.
+     * @return AdapterBalance array by the given parameters.
      */
-    function getBalances(
-        address user,
+    function getAdapterBalance(
+        address account,
         address adapter,
-        address[] memory assets
+        address[] memory tokens
     )
         public
         view
-        returns (AssetBalance[] memory)
+        returns (AdapterBalance memory)
     {
-        uint256 length = assets.length;
-        AssetBalance[] memory assetBalances = new AssetBalance[](length);
+        FullTokenBalance[] memory finalFullTokenBalances = new FullTokenBalance[](tokens.length);
+        uint256 amount;
+        string memory tokenType;
 
-        for (uint256 i = 0; i < length; i++) {
-            address asset = assets[i];
-            assetBalances[i] = AssetBalance({
-                asset: asset,
-                amount: Adapter(adapter).getAssetAmount(asset, user),
-                decimals: getAssetDecimals(asset)
-            });
+        for (uint256 i = 0; i < tokens.length; i++) {
+            try ProtocolAdapter(adapter).getBalance(tokens[i], account) returns (uint256 result) {
+                amount = result;
+            } catch {
+                amount = 0;
+            }
+
+            tokenType = ProtocolAdapter(adapter).tokenType();
+
+            finalFullTokenBalances[i] = getFullTokenBalance(
+                tokenType,
+                tokens[i],
+                amount,
+                getFinalComponents(tokenType, tokens[i], 1e18)
+            );
         }
 
-        return assetBalances;
+        return AdapterBalance({
+            metadata: AdapterMetadata({
+                adapterAddress: adapter,
+                adapterType: ProtocolAdapter(adapter).adapterType()
+            }),
+            balances: finalFullTokenBalances
+        });
     }
 
     /**
-     * @return All the exchange rates for supported assets
-     * via the given adapter.
+     * @param tokenType Type of the base token.
+     * @param token Address of the base token.
+     * @param amount Amount of the base token.
+     * @param components Components of the base token.
+     * @return FullTokenBalance struct by the given components.
      */
-    function getRates(
-        address adapter
-    )
-        public
-        view
-        returns (AssetRate[] memory)
-    {
-        address[] memory adapterAssets = assets[adapter];
-
-        return getRates(adapter, adapterAssets);
-    }
-
-    /**
-     * @return All the exchange rates for the given assets
-     * via the given adapter.
-     */
-    function getRates(
-        address adapter,
-        address[] memory assets
-    )
-        public
-        view
-        returns (AssetRate[] memory)
-    {
-        uint256 length = assets.length;
-        AssetRate[] memory rates = new AssetRate[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            address asset = assets[i];
-            rates[i] = AssetRate({
-                asset: asset,
-                components: Adapter(adapter).getUnderlyingRates(asset)
-            });
-        }
-
-        return rates;
-    }
-
-    function getAssetDecimals(
-        address asset
+    function getFullTokenBalance(
+        string memory tokenType,
+        address token,
+        uint256 amount,
+        Component[] memory components
     )
         internal
         view
-        returns (uint8)
+        returns (FullTokenBalance memory)
     {
-        return asset == ETH ? uint8(18) : ERC20(asset).decimals();
+        TokenBalance[] memory componentTokenBalances = new TokenBalance[](components.length);
+
+        for (uint256 i = 0; i < components.length; i++) {
+            componentTokenBalances[i] = getTokenBalance(
+                components[i].tokenType,
+                components[i].token,
+                components[i].rate * amount / 1e18
+            );
+        }
+
+        return FullTokenBalance({
+            base: getTokenBalance(tokenType, token, amount),
+            underlying: componentTokenBalances
+        });
     }
 
+    /**
+     * @param tokenType String with type of the token.
+     * @param token Address of the token.
+     * @param amount Amount of the token.
+     * @return Final components by token type and token address.
+     */
+    function getFinalComponents(
+        string memory tokenType,
+        address token,
+        uint256 amount
+    )
+        internal
+        view
+        returns (Component[] memory)
+    {
+        uint256 totalLength;
+
+        totalLength = getFinalComponentsNumber(tokenType, token, true);
+
+        Component[] memory finalTokens = new Component[](totalLength);
+        uint256 length;
+        uint256 init = 0;
+
+        Component[] memory components = getComponents(tokenType, token, amount);
+        Component[] memory finalComponents;
+
+        for (uint256 i = 0; i < components.length; i++) {
+            finalComponents = getFinalComponents(
+                components[i].tokenType,
+                components[i].token,
+                components[i].rate
+            );
+
+            length = finalComponents.length;
+
+            if (length == 0) {
+                finalTokens[init] = components[i];
+                init = init + 1;
+            } else {
+                for (uint256 j = 0; j < length; j++) {
+                    finalTokens[init + j] = finalComponents[j];
+                }
+
+                init = init + length;
+            }
+        }
+
+        return finalTokens;
+    }
+
+    /**
+     * @param tokenType String with type of the token.
+     * @param token Address of the token.
+     * @param initial Whether the function call is initial or recursive.
+     * @return Final tokens number by token type and token.
+     */
+    function getFinalComponentsNumber(
+        string memory tokenType,
+        address token,
+        bool initial
+    )
+        internal
+        view
+        returns (uint256)
+    {
+        if (tokenType.isEqualTo("ERC20")) {
+            return initial ? uint256(0) : uint256(1);
+        }
+
+        uint256 totalLength = 0;
+        Component[] memory components = getComponents(tokenType, token, 1e18);
+
+        for (uint256 i = 0; i < components.length; i++) {
+            totalLength = totalLength + getFinalComponentsNumber(
+                components[i].tokenType,
+                components[i].token,
+                false
+            );
+        }
+
+        return totalLength;
+    }
+
+    /**
+     * @param tokenType String with type of the token.
+     * @param token Address of the token.
+     * @param amount Amount of the token.
+     * @return Components by token type and token address.
+     */
+    function getComponents(
+        string memory tokenType,
+        address token,
+        uint256 amount
+    )
+        internal
+        view
+        returns (Component[] memory)
+    {
+        TokenAdapter adapter = TokenAdapter(tokenAdapter[tokenType]);
+        Component[] memory components;
+
+        try adapter.getComponents(token) returns (Component[] memory result) {
+            components = result;
+        } catch {
+            components = new Component[](0);
+        }
+
+        for (uint256 i = 0; i < components.length; i++) {
+            components[i].rate = components[i].rate * amount / 1e18;
+        }
+
+        return components;
+    }
+
+    /**
+     * @notice Fulfills TokenBalance struct using type, address, and balance of the token.
+     * @param tokenType String with type of the token.
+     * @param token Address of the token.
+     * @param amount Amount of tokens.
+     * @return TokenBalance struct with token info and balance.
+     */
+    function getTokenBalance(
+        string memory tokenType,
+        address token,
+        uint256 amount
+    )
+        internal
+        view
+        returns (TokenBalance memory)
+    {
+        TokenAdapter adapter = TokenAdapter(tokenAdapter[tokenType]);
+
+        try adapter.getMetadata(token) returns (TokenMetadata memory result) {
+            return TokenBalance({
+                metadata: result,
+                amount: amount
+            });
+        } catch {
+            return TokenBalance({
+                metadata: TokenMetadata({
+                    token: token,
+                    name: "Not available",
+                    symbol: "N/A",
+                    decimals: 18
+                }),
+                amount: amount
+            });
+        }
+    }
 }

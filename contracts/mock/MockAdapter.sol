@@ -1,39 +1,52 @@
-pragma solidity 0.6.2;
+// Copyright (C) 2020 Igor Sobolev <sobolev@zerion.io>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+pragma solidity 0.6.4;
 pragma experimental ABIEncoderV2;
 
-import { Component } from "../Structs.sol";
-import "../adapters/Adapter.sol";
+import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
 
 
-contract MockAdapter is Adapter {
+contract MockAdapter is ProtocolAdapter {
 
-    mapping (address => int256) internal balances;
+    mapping (address => uint256) internal balanceOf;
 
     constructor() public {
-        balances[msg.sender] = 1000;
-    }
-
-    function getProtocolName() external pure override returns(string memory) {
-        return("Mock");
-    }
-
-    function getAssetAmount(address, address user) external view override returns(int256) {
-        return balances[user];
-    }
-
-    function getUnderlyingRates(address) external view override returns (Component[] memory) {
-        Component[] memory components = new Component[](1);
-        components[0] = Component({
-            underlying: address(this),
-            rate: uint256(1e18)
-            });
-        return components;
+        balanceOf[msg.sender] = 1000;
     }
 
     /**
-     * @dev this function is here as this contract is mock for both adapter and asset
+     * @return Type of the adapter.
+     * @dev Implementation of ProtocolAdapter interface function.
      */
-    function decimals() external pure returns(uint256) {
-        return 18;
+    function adapterType() external pure override returns (string memory) {
+        return "Asset";
+    }
+
+    /**
+     * @return Type of the token used in adapter.
+     * @dev Implementation of ProtocolAdapter interface function.
+     */
+    function tokenType() external pure override returns (string memory) {
+        return "ERC20";
+    }
+
+    /**
+     * @return Mock balance.
+     */
+    function getBalance(address, address account) external view override returns (uint256) {
+        return balanceOf[account];
     }
 }

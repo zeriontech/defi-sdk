@@ -1,2 +1,5 @@
 node_modules
 ./contracts/Migrations.sol
+./contracts/Structs.sol
+./contracts/adapters/maker/MKRAdapter.sol
+./contracts/adapters/dydx

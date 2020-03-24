@@ -15,5 +15,5 @@ jobs:
           node-version: '10.x'
       - name: install
         run: npm install
-      - name: lint:eslint
-        run: npm run lint:eslint
+      - name: lint
+        run: npm run lint
