@@ -65,6 +65,8 @@ const yUSDCv3 = '0x26EA744E5B887E5205727f55dFBE8685e3b21951';
 const yUSDTv3 = '0xE6354ed5bC4b393a5Aad09f21c46E101e692d447';
 const yBUSDv3 = '0x04bC0Ab673d88aE9dbC9DA2380cB6B79C4BCa9aE';
 
+const idleDAI = '0x10eC0D497824e342bCB0EDcE00959142aAa766dD';
+const idleUSDC = '0xeB66ACc3d011056B00ea521F8203580C2E5d3991';
 
 const ssCompoundTokenAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
 const ssYTokenAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
@@ -140,6 +142,10 @@ const iearn3AdapterTokens = [
   yUSDCv3,
   yUSDTv3,
   yBUSDv3,
+];
+const idleAdapterTokens = [
+  idleDAI,
+  idleUSDC
 ];
 const dsrAdapterTokens = [
   daiAddress,
@@ -401,6 +407,19 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/0x-staking.png',
     '0',
   ]);
+  await deployer.deploy(IdleAdapter, { from: accounts[0] })
+    .then(() => {
+      adapters[13].push(IdleAdapter.address);
+      tokens[13].push(idleAdapterTokens);
+    });
+  protocolNames.push('idle.finance');
+  metadata.push([
+    'idle.finance',
+    'Yield aggregator for lending platforms',
+    'idle.finance',
+    'protocol-icons.s3.amazonaws.com/idle.png',
+    '0',
+  ]);
   await deployer.deploy(ERC20TokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -429,6 +448,12 @@ module.exports = async (deployer, network, accounts) => {
     .then(() => {
       tokenAdapters.push(
         IearnTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(IdleTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        IdleTokenAdapter.address,
       );
     });
   await deployer.deploy(ChaiTokenAdapter, { from: accounts[0] })
@@ -468,6 +493,7 @@ module.exports = async (deployer, network, accounts) => {
           'CToken',
           'Curve pool token',
           'YToken',
+          'IdleToken',
           'Chai token',
           'PoolTogether pool',
           'Uniswap V1 pool token',
