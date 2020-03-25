@@ -37,8 +37,9 @@ interface Pot {
 
 
 /**
- * @title Adapter for Chai tokens.
+ * @title Token adapter for Chai tokens.
  * @dev Implementation of TokenAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ChaiTokenAdapter is TokenAdapter, MKRAdapter {
 

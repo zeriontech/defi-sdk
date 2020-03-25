@@ -23,6 +23,7 @@ import { ERC20 } from "../../ERC20.sol";
 /**
  * @title Asset adapter for Compound protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CompoundAssetAdapter is ProtocolAdapter {
 

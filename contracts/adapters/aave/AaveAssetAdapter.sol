@@ -23,6 +23,7 @@ import { ERC20 } from "../../ERC20.sol";
 /**
  * @title Asset adapter for Aave protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract AaveAssetAdapter is ProtocolAdapter {
 

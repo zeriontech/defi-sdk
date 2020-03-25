@@ -45,6 +45,7 @@ interface Synthetix {
 /**
  * @title Asset adapter for Synthetix protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract SynthetixAssetAdapter is ProtocolAdapter {
 

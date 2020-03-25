@@ -44,6 +44,7 @@ interface CompoundRegistry {
 /**
  * @title Debt adapter for Compound protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CompoundDebtAdapter is ProtocolAdapter {
 

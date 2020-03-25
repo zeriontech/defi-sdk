@@ -46,8 +46,9 @@ interface Factory {
 
 
 /**
- * @title TokenAdapter for Uniswap V1 pool tokens.
+ * @title Token adapter for Uniswap V1 pool tokens.
  * @dev Implementation of TokenAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract UniswapV1TokenAdapter is TokenAdapter {
 

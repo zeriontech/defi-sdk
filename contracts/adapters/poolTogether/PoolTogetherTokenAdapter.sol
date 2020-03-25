@@ -33,8 +33,9 @@ interface BasePool {
 
 
 /**
- * @title Adapter for PoolTogether pools.
+ * @title Token adapter for PoolTogether pools.
  * @dev Implementation of TokenAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract PoolTogetherTokenAdapter is TokenAdapter {
 

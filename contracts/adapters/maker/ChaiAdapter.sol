@@ -23,6 +23,7 @@ import { ERC20 } from "../../ERC20.sol";
 /**
  * @title Adapter for Chai protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ChaiAdapter is ProtocolAdapter {
 

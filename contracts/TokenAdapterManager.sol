@@ -21,7 +21,9 @@ import { Strings } from "./Strings.sol";
 
 
 /**
- * @title Base contract for AdapterRegistry.
+ * @title AdapterRegistry part responsible for token adapters management.
+ * @dev Base contract for AdapterRegistry.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract TokenAdapterManager is Ownable {
 

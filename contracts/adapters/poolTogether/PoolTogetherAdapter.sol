@@ -34,6 +34,7 @@ interface BasePool {
 /**
  * @title Adapter for PoolTogether protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract PoolTogetherAdapter is ProtocolAdapter {
 

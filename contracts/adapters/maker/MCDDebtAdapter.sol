@@ -61,6 +61,7 @@ interface DssCdpManager {
 /**
  * @title Debt adapter for MCD protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract MCDDebtAdapter is ProtocolAdapter, MKRAdapter {
 

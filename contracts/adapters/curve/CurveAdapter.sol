@@ -36,6 +36,7 @@ interface stableswap {
 /**
  * @title Adapter for Curve protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CurveAdapter is ProtocolAdapter {
 

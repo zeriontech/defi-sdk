@@ -20,6 +20,10 @@ import { TokenMetadata, Component } from "../Structs.sol";
 import { TokenAdapter } from "../adapters/TokenAdapter.sol";
 
 
+/**
+ * @notice Mock token adapter for tests.
+ * @author Igor Sobolev <sobolev@zerion.io>
+ */
 contract MockTokenAdapter is TokenAdapter {
 
     /**

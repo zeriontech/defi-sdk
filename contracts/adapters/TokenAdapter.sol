@@ -20,8 +20,9 @@ import { TokenMetadata, Component } from "../Structs.sol";
 
 
 /**
- * @title Base contract for token adapters.
+ * @title Token adapter interface.
  * @dev getMetadata() and getComponents() functions MUST be implemented.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 interface TokenAdapter {
 

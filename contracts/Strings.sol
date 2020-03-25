@@ -16,7 +16,10 @@
 pragma solidity 0.6.4;
 pragma experimental ABIEncoderV2;
 
-
+/**
+ * @notice Library for strings.
+ * @author Igor Sobolev <sobolev@zerion.io>
+ */
 library Strings {
 
     function isEmpty(string memory s) internal pure returns (bool) {

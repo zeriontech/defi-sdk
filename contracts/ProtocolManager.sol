@@ -22,7 +22,9 @@ import { Strings } from "./Strings.sol";
 
 
 /**
- * @title Base contract for AdapterRegistry.
+ * @title AdapterRegistry part responsible for protocols and adapters management.
+ * @dev Base contract for AdapterRegistry.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract ProtocolManager is Ownable {
 

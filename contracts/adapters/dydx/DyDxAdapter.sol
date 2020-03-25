@@ -18,7 +18,9 @@ pragma experimental ABIEncoderV2;
 
 
 /**
- * @title Base contract for dYdX adapters.
+ * @dev dYdX adapter abstract contract.
+ * @dev Base contract for dYdX adapters.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract DyDxAdapter {
 

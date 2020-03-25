@@ -61,6 +61,7 @@ interface DssCdpManager {
 /**
  * @title Asset adapter for MCD protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract MCDAssetAdapter is ProtocolAdapter, MKRAdapter {
 

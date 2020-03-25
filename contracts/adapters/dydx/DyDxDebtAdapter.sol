@@ -56,6 +56,7 @@ interface SoloMargin {
 /**
  * @title Debt adapter for dYdX protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract DyDxDebtAdapter is ProtocolAdapter, DyDxAdapter {
 

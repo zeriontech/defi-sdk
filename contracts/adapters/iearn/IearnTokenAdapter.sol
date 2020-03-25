@@ -34,8 +34,9 @@ interface YToken {
 
 
 /**
- * @title Adapter for YTokens.
+ * @title Token adapter for YTokens.
  * @dev Implementation of TokenAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract IearnTokenAdapter is TokenAdapter {
 

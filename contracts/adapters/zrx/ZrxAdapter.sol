@@ -34,6 +34,7 @@ interface Staking {
 /**
  * @title Adapter for 0x protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ZrxAdapter is ProtocolAdapter {
 

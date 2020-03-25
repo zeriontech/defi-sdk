@@ -37,6 +37,7 @@ interface Pot {
 /**
  * @title Adapter for DSR protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract DSRAdapter is ProtocolAdapter, MKRAdapter {
 

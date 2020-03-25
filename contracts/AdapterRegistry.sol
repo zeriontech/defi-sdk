@@ -35,9 +35,10 @@ import {
 
 
 /**
-* @title Registry for protocols, protocol adapters, and token adapters.
-* @notice getBalances() function implements the main functionality.
-*/
+ * @title Registry for protocols, adapters, and token adapters.
+ * @notice getBalances() function implements the main functionality.
+ * @author Igor Sobolev <sobolev@zerion.io>
+ */
 contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
 
     using Strings for string;

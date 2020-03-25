@@ -33,8 +33,9 @@ interface AToken {
 
 
 /**
- * @title Adapter for ATokens.
+ * @title Token adapter for ATokens.
  * @dev Implementation of TokenAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract AaveTokenAdapter is TokenAdapter {
 

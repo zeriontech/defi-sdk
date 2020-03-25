@@ -35,8 +35,9 @@ interface CToken {
 
 
 /**
- * @title Adapter for CTokens.
+ * @title Token adapter for CTokens.
  * @dev Implementation of TokenAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CompoundTokenAdapter is TokenAdapter {
 

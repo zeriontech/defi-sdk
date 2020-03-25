@@ -23,6 +23,7 @@ import { ERC20 } from "../../ERC20.sol";
 /**
  * @title Adapter for iearn.finance protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract IearnAdapter is ProtocolAdapter {
 

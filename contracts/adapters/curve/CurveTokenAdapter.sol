@@ -35,8 +35,9 @@ interface stableswap {
 
 
 /**
- * @title Adapter for Curve pool tokens.
+ * @title Token adapter for Curve pool tokens.
  * @dev Implementation of TokenAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CurveTokenAdapter is TokenAdapter {
 

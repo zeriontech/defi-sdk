@@ -44,6 +44,7 @@ interface Synthetix {
 /**
  * @title Debt adapter for Synthetix protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract SynthetixDebtAdapter is ProtocolAdapter {
 

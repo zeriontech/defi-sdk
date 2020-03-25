@@ -16,6 +16,13 @@
 pragma solidity 0.6.4;
 
 
+/**
+ * @title Registry for Compound contracts.
+ * @dev Implements the only function - getCToken(address).
+ * @notice Call getCToken(token) function and get address
+ * of CToken contract for the given token address.
+ * @author Igor Sobolev <sobolev@zerion.io>
+ */
 contract CompoundRegistry {
 
     mapping (address => address) internal cTokens;
