@@ -2,10 +2,13 @@
 
 # DeFi SDK
 
-![](https://github.com/zeriontech/protocol-wrappers/workflows/lint/badge.svg)
-![](https://github.com/zeriontech/protocol-wrappers/workflows/build/badge.svg)
-![](https://github.com/zeriontech/protocol-wrappers/workflows/test/badge.svg)
-![](https://github.com/zeriontech/protocol-wrappers/workflows/coverage/badge.svg)
+[![Build status](https://github.com/zeriontech/protocol-wrappers/workflows/build/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:build)
+[![Test status](https://github.com/zeriontech/protocol-wrappers/workflows/test/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:test)
+[![Coverage status](https://github.com/zeriontech/protocol-wrappers/workflows/coverage/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:coverage)
+[![Lint status](https://github.com/zeriontech/protocol-wrappers/workflows/lint/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:lint)
+[![License](https://img.shields.io/github/license/zeriontech/defi-sdk)](https://www.gnu.org/licenses/lgpl-3.0.en.html)
+[![Discord](https://img.shields.io/discord/544761450724458498?label=discord)](https://go.zerion.io/discord)
+[![Twitter Follow](https://img.shields.io/twitter/follow/zerion_io.svg)](https://twitter.com/intent/follow?screen_name=zerion_io)
 
 **DeFi SDK** is an open-source system of smart contracts designed for precise DeFi portfolio accounting. To put it simply, DeFi SDK is the on-chain *balanceOf* for DeFi protocols. 
 
@@ -13,8 +16,8 @@ If you have any questions about DeFi SDK, feel free to reach out to us on our [D
 
 ## Features
 
-#### 💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, Curve*, etc. 
-  > How much debt does `0xdead..beef` have on Curve Y pool?
+#### 💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, dYdX*, etc. 
+  > How much debt does `0xdead..beef` have on Compound?
 #### 📊Get the underlying components of complex derivative ERC20 tokens 
 > How much `cUSDC` vs `ETH` does `ETHMACOAPY` have?
 #### ✨Interact with multiple DeFi protocols in a unified way (coming soon)
@@ -33,11 +36,14 @@ If you have any questions about DeFi SDK, feel free to reach out to us on our [D
 
 ### Fetch Compound debt and collateral
 
-As of now, to get all cTokens along with a user's debt on Compound you need to perform over 10 calls to the Ethereum node to different contracts or rely on a centralized API. With DeFi SDK, you can call one function `getProtocolBalances(account, ["Compound"])` on the `api.zerion.eth` smart contract to get all borrowed and supplied tokens.
+As of now, to get all cTokens along with a user's debt on Compound you need to perform over 10 calls to the Ethereum node to different contracts or rely on a centralized API. With DeFi SDK, you can call
 
 ```solidity
-getBalances('0xdead...beef', ['Compound'])
+getProtocolBalances('0xdead...beef', ['Compound'])
 ```
+
+on the `api.zerion.eth` smart contract and get all borrowed and supplied tokens
+
 ```javascript
 [{
   metadata: {
@@ -60,7 +66,7 @@ getBalances('0xdead...beef', ['Compound'])
           symbol: 'cBAT',
           decimals: '8'
         },
-        amount: '0'
+        amount: '314159265'
       },
       underlying: [{
         metadata: {
@@ -69,7 +75,7 @@ getBalances('0xdead...beef', ['Compound'])
           symbol: 'BAT',
           decimals: '18'
         },
-        amount: '0'
+        amount: '6626070040000000000'
       }]
     }]
   },{
@@ -85,7 +91,7 @@ getBalances('0xdead...beef', ['Compound'])
             symbol: 'DAI',
             decimals: '18'
           },
-          amount: '0'
+          amount: '1971081500000000000'
         },
         underlying: []
       }]
@@ -101,31 +107,37 @@ getBalances('0xdead...beef', ['Compound'])
 </p>
 
 Sometimes, a DeFi token contains several other tokens, and to calculate their price, you need to know their underlying assets. For example, a `Uniswap V1 cDAI pool` consists of `ETH` and `cDAI`. `cDAI`, in turn, has `DAI` as an underlying token. With DeFi SDK you can call
+
 ```solidity 
 // Uniswap V1 cDAI pool
 getFinalFullTokenBalance('0x34E89740adF97C3A9D3f63Cc2cE4a914382c230b', "Uniswap V1 pool token")
 ```
+
+ and fetch the decomposition of UNI-token into ERC20 tokens, like `ETH` and `DAI`
+
 ```javascript
-100 ETH
-0.1 DAI 
-``` 
- and fetch the decomposition of UNI-token into ERC20 tokens, like `ETH` and `DAI`.
+0.98 ETH
+215.6 DAI
+```
 
 ### Get account balances across all supported DeFi protocols
 
-In case you want to get account balances across all supported DeFi protocols, you can call 
+In case you want to get account balances across all supported DeFi protocols, you can call
+
 ```solidity 
 // bankless.zerion.eth portfolio 
 getBalances('0x0ef51b7dac3933b8109482e7d910c21848e45da0f') 
 ```
+
+and obtain all balances for a given account. The response from the smart-contract will contain information about each of the protocols
+
 ```javascript
 100 DAI // collateral on Compound
-0.1 ETH // debt on Compound  
+0.1 ETH // debt on Compound
 100 USDC // locked in PoolTogether
 213 TUSD + 201 USDC + 82 USDT + 11 DAI // Curve Y pool
 ...
 ```
-and obtain all balances for a given account. The response from the smart-contract will contain information about each of the protocols.
 
 ## DeFi SDK architecture
 
