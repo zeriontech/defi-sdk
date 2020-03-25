@@ -21,7 +21,7 @@ import { ERC20 } from "../../ERC20.sol";
 
 
 /**
- * @title Adapter for iearn.finance protocol.
+ * @title Adapter for idle.finance protocol.
  * @dev Implementation of ProtocolAdapter interface.
  */
 contract IdleAdapter is ProtocolAdapter {
