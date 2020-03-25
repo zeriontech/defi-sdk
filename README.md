@@ -1,11 +1,11 @@
+![](https://i.ibb.co/RC54SjL/defisdk.png)
+
 # DeFi SDK
 
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/lint/badge.svg)
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/build/badge.svg)
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/test/badge.svg)
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/coverage/badge.svg)
-
-![](./images/1.png)
 
 **DeFi SDK** is an open-source system of smart contracts designed for precise DeFi portfolio accounting. To put it simply, DeFi SDK is the on-chain *balanceOf* for DeFi protocols. 
 
@@ -38,7 +38,7 @@ As of now, to get all cTokens along with a user's debt on Compound you need to p
 ```solidity
 getBalances('0xdead...beef', ['Compound'])
 ```
-```jsonld=1
+```javascript
 [{
   metadata: {
     name: 'Compound',
@@ -105,7 +105,7 @@ Sometimes, a DeFi token contains several other tokens, and to calculate their pr
 // Uniswap V1 cDAI pool
 getFinalFullTokenBalance('0x34E89740adF97C3A9D3f63Cc2cE4a914382c230b', "Uniswap V1 pool token")
 ```
-```jsonld=
+```javascript
 100 ETH
 0.1 DAI 
 ``` 
@@ -118,7 +118,7 @@ In case you want to get account balances across all supported DeFi protocols, yo
 // bankless.zerion.eth portfolio 
 getBalances('0x0ef51b7dac3933b8109482e7d910c21848e45da0f') 
 ```
-```jsonld=
+```javascript
 100 DAI // collateral on Compound
 0.1 ETH // debt on Compound  
 100 USDC // locked in PoolTogether
