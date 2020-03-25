@@ -208,8 +208,8 @@ const zrxAdapterTokens = [
 
 let protocolNames = [];
 let metadata = [];
-let adapters = [[], [], [], [], [], [], [], [], [], [], [], [], []];
-let tokens = [[], [], [], [], [], [], [], [], [], [], [], [], []];
+let adapters = [[], [], [], [], [], [], [], [], [], [], [], [], [], []];
+let tokens = [[], [], [], [], [], [], [], [], [], [], [], [], [], []];
 let tokenAdapters = [];
 
 module.exports = async (deployer, network, accounts) => {
@@ -412,9 +412,9 @@ module.exports = async (deployer, network, accounts) => {
       adapters[13].push(IdleAdapter.address);
       tokens[13].push(idleAdapterTokens);
     });
-  protocolNames.push('idle.finance');
+  protocolNames.push('Idle');
   metadata.push([
-    'idle.finance',
+    'Idle',
     'Yield aggregator for lending platforms',
     'idle.finance',
     'protocol-icons.s3.amazonaws.com/idle.png',
@@ -492,8 +492,8 @@ module.exports = async (deployer, network, accounts) => {
           'AToken',
           'CToken',
           'Curve pool token',
-          'YToken',
           'IdleToken',
+          'YToken',
           'Chai token',
           'PoolTogether pool',
           'Uniswap V1 pool token',
