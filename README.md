@@ -2,10 +2,12 @@
 
 # DeFi SDK
 
-![](https://github.com/zeriontech/protocol-wrappers/workflows/lint/badge.svg)
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/build/badge.svg)
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/test/badge.svg)
 ![](https://github.com/zeriontech/protocol-wrappers/workflows/coverage/badge.svg)
+![](https://github.com/zeriontech/protocol-wrappers/workflows/lint/badge.svg)
+![](https://img.shields.io/github/license/zeriontech/defi-sdk)
+![](https://img.shields.io/twitter/follow/zerion_io?style=social)
 
 **DeFi SDK** is an open-source system of smart contracts designed for precise DeFi portfolio accounting. To put it simply, DeFi SDK is the on-chain *balanceOf* for DeFi protocols. 
 
@@ -13,8 +15,8 @@ If you have any questions about DeFi SDK, feel free to reach out to us on our [D
 
 ## Features
 
-#### 💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, Curve*, etc. 
-  > How much debt does `0xdead..beef` have on Curve Y pool?
+#### 💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, DyDx*, etc. 
+  > How much debt does `0xdead..beef` have on Compound?
 #### 📊Get the underlying components of complex derivative ERC20 tokens 
 > How much `cUSDC` vs `ETH` does `ETHMACOAPY` have?
 #### ✨Interact with multiple DeFi protocols in a unified way (coming soon)
@@ -36,7 +38,7 @@ If you have any questions about DeFi SDK, feel free to reach out to us on our [D
 As of now, to get all cTokens along with a user's debt on Compound you need to perform over 10 calls to the Ethereum node to different contracts or rely on a centralized API. With DeFi SDK, you can call one function `getProtocolBalances(account, ["Compound"])` on the `api.zerion.eth` smart contract to get all borrowed and supplied tokens.
 
 ```solidity
-getBalances('0xdead...beef', ['Compound'])
+getProtocolBalances('0xdead...beef', ['Compound'])
 ```
 ```javascript
 [{
@@ -60,7 +62,7 @@ getBalances('0xdead...beef', ['Compound'])
           symbol: 'cBAT',
           decimals: '8'
         },
-        amount: '0'
+        amount: '314159265'
       },
       underlying: [{
         metadata: {
@@ -69,7 +71,7 @@ getBalances('0xdead...beef', ['Compound'])
           symbol: 'BAT',
           decimals: '18'
         },
-        amount: '0'
+        amount: '6626070040000000000'
       }]
     }]
   },{
@@ -85,7 +87,7 @@ getBalances('0xdead...beef', ['Compound'])
             symbol: 'DAI',
             decimals: '18'
           },
-          amount: '0'
+          amount: '1971081500000000000'
         },
         underlying: []
       }]
@@ -106,8 +108,8 @@ Sometimes, a DeFi token contains several other tokens, and to calculate their pr
 getFinalFullTokenBalance('0x34E89740adF97C3A9D3f63Cc2cE4a914382c230b', "Uniswap V1 pool token")
 ```
 ```javascript
-100 ETH
-0.1 DAI 
+0.1 ETH
+100 DAI 
 ``` 
  and fetch the decomposition of UNI-token into ERC20 tokens, like `ETH` and `DAI`.
 
