@@ -280,10 +280,23 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/dYdX.png',
     '0',
   ]);
+  await deployer.deploy(IdleAdapter, { from: accounts[0] })
+    .then(() => {
+      adapters[4].push(IdleAdapter.address);
+      tokens[4].push(idleAdapterTokens);
+    });
+  protocolNames.push('Idle');
+  metadata.push([
+    'Idle',
+    'Yield aggregator for lending platforms',
+    'idle.finance',
+    'protocol-icons.s3.amazonaws.com/idle.png',
+    '0',
+  ]);
   await deployer.deploy(IearnAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[4].push(IearnAdapter.address);
-      tokens[4].push(iearn2AdapterTokens);
+      adapters[5].push(IearnAdapter.address);
+      tokens[5].push(iearn2AdapterTokens);
     });
   protocolNames.push('iearn.finance (v2)');
   metadata.push([
@@ -295,8 +308,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(IearnAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[5].push(IearnAdapter.address);
-      tokens[5].push(iearn3AdapterTokens);
+      adapters[6].push(IearnAdapter.address);
+      tokens[6].push(iearn3AdapterTokens);
     });
   protocolNames.push('iearn.finance (v3)');
   metadata.push([
@@ -308,8 +321,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(ChaiAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[6].push(ChaiAdapter.address);
-      tokens[6].push(chaiAdapterTokens);
+      adapters[7].push(ChaiAdapter.address);
+      tokens[7].push(chaiAdapterTokens);
     });
   protocolNames.push('Chai');
   metadata.push([
@@ -321,8 +334,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(DSRAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[7].push(DSRAdapter.address);
-      tokens[7].push(dsrAdapterTokens);
+      adapters[8].push(DSRAdapter.address);
+      tokens[8].push(dsrAdapterTokens);
     });
   protocolNames.push('Dai Savings Rate');
   metadata.push([
@@ -334,13 +347,13 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(MCDAssetAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[8].push(MCDAssetAdapter.address);
-      tokens[8].push(mcdAssetAdapterTokens);
+      adapters[9].push(MCDAssetAdapter.address);
+      tokens[9].push(mcdAssetAdapterTokens);
     });
   await deployer.deploy(MCDDebtAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[8].push(MCDDebtAdapter.address);
-      tokens[8].push(mcdDebtAdapterTokens);
+      adapters[9].push(MCDDebtAdapter.address);
+      tokens[9].push(mcdDebtAdapterTokens);
     });
   protocolNames.push('Multi-Collateral Dai');
   metadata.push([
@@ -352,8 +365,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(PoolTogetherAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[9].push(PoolTogetherAdapter.address);
-      tokens[9].push(poolTogetherAdapterTokens);
+      adapters[10].push(PoolTogetherAdapter.address);
+      tokens[10].push(poolTogetherAdapterTokens);
     });
   protocolNames.push('PoolTogether');
   metadata.push([
@@ -365,13 +378,13 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(SynthetixAssetAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[10].push(SynthetixAssetAdapter.address);
-      tokens[10].push(synthetixAssetAdapterTokens);
+      adapters[11].push(SynthetixAssetAdapter.address);
+      tokens[11].push(synthetixAssetAdapterTokens);
     });
   await deployer.deploy(SynthetixDebtAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[10].push(SynthetixDebtAdapter.address);
-      tokens[10].push(synthetixDebtAdapterTokens);
+      adapters[11].push(SynthetixDebtAdapter.address);
+      tokens[11].push(synthetixDebtAdapterTokens);
     });
   protocolNames.push('Synthetix');
   metadata.push([
@@ -383,8 +396,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(UniswapV1Adapter, { from: accounts[0] })
     .then(() => {
-      adapters[11].push(UniswapV1Adapter.address);
-      tokens[11].push(uniswapV1AdapterTokens);
+      adapters[12].push(UniswapV1Adapter.address);
+      tokens[12].push(uniswapV1AdapterTokens);
     });
   protocolNames.push('Uniswap V1');
   metadata.push([
@@ -396,8 +409,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(ZrxAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[12].push(ZrxAdapter.address);
-      tokens[12].push(zrxAdapterTokens);
+      adapters[13].push(ZrxAdapter.address);
+      tokens[13].push(zrxAdapterTokens);
     });
   protocolNames.push('0x Staking');
   metadata.push([
@@ -407,19 +420,7 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/0x-staking.png',
     '0',
   ]);
-  await deployer.deploy(IdleAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[13].push(IdleAdapter.address);
-      tokens[13].push(idleAdapterTokens);
-    });
-  protocolNames.push('Idle');
-  metadata.push([
-    'Idle',
-    'Yield aggregator for lending platforms',
-    'idle.finance',
-    'protocol-icons.s3.amazonaws.com/idle.png',
-    '0',
-  ]);
+
   await deployer.deploy(ERC20TokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
