@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Igor Sobolev <sobolev@zerion.io>
+// Copyright (C) 2020 Zerion Inc. <https://zerion.io>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import { TokenMetadata, Component } from "../Structs.sol";
 /**
  * @title Adapter for ERC20 tokens.
  * @dev Implementation of TokenAdapter interface function.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ERC20TokenAdapter is TokenAdapter {
 

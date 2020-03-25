@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Igor Sobolev <sobolev@zerion.io>
+// Copyright (C) 2020 Zerion Inc. <https://zerion.io>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,7 +22,9 @@ import { Strings } from "./Strings.sol";
 
 
 /**
- * @title Base contract for AdapterRegistry.
+ * @title AdapterRegistry part responsible for protocols and adapters management.
+ * @dev Base contract for AdapterRegistry.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract ProtocolManager is Ownable {
 

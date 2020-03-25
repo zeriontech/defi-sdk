@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Igor Sobolev <sobolev@zerion.io>
+// Copyright (C) 2020 Zerion Inc. <https://zerion.io>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,7 +16,10 @@
 pragma solidity 0.6.4;
 pragma experimental ABIEncoderV2;
 
-
+/**
+ * @notice Library for strings.
+ * @author Igor Sobolev <sobolev@zerion.io>
+ */
 library Strings {
 
     function isEmpty(string memory s) internal pure returns (bool) {

@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Igor Sobolev <sobolev@zerion.io>
+// Copyright (C) 2020 Zerion Inc. <https://zerion.io>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,9 +20,10 @@ import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
 
 
 /**
- * @title Base contract for interactive protocol adapters.
+ * @title Interactive protocol adapter interface.
  * @dev deposit() and withdraw() functions MUST be implemented
  * as well as all the functions from ProtocolAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 interface InteractiveAdapter is ProtocolAdapter {
 

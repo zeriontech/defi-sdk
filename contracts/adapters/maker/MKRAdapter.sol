@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Igor Sobolev <sobolev@zerion.io>
+// Copyright (C) 2020 Zerion Inc. <https://zerion.io>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,9 @@ pragma experimental ABIEncoderV2;
 
 
 /**
- * @title Base contract for MCD, DSR, and (later) Chai adapters.
+ * @title Maker adapter abstract contract.
+ * @dev Base contract for MCD, DSR, and (later) Chai adapters.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract MKRAdapter {
     address internal constant VAT = 0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B;
