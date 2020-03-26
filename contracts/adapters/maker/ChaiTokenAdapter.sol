@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Igor Sobolev <sobolev@zerion.io>
+// Copyright (C) 2020 Zerion Inc. <https://zerion.io>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -37,8 +37,9 @@ interface Pot {
 
 
 /**
- * @title Adapter for Chai tokens.
+ * @title Token adapter for Chai tokens.
  * @dev Implementation of TokenAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ChaiTokenAdapter is TokenAdapter, MKRAdapter {
 

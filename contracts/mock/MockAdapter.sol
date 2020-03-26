@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Igor Sobolev <sobolev@zerion.io>
+// Copyright (C) 2020 Zerion Inc. <https://zerion.io>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,6 +19,10 @@ pragma experimental ABIEncoderV2;
 import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
 
 
+/**
+ * @notice Mock protocol adapter for tests.
+ * @author Igor Sobolev <sobolev@zerion.io>
+ */
 contract MockAdapter is ProtocolAdapter {
 
     mapping (address => uint256) internal balanceOf;

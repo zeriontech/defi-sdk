@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Igor Sobolev <sobolev@zerion.io>
+// Copyright (C) 2020 Zerion Inc. <https://zerion.io>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,10 @@ import { TokenMetadata, Component } from "../Structs.sol";
 import { TokenAdapter } from "../adapters/TokenAdapter.sol";
 
 
+/**
+ * @notice Mock token adapter for tests.
+ * @author Igor Sobolev <sobolev@zerion.io>
+ */
 contract MockTokenAdapter is TokenAdapter {
 
     /**

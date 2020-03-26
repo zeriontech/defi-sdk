@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Igor Sobolev <sobolev@zerion.io>
+// Copyright (C) 2020 Zerion Inc. <https://zerion.io>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,6 +16,13 @@
 pragma solidity 0.6.4;
 
 
+/**
+ * @title Registry for Compound contracts.
+ * @dev Implements the only function - getCToken(address).
+ * @notice Call getCToken(token) function and get address
+ * of CToken contract for the given token address.
+ * @author Igor Sobolev <sobolev@zerion.io>
+ */
 contract CompoundRegistry {
 
     mapping (address => address) internal cTokens;
