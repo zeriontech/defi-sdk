@@ -10,20 +10,21 @@
 [![Discord](https://img.shields.io/discord/544761450724458498?label=discord)](https://go.zerion.io/discord)
 [![Twitter Follow](https://img.shields.io/twitter/follow/zerion_io.svg)](https://twitter.com/intent/follow?screen_name=zerion_io)
 
-**DeFi SDK** is an open-source system of smart contracts designed for precise DeFi portfolio accounting. To put it simply, DeFi SDK is the on-chain *balanceOf* for DeFi protocols. 
+**DeFi SDK** is an open-source system of smart contracts designed for precise DeFi portfolio accounting. To put it simply, DeFi SDK is the on-chain *balanceOf* for DeFi protocols.
 
 If you have any questions about DeFi SDK, feel free to reach out to us on our [Discord server](https://go.zerion.io/discord).
 
 ## Features
 
+
 #### 💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, dYdX*, etc. 
-  > How much debt does `0xdead..beef` have on Compound?
+> How much debt does `0xdead..beef` have on Compound?
 #### 📊Get the underlying components of complex derivative ERC20 tokens 
 > How much `cUSDC` vs `ETH` does `ETHMACOAPY` have?
 #### ✨Interact with multiple DeFi protocols in a unified way (coming soon)
 > See [What’s next for DeFi SDK](#whats-next-for-defi-sdk-)
 
-## Table of Contents 
+## Table of Contents
 
   - [Examples](#examples)
   - [DeFi SDK architecture](#defi-sdk-architecture)
@@ -32,7 +33,7 @@ If you have any questions about DeFi SDK, feel free to reach out to us on our [D
   - [What’s next for DeFi SDK](#whats-next-for-defi-sdk-)
   - [Security vulnerabilities](#security-vulnerabilities-)
 
-## Examples 
+## Examples
 
 ### Fetch Compound debt and collateral
 
@@ -141,15 +142,15 @@ and obtain all balances for a given account. The response from the smart-contrac
 
 ## DeFi SDK architecture
 
-- **ProtocolAdapter** is a special contract for every protocol. Its main purpose is to wrap all the protocol interactions. 
+- **ProtocolAdapter** is a special contract for every protocol. Its main purpose is to wrap all the protocol interactions.
 There are different types of protocol adapters: "Asset" adapter returns the amount of the account's tokens held on the protocol and the "Debt" adapter returns the amount of the account's debt to the protocol. Some protocols do not use "simple" ERC20 tokens but instead have complex derivatives, for example the Compound protocol has CTokens. The **ProtocolAdapter** contract also provides information about the type of tokens used within it.
-- **TokenAdapter** is a contract for every derivative token type (e.g cTokens, aTokens, yTokens, etc.) 
+- **TokenAdapter** is a contract for every derivative token type (e.g cTokens, aTokens, yTokens, etc.)
 Its main purpose is to provide ERC20-style token metadata as well as information about the underlying ERC20 tokens (like DAI for cDAI). Namely, it provides addresses, types and rates of underlying tokens.
-- **AdapterRegistry** is a contract that a) maintains a list of *ProtocolAdapters* and *TokenAdapters* and b) is called to fetch user balances. 
+- **AdapterRegistry** is a contract that a) maintains a list of *ProtocolAdapters* and *TokenAdapters* and b) is called to fetch user balances.
 
 More detailed documentation about contracts can be found in [adapters](../../wiki/Adapters) and [AdapterRegistry](../../wiki/AdapterRegistry) documentation.
 
-## Supported protocols 
+## Supported protocols
 
 | Protocol Name | Description | Protocol Adapters | Token Adapters |
 | :-----------: | :---------: | :---------------: | :------------: |
@@ -157,10 +158,11 @@ More detailed documentation about contracts can be found in [adapters](../../wik
 | [Compound](./contracts/adapters/compound) | Decentralized lending & borrowing protocol. | [Asset adapter](./contracts/adapters/compound/CompoundAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/compound/CompoundDebtAdapter.sol) | ["CToken"](./contracts/adapters/compound/CompoundTokenAdapter.sol) |
 | [Curve](./contracts/adapters/curve) | Exchange liquidity pool for stablecoin trading. Supports Compound, Y, and BUSD pools. | [Asset adapter](./contracts/adapters/curve/CurveAdapter.sol) | ["Curve pool token"](contracts/adapters/curve/CurveTokenAdapter.sol) |
 | [dYdX](./contracts/adapters/dydx) | Decentralized trading platform. All 4 markets (WETH, SAI, USDC, DAI) are supported. | [Asset adapter](./contracts/adapters/dydx/DyDxAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/dydx/DyDxDebtAdapter.sol) | — |
+| [Idle](./contracts/adapters/idle) | Yield aggregator for lending platforms. | [Asset adapter](./contracts/adapters/idle/IdleAdapter.sol) | ["IdleToken"](./contracts/adapters/idle/IdleTokenAdapter.sol) |
 | [iearn.finance (v2/v3)](./contracts/adapters/iearn) | Yield aggregator for lending platforms. Protocol adapter is duplicated for v2 and v3 versions of protocol. | [Asset adapter](./contracts/adapters/iearn/IearnAdapter.sol) | ["YToken"](./contracts/adapters/iearn/IearnTokenAdapter.sol) |
 | [Chai](./contracts/adapters/maker) | A simple ERC20 wrapper over the Dai Savings Rate. | [Asset adapter](./contracts/adapters/maker/ChaiAdapter.sol) | ["Chai token"](./contracts/adapters/maker/ChaiTokenAdapter.sol) |
 | [DSR](./contracts/adapters/maker) | Decentralized lending protocol by MakerDAO. | [Asset adapter](./contracts/adapters/maker/DSRAdapter.sol) | — |
-| [MCD](./contracts/adapters/maker) | Collateralized loans on Maker. | [Asset adapter](./contracts/adapters/maker/MCDAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/maker/MCDDebtAdapter.sol) | — | 
+| [MCD](./contracts/adapters/maker) | Collateralized loans on Maker. | [Asset adapter](./contracts/adapters/maker/MCDAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/maker/MCDDebtAdapter.sol) | — |
 | [PoolTogether](./contracts/adapters/poolTogether) | Decentralized no-loss lottery. Supports SAI, DAI, and USDC pools. | [Asset adapter](./contracts/adapters/poolTogether/PoolTogetherAdapter.sol) | ["PoolTogether pool"](./contracts/adapters/poolTogether/PoolTogetherTokenAdapter.sol) |
 | [Synthetix](./contracts/adapters/synthetix) | Synthetic assets protocol. Asset adapter returns amount of SNX locked as collateral. | [Asset adapter](./contracts/adapters/synthetix/SynthetixAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/synthetix/SynthetixDebtAdapter.sol) | — |
 | [Uniswap V1](./contracts/adapters/uniswap) | Automated liquidity protocol. Top 30 pools are added to the **AdapterRegistry** contract, however  adapter supports all Uniswap pools. | [Asset adapter](./contracts/adapters/uniswap/UniswapV1Adapter.sol) supports all Uniswap pools | ["Uniswap V1 pool token"](./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol) |
