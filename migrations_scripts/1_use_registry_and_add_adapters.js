@@ -129,6 +129,10 @@ const dydxAdapterTokens = [
   usdcAddress,
   daiAddress,
 ];
+const idleAdapterTokens = [
+  idleDAI,
+  idleUSDC,
+];
 const iearn2AdapterTokens = [
   yDAIv2,
   yUSDCv2,
@@ -142,10 +146,6 @@ const iearn3AdapterTokens = [
   yUSDCv3,
   yUSDTv3,
   yBUSDv3,
-];
-const idleAdapterTokens = [
-  idleDAI,
-  idleUSDC
 ];
 const dsrAdapterTokens = [
   daiAddress,
@@ -171,36 +171,37 @@ const synthetixAssetAdapterTokens = [
 const synthetixDebtAdapterTokens = [
   susdAddress,
 ];
-const uniswapV1AdapterTokens = [ // top 50 pools
-  '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb',
-  '0x2b591e99afe9f32eaa6214f7b7629768c40eeb39',
-  '0x6b175474e89094c44da98b954eedeac495271d0f',
-  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-  '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
-  '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-  '0xc011a72400e58ecd99ee497cf89e3775d4bd732f',
-  '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-  '0x0d8775f648430679a709e98d2b0cb6250d2887ef',
-  '0x514910771af9ca656af840dff83e8264ecf986ca',
-  '0xdd974d5c2e2928dea5f71b9825b8b646686bd200',
-  '0xcf8f9555d55ce45a3a33a81d6ef99a2a2e71dee2',
-  '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
-  '0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d',
-  '0x960b236a07cf122663c4303350609a66a7b288c0',
-  '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',
-  '0x9cb2f26a23b8d89973f08c957c4d7cdf75cd341c',
-  // '0xb4efd85c19999d84251304bda99e90b92300bd93',
-  // '0xbbbbca6a901c926f240b89eacb641d8aec7aeafd',
-  // '0xaaaf91d9b90df800df4f55c205fd6989c977e73a',
-  // '0xb4272071ecadd69d933adcd19ca99fe80664fc08',
-  // '0x3212b29e33587a00fb1c83346f5dbfa69a458923',
-  // '0x1985365e9f78359a9b6ad760e32412f4a445e862',
-  // '0xe41d2489571d322189246dafa5ebde1f4699f498',
-  // '0x42d6622dece394b54999fbd73d108123806f6a18',
-  // '0xe0b7927c4af23765cb51314a0e0521a9645f0e2a',
-  // '0x4946fcea7c692606e8908002e55a582af44ac121',
-  // '0x408e41876cccdc0f92210600ef50372656052a38',
-  // '0x6810e776880c02933d47db1b9fc05908e5386b96',
+const uniswapV1AdapterTokens = [ // top 30 pools
+  '0xe9cf7887b93150d4f2da7dfc6d502b216438f244',
+  '0x05cde89ccfa0ada8c88d5a23caaa79ef129e7883',
+  '0x2a1530c4c41db0b0b2bb646cb5eb1a67b7158667',
+  '0x97dec872013f6b5fb443861090ad931542878126',
+  '0x2c4bd064b998838076fa341a83d007fc2fa50957',
+  '0xa2881a90bf33f03e7a3f803765cd2ed5c8928dfb',
+  '0x3958b4ec427f8fa24eb60f42821760e88d485f7f',
+  '0x4d2f5cfba55ae412221182d8475bc85799a5644b',
+  '0x2e642b8d59b45a1d8c5aef716a84ff44ea665914',
+  '0xf173214c720f58e03e194085b1db28b50acdeead',
+  '0x93a8515d674c3d3235beea0de7ae3099aa34b1a5',
+  '0x49c4f9bc14884f6210f28342ced592a633801a8b',
+  '0xf506828b166de88ca2edb2a98d960abba0d2402a',
+  '0xb944d13b2f4047fc7bd3f7013bcf01b115fb260d',
+  '0x077d52b047735976dfda76fef74d4d988ac25196',
+  '0x80324ec8d64425b37f8603a97097da7d493dbc79',
+  '0x09cabec1ead1c0ba254b09efb3ee13841712be14',
+  '0xa539baaa3aca455c986bb1e25301cef936ce1b65',
+  '0x3fb2f18065926ddb33e7571475c509541d15da0e',
+  '0x48b04d2a05b6b604d8d5223fd1984f191ded51af',
+  '0xffcf45b540e6c9f094ae656d2e34ad11cdfdb187',
+  '0xb6cfbf322db47d39331e306005dc7e5e6549942b',
+  '0x8de0d002dc83478f479dc31f76cb0a8aa7ccea17',
+  '0x4e395304655f0796bc3bc63709db72173b9ddf98',
+  '0xae76c84c9262cdb9abc0c2c8888e62db8e22a0bf',
+  '0x43892992b0b102459e895b88601bb2c76736942c',
+  '0xf79cb3bea83bd502737586a6e8b133c378fd1ff2',
+  '0xd91ff16ef92568fc27f466c3c5613e43313ab1dc',
+  '0x2bf5a5ba29e60682fc56b2fcf9ce07bef4f6196f',
+  '0xe8e45431b93215566ba923a7e611b7342ea954df',
 ];
 const zrxAdapterTokens = [
   zrxAddress,

@@ -21,7 +21,6 @@ contract('UniswapAdapter', () => {
   const snxAddress = '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F';
   const saiAddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-  const cDaiAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
@@ -77,12 +76,6 @@ contract('UniswapAdapter', () => {
     'Dai Stablecoin',
     'DAI',
     '18',
-  ];
-  const cDai = [
-    cDaiAddress,
-    'Compound Dai',
-    'cDAI',
-    '8',
   ];
   const usdc = [
     usdcAddress,
@@ -179,7 +172,7 @@ contract('UniswapAdapter', () => {
       });
   });
 
-  it('should return correct balances', async () => {
+  it.only('should return correct balances', async () => {
     await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then((result) => {
@@ -217,7 +210,7 @@ contract('UniswapAdapter', () => {
         assert.deepEqual(result[0].adapterBalances[0].balances[3].underlying[1].metadata, usdc);
         assert.deepEqual(result[0].adapterBalances[0].balances[4].underlying[1].metadata, snx);
         assert.deepEqual(result[0].adapterBalances[0].balances[5].underlying[1].metadata, sai);
-        assert.deepEqual(result[0].adapterBalances[0].balances[6].underlying[1].metadata, cDai);
+        assert.deepEqual(result[0].adapterBalances[0].balances[6].underlying[1].metadata, dai);
       });
   });
 });

@@ -1,6 +1,6 @@
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 
-contract.skip('AdapterRegistry deployed', () => {
+contract('AdapterRegistry deployed', () => {
   let adapterRegistry;
 
   beforeEach(async () => {
@@ -43,8 +43,8 @@ contract.skip('AdapterRegistry deployed', () => {
             'Uniswap V1 pool token',
             'PoolTogether pool',
             'Chai token',
-            'IdleToken',
             'YToken',
+            'IdleToken',
             'Curve pool token',
             'CToken',
             'AToken',
