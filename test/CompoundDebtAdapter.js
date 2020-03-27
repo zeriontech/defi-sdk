@@ -25,13 +25,6 @@ contract('CompoundDebtAdapter', () => {
     'DAI',
     '18',
   ];
-  const sai = [
-    saiAddress,
-    'Sai Stablecoin v1.0',
-    'SAI',
-    '18',
-  ];
-
   const usdc = [
     usdcAddress,
     'USD//C',
@@ -98,8 +91,7 @@ contract('CompoundDebtAdapter', () => {
         displayToken(result[0].adapterBalances[0].balances[1].base);
         displayToken(result[0].adapterBalances[0].balances[3].base);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, dai);
-        assert.deepEqual(result[0].adapterBalances[0].balances[4].base.metadata, sai);
-        assert.deepEqual(result[0].adapterBalances[0].balances[6].base.metadata, usdc);
+        assert.deepEqual(result[0].adapterBalances[0].balances[3].base.metadata, usdc);
       });
   });
 });

@@ -1,6 +1,6 @@
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 
-contract('AdapterRegistry deployed', () => {
+contract.skip('AdapterRegistry deployed', () => {
   let adapterRegistry;
 
   beforeEach(async () => {

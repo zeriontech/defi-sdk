@@ -5,6 +5,7 @@ const CompoundDebtAdapter = artifacts.require('CompoundDebtAdapter');
 const CurveAdapter = artifacts.require('CurveAdapter');
 const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
+const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
 const ChaiAdapter = artifacts.require('ChaiAdapter');
 const DSRAdapter = artifacts.require('DSRAdapter');
@@ -19,17 +20,37 @@ const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const AaveTokenAdapter = artifacts.require('AaveTokenAdapter');
 const CompoundTokenAdapter = artifacts.require('CompoundTokenAdapter');
 const CurveTokenAdapter = artifacts.require('CurveTokenAdapter');
+const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 
+const aDaiAddress = '0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d';
+const aTusdAddress = '0x4DA9b813057D04BAef4e5800E36083717b4a0341';
+const aUsdcAddress = '0x9bA00D6856a4eDF4665BcA2C2309936572473B7E';
+const aUsdtAddress = '0x71fc860F7D3A592A4a98740e39dB31d25db65ae8';
+const aSusdAddress = '0x625aE63000f46200499120B906716420bd059240';
+const aBusdAddress = '0x6Ee0f7BB50a54AB5253dA0667B0Dc2ee526C30a8';
+const aLendAddress = '0x7D2D3688Df45Ce7C552E19c27e007673da9204B8';
+const aBatAddress = '0xE1BA0FB44CCb0D11b80F92f4f8Ed94CA3fF51D00';
+const aEthAddress = '0x3a3A65aAb0dd2A17E3F1947bA16138cd37d08c04';
+const aLinkAddress = '0xA64BD6C70Cb9051F6A9ba1F163Fdc07E0DfB5F84';
+const aKncAddress = '0x9D91BE44C06d373a8a226E1f3b146956083803eB';
+const aRepAddress = '0x71010A9D003445aC60C4e6A7017c1E89A477B438';
+const aMkrAddress = '0x7deB5e830be29F91E298ba5FF1356BB7f8146998';
+const aManaAddress = '0x6FCE4A401B6B80ACe52baAefE4421Bd188e76F6f';
+const aZrxAddress = '0x6Fb0855c404E09c47C3fBCA25f08d4E41f9F062f';
+const aSnxAddress = '0x328C4c80BC7aCa0834Db37e6600A6c49E12Da4DE';
+const aWbtcAddress = '0xFC4B8ED459e00e5400be803A9BB3954234FD50e3';
+
 const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 const tusdAddress = '0x0000000000085d4780B73119b644AE5ecd22b376';
 const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 const usdtAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
 const susdAddress = '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51';
+const busdAddress = '0x4Fabb145d64652a948d72533023f6E7A623C7C53';
 const lendAddress = '0x80fB784B7eD66730e8b1DBd9820aFD29931aab03';
 const batAddress = '0x0D8775F648430679A709E98d2b0Cb6250d2887EF';
 const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -80,12 +101,32 @@ const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
 
 const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
 
-const aaveAdapterTokens = [
+const aaveAssetAdapterTokens = [
+  aDaiAddress,
+  aTusdAddress,
+  aUsdcAddress,
+  aUsdtAddress,
+  aSusdAddress,
+  aBusdAddress,
+  aLendAddress,
+  aBatAddress,
+  aEthAddress,
+  aLinkAddress,
+  aKncAddress,
+  aRepAddress,
+  aMkrAddress,
+  aManaAddress,
+  aZrxAddress,
+  aSnxAddress,
+  aWbtcAddress,
+];
+const aaveDebtAdapterTokens = [
   daiAddress,
   tusdAddress,
   usdcAddress,
   usdtAddress,
   susdAddress,
+  busdAddress,
   lendAddress,
   batAddress,
   ethAddress,
@@ -217,12 +258,12 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(AaveAssetAdapter, { from: accounts[0] })
     .then(() => {
       adapters[0].push(AaveAssetAdapter.address);
-      tokens[0].push(aaveAdapterTokens);
+      tokens[0].push(aaveAssetAdapterTokens);
     });
   await deployer.deploy(AaveDebtAdapter, { from: accounts[0] })
     .then(() => {
       adapters[0].push(AaveDebtAdapter.address);
-      tokens[0].push(aaveAdapterTokens);
+      tokens[0].push(aaveDebtAdapterTokens);
     });
   protocolNames.push('Aave');
   metadata.push([
@@ -446,16 +487,16 @@ module.exports = async (deployer, network, accounts) => {
         CurveTokenAdapter.address,
       );
     });
-  await deployer.deploy(IearnTokenAdapter, { from: accounts[0] })
-    .then(() => {
-      tokenAdapters.push(
-        IearnTokenAdapter.address,
-      );
-    });
   await deployer.deploy(IdleTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
         IdleTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(IearnTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        IearnTokenAdapter.address,
       );
     });
   await deployer.deploy(ChaiTokenAdapter, { from: accounts[0] })

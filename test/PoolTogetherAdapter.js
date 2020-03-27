@@ -6,7 +6,6 @@ const TokenAdapter = artifacts.require('./PoolTogetherTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
 contract('PoolTogetherAdapter', () => {
-  const saiAddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 
@@ -27,12 +26,6 @@ contract('PoolTogetherAdapter', () => {
     'DAI',
     '18',
   ];
-  const sai = [
-    saiAddress,
-    'Sai Stablecoin v1.0',
-    'SAI',
-    '18',
-  ];
   const usdc = [
     usdcAddress,
     'USD//C',
@@ -42,12 +35,6 @@ contract('PoolTogetherAdapter', () => {
   const daiPool = [
     daiPoolAddress,
     'DAI pool',
-    'PLT',
-    '18',
-  ];
-  const saiPool = [
-    saiPoolAddress,
-    'SAI pool',
     'PLT',
     '18',
   ];
@@ -114,13 +101,10 @@ contract('PoolTogetherAdapter', () => {
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
         displayToken(result[0].adapterBalances[0].balances[1].underlying[0]);
-        displayToken(result[0].adapterBalances[0].balances[2].underlying[0]);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, saiPool);
-        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, daiPool);
-        assert.deepEqual(result[0].adapterBalances[0].balances[2].base.metadata, usdcPool);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, sai);
-        assert.deepEqual(result[0].adapterBalances[0].balances[1].underlying[0].metadata, dai);
-        assert.deepEqual(result[0].adapterBalances[0].balances[2].underlying[0].metadata, usdc);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, daiPool);
+        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, usdcPool);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, dai);
+        assert.deepEqual(result[0].adapterBalances[0].balances[1].underlying[0].metadata, usdc);
       });
   });
 });

@@ -1,4 +1,4 @@
-import displayToken from './helpers/displayToken';
+// import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./MCDDebtAdapter');
@@ -13,12 +13,6 @@ contract('MCDDebtAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let tokenAdapterAddress;
-  const dai = [
-    daiAddress,
-    'Dai Stablecoin',
-    'DAI',
-    '18',
-  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -68,9 +62,7 @@ contract('MCDDebtAdapter', () => {
     await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then((result) => {
-        displayToken(result[0].adapterBalances[0].balances[0].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, dai);
-        assert.equal(result[0].adapterBalances[0].balances[0].underlying.length, 0);
+        assert.equal(result[0].adapterBalances[0].balances.length, 0);
       });
   });
 });

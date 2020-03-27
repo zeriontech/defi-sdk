@@ -20,12 +20,6 @@ contract('MCDAssetAdapter', () => {
     'WETH',
     '18',
   ];
-  const bat = [
-    batAddress,
-    'Basic Attention Token',
-    'BAT',
-    '18',
-  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -77,11 +71,8 @@ contract('MCDAssetAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
-        displayToken(result[0].adapterBalances[0].balances[1].base);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, weth);
-        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, bat);
         assert.equal(result[0].adapterBalances[0].balances[0].underlying.length, 0);
-        assert.equal(result[0].adapterBalances[0].balances[1].underlying.length, 0);
       });
   });
 });

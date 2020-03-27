@@ -207,6 +207,7 @@ abstract contract ProtocolManager is Ownable {
         require(newAdapterAddress != address(0) || newSupportedTokens.length != 0, "PM: empty!");
 
         address adapterAddress = protocolAdapters[protocolName][index];
+        require(adapterAddress != newAdapterAddress, "PM: same!");
 
         if (newAdapterAddress != address(0)) {
             protocolAdapters[protocolName][index] = newAdapterAddress;
@@ -337,7 +338,7 @@ abstract contract ProtocolManager is Ownable {
             description: metadata.description,
             websiteURL: metadata.websiteURL,
             iconURL: metadata.iconURL,
-            version: 0
+            version: metadata.version
         });
 
         for (uint256 i = 0; i < adapters.length; i++) {

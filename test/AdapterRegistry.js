@@ -397,7 +397,7 @@ contract('AdapterRegistry', () => {
         '0',
       ]],
       [[
-        protocolAdapterAddress,
+        ONE,
       ]],
       [[[
         protocolAdapterAddress,
@@ -488,7 +488,7 @@ contract('AdapterRegistry', () => {
         '0',
       ]],
       [[
-        protocolAdapterAddress,
+        ONE,
       ]],
       [[[
         protocolAdapterAddress,
@@ -528,7 +528,7 @@ contract('AdapterRegistry', () => {
         '0',
       ]],
       [[
-        protocolAdapterAddress,
+        TWO,
       ]],
       [[[
         protocolAdapterAddress,
@@ -721,7 +721,7 @@ contract('AdapterRegistry', () => {
   it('should add protocol adapter by the owner', async () => {
     await adapterRegistry.methods.addProtocolAdapters(
       'Mock',
-      [protocolAdapterAddress],
+      [ONE],
       [[protocolAdapterAddress]],
     )
       .send({
@@ -731,7 +731,7 @@ contract('AdapterRegistry', () => {
     await adapterRegistry.methods.getProtocolAdapters('Mock')
       .call()
       .then((result) => {
-        assert.deepEqual(result, [protocolAdapterAddress, protocolAdapterAddress]);
+        assert.deepEqual(result, [protocolAdapterAddress, ONE]);
       });
   });
 
@@ -906,6 +906,19 @@ contract('AdapterRegistry', () => {
       0,
       ZERO,
       [],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      }));
+  });
+
+  it('should not update protocol adapter with same address', async () => {
+    await expectRevert(adapterRegistry.methods.updateProtocolAdapter(
+      'Mock',
+      0,
+      protocolAdapterAddress,
+      [ONE],
     )
       .send({
         from: accounts[0],
@@ -1285,9 +1298,7 @@ contract('AdapterRegistry', () => {
         assert.equal(result[0].metadata.iconURL, 'Mock icon');
         assert.equal(result[0].metadata.version, '0');
         assert.equal(result[0].adapterBalances[0].metadata.adapterType, 'Asset');
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, mockAsset);
-        assert.equal(result[0].adapterBalances[0].balances[0].base.amount, 0);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying, []);
+        assert.equal(result[0].adapterBalances[0].balances.length, 0);
       });
   });
 });

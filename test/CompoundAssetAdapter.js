@@ -102,11 +102,11 @@ contract('CompoundAssetAdapter', () => {
     await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then((result) => {
-        displayToken(result[0].adapterBalances[0].balances[6].underlying[0]);
-        displayToken(result[0].adapterBalances[0].balances[7].underlying[0]);
+        displayToken(result[0].adapterBalances[0].balances[4].underlying[0]);
+        displayToken(result[0].adapterBalances[0].balances[5].underlying[0]);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, dai);
-        assert.deepEqual(result[0].adapterBalances[0].balances[4].underlying[0].metadata, sai);
-        assert.deepEqual(result[0].adapterBalances[0].balances[6].underlying[0].metadata, usdc);
+        assert.deepEqual(result[0].adapterBalances[0].balances[3].underlying[0].metadata, sai);
+        assert.deepEqual(result[0].adapterBalances[0].balances[4].underlying[0].metadata, usdc);
       });
   });
 });
