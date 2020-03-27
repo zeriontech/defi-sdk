@@ -30,6 +30,7 @@ contract ERC20TokenAdapter is TokenAdapter {
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant SAI = 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359;
+    address internal constant CSAI = 0x45A2FDfED7F7a2c791fb1bdF6075b83faD821ddE;
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -49,6 +50,13 @@ contract ERC20TokenAdapter is TokenAdapter {
                 name: "Sai Stablecoin v1.0",
                 symbol: "SAI",
                 decimals: uint8(18)
+            });
+        } else if (token == CSAI) {
+            return TokenMetadata({
+                token: CSAI,
+                name: "Compound Sai",
+                symbol: "cSAI",
+                decimals: uint8(8)
             });
         } else {
             return TokenMetadata({

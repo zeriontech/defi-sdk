@@ -43,18 +43,28 @@ contract CompoundTokenAdapter is TokenAdapter {
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;
+    address internal constant CSAI = 0xF5DCe57282A584D2746FaF1593d3121Fcac444dC;
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
      * @dev Implementation of TokenAdapter interface function.
      */
     function getMetadata(address token) external view override returns (TokenMetadata memory) {
-        return TokenMetadata({
-            token: token,
-            name: ERC20(token).name(),
-            symbol: ERC20(token).symbol(),
-            decimals: ERC20(token).decimals()
-        });
+        if (token == CSAI) {
+            return TokenMetadata({
+                token: CSAI,
+                name: "Compound Sai",
+                symbol: "cSAI",
+                decimals: uint8(8)
+            });
+        } else {
+            return TokenMetadata({
+                token: token,
+                name: ERC20(token).name(),
+                symbol: ERC20(token).symbol(),
+                decimals: ERC20(token).decimals()
+            });
+        }
     }
 
     /**
