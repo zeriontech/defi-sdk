@@ -55,7 +55,7 @@ contract('IdleAdapter', () => {
       ]],
       [[[
         idleDAIAddress,
-        idleUSDCAddress
+        idleUSDCAddress,
       ]]],
     )
       .send({

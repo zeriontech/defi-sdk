@@ -7,5 +7,5 @@ node_modules
 ./contracts/ProtocolManager.sol
 ./contracts/Ownable.sol
 ./contracts/adapters/maker/MKRAdapter.sol
-./contracts/adapters/uniswap/UniswapTokenAdapter.sol
+./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol
 ./contracts/adapters/dydx
