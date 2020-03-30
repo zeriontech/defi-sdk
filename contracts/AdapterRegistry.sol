@@ -16,12 +16,6 @@
 pragma solidity 0.6.4;
 pragma experimental ABIEncoderV2;
 
-import { Ownable } from "./Ownable.sol";
-import { ProtocolManager } from "./ProtocolManager.sol";
-import { TokenAdapterManager } from "./TokenAdapterManager.sol";
-import { ProtocolAdapter } from "./adapters/ProtocolAdapter.sol";
-import { TokenAdapter } from "./adapters/TokenAdapter.sol";
-import { Strings } from "./Strings.sol";
 import {
     ProtocolBalance,
     ProtocolMetadata,
@@ -32,6 +26,12 @@ import {
     TokenMetadata,
     Component
 } from "./Structs.sol";
+import { Strings } from "./Strings.sol";
+import { Ownable } from "./Ownable.sol";
+import { ProtocolManager } from "./ProtocolManager.sol";
+import { TokenAdapterManager } from "./TokenAdapterManager.sol";
+import { ProtocolAdapter } from "./adapters/ProtocolAdapter.sol";
+import { TokenAdapter } from "./adapters/TokenAdapter.sol";
 
 
 /**
