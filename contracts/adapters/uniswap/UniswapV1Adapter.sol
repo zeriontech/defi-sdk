@@ -21,17 +21,6 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @dev Factory contract interface.
- * Only the functions required for UniswapAdapter contract are added.
- * The Factory contract is available here
- * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_factory.vy.
- */
-interface Factory {
-    function getToken(address) external view returns (address);
-}
-
-
-/**
  * @title Adapter for Uniswap V1 protocol.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>

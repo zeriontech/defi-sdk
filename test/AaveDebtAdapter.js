@@ -33,6 +33,12 @@ contract('AaveDebtAdapter', () => {
     'KNC',
     '18',
   ];
+  const mkr = [
+    mkrAddress,
+    'Maker',
+    'MKR',
+    '18',
+  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -98,7 +104,9 @@ contract('AaveDebtAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
+        displayToken(result[0].adapterBalances[0].balances[1].base);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, knc);
+        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, mkr);
       });
   });
 });

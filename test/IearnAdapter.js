@@ -26,6 +26,12 @@ contract('IearnAdapter', () => {
     'DAI',
     '18',
   ];
+  const yDAIna = [
+    yDAIAddress,
+    'Not available',
+    'N/A',
+    '18',
+  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -86,6 +92,26 @@ contract('IearnAdapter', () => {
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, dai);
+      });
+  });
+
+  it('should not fail if token adapter is missing', async () => {
+    await adapterRegistry.methods.removeTokenAdapters(
+      ['YToken'],
+    )
+      .send({
+        from: accounts[0],
+        gas: '1000000',
+      });
+    await adapterRegistry.methods.getAdapterBalance(
+      testAddress,
+      protocolAdapterAddress,
+      [yDAIAddress],
+    )
+      .call()
+      .then((result) => {
+        assert.deepEqual(result.balances[0].base.metadata, yDAIna);
+        assert.equal(result.balances[0].underlying.length, 0);
       });
   });
 });

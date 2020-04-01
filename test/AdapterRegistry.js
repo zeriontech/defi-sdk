@@ -682,6 +682,18 @@ contract('AdapterRegistry', () => {
       }));
   });
 
+  it('should not add protocol adapter that is already in use', async () => {
+    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
+      'Mock',
+      [protocolAdapterAddress],
+      [[protocolAdapterAddress]],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      }));
+  });
+
   it('should not add protocol adapter with no adapters', async () => {
     await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       'Mock',

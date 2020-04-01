@@ -135,7 +135,7 @@ contract UniswapV1TokenAdapter is TokenAdapter {
     }
 
     /**
-     * @dev Internal function to convert bytes32 to string.
+     * @dev Internal function to convert bytes32 to string and trim zeroes.
      */
     function convertToString(bytes32 data) internal pure returns (string memory) {
         uint256 length = 0;

@@ -8,4 +8,5 @@ node_modules
 ./contracts/Ownable.sol
 ./contracts/adapters/maker/MKRAdapter.sol
 ./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol
+./contracts/adapters/balancer/BalancerTokenAdapter.sol
 ./contracts/adapters/dydx

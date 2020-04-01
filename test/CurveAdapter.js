@@ -168,7 +168,7 @@ contract('CurveAdapter', () => {
       });
   });
 
-  it('should return correct full unit', async () => {
+  it('should return correct final full unit', async () => {
     await adapterRegistry.methods['getFinalFullTokenBalance(string,address)'](
       'Curve pool token',
       ssCompoundTokenAddress,
@@ -188,7 +188,7 @@ contract('CurveAdapter', () => {
     )
       .call()
       .then((result) => {
-        assert.equal(result.balances.length, 0);
+        assert.deepEqual(result.balances[0].underlying, []);
       });
   });
 });
