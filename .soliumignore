@@ -9,3 +9,4 @@ node_modules
 ./contracts/adapters/maker/MKRAdapter.sol
 ./contracts/adapters/uniswap/UniswapTokenAdapter.sol
 ./contracts/adapters/dydx
+./contracts/adapters/opium

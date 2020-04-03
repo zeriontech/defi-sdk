@@ -3,3 +3,4 @@ node_modules
 ./contracts/Structs.sol
 ./contracts/adapters/maker/MKRAdapter.sol
 ./contracts/adapters/dydx
+./contracts/adapters/opium
