@@ -10,3 +10,5 @@ node_modules
 ./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol
 ./contracts/adapters/balancer/BalancerTokenAdapter.sol
 ./contracts/adapters/dydx
+./contracts/adapters
+./contracts/mock

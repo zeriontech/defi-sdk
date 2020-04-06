@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity 0.6.4;
+pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -38,23 +38,11 @@ interface Staking {
  */
 contract ZrxAdapter is ProtocolAdapter {
 
+    string public constant override adapterType = "Asset";
+
+    string public constant override tokenType = "ERC20";
+
     address internal constant STAKING = 0xa26e80e7Dea86279c6d778D702Cc413E6CFfA777;
-
-    /**
-     * @return Type of the adapter.
-     * @dev Implementation of ProtocolAdapter interface function.
-     */
-    function adapterType() external pure override returns (string memory) {
-        return "Asset";
-    }
-
-    /**
-     * @return Type of the token used in adapter.
-     * @dev Implementation of ProtocolAdapter interface function.
-     */
-    function tokenType() external pure override returns (string memory) {
-        return "ERC20";
-    }
 
     /**
      * @return Amount of ZRX locked on the protocol by the given account.

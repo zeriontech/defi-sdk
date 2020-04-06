@@ -13,9 +13,12 @@
     ],
     "compiler-version": [
       "error",
-      "0.6.4"
+      "0.6.5"
     ],
     "private-vars-leading-underscore": [
+      "off"
+    ],
+    "const-name-snakecase": [
       "off"
     ]
   }
