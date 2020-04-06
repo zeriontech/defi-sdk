@@ -36,7 +36,7 @@ contract UniswapV1Adapter is ProtocolAdapter {
      * @param token Address of the exchange (pool)!
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address token, address account) external view override returns (uint256) {
+    function getBalance(address token, address account) public view override returns (uint256) {
         return ERC20(token).balanceOf(account);
     }
 }

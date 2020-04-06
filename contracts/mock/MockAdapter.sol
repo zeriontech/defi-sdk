@@ -38,7 +38,7 @@ contract MockAdapter is ProtocolAdapter {
     /**
      * @return Mock balance.
      */
-    function getBalance(address, address account) external view override returns (uint256) {
+    function getBalance(address, address account) public view override returns (uint256) {
         return balanceOf[account];
     }
 }

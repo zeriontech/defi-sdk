@@ -68,7 +68,7 @@ contract DyDxDebtAdapter is ProtocolAdapter, DyDxAdapter {
      * @return Amount of tokens held by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address token, address account) external view override returns (uint256) {
+    function getBalance(address token, address account) public view override returns (uint256) {
         Wei memory accountWei = SoloMargin(SOLO).getAccountWei(Info(account, 0), getMarketId(token));
         return accountWei.sign ? 0 : accountWei.value;
     }

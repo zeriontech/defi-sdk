@@ -122,6 +122,9 @@ contract UniswapV1TokenAdapter is TokenAdapter {
         }
     }
 
+    /**
+     * @dev Internal function to get non-ERC20 token symbol.
+     */
     function getSymbol(address token) internal view returns (string memory) {
         (, bytes memory returnData) = token.staticcall(
             abi.encodeWithSelector(ERC20(token).symbol.selector)

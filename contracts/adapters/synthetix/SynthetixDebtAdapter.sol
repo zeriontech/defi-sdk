@@ -58,7 +58,7 @@ contract SynthetixDebtAdapter is ProtocolAdapter {
      * @return Amount of debt of the given account for the protocol.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address, address account) external view override returns (uint256) {
+    function getBalance(address, address account) public view override returns (uint256) {
         Synthetix synthetix = Synthetix(Proxy(SNX).target());
 
         return synthetix.debtBalanceOf(account, "sUSD");

@@ -19,7 +19,7 @@ pragma experimental ABIEncoderV2;
 
 /**
  * @title Maker adapter abstract contract.
- * @dev Base contract for MCD, DSR, and Chai adapters.
+ * @dev Base contract for Maker adapters.
  * Math function are taken from the Pot contract available here
  * github.com/makerdao/dss/blob/master/src/pot.sol.
  * @author Igor Sobolev <sobolev@zerion.io>
