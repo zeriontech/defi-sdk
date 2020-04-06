@@ -30,7 +30,7 @@ contract('IearnAdapter', () => {
     yDAIAddress,
     'Not available',
     'N/A',
-    '18',
+    '0',
   ];
 
   beforeEach(async () => {

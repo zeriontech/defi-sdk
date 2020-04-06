@@ -364,27 +364,27 @@ contract('AdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol with no assets', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocols(
-      ['Mock2'],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-
-      [[
-        protocolAdapterAddress,
-      ]],
-      [[[]]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
+  // it('should not add protocol with no assets', async () => {
+  //   await expectRevert(adapterRegistry.methods.addProtocols(
+  //     ['Mock2'],
+  //     [[
+  //       'Mock Protocol Name',
+  //       'Mock protocol description',
+  //       'Mock website',
+  //       'Mock icon',
+  //       '0',
+  //     ]],
+  //
+  //     [[
+  //       protocolAdapterAddress,
+  //     ]],
+  //     [[[]]],
+  //   )
+  //     .send({
+  //       from: accounts[0],
+  //       gas: '300000',
+  //     }));
+  // });
 
   it('should add protocol by the owner', async () => {
     await adapterRegistry.methods.addProtocols(
@@ -718,17 +718,17 @@ contract('AdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol adapter without tokens', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
-      'Mock',
-      [protocolAdapterAddress],
-      [[]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
+  // it('should not add protocol adapter without tokens', async () => {
+  //   await expectRevert(adapterRegistry.methods.addProtocolAdapters(
+  //     'Mock',
+  //     [protocolAdapterAddress],
+  //     [[]],
+  //   )
+  //     .send({
+  //       from: accounts[0],
+  //       gas: '300000',
+  //     }));
+  // });
 
   it('should add protocol adapter by the owner', async () => {
     await adapterRegistry.methods.addProtocolAdapters(
@@ -912,24 +912,11 @@ contract('AdapterRegistry', () => {
       }));
   });
 
-  it('should not update protocol adapter with empty input', async () => {
+  it('should not update protocol adapter with zero address', async () => {
     await expectRevert(adapterRegistry.methods.updateProtocolAdapter(
       'Mock',
       0,
       ZERO,
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not update protocol adapter with same address', async () => {
-    await expectRevert(adapterRegistry.methods.updateProtocolAdapter(
-      'Mock',
-      0,
-      protocolAdapterAddress,
       [ONE],
     )
       .send({
@@ -937,6 +924,19 @@ contract('AdapterRegistry', () => {
         gas: '300000',
       }));
   });
+
+  // it('should not update protocol adapter with same address', async () => {
+  //   await expectRevert(adapterRegistry.methods.updateProtocolAdapter(
+  //     'Mock',
+  //     0,
+  //     protocolAdapterAddress,
+  //     [ONE],
+  //   )
+  //     .send({
+  //       from: accounts[0],
+  //       gas: '300000',
+  //     }));
+  // });
 
   it('should update protocol adapter by the owner', async () => {
     await adapterRegistry.methods.updateProtocolAdapter(
@@ -957,7 +957,7 @@ contract('AdapterRegistry', () => {
     await adapterRegistry.methods.updateProtocolAdapter(
       'Mock',
       0,
-      ZERO,
+      ONE,
       [ONE, ONE],
     )
       .send({
@@ -993,6 +993,21 @@ contract('AdapterRegistry', () => {
       .call()
       .then((result) => {
         assert.deepEqual(result, [TWO, TWO]);
+      });
+    await adapterRegistry.methods.updateProtocolAdapter(
+      'Mock',
+      0,
+      TWO,
+      [],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      });
+    await adapterRegistry.methods.getSupportedTokens(TWO)
+      .call()
+      .then((result) => {
+        assert.deepEqual(result, []);
       });
   });
 
@@ -1304,13 +1319,7 @@ contract('AdapterRegistry', () => {
     await adapterRegistry.methods.getBalances(accounts[1])
       .call()
       .then((result) => {
-        assert.equal(result[0].metadata.name, 'Mock Protocol Name');
-        assert.equal(result[0].metadata.description, 'Mock protocol description');
-        assert.equal(result[0].metadata.websiteURL, 'Mock website');
-        assert.equal(result[0].metadata.iconURL, 'Mock icon');
-        assert.equal(result[0].metadata.version, '0');
-        assert.equal(result[0].adapterBalances[0].metadata.adapterType, 'Asset');
-        assert.equal(result[0].adapterBalances[0].balances.length, 0);
+        assert.equal(result.length, 0);
       });
   });
 });

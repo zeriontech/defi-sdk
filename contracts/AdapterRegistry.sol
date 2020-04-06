@@ -107,15 +107,29 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         returns (ProtocolBalance[] memory)
     {
         ProtocolBalance[] memory protocolBalances = new ProtocolBalance[](protocolNames.length);
+        uint256 counter = 0;
 
         for (uint256 i = 0; i < protocolNames.length; i++) {
             protocolBalances[i] = ProtocolBalance({
                 metadata: protocolMetadata[protocolNames[i]],
                 adapterBalances: getAdapterBalances(account, protocolAdapters[protocolNames[i]])
             });
+            if (protocolBalances[i].adapterBalances.length > 0) {
+                counter++;
+            }
         }
 
-        return protocolBalances;
+        ProtocolBalance[] memory nonZeroProtocolBalances = new ProtocolBalance[](counter);
+        counter = 0;
+
+        for (uint256 i = 0; i < protocolNames.length; i++) {
+            if (protocolBalances[i].adapterBalances.length > 0) {
+                nonZeroProtocolBalances[counter] = protocolBalances[i];
+                counter++;
+            }
+        }
+
+        return nonZeroProtocolBalances;
     }
 
     /**
@@ -132,6 +146,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         returns (AdapterBalance[] memory)
     {
         AdapterBalance[] memory adapterBalances = new AdapterBalance[](adapters.length);
+        uint256 counter = 0;
 
         for (uint256 i = 0; i < adapterBalances.length; i++) {
             adapterBalances[i] = getAdapterBalance(
@@ -139,9 +154,22 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
                 adapters[i],
                 supportedTokens[adapters[i]]
             );
+            if (adapterBalances[i].balances.length > 0) {
+                counter++;
+            }
         }
 
-        return adapterBalances;
+        AdapterBalance[] memory nonZeroAdapterBalances = new AdapterBalance[](counter);
+        counter = 0;
+
+        for (uint256 i = 0; i < adapterBalances.length; i++) {
+            if (adapterBalances[i].balances.length > 0) {
+                nonZeroAdapterBalances[counter] = adapterBalances[i];
+                counter++;
+            }
+        }
+
+        return nonZeroAdapterBalances;
     }
 
     /**
@@ -163,7 +191,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         uint256[] memory amounts = new uint256[](tokens.length);
         uint256 counter;
 
-        for (uint256 i = 0; i < tokens.length; i++) {
+        for (uint256 i = 0; i < amounts.length; i++) {
             try ProtocolAdapter(adapter).getBalance(tokens[i], account) returns (uint256 result) {
                 amounts[i] = result;
             } catch {
@@ -374,7 +402,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
                     token: token,
                     name: "Not available",
                     symbol: "N/A",
-                    decimals: 18
+                    decimals: 0
                 });
             }
         } else {
@@ -382,7 +410,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
                 token: token,
                 name: "Not available",
                 symbol: "N/A",
-                decimals: 18
+                decimals: 0
             });
         }
 

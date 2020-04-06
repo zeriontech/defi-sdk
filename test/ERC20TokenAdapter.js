@@ -16,7 +16,7 @@ contract('ERC20TokenAdapter', () => {
   //   badAddress,
   //   'Not available',
   //   'N/A',
-  //   '18',
+  //   '0',
   // ];
 
   beforeEach(async () => {

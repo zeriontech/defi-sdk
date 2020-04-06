@@ -62,7 +62,7 @@ contract('MCDDebtAdapter', () => {
     await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then((result) => {
-        assert.equal(result[0].adapterBalances[0].balances.length, 0);
+        assert.equal(result.length, 0);
       });
   });
 });

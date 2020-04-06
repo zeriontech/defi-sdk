@@ -204,21 +204,16 @@ abstract contract ProtocolManager is Ownable {
     {
         require(isValidProtocol(protocolName), "PM: bad name!");
         require(index < protocolAdapters[protocolName].length, "PM: bad index!");
-        require(newAdapterAddress != address(0) || newSupportedTokens.length != 0, "PM: empty!");
+        require(newAdapterAddress != address(0), "PM: empty!");
 
         address adapterAddress = protocolAdapters[protocolName][index];
-        require(adapterAddress != newAdapterAddress, "PM: same!");
 
-        if (newAdapterAddress != address(0)) {
-            protocolAdapters[protocolName][index] = newAdapterAddress;
-            if (newSupportedTokens.length != 0) {
-                supportedTokens[newAdapterAddress] = newSupportedTokens;
-            } else {
-                supportedTokens[newAdapterAddress] = supportedTokens[adapterAddress];
-            }
-            delete supportedTokens[adapterAddress];
-        } else {
+        if (newAdapterAddress == adapterAddress) {
             supportedTokens[adapterAddress] = newSupportedTokens;
+        } else {
+            protocolAdapters[protocolName][index] = newAdapterAddress;
+            supportedTokens[newAdapterAddress] = newSupportedTokens;
+            delete supportedTokens[adapterAddress];
         }
 
         protocolMetadata[protocolName].version++;
@@ -390,7 +385,6 @@ abstract contract ProtocolManager is Ownable {
         internal
     {
         require(adapter != address(0), "PM: zero!");
-        require(tokens.length != 0, "PM: empty!");
         require(supportedTokens[adapter].length == 0, "PM: exists!");
 
         protocolAdapters[protocolName].push(adapter);
