@@ -17,15 +17,20 @@ pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
+import { AmountType } from "../Structs.sol";
+import { ERC20 } from "../ERC20.sol";
 
 
 /**
- * @title Interactive protocol adapter interface.
+ * @title Base contract for interactive protocol adapters.
  * @dev deposit() and withdraw() functions MUST be implemented
  * as well as all the functions from ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-interface InteractiveAdapter is ProtocolAdapter {
+abstract contract InteractiveAdapter is ProtocolAdapter {
+
+    uint256 internal constant RELATIVE_AMOUNT_BASE = 1000;
+    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
      * @dev The function must deposit assets to the protocol.
@@ -34,10 +39,12 @@ interface InteractiveAdapter is ProtocolAdapter {
     function deposit(
         address[] calldata assets,
         uint256[] calldata amounts,
+        AmountType[] calldata amountTypes,
         bytes calldata data
     )
         external
         payable
+        virtual
         returns (address[] memory);
 
     /**
@@ -47,9 +54,70 @@ interface InteractiveAdapter is ProtocolAdapter {
     function withdraw(
         address[] calldata assets,
         uint256[] calldata amounts,
+        AmountType[] calldata amountTypes,
         bytes calldata data
     )
         external
         payable
+        virtual
         returns (address[] memory);
+
+//    /**
+//     * @dev ProtocolAdapter function that should be `public`.
+//     * MUST be implemented in corresponding ProtocolAdapter.
+//     */
+//    function getBalance(
+//        address token,
+//        address account
+//    )
+//        public
+//        view
+//        override
+//        virtual
+//        returns (uint256);
+
+    function getAbsoluteAmountDeposit(
+        address token,
+        uint256 amount,
+        AmountType amountType
+    )
+        internal
+        view
+        virtual
+        returns (uint256)
+    {
+        if (amountType == AmountType.Relative) {
+            require(amount <= RELATIVE_AMOUNT_BASE, "L: wrong relative value!");
+
+            uint256 totalAmount;
+            if (token == ETH) {
+                totalAmount = address(this).balance;
+            } else {
+                totalAmount = ERC20(token).balanceOf(address(this));
+            }
+
+            return totalAmount * amount / RELATIVE_AMOUNT_BASE; // TODO overflow check
+        } else {
+            return amount;
+        }
+    }
+
+    function getAbsoluteAmountWithdraw(
+        address token,
+        uint256 amount,
+        AmountType amountType
+    )
+        internal
+        view
+        virtual
+        returns (uint256)
+    {
+        if (amountType == AmountType.Relative) {
+            require(amount <= RELATIVE_AMOUNT_BASE, "L: wrong relative value!");
+
+            return getBalance(token, address(this)) * amount / RELATIVE_AMOUNT_BASE; // TODO overflow check
+        } else {
+            return amount;
+        }
+    }
 }

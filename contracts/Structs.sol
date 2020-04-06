@@ -72,3 +72,30 @@ struct Component {
     string tokenType;  // "ERC20" by default
     uint256 rate;  // price per full share (1e18)
 }
+
+//================================InteractiveAdapters structs=====================================
+
+
+struct Action {
+    ActionType actionType;
+    string protocolName;
+    string adapterType;
+    address[] tokens;
+    uint256[] amounts;
+    AmountType[] amountTypes;
+    bytes data;
+}
+
+
+struct Approval {
+    address token;
+    uint256 amount;
+    AmountType amountType;
+    uint256 nonce;
+}
+
+
+enum ActionType { None, Deposit, Withdraw }
+
+
+enum AmountType { None, Relative, Absolute }

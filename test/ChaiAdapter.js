@@ -1,7 +1,7 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./ChaiAdapter');
+const ProtocolAdapter = artifacts.require('./ChaiInteractiveAdapter');
 const TokenAdapter = artifacts.require('./ChaiTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
@@ -75,7 +75,7 @@ contract('ChaiAdapter', () => {
   });
 
   it('should return correct balances', async () => {
-    await adapterRegistry.methods['getBalances(address)'](testAddress)
+    await adapterRegistry.methods['getBalances(address)'](accounts[0])
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
