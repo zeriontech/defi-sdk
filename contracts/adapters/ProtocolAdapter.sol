@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity 0.6.4;
+pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
 
@@ -26,11 +26,13 @@ interface ProtocolAdapter {
 
     /**
      * @dev MUST return "Asset" or "Debt".
+     * SHOULD be implemented by the public constant state variable.
      */
     function adapterType() external pure returns (string memory);
 
     /**
      * @dev MUST return token type (default is "ERC20").
+     * SHOULD be implemented by the public constant state variable.
      */
     function tokenType() external pure returns (string memory);
 
