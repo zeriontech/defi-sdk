@@ -21,19 +21,19 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @title Adapter for Uniswap V1 protocol.
+ * @title Adapter for Balancer protocol.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UniswapV1Adapter is ProtocolAdapter {
+contract BalancerAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "Uniswap V1 pool token";
+    string public constant override tokenType = "Balancer pool token";
 
     /**
-     * @return Amount of Uniswap pool tokens held by the given account.
-     * @param token Address of the exchange (pool)!
+     * @return Amount of Balancer pool tokens held by the given account.
+     * @param token Address of the pool!
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {

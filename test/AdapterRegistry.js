@@ -364,27 +364,27 @@ contract('AdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol with no assets', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocols(
-      ['Mock2'],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-
-      [[
-        protocolAdapterAddress,
-      ]],
-      [[[]]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
+  // it('should not add protocol with no assets', async () => {
+  //   await expectRevert(adapterRegistry.methods.addProtocols(
+  //     ['Mock2'],
+  //     [[
+  //       'Mock Protocol Name',
+  //       'Mock protocol description',
+  //       'Mock website',
+  //       'Mock icon',
+  //       '0',
+  //     ]],
+  //
+  //     [[
+  //       protocolAdapterAddress,
+  //     ]],
+  //     [[[]]],
+  //   )
+  //     .send({
+  //       from: accounts[0],
+  //       gas: '300000',
+  //     }));
+  // });
 
   it('should add protocol by the owner', async () => {
     await adapterRegistry.methods.addProtocols(
@@ -397,7 +397,7 @@ contract('AdapterRegistry', () => {
         '0',
       ]],
       [[
-        protocolAdapterAddress,
+        ONE,
       ]],
       [[[
         protocolAdapterAddress,
@@ -488,7 +488,7 @@ contract('AdapterRegistry', () => {
         '0',
       ]],
       [[
-        protocolAdapterAddress,
+        ONE,
       ]],
       [[[
         protocolAdapterAddress,
@@ -528,7 +528,7 @@ contract('AdapterRegistry', () => {
         '0',
       ]],
       [[
-        protocolAdapterAddress,
+        TWO,
       ]],
       [[[
         protocolAdapterAddress,
@@ -682,6 +682,18 @@ contract('AdapterRegistry', () => {
       }));
   });
 
+  it('should not add protocol adapter that is already in use', async () => {
+    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
+      'Mock',
+      [protocolAdapterAddress],
+      [[protocolAdapterAddress]],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      }));
+  });
+
   it('should not add protocol adapter with no adapters', async () => {
     await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       'Mock',
@@ -706,22 +718,22 @@ contract('AdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol adapter without tokens', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
-      'Mock',
-      [protocolAdapterAddress],
-      [[]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
+  // it('should not add protocol adapter without tokens', async () => {
+  //   await expectRevert(adapterRegistry.methods.addProtocolAdapters(
+  //     'Mock',
+  //     [protocolAdapterAddress],
+  //     [[]],
+  //   )
+  //     .send({
+  //       from: accounts[0],
+  //       gas: '300000',
+  //     }));
+  // });
 
   it('should add protocol adapter by the owner', async () => {
     await adapterRegistry.methods.addProtocolAdapters(
       'Mock',
-      [protocolAdapterAddress],
+      [ONE],
       [[protocolAdapterAddress]],
     )
       .send({
@@ -731,7 +743,7 @@ contract('AdapterRegistry', () => {
     await adapterRegistry.methods.getProtocolAdapters('Mock')
       .call()
       .then((result) => {
-        assert.deepEqual(result, [protocolAdapterAddress, protocolAdapterAddress]);
+        assert.deepEqual(result, [protocolAdapterAddress, ONE]);
       });
   });
 
@@ -900,18 +912,31 @@ contract('AdapterRegistry', () => {
       }));
   });
 
-  it('should not update protocol adapter with empty input', async () => {
+  it('should not update protocol adapter with zero address', async () => {
     await expectRevert(adapterRegistry.methods.updateProtocolAdapter(
       'Mock',
       0,
       ZERO,
-      [],
+      [ONE],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       }));
   });
+
+  // it('should not update protocol adapter with same address', async () => {
+  //   await expectRevert(adapterRegistry.methods.updateProtocolAdapter(
+  //     'Mock',
+  //     0,
+  //     protocolAdapterAddress,
+  //     [ONE],
+  //   )
+  //     .send({
+  //       from: accounts[0],
+  //       gas: '300000',
+  //     }));
+  // });
 
   it('should update protocol adapter by the owner', async () => {
     await adapterRegistry.methods.updateProtocolAdapter(
@@ -932,7 +957,7 @@ contract('AdapterRegistry', () => {
     await adapterRegistry.methods.updateProtocolAdapter(
       'Mock',
       0,
-      ZERO,
+      ONE,
       [ONE, ONE],
     )
       .send({
@@ -968,6 +993,21 @@ contract('AdapterRegistry', () => {
       .call()
       .then((result) => {
         assert.deepEqual(result, [TWO, TWO]);
+      });
+    await adapterRegistry.methods.updateProtocolAdapter(
+      'Mock',
+      0,
+      TWO,
+      [],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      });
+    await adapterRegistry.methods.getSupportedTokens(TWO)
+      .call()
+      .then((result) => {
+        assert.deepEqual(result, []);
       });
   });
 
@@ -1279,15 +1319,7 @@ contract('AdapterRegistry', () => {
     await adapterRegistry.methods.getBalances(accounts[1])
       .call()
       .then((result) => {
-        assert.equal(result[0].metadata.name, 'Mock Protocol Name');
-        assert.equal(result[0].metadata.description, 'Mock protocol description');
-        assert.equal(result[0].metadata.websiteURL, 'Mock website');
-        assert.equal(result[0].metadata.iconURL, 'Mock icon');
-        assert.equal(result[0].metadata.version, '0');
-        assert.equal(result[0].adapterBalances[0].metadata.adapterType, 'Asset');
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, mockAsset);
-        assert.equal(result[0].adapterBalances[0].balances[0].base.amount, 0);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying, []);
+        assert.equal(result.length, 0);
       });
   });
 });

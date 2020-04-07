@@ -13,15 +13,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity 0.6.4;
+pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
-import { Ownable } from "./Ownable.sol";
-import { ProtocolManager } from "./ProtocolManager.sol";
-import { TokenAdapterManager } from "./TokenAdapterManager.sol";
-import { ProtocolAdapter } from "./adapters/ProtocolAdapter.sol";
-import { TokenAdapter } from "./adapters/TokenAdapter.sol";
-import { Strings } from "./Strings.sol";
 import {
     ProtocolBalance,
     ProtocolMetadata,
@@ -32,6 +26,12 @@ import {
     TokenMetadata,
     Component
 } from "./Structs.sol";
+import { Strings } from "./Strings.sol";
+import { Ownable } from "./Ownable.sol";
+import { ProtocolManager } from "./ProtocolManager.sol";
+import { TokenAdapterManager } from "./TokenAdapterManager.sol";
+import { ProtocolAdapter } from "./adapters/ProtocolAdapter.sol";
+import { TokenAdapter } from "./adapters/TokenAdapter.sol";
 
 
 /**
@@ -107,15 +107,29 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         returns (ProtocolBalance[] memory)
     {
         ProtocolBalance[] memory protocolBalances = new ProtocolBalance[](protocolNames.length);
+        uint256 counter = 0;
 
         for (uint256 i = 0; i < protocolNames.length; i++) {
             protocolBalances[i] = ProtocolBalance({
                 metadata: protocolMetadata[protocolNames[i]],
                 adapterBalances: getAdapterBalances(account, protocolAdapters[protocolNames[i]])
             });
+            if (protocolBalances[i].adapterBalances.length > 0) {
+                counter++;
+            }
         }
 
-        return protocolBalances;
+        ProtocolBalance[] memory nonZeroProtocolBalances = new ProtocolBalance[](counter);
+        counter = 0;
+
+        for (uint256 i = 0; i < protocolNames.length; i++) {
+            if (protocolBalances[i].adapterBalances.length > 0) {
+                nonZeroProtocolBalances[counter] = protocolBalances[i];
+                counter++;
+            }
+        }
+
+        return nonZeroProtocolBalances;
     }
 
     /**
@@ -132,6 +146,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         returns (AdapterBalance[] memory)
     {
         AdapterBalance[] memory adapterBalances = new AdapterBalance[](adapters.length);
+        uint256 counter = 0;
 
         for (uint256 i = 0; i < adapterBalances.length; i++) {
             adapterBalances[i] = getAdapterBalance(
@@ -139,9 +154,22 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
                 adapters[i],
                 supportedTokens[adapters[i]]
             );
+            if (adapterBalances[i].balances.length > 0) {
+                counter++;
+            }
         }
 
-        return adapterBalances;
+        AdapterBalance[] memory nonZeroAdapterBalances = new AdapterBalance[](counter);
+        counter = 0;
+
+        for (uint256 i = 0; i < adapterBalances.length; i++) {
+            if (adapterBalances[i].balances.length > 0) {
+                nonZeroAdapterBalances[counter] = adapterBalances[i];
+                counter++;
+            }
+        }
+
+        return nonZeroAdapterBalances;
     }
 
     /**
@@ -159,25 +187,34 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         view
         returns (AdapterBalance memory)
     {
-        FullTokenBalance[] memory finalFullTokenBalances = new FullTokenBalance[](tokens.length);
-        uint256 amount;
-        string memory tokenType;
+        string memory tokenType = ProtocolAdapter(adapter).tokenType();
+        uint256[] memory amounts = new uint256[](tokens.length);
+        uint256 counter;
 
-        for (uint256 i = 0; i < tokens.length; i++) {
+        for (uint256 i = 0; i < amounts.length; i++) {
             try ProtocolAdapter(adapter).getBalance(tokens[i], account) returns (uint256 result) {
-                amount = result;
+                amounts[i] = result;
             } catch {
-                amount = 0;
+                amounts[i] = 0;
             }
+            if (amounts[i] > 0) {
+                counter++;
+            }
+        }
 
-            tokenType = ProtocolAdapter(adapter).tokenType();
+        FullTokenBalance[] memory finalFullTokenBalances = new FullTokenBalance[](counter);
+        counter = 0;
 
-            finalFullTokenBalances[i] = getFullTokenBalance(
-                tokenType,
-                tokens[i],
-                amount,
-                getFinalComponents(tokenType, tokens[i], 1e18)
-            );
+        for (uint256 i = 0; i < amounts.length; i++) {
+            if (amounts[i] > 0) {
+                finalFullTokenBalances[counter] = getFullTokenBalance(
+                    tokenType,
+                    tokens[i],
+                    amounts[i],
+                    getFinalComponents(tokenType, tokens[i], amounts[i])
+                );
+                counter++;
+            }
         }
 
         return AdapterBalance({
@@ -212,7 +249,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
             componentTokenBalances[i] = getTokenBalance(
                 components[i].tokenType,
                 components[i].token,
-                components[i].rate * amount / 1e18
+                components[i].rate
             );
         }
 
@@ -237,10 +274,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         view
         returns (Component[] memory)
     {
-        uint256 totalLength;
-
-        totalLength = getFinalComponentsNumber(tokenType, token, true);
-
+        uint256 totalLength = getFinalComponentsNumber(tokenType, token, true);
         Component[] memory finalTokens = new Component[](totalLength);
         uint256 length;
         uint256 init = 0;
@@ -287,12 +321,12 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         view
         returns (uint256)
     {
-        if (tokenType.isEqualTo("ERC20")) {
-            return initial ? uint256(0) : uint256(1);
-        }
-
         uint256 totalLength = 0;
         Component[] memory components = getComponents(tokenType, token, 1e18);
+
+        if (components.length == 0) {
+            return initial ? uint256(0) : uint256(1);
+        }
 
         for (uint256 i = 0; i < components.length; i++) {
             totalLength = totalLength + getFinalComponentsNumber(
@@ -323,9 +357,13 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         TokenAdapter adapter = TokenAdapter(tokenAdapter[tokenType]);
         Component[] memory components;
 
-        try adapter.getComponents(token) returns (Component[] memory result) {
-            components = result;
-        } catch {
+        if (address(adapter) != address(0)) {
+            try adapter.getComponents(token) returns (Component[] memory result) {
+                components = result;
+            } catch {
+                components = new Component[](0);
+            }
+        } else {
             components = new Component[](0);
         }
 
@@ -353,22 +391,29 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         returns (TokenBalance memory)
     {
         TokenAdapter adapter = TokenAdapter(tokenAdapter[tokenType]);
+        TokenBalance memory tokenBalance;
+        tokenBalance.amount = amount;
 
-        try adapter.getMetadata(token) returns (TokenMetadata memory result) {
-            return TokenBalance({
-                metadata: result,
-                amount: amount
-            });
-        } catch {
-            return TokenBalance({
-                metadata: TokenMetadata({
+        if (address(adapter) != address(0)) {
+            try adapter.getMetadata(token) returns (TokenMetadata memory result) {
+                tokenBalance.metadata = result;
+            } catch {
+                tokenBalance.metadata = TokenMetadata({
                     token: token,
                     name: "Not available",
                     symbol: "N/A",
-                    decimals: 18
-                }),
-                amount: amount
+                    decimals: 0
+                });
+            }
+        } else {
+            tokenBalance.metadata = TokenMetadata({
+                token: token,
+                name: "Not available",
+                symbol: "N/A",
+                decimals: 0
             });
         }
+
+        return tokenBalance;
     }
 }

@@ -27,22 +27,16 @@ contract('AaveDebtAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
-  const dai = [
-    daiAddress,
-    'Dai Stablecoin',
-    'DAI',
-    '18',
-  ];
   const knc = [
     kncAddress,
     'Kyber Network Crystal',
     'KNC',
     '18',
   ];
-  const bat = [
-    batAddress,
-    'Basic Attention Token',
-    'BAT',
+  const mkr = [
+    mkrAddress,
+    'Maker',
+    'MKR',
     '18',
   ];
 
@@ -111,10 +105,8 @@ contract('AaveDebtAdapter', () => {
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
         displayToken(result[0].adapterBalances[0].balances[1].base);
-        displayToken(result[0].adapterBalances[0].balances[2].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, dai);
-        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, knc);
-        assert.deepEqual(result[0].adapterBalances[0].balances[2].base.metadata, bat);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, knc);
+        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, mkr);
       });
   });
 });

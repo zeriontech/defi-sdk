@@ -1,10 +1,12 @@
 const AaveAssetAdapter = artifacts.require('AaveAssetAdapter');
 const AaveDebtAdapter = artifacts.require('AaveDebtAdapter');
+const BalancerAdapter = artifacts.require('BalancerAdapter');
 const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
 const CompoundDebtAdapter = artifacts.require('CompoundDebtAdapter');
 const CurveAdapter = artifacts.require('CurveAdapter');
 const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
+const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
 const ChaiAdapter = artifacts.require('ChaiAdapter');
 const DSRAdapter = artifacts.require('DSRAdapter');
@@ -17,19 +19,40 @@ const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const AaveTokenAdapter = artifacts.require('AaveTokenAdapter');
+const BalancerTokenAdapter = artifacts.require('BalancerTokenAdapter');
 const CompoundTokenAdapter = artifacts.require('CompoundTokenAdapter');
 const CurveTokenAdapter = artifacts.require('CurveTokenAdapter');
+const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 
+const aDaiAddress = '0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d';
+const aTusdAddress = '0x4DA9b813057D04BAef4e5800E36083717b4a0341';
+const aUsdcAddress = '0x9bA00D6856a4eDF4665BcA2C2309936572473B7E';
+const aUsdtAddress = '0x71fc860F7D3A592A4a98740e39dB31d25db65ae8';
+const aSusdAddress = '0x625aE63000f46200499120B906716420bd059240';
+const aBusdAddress = '0x6Ee0f7BB50a54AB5253dA0667B0Dc2ee526C30a8';
+const aLendAddress = '0x7D2D3688Df45Ce7C552E19c27e007673da9204B8';
+const aBatAddress = '0xE1BA0FB44CCb0D11b80F92f4f8Ed94CA3fF51D00';
+const aEthAddress = '0x3a3A65aAb0dd2A17E3F1947bA16138cd37d08c04';
+const aLinkAddress = '0xA64BD6C70Cb9051F6A9ba1F163Fdc07E0DfB5F84';
+const aKncAddress = '0x9D91BE44C06d373a8a226E1f3b146956083803eB';
+const aRepAddress = '0x71010A9D003445aC60C4e6A7017c1E89A477B438';
+const aMkrAddress = '0x7deB5e830be29F91E298ba5FF1356BB7f8146998';
+const aManaAddress = '0x6FCE4A401B6B80ACe52baAefE4421Bd188e76F6f';
+const aZrxAddress = '0x6Fb0855c404E09c47C3fBCA25f08d4E41f9F062f';
+const aSnxAddress = '0x328C4c80BC7aCa0834Db37e6600A6c49E12Da4DE';
+const aWbtcAddress = '0xFC4B8ED459e00e5400be803A9BB3954234FD50e3';
+
 const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 const tusdAddress = '0x0000000000085d4780B73119b644AE5ecd22b376';
 const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 const usdtAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
 const susdAddress = '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51';
+const busdAddress = '0x4Fabb145d64652a948d72533023f6E7A623C7C53';
 const lendAddress = '0x80fB784B7eD66730e8b1DBd9820aFD29931aab03';
 const batAddress = '0x0D8775F648430679A709E98d2b0Cb6250d2887EF';
 const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -80,12 +103,32 @@ const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
 
 const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
 
-const aaveAdapterTokens = [
+const aaveAssetAdapterTokens = [
+  aDaiAddress,
+  aTusdAddress,
+  aUsdcAddress,
+  aUsdtAddress,
+  aSusdAddress,
+  aBusdAddress,
+  aLendAddress,
+  aBatAddress,
+  aEthAddress,
+  aLinkAddress,
+  aKncAddress,
+  aRepAddress,
+  aMkrAddress,
+  aManaAddress,
+  aZrxAddress,
+  aSnxAddress,
+  aWbtcAddress,
+];
+const aaveDebtAdapterTokens = [
   daiAddress,
   tusdAddress,
   usdcAddress,
   usdtAddress,
   susdAddress,
+  busdAddress,
   lendAddress,
   batAddress,
   ethAddress,
@@ -129,6 +172,10 @@ const dydxAdapterTokens = [
   usdcAddress,
   daiAddress,
 ];
+const idleAdapterTokens = [
+  idleDAI,
+  idleUSDC,
+];
 const iearn2AdapterTokens = [
   yDAIv2,
   yUSDCv2,
@@ -142,10 +189,6 @@ const iearn3AdapterTokens = [
   yUSDCv3,
   yUSDTv3,
   yBUSDv3,
-];
-const idleAdapterTokens = [
-  idleDAI,
-  idleUSDC
 ];
 const dsrAdapterTokens = [
   daiAddress,
@@ -171,57 +214,26 @@ const synthetixAssetAdapterTokens = [
 const synthetixDebtAdapterTokens = [
   susdAddress,
 ];
-const uniswapV1AdapterTokens = [ // top 50 pools
-  '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb',
-  '0x2b591e99afe9f32eaa6214f7b7629768c40eeb39',
-  '0x6b175474e89094c44da98b954eedeac495271d0f',
-  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-  '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
-  '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-  '0xc011a72400e58ecd99ee497cf89e3775d4bd732f',
-  '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-  '0x0d8775f648430679a709e98d2b0cb6250d2887ef',
-  '0x514910771af9ca656af840dff83e8264ecf986ca',
-  '0xdd974d5c2e2928dea5f71b9825b8b646686bd200',
-  '0xcf8f9555d55ce45a3a33a81d6ef99a2a2e71dee2',
-  '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
-  '0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d',
-  '0x960b236a07cf122663c4303350609a66a7b288c0',
-  '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',
-  '0x9cb2f26a23b8d89973f08c957c4d7cdf75cd341c',
-  // '0xb4efd85c19999d84251304bda99e90b92300bd93',
-  // '0xbbbbca6a901c926f240b89eacb641d8aec7aeafd',
-  // '0xaaaf91d9b90df800df4f55c205fd6989c977e73a',
-  // '0xb4272071ecadd69d933adcd19ca99fe80664fc08',
-  // '0x3212b29e33587a00fb1c83346f5dbfa69a458923',
-  // '0x1985365e9f78359a9b6ad760e32412f4a445e862',
-  // '0xe41d2489571d322189246dafa5ebde1f4699f498',
-  // '0x42d6622dece394b54999fbd73d108123806f6a18',
-  // '0xe0b7927c4af23765cb51314a0e0521a9645f0e2a',
-  // '0x4946fcea7c692606e8908002e55a582af44ac121',
-  // '0x408e41876cccdc0f92210600ef50372656052a38',
-  // '0x6810e776880c02933d47db1b9fc05908e5386b96',
-];
 const zrxAdapterTokens = [
   zrxAddress,
 ];
 
 let protocolNames = [];
 let metadata = [];
-let adapters = [[], [], [], [], [], [], [], [], [], [], [], [], [], []];
-let tokens = [[], [], [], [], [], [], [], [], [], [], [], [], [], []];
+let adapters = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], []];
+let tokens = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], []];
 let tokenAdapters = [];
 
 module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(AaveAssetAdapter, { from: accounts[0] })
     .then(() => {
       adapters[0].push(AaveAssetAdapter.address);
-      tokens[0].push(aaveAdapterTokens);
+      tokens[0].push(aaveAssetAdapterTokens);
     });
   await deployer.deploy(AaveDebtAdapter, { from: accounts[0] })
     .then(() => {
       adapters[0].push(AaveDebtAdapter.address);
-      tokens[0].push(aaveAdapterTokens);
+      tokens[0].push(aaveDebtAdapterTokens);
     });
   protocolNames.push('Aave');
   metadata.push([
@@ -231,15 +243,28 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/aave.png',
     '0',
   ]);
+  await deployer.deploy(BalancerAdapter, { from: accounts[0] })
+    .then(() => {
+      adapters[1].push(BalancerAdapter.address);
+      tokens[1].push([]);
+    });
+  protocolNames.push('Balancer');
+  metadata.push([
+    'Balancer',
+    'Non-custodial portfolio manager, liquidity provider, and price sensor',
+    'pools.balancer.exchange',
+    'protocol-icons.s3.amazonaws.com/balancer.png',
+    '0',
+  ]);
   await deployer.deploy(CompoundAssetAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[1].push(CompoundAssetAdapter.address);
-      tokens[1].push(compoundAssetAdapterTokens);
+      adapters[2].push(CompoundAssetAdapter.address);
+      tokens[2].push(compoundAssetAdapterTokens);
     });
   await deployer.deploy(CompoundDebtAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[1].push(CompoundDebtAdapter.address);
-      tokens[1].push(compoundDebtAdapterTokens);
+      adapters[2].push(CompoundDebtAdapter.address);
+      tokens[2].push(compoundDebtAdapterTokens);
     });
   protocolNames.push('Compound');
   metadata.push([
@@ -251,8 +276,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(CurveAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[2].push(CurveAdapter.address);
-      tokens[2].push(curveAdapterTokens);
+      adapters[3].push(CurveAdapter.address);
+      tokens[3].push(curveAdapterTokens);
     });
   protocolNames.push('Curve');
   metadata.push([
@@ -264,13 +289,13 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(DyDxAssetAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[3].push(DyDxAssetAdapter.address);
-      tokens[3].push(dydxAdapterTokens);
+      adapters[4].push(DyDxAssetAdapter.address);
+      tokens[4].push(dydxAdapterTokens);
     });
   await deployer.deploy(DyDxDebtAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[3].push(DyDxDebtAdapter.address);
-      tokens[3].push(dydxAdapterTokens);
+      adapters[4].push(DyDxDebtAdapter.address);
+      tokens[4].push(dydxAdapterTokens);
     });
   protocolNames.push('dYdX');
   metadata.push([
@@ -282,8 +307,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(IdleAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[4].push(IdleAdapter.address);
-      tokens[4].push(idleAdapterTokens);
+      adapters[5].push(IdleAdapter.address);
+      tokens[5].push(idleAdapterTokens);
     });
   protocolNames.push('Idle');
   metadata.push([
@@ -295,8 +320,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(IearnAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[5].push(IearnAdapter.address);
-      tokens[5].push(iearn2AdapterTokens);
+      adapters[6].push(IearnAdapter.address);
+      tokens[6].push(iearn2AdapterTokens);
     });
   protocolNames.push('iearn.finance (v2)');
   metadata.push([
@@ -308,8 +333,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(IearnAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[6].push(IearnAdapter.address);
-      tokens[6].push(iearn3AdapterTokens);
+      adapters[7].push(IearnAdapter.address);
+      tokens[7].push(iearn3AdapterTokens);
     });
   protocolNames.push('iearn.finance (v3)');
   metadata.push([
@@ -321,8 +346,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(ChaiAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[7].push(ChaiAdapter.address);
-      tokens[7].push(chaiAdapterTokens);
+      adapters[8].push(ChaiAdapter.address);
+      tokens[8].push(chaiAdapterTokens);
     });
   protocolNames.push('Chai');
   metadata.push([
@@ -334,8 +359,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(DSRAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[8].push(DSRAdapter.address);
-      tokens[8].push(dsrAdapterTokens);
+      adapters[9].push(DSRAdapter.address);
+      tokens[9].push(dsrAdapterTokens);
     });
   protocolNames.push('Dai Savings Rate');
   metadata.push([
@@ -347,13 +372,13 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(MCDAssetAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[9].push(MCDAssetAdapter.address);
-      tokens[9].push(mcdAssetAdapterTokens);
+      adapters[10].push(MCDAssetAdapter.address);
+      tokens[10].push(mcdAssetAdapterTokens);
     });
   await deployer.deploy(MCDDebtAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[9].push(MCDDebtAdapter.address);
-      tokens[9].push(mcdDebtAdapterTokens);
+      adapters[10].push(MCDDebtAdapter.address);
+      tokens[10].push(mcdDebtAdapterTokens);
     });
   protocolNames.push('Multi-Collateral Dai');
   metadata.push([
@@ -365,8 +390,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(PoolTogetherAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[10].push(PoolTogetherAdapter.address);
-      tokens[10].push(poolTogetherAdapterTokens);
+      adapters[11].push(PoolTogetherAdapter.address);
+      tokens[11].push(poolTogetherAdapterTokens);
     });
   protocolNames.push('PoolTogether');
   metadata.push([
@@ -378,13 +403,13 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(SynthetixAssetAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[11].push(SynthetixAssetAdapter.address);
-      tokens[11].push(synthetixAssetAdapterTokens);
+      adapters[12].push(SynthetixAssetAdapter.address);
+      tokens[12].push(synthetixAssetAdapterTokens);
     });
   await deployer.deploy(SynthetixDebtAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[11].push(SynthetixDebtAdapter.address);
-      tokens[11].push(synthetixDebtAdapterTokens);
+      adapters[12].push(SynthetixDebtAdapter.address);
+      tokens[12].push(synthetixDebtAdapterTokens);
     });
   protocolNames.push('Synthetix');
   metadata.push([
@@ -396,8 +421,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(UniswapV1Adapter, { from: accounts[0] })
     .then(() => {
-      adapters[12].push(UniswapV1Adapter.address);
-      tokens[12].push(uniswapV1AdapterTokens);
+      adapters[13].push(UniswapV1Adapter.address);
+      tokens[13].push([]);
     });
   protocolNames.push('Uniswap V1');
   metadata.push([
@@ -409,8 +434,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
   await deployer.deploy(ZrxAdapter, { from: accounts[0] })
     .then(() => {
-      adapters[13].push(ZrxAdapter.address);
-      tokens[13].push(zrxAdapterTokens);
+      adapters[14].push(ZrxAdapter.address);
+      tokens[14].push(zrxAdapterTokens);
     });
   protocolNames.push('0x Staking');
   metadata.push([
@@ -433,6 +458,12 @@ module.exports = async (deployer, network, accounts) => {
         AaveTokenAdapter.address,
       );
     });
+  await deployer.deploy(BalancerTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        BalancerTokenAdapter.address,
+      );
+    });
   await deployer.deploy(CompoundTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -445,16 +476,16 @@ module.exports = async (deployer, network, accounts) => {
         CurveTokenAdapter.address,
       );
     });
-  await deployer.deploy(IearnTokenAdapter, { from: accounts[0] })
-    .then(() => {
-      tokenAdapters.push(
-        IearnTokenAdapter.address,
-      );
-    });
   await deployer.deploy(IdleTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
         IdleTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(IearnTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        IearnTokenAdapter.address,
       );
     });
   await deployer.deploy(ChaiTokenAdapter, { from: accounts[0] })
@@ -491,6 +522,7 @@ module.exports = async (deployer, network, accounts) => {
         [
           'ERC20',
           'AToken',
+          'Balancer pool token',
           'CToken',
           'Curve pool token',
           'IdleToken',

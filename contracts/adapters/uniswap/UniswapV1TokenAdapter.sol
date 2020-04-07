@@ -13,12 +13,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity 0.6.4;
+pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
-import { TokenAdapter } from "../TokenAdapter.sol";
-import { TokenMetadata, Component } from "../../Structs.sol";
 import { ERC20 } from "../../ERC20.sol";
+import { TokenMetadata, Component } from "../../Structs.sol";
+import { TokenAdapter } from "../TokenAdapter.sol";
+
+
+/**
+ * @dev CToken contract interface.
+ * Only the functions required for UniswapV1TokenAdapter contract are added.
+ * The CToken contract is available here
+ * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
+ */
+interface CToken {
+    function isCToken() external view returns (bool);
+}
 
 
 /**
@@ -55,6 +66,7 @@ contract UniswapV1TokenAdapter is TokenAdapter {
     address internal constant FACTORY = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant SAI_POOL = 0x09cabEC1eAd1c0Ba254B09efb3EE13841712bE14;
+    address internal constant CSAI_POOL = 0x45A2FDfED7F7a2c791fb1bdF6075b83faD821ddE;
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -85,7 +97,11 @@ contract UniswapV1TokenAdapter is TokenAdapter {
             rate: token.balance * 1e18 / totalSupply
         });
 
-        underlyingTokenType = "ERC20";
+        try CToken(underlyingToken).isCToken() returns (bool) {
+            underlyingTokenType = "CToken";
+        } catch {
+            underlyingTokenType = "ERC20";
+        }
 
         underlyingTokens[1] = Component({
             token: underlyingToken,
@@ -99,6 +115,8 @@ contract UniswapV1TokenAdapter is TokenAdapter {
     function getPoolName(address token) internal view returns (string memory) {
         if (token == SAI_POOL) {
             return "SAI pool";
+        } else if (token == CSAI_POOL) {
+            return "cSAI pool";
         } else {
             return string(abi.encodePacked(getSymbol(Factory(FACTORY).getToken(token)), " pool"));
         }
@@ -117,7 +135,7 @@ contract UniswapV1TokenAdapter is TokenAdapter {
     }
 
     /**
-     * @dev Internal function to convert bytes32 to string.
+     * @dev Internal function to convert bytes32 to string and trim zeroes.
      */
     function convertToString(bytes32 data) internal pure returns (string memory) {
         uint256 length = 0;

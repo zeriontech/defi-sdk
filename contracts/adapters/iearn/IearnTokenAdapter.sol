@@ -13,12 +13,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity 0.6.4;
+pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
-import { TokenAdapter } from "../TokenAdapter.sol";
-import { TokenMetadata, Component } from "../../Structs.sol";
 import { ERC20 } from "../../ERC20.sol";
+import { TokenMetadata, Component } from "../../Structs.sol";
+import { TokenAdapter } from "../TokenAdapter.sol";
 
 
 /**

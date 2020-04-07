@@ -13,11 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity 0.6.4;
+pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-import { ERC20 } from "../../ERC20.sol";
 
 
 /**
@@ -51,21 +50,9 @@ contract AaveDebtAdapter is ProtocolAdapter {
 
     address internal constant PROVIDER = 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8;
 
-    /**
-     * @return Type of the adapter.
-     * @dev Implementation of ProtocolAdapter interface function.
-     */
-    function adapterType() external pure override returns (string memory) {
-        return "Debt";
-    }
+    string public constant override adapterType = "Debt";
 
-    /**
-     * @return Type of the token used in adapter.
-     * @dev Implementation of ProtocolAdapter interface function.
-     */
-    function tokenType() external pure override returns (string memory) {
-        return "ERC20";
-    }
+    string public constant override tokenType = "ERC20";
 
     /**
      * @return Amount of debt of the given account for the protocol.

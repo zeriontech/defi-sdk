@@ -22,30 +22,6 @@ contract('DyDxDebtAdapter', () => {
     'WETH',
     '18',
   ];
-  const dai = [
-    daiAddress,
-    'Dai Stablecoin',
-    'DAI',
-    '18',
-  ];
-  const sai = [
-    saiAddress,
-    'Sai Stablecoin v1.0',
-    'SAI',
-    '18',
-  ];
-  const bat = [
-    batAddress,
-    'Basic Attention Token',
-    'BAT',
-    '18',
-  ];
-  const usdc = [
-    usdcAddress,
-    'USD//C',
-    'USDC',
-    '6',
-  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -99,17 +75,11 @@ contract('DyDxDebtAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
-        displayToken(result[0].adapterBalances[0].balances[1].base);
-        displayToken(result[0].adapterBalances[0].balances[2].base);
-        displayToken(result[0].adapterBalances[0].balances[3].base);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, weth);
-        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, sai);
-        assert.deepEqual(result[0].adapterBalances[0].balances[2].base.metadata, usdc);
-        assert.deepEqual(result[0].adapterBalances[0].balances[3].base.metadata, dai);
       });
   });
 
-  it('should return 0 value for wrong asset', async () => {
+  it('should not return 0 value for wrong asset', async () => {
     await adapterRegistry.methods.getAdapterBalance(
       testAddress,
       protocolAdapterAddress,
@@ -117,9 +87,7 @@ contract('DyDxDebtAdapter', () => {
     )
       .call()
       .then((result) => {
-        assert.deepEqual(result.balances[0].base.metadata, bat);
-        assert.equal(result.balances[0].base.amount, 0);
-        assert.equal(result.balances[0].underlying.length, 0);
+        assert.equal(result.balances.length, 0);
       });
   });
 });

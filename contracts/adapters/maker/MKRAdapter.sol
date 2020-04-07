@@ -13,13 +13,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity 0.6.4;
+pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
 
 /**
  * @title Maker adapter abstract contract.
- * @dev Base contract for MCD, DSR, and (later) Chai adapters.
+ * @dev Base contract for MCD, DSR, and Chai adapters.
+ * Math function are taken from the Pot contract available here
+ * github.com/makerdao/dss/blob/master/src/pot.sol.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract MKRAdapter {

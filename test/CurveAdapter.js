@@ -28,12 +28,6 @@ contract('CurveAdapter', () => {
   let erc20TokenAdapterAddress;
   let cTokenAdapterAddress;
   let yTokenAdapterAddress;
-  const ssUSDT = [
-    ssUSDTTokenAddress,
-    'cDAI+cUSDC+USDT pool',
-    'cDAI+cUSDC+USDT',
-    '18',
-  ];
   const dai = [
     daiAddress,
     'Dai Stablecoin',
@@ -174,7 +168,7 @@ contract('CurveAdapter', () => {
       });
   });
 
-  it('should return correct full unit', async () => {
+  it('should return correct final full unit', async () => {
     await adapterRegistry.methods['getFinalFullTokenBalance(string,address)'](
       'Curve pool token',
       ssCompoundTokenAddress,
@@ -186,7 +180,7 @@ contract('CurveAdapter', () => {
       });
   });
 
-  it('should return 0 if wrong pool token address', async () => {
+  it('should not return 0 if wrong pool token address', async () => {
     await adapterRegistry.methods.getAdapterBalance(
       testAddress,
       protocolAdapterAddress,
@@ -194,9 +188,7 @@ contract('CurveAdapter', () => {
     )
       .call()
       .then((result) => {
-        assert.deepEqual(result.balances[0].base.metadata, ssUSDT);
-        assert.equal(result.balances[0].base.amount, 0);
-        assert.equal(result.balances[0].underlying.length, 0);
+        assert.deepEqual(result.balances[0].underlying, []);
       });
   });
 });

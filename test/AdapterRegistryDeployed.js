@@ -43,8 +43,8 @@ contract.skip('AdapterRegistry deployed', () => {
             'Uniswap V1 pool token',
             'PoolTogether pool',
             'Chai token',
-            'IdleToken',
             'YToken',
+            'IdleToken',
             'Curve pool token',
             'CToken',
             'AToken',
@@ -52,5 +52,9 @@ contract.skip('AdapterRegistry deployed', () => {
           ],
         );
       });
+    await adapterRegistry.methods.getBalances('0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990')
+      .estimateGas()
+      // eslint-disable-next-line no-console
+      .then((estimatedGas) => console.log(`Estimated gas for getBalances() call is ${estimatedGas}`));
   });
 });

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity 0.6.4;
+pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
@@ -49,21 +49,9 @@ interface Synthetix {
  */
 contract SynthetixAssetAdapter is ProtocolAdapter {
 
-    /**
-     * @return Type of the adapter.
-     * @dev Implementation of ProtocolAdapter interface function.
-     */
-    function adapterType() external pure override returns (string memory) {
-        return "Asset";
-    }
+    string public constant override adapterType = "Asset";
 
-    /**
-     * @return Type of the token used in adapter.
-     * @dev Implementation of ProtocolAdapter interface function.
-     */
-    function tokenType() external pure override returns (string memory) {
-        return "ERC20";
-    }
+    string public constant override tokenType = "ERC20";
 
     /**
      * @return Amount of SNX locked on the protocol by the given account.

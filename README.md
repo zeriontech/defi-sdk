@@ -7,8 +7,8 @@
 [![Coverage status](https://github.com/zeriontech/protocol-wrappers/workflows/coverage/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:coverage)
 [![Lint status](https://github.com/zeriontech/protocol-wrappers/workflows/lint/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:lint)
 [![License](https://img.shields.io/github/license/zeriontech/defi-sdk)](https://www.gnu.org/licenses/lgpl-3.0.en.html)
-[![Discord](https://img.shields.io/discord/544761450724458498?label=discord)](https://go.zerion.io/discord)
-[![Twitter Follow](https://img.shields.io/twitter/follow/zerion_io.svg)](https://twitter.com/intent/follow?screen_name=zerion_io)
+[![Discord](https://badgen.net/badge/zerion/Zerion?icon=discord&label=discord)](https://go.zerion.io/discord)
+[![Twitter Follow](https://badgen.net/twitter/follow/zerion_io)](https://twitter.com/intent/follow?screen_name=zerion_io)
 
 **DeFi SDK** is an open-source system of smart contracts designed for precise DeFi portfolio accounting. To put it simply, DeFi SDK is the on-chain *balanceOf* for DeFi protocols.
 
@@ -140,7 +140,7 @@ and obtain all balances for a given account. The response from the smart-contrac
 ...
 ```
 
-## DeFi SDK architecture
+## DeFi SDK Architecture
 
 - **ProtocolAdapter** is a special contract for every protocol. Its main purpose is to wrap all the protocol interactions.
 There are different types of protocol adapters: "Asset" adapter returns the amount of the account's tokens held on the protocol and the "Debt" adapter returns the amount of the account's debt to the protocol. Some protocols do not use "simple" ERC20 tokens but instead have complex derivatives, for example the Compound protocol has CTokens. The **ProtocolAdapter** contract also provides information about the type of tokens used within it.
@@ -150,11 +150,12 @@ Its main purpose is to provide ERC20-style token metadata as well as information
 
 More detailed documentation about contracts can be found in [adapters](../../wiki/Adapters) and [AdapterRegistry](../../wiki/AdapterRegistry) documentation.
 
-## Supported protocols
+## Supported Protocols
 
 | Protocol Name | Description | Protocol Adapters | Token Adapters |
 | :-----------: | :---------: | :---------------: | :------------: |
 | [Aave](./contracts/adapters/aave) | Decentralized lending & borrowing protocol. | [Asset adapter](./contracts/adapters/aave/AaveAssetAdapter.sol) <br> [Debt adapter](contracts/adapters/aave/AaveDebtAdapter.sol) | ["AToken"](./contracts/adapters/aave/AaveTokenAdapter.sol) |
+| [Balancer](./contracts/adapters/balancer) | Non-custodial portfolio manager, liquidity provider, and price sensor. | [Asset adapter](./contracts/adapters/balancer/BalancerAdapter.sol) supports all Balancer pools | ["Balancer pool token"](./contracts/adapters/aave/BalancerTokenAdapter.sol) |
 | [Compound](./contracts/adapters/compound) | Decentralized lending & borrowing protocol. | [Asset adapter](./contracts/adapters/compound/CompoundAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/compound/CompoundDebtAdapter.sol) | ["CToken"](./contracts/adapters/compound/CompoundTokenAdapter.sol) |
 | [Curve](./contracts/adapters/curve) | Exchange liquidity pool for stablecoin trading. Supports Compound, Y, and BUSD pools. | [Asset adapter](./contracts/adapters/curve/CurveAdapter.sol) | ["Curve pool token"](contracts/adapters/curve/CurveTokenAdapter.sol) |
 | [dYdX](./contracts/adapters/dydx) | Decentralized trading platform. All 4 markets (WETH, SAI, USDC, DAI) are supported. | [Asset adapter](./contracts/adapters/dydx/DyDxAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/dydx/DyDxDebtAdapter.sol) | — |
@@ -168,14 +169,14 @@ More detailed documentation about contracts can be found in [adapters](../../wik
 | [Uniswap V1](./contracts/adapters/uniswap) | Automated liquidity protocol. Top 30 pools are added to the **AdapterRegistry** contract, however  adapter supports all Uniswap pools. | [Asset adapter](./contracts/adapters/uniswap/UniswapV1Adapter.sol) supports all Uniswap pools | ["Uniswap V1 pool token"](./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol) |
 | [0x Staking](./contracts/adapters/zrx) | Liquidity rewards for staking ZRX. | [Asset adapter](./contracts/adapters/zrx/ZrxAdapter.sol) | — |
 
-## How to add your adapter
+## How to Add Your Adapter
 
 The full instructions on how to add a custom adapter to the **AdapterRegistry** contract may be found in our [wiki](../../wiki/Adding-new-adapters).
 
 If you have questions and/or want to add your adapter to Zerion reach out to us on our [Discord server](https://go.zerion.io/discord).
 
 
-## What’s next for DeFi SDK? 🚀
+## What’s Next for DeFi SDK? 🚀
 
 This first version of DeFi SDK is for read-only accounting purposes. Our next step is to introduce Interactive Adapters that allow users to make cross-protocol transactions from a single interface. We are incredibly excited to work with developers, users and the wider DeFi community to make these integrations as secure and accessible as possible. Watch this space, because the “De” in DeFi is about to get a whole lot more user-friendly!
 
@@ -183,7 +184,7 @@ This first version of DeFi SDK is for read-only accounting purposes. Our next st
 
 If you discover a security vulnerability within DeFi SDK, please send us an e-mail at inbox@zerion.io. All security vulnerabilities will be promptly addressed.
 
-## Dev notes
+## Dev Notes
 
 This project uses Truffle and web3js for all Ethereum interactions and testing.
 
@@ -217,4 +218,4 @@ Currently, unsupported files are ignored.
 
 ## License
 
-All smart contracts are released under LGPL v.3.
+All smart contracts are released under GNU LGPLv3.
