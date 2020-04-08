@@ -12,3 +12,5 @@ node_modules
 ./contracts/adapters/dydx
 ./contracts/adapters
 ./contracts/mock
+./contracts/Logic.sol
+./contracts/SignatureVerifier.sol

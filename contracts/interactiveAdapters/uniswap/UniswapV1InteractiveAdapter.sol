@@ -29,8 +29,22 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
  * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_exchange.vy.
  */
 interface Exchange {
-    function addLiquidity(uint256, uint256, uint256) external payable returns (uint256);
-    function removeLiquidity(uint256, uint256, uint256, uint256) external returns (uint256, uint256);
+    function addLiquidity(
+        uint256,
+        uint256,
+        uint256
+    )
+        external
+        payable
+        returns (uint256);
+    function removeLiquidity(
+        uint256,
+        uint256,
+        uint256,
+        uint256
+    )
+        external
+        returns (uint256, uint256);
 }
 
 
