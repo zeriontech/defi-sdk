@@ -6,7 +6,7 @@
 [![Test status](https://github.com/zeriontech/protocol-wrappers/workflows/test/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:test)
 [![Coverage status](https://github.com/zeriontech/protocol-wrappers/workflows/coverage/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:coverage)
 [![Lint status](https://github.com/zeriontech/protocol-wrappers/workflows/lint/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:lint)
-[![License](https://img.shields.io/github/license/zeriontech/defi-sdk)](https://www.gnu.org/licenses/lgpl-3.0.en.html)
+[![License](https://badgen.net/github/license/zeriontech/defi-sdk)](https://www.gnu.org/licenses/lgpl-3.0.en.html)
 [![Discord](https://badgen.net/badge/zerion/Zerion?icon=discord&label=discord)](https://go.zerion.io/discord)
 [![Twitter Follow](https://badgen.net/twitter/follow/zerion_io)](https://twitter.com/intent/follow?screen_name=zerion_io)
 
@@ -28,6 +28,7 @@ If you have any questions about DeFi SDK, feel free to reach out to us on our [D
 
   - [Examples](#examples)
   - [DeFi SDK architecture](#defi-sdk-architecture)
+  - [Addresses](#addresses)
   - [Supported protocols](#supported-protocols)
   - [How to add your adapter](#how-to-add-your-adapter)
   - [What’s next for DeFi SDK](#whats-next-for-defi-sdk-)
@@ -149,6 +150,12 @@ Its main purpose is to provide ERC20-style token metadata as well as information
 - **AdapterRegistry** is a contract that a) maintains a list of *ProtocolAdapters* and *TokenAdapters* and b) is called to fetch user balances.
 
 More detailed documentation about contracts can be found in [adapters](../../wiki/Adapters) and [AdapterRegistry](../../wiki/AdapterRegistry) documentation.
+
+## Addresses
+
+**AdapterRegistry** contract is deployed to the mainnet and its source code is verified on [etherscan](https://etherscan.io/address/0x06fe76b2f432fdfecaef1a7d4f6c3d41b5861672#code).
+
+All the deployed contracts' addresses are available [here](../../wiki/Addresses).
 
 ## Supported Protocols
 
