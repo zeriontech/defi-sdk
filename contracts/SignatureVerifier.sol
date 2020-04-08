@@ -1,4 +1,4 @@
-pragma solidity 0.6.4;
+pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
 import { Approval } from "./Structs.sol";
