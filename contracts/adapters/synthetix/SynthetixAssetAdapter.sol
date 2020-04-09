@@ -37,8 +37,7 @@ interface Proxy {
  * github.com/Synthetixio/synthetix/blob/master/contracts/Synthetix.sol.
  */
 interface Synthetix {
-    function balanceOf(address) external view returns (uint256);
-    function transferableSynthetix(address) external view returns (uint256);
+    function collateral(address) external view returns (uint256);
 }
 
 
@@ -60,6 +59,6 @@ contract SynthetixAssetAdapter is ProtocolAdapter {
     function getBalance(address token, address account) external view override returns (uint256) {
         Synthetix synthetix = Synthetix(Proxy(token).target());
 
-        return synthetix.balanceOf(account) - synthetix.transferableSynthetix(account);
+        return synthetix.collateral(account);
     }
 }
