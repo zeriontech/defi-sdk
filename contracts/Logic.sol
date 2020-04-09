@@ -160,4 +160,5 @@ contract Logic is SignatureVerifier {
         }
     }
 // TODO implement receive function
+    receive() external payable {}
 }

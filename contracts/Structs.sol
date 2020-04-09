@@ -73,6 +73,7 @@ struct Component {
     uint256 rate;  // price per full share (1e18)
 }
 
+
 //================================InteractiveAdapters structs=====================================
 
 

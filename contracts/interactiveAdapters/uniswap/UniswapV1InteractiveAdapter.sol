@@ -111,6 +111,7 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
             ) > 0,
             "UIA: deposit failed!"
         );
+        ERC20(tokens[1]).approve(exchange, 0);
 
         return tokensToBeWithdrawn;
     }
