@@ -62,20 +62,6 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         virtual
         returns (address[] memory);
 
-//    /**
-//     * @dev ProtocolAdapter function that should be `public`.
-//     * MUST be implemented in corresponding ProtocolAdapter.
-//     */
-//    function getBalance(
-//        address token,
-//        address account
-//    )
-//        public
-//        view
-//        override
-//        virtual
-//        returns (uint256);
-
     function getAbsoluteAmountDeposit(
         address token,
         uint256 amount,

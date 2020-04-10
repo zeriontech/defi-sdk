@@ -2,6 +2,7 @@ pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
+import { SafeERC20 } from "../../SafeERC20.sol";
 import { Action, AmountType } from "../../Structs.sol";
 import { CompoundAssetAdapter } from "../../adapters/compound/CompoundAssetAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
@@ -25,26 +26,28 @@ interface CEther {
  * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
  */
 interface CToken {
-    function underlying() external view returns (address);
     function mint(uint256) external returns (uint256);
     function redeem(uint256) external returns (uint256);
+    function underlying() external view returns (address);
 }
 
 
 /**
- * @title Interactive token adapter for Compound protocol.
+ * @title Interactive adapter for Compound protocol.
  * @dev Implementation of InteractiveAdapter interface.
  */
 contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAdapter {
 
+    using SafeERC20 for ERC20;
+
     address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;
 
     /**
-     * @notice Deposits token to the Compound protocol.
+     * @notice Deposits tokens to the Compound protocol.
      * @param tokens Array with one element - cToken address.
      * @param amounts Array with one element - underlying token amount to be deposited.
      * @param amountTypes Array with one element - amount type.
-     * @return Asset sent back to the msg.sender.
+     * @return Tokens sent back to the msg.sender.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -75,7 +78,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
             CToken cToken = CToken(tokens[0]);
             ERC20 underlying = ERC20(cToken.underlying());
 
-            underlying.approve(tokens[0], amount);
+            underlying.safeApprove(tokens[0], amount);
             require(cToken.mint(amount) == 0, "CAIA: deposit failed!");
 
             tokensToBeWithdrawn[0] = tokens[0];
@@ -84,11 +87,11 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
     }
 
     /**
-     * @notice Withdraws token from the Compound protocol.
+     * @notice Withdraws tokens from the Compound protocol.
      * @param tokens Array with one element - cToken address.
      * @param amounts Array with one element - cToken amount to be withdrawn.
      * @param amountTypes Array with one element - amount type.
-     * @return Asset sent back to the msg.sender.
+     * @return Tokens sent back to the msg.sender.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(

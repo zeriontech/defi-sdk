@@ -2,6 +2,7 @@ pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
+import { SafeERC20 } from "../../SafeERC20.sol";
 import { Action, AmountType } from "../../Structs.sol";
 import { ChaiAdapter } from "../../adapters/maker/ChaiAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
@@ -25,13 +26,15 @@ interface Chai {
  */
 contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
 
+    using SafeERC20 for ERC20;
+
     address internal constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     address internal constant CHAI = 0x06AF07097C9Eeb7fD685c692751D5C66dB49c215;
 
     /**
-     * @notice Deposits token to the Chai contract.
+     * @notice Deposits tokens to the Chai contract.
      * @param amounts Array with one element - DAI amount to be deposited.
-     * @return Asset sent back to the msg.sender.
+     * @return Tokens sent back to the msg.sender.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -49,7 +52,7 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
         require(amountTypes.length == 1,  "CIA: should be 1 type!");
 
         uint256 amount = getAbsoluteAmountDeposit(DAI, amounts[0], amountTypes[0]);
-        ERC20(DAI).approve(CHAI, amount);
+        ERC20(DAI).safeApprove(CHAI, amount);
         Chai(CHAI).join(address(this), amount);
 
         address[] memory tokensToBeWithdrawn = new address[](1);
@@ -58,9 +61,9 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
     }
 
     /**
-     * @notice Withdraws token from the Chai contract.
+     * @notice Withdraws tokens from the Chai contract.
      * @param amounts Array with one element - CHAI amount to be withdrawn.
-     * @return Asset sent back to the msg.sender.
+     * @return Tokens sent back to the msg.sender.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(

@@ -17,6 +17,7 @@ pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
+import { SafeERC20 } from "../../SafeERC20.sol";
 import { Action, AmountType } from "../../Structs.sol";
 import { UniswapV1Adapter } from "../../adapters/uniswap/UniswapV1Adapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
@@ -67,10 +68,12 @@ interface Factory {
  */
 contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
 
+    using SafeERC20 for ERC20;
+
     address internal constant FACTORY = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
 
     /**
-     * @notice Deposits token to the Uniswap pool.
+     * @notice Deposits tokens to the Uniswap pool.
      * @param tokens Array with one element - token address.
      * @param amounts Array with one element - token amount to be deposited.
      * @param amountTypes Array with one element - amount type.
@@ -88,9 +91,9 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
         override
         returns (address[] memory)
     {
-        require(tokens.length == 2, "UIA: should be 1 token!");
-        require(amounts.length == 2,  "UIA: should be 1 amount!");
-        require(amountTypes.length == 2,  "UIA: should be 1 type!");
+        require(tokens.length == 2, "UIA: should be 2 tokens!");
+        require(amounts.length == 2,  "UIA: should be 2 amounts!");
+        require(amountTypes.length == 2,  "UIA: should be 2 types!");
         require(tokens[0] == ETH, "UIA: should be ETH!");
         address exchange = Factory(FACTORY).getExchange(tokens[1]);
         require(exchange != address(0), "UIA: no exchange!");
@@ -102,22 +105,23 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
         tokensToBeWithdrawn[0] = exchange;
         tokensToBeWithdrawn[1] = tokens[1];
 
-        ERC20(tokens[1]).approve(exchange, tokenAmount);
+        ERC20(tokens[1]).safeApprove(exchange, tokenAmount);
         require(
             Exchange(exchange).addLiquidity.value(ethAmount)(
                 uint256(1),
                 tokenAmount,
+                // solhint-disable-next-line not-rely-on-time
                 now + 1 hours
             ) > 0,
             "UIA: deposit failed!"
         );
-        ERC20(tokens[1]).approve(exchange, 0);
+        ERC20(tokens[1]).safeApprove(exchange, 0);
 
         return tokensToBeWithdrawn;
     }
 
     /**
-     * @notice Withdraws token from the Compound protocol.
+     * @notice Withdraws tokens from the Compound protocol.
      * @param tokens Array with one element - exchange address.
      * @param amounts Array with one element - UNI-token amount to be withdrawn.
      * @param amountTypes Array with one element - amount type.
@@ -148,6 +152,7 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
             amount,
             uint256(1),
             uint256(1),
+            // solhint-disable-next-line not-rely-on-time
             now + 1 hours
         );
 
