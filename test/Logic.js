@@ -6,6 +6,7 @@ const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ChaiAdapter = artifacts.require('./ChaiInteractiveAdapter');
 const UniswapV1Adapter = artifacts.require('./UniswapV1InteractiveAdapter');
 const CompoundAssetAdapter = artifacts.require('./CompoundAssetInteractiveAdapter');
+const OneSplitAdapter = artifacts.require('./OneSplitInteractiveAdapter');
 const ChaiTokenAdapter = artifacts.require('./ChaiTokenAdapter');
 const CompoundTokenAdapter = artifacts.require('./CompoundTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('./UniswapV1TokenAdapter');
@@ -13,7 +14,7 @@ const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const Logic = artifacts.require('./Logic');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('Logic', () => {
+contract('Logic', () => {
   const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
@@ -32,12 +33,6 @@ contract.only('Logic', () => {
   let erc20TokenAdapterAddress;
   let protocolAdapterAddress;
   let tokenAdapterAddress;
-  // const chai = [
-  //   chaiAddress,
-  //   'Chai',
-  //   'CHAI',
-  //   '18',
-  // ];
   const dai = [
     daiAddress,
     'Dai Stablecoin',
@@ -56,6 +51,7 @@ contract.only('Logic', () => {
     'ETH',
     '18',
   ];
+
   describe('Chai <-> DSR transfer', () => {
     beforeEach(async () => {
       accounts = await web3.eth.getAccounts();
@@ -190,7 +186,8 @@ contract.only('Logic', () => {
         });
     });
   });
-  describe.only('Uniswap add/removeLiquidity', () => {
+
+  describe('Uniswap add/removeLiquidity', () => {
     beforeEach(async () => {
       accounts = await web3.eth.getAccounts();
       await UniswapV1Adapter.new({ from: accounts[0] })
@@ -244,9 +241,11 @@ contract.only('Logic', () => {
         .then((result) => {
           logic = result.contract;
         });
-      await logic.methods.tokenSpender().call().then((result) => {
-        tokenSpender = result;
-      });
+      await logic.methods.tokenSpender()
+        .call()
+        .then((result) => {
+          tokenSpender = result;
+        });
     });
 
     it('should be correct addLiquidity call transfer', async () => {
@@ -270,7 +269,7 @@ contract.only('Logic', () => {
       console.log('calling logic with action...');
       await logic.methods['0x73cd452c']( // executeActions function call
         [
-          [1, 'Uniswap V1', 'Asset', [ethAddress, daiAddress], [1000000000000000, 1000], [2, 1], '0x'],
+          [1, 'Uniswap V1', 'Asset', [ethAddress, daiAddress], [1000000000000000, 100], [2, 1], '0x'],
         ],
         [
           [daiAddress, 1000, 1, 0],
@@ -297,7 +296,7 @@ contract.only('Logic', () => {
           console.log(`dai amount is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
         });
     });
-    it.only('should be correct removeLiquidity call transfer', async () => {
+    it('should be correct removeLiquidity call transfer', async () => {
       let DAI;
       let DAIUNI;
       let daiUniAmount;
@@ -312,7 +311,8 @@ contract.only('Logic', () => {
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log(`dai amount before is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
+          console.log(`dai amount before is ${new BN(result).div(new BN('10000000000000000'))
+            .toNumber() / 100}`);
         });
       await adapterRegistry.methods['getBalances(address)'](accounts[0])
         .call()
@@ -346,17 +346,107 @@ contract.only('Logic', () => {
       await adapterRegistry.methods['getBalances(address)'](testAddress)
         .call()
         .then((result) => {
-          displayToken(result.length, 0);
+          assert.equal(result.length, 0);
+        });
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`dai amount after is ${new BN(result).div(new BN('10000000000000000'))
+            .toNumber() / 100}`);
+        });
+      await DAIUNI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`dai uni amount after is ${new BN(result).div(new BN('10000000000000000'))
+            .toNumber() / 100}`);
+        });
+    });
+  });
+
+  describe('1split tests', () => {
+    beforeEach(async () => {
+      accounts = await web3.eth.getAccounts();
+      await OneSplitAdapter.new({ from: accounts[0] })
+        .then((result) => {
+          protocolAdapterAddress = result.address;
+        });
+      await AdapterRegistry.new({ from: accounts[0] })
+        .then((result) => {
+          adapterRegistry = result.contract;
+        });
+      await adapterRegistry.methods.addProtocols(
+        ['OneSplit'],
+        [[
+          'Mock Protocol Name',
+          'Mock protocol description',
+          'Mock website',
+          'Mock icon',
+          '0',
+        ]],
+        [[
+          protocolAdapterAddress,
+        ]],
+        [[[]]],
+      )
+        .send({
+          from: accounts[0],
+          gas: '1000000',
+        });
+      await Logic.new(
+        adapterRegistry.options.address,
+        { from: accounts[0] },
+      )
+        .then((result) => {
+          logic = result.contract;
+        });
+      await logic.methods.tokenSpender()
+        .call()
+        .then((result) => {
+          tokenSpender = result;
+        });
+    });
+    it.only('should be correct 1split exchange (eth->dai)', async () => {
+      let DAI;
+      await ERC20.at(daiAddress)
+        .then((result) => {
+          DAI = result.contract;
+        });
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`dai amount before is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`eth amount before is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
+        });
+      console.log('calling logic with action...');
+      await logic.methods['0x73cd452c']( // executeActions function call
+        [
+          [
+            1,
+            'OneSplit',
+            'Exchange',
+            [ethAddress],
+            ['100000000000000000'],
+            [2],
+            web3.eth.abi.encodeParameter('address', daiAddress),
+          ],
+        ],
+        [],
+      )
+        .send({
+          from: accounts[0],
+          value: 100000000000000000,
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
           console.log(`dai amount after is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
         });
-      await DAIUNI.methods['balanceOf(address)'](accounts[0])
-        .call()
+      await web3.eth.getBalance(accounts[0])
         .then((result) => {
-          console.log(`dai uni amount after is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
+          console.log(`eth amount before is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
         });
     });
   });
