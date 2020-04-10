@@ -18,7 +18,7 @@ library SafeERC20 {
         address to,
         uint256 value
     )
-    internal
+        internal
     {
         callOptionalReturn(
             token,
@@ -36,7 +36,7 @@ library SafeERC20 {
         address to,
         uint256 value
     )
-    internal
+        internal
     {
         callOptionalReturn(
             token,
@@ -44,6 +44,25 @@ library SafeERC20 {
                 token.transferFrom.selector,
                 from,
                 to,
+                value
+            )
+        );
+    }
+
+    function safeApprove(
+        ERC20 token,
+        address spender,
+        uint256 value
+    ) internal {
+        require(
+            (value == 0) || (token.allowance(address(this), spender) == 0),
+            "SafeERC20: approve from non-zero to non-zero allowance"
+        );
+        callOptionalReturn(
+            token,
+            abi.encodeWithSelector(
+                token.approve.selector,
+                spender,
                 value
             )
         );
@@ -64,8 +83,7 @@ library SafeERC20 {
         //  1. The call itself is made, and success asserted
         //  2. The return value is decoded, which in turn checks the size of the returned data.
 
-        // solhint-disable-next-line security/no-low-level-calls
-        // solium-disable-next-line security/no-low-level-calls
+        // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory returndata) = address(token).call(data);
         require(success, "SafeERC20: low-level call failed");
 

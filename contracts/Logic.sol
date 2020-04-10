@@ -32,6 +32,9 @@ contract Logic is SignatureVerifier {
         tokenSpender = new TokenSpender();
         adapterRegistry = AdapterRegistry(_adapterRegistry);
     }
+//
+//    // solhint-disable-next-line no-empty-blocks
+//    receive() external payable {}
 
 //    /**
 //     * @notice Execute actions on signer's behalf.
@@ -99,7 +102,7 @@ contract Logic is SignatureVerifier {
         require(action.actionType != ActionType.None, "L: wrong action type!");
         require(action.amounts.length == action.amountTypes.length, "L: inconsistent arrays![1]");
         require(action.amounts.length == action.tokens.length, "L: inconsistent arrays![2]");
-        uint256 index = action.adapterType.isEqualTo("Asset") ? 0 : 1;
+        uint256 index = action.adapterType.isEqualTo("Debt") ? 1 : 0;
         address adapter = adapterRegistry.getProtocolAdapters(action.protocolName)[index];
         require(
             ProtocolAdapter(adapter).adapterType().isEqualTo(action.adapterType),
@@ -109,6 +112,7 @@ contract Logic is SignatureVerifier {
         bool success;
         bytes memory returnData;
         if (action.actionType == ActionType.Deposit) {
+            // solhint-disable-next-line avoid-low-level-calls
             (success, returnData) = adapter.delegatecall(
                 abi.encodeWithSelector(
                     InteractiveAdapter(adapter).deposit.selector,
@@ -119,6 +123,7 @@ contract Logic is SignatureVerifier {
                 )
             );
         } else {
+            // solhint-disable-next-line avoid-low-level-calls
             (success, returnData) = adapter.delegatecall(
                 abi.encodeWithSelector(
                     InteractiveAdapter(adapter).withdraw.selector,
@@ -159,6 +164,4 @@ contract Logic is SignatureVerifier {
             user.transfer(ethBalance);
         }
     }
-// TODO implement receive function
-    receive() external payable {}
 }
