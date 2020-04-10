@@ -3,17 +3,8 @@ require('dotenv').config();
 module.exports = {
   skipFiles: [
     'Migrations.sol',
-    'Structs.sol',
-    'ERC20.sol',
     'Logic.sol',
-    'adapters/ProtocolAdapter.sol',
-    'adapters/TokenAdapter.sol',
-    'adapters/maker/MKRAdapter.sol',
-    'adapters/dydx/DyDxAssetAdapter.sol',
-    'adapters/dydx/DyDxDebtAdapter.sol',
-    'adapters/compound/CompoundRegistry.sol',
-    'interactiveAdapters',
-    'mock',
+    'SignatureVerifier.sol',
   ],
   providerOptions: {
     accounts: [

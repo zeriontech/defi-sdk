@@ -1,6 +1,5 @@
 node_modules
 ./contracts/Migrations.sol
-./contracts/Structs.sol
 ./contracts/adapters/maker/MKRAdapter.sol
 ./contracts/adapters/balancer/BalancerTokenAdapter.sol
 ./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol
@@ -9,3 +8,4 @@ node_modules
 ./contracts/ProtocolManager.sol
 ./contracts/TokenAdapterManager.sol
 ./contracts/adapters/dydx
+./contracts/SignatureVerifier.sol
