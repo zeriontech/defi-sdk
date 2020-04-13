@@ -1,4 +1,4 @@
-pragma solidity 0.6.5;
+pragma solidity 0.6.6;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";

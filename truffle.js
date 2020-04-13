@@ -38,7 +38,7 @@ module.exports = {
   },
   compilers: {
     solc: {
-      version: '0.6.5',
+      version: '0.6.6',
       settings: {
         optimizer: {
           enabled: true,
@@ -50,11 +50,11 @@ module.exports = {
   api_keys: {
     etherscan: `${process.env.ETHERSCAN_API_KEY}`,
   },
-  mocha: {
-    reporter: 'eth-gas-reporter',
-    reporterOptions: {
-      currency: 'USD',
-      gasPrice: 1,
-    },
-  },
+  // mocha: {
+  //   reporter: 'eth-gas-reporter',
+  //   reporterOptions: {
+  //     currency: 'USD',
+  //     gasPrice: 1,
+  //   },
+  // },
 };
