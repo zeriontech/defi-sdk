@@ -32,9 +32,9 @@ contract Logic is SignatureVerifier {
         tokenSpender = new TokenSpender();
         adapterRegistry = AdapterRegistry(_adapterRegistry);
     }
-//
-//    // solhint-disable-next-line no-empty-blocks
-//    receive() external payable {}
+
+    // solhint-disable-next-line no-empty-blocks
+    receive() external payable {}
 
 //    /**
 //     * @notice Execute actions on signer's behalf.
@@ -80,12 +80,11 @@ contract Logic is SignatureVerifier {
     )
         internal
     {
-        uint256 length = actions.length;
-        address[][] memory tokensToBeWithdrawn = new address[][](length + 1);
+        address[][] memory tokensToBeWithdrawn = new address[][](actions.length + 1);
 
         tokensToBeWithdrawn[0] = tokenSpender.issueTokens(approvals, user);
 
-        for (uint256 i = 0; i < length; i++) {
+        for (uint256 i = 0; i < actions.length; i++) {
             tokensToBeWithdrawn[i + 1] = callInteractiveAdapter(actions[i]);
             emit ExecutedAction(i);
         }
@@ -102,12 +101,7 @@ contract Logic is SignatureVerifier {
         require(action.actionType != ActionType.None, "L: wrong action type!");
         require(action.amounts.length == action.amountTypes.length, "L: inconsistent arrays![1]");
         require(action.amounts.length == action.tokens.length, "L: inconsistent arrays![2]");
-        uint256 index = action.adapterType.isEqualTo("Debt") ? 1 : 0;
-        address adapter = adapterRegistry.getProtocolAdapters(action.protocolName)[index];
-        require(
-            ProtocolAdapter(adapter).adapterType().isEqualTo(action.adapterType),
-            "L: wrong index!"
-        );
+        address adapter = adapterRegistry.getProtocolAdapters(action.protocolName)[action.adapterIndex];
 
         bool success;
         bytes memory returnData;

@@ -41,8 +41,8 @@ interface OneSplit {
         external
         payable;
     function getExpectedReturn(
-        address,
-        address,
+        ERC20,
+        ERC20,
         uint256,
         uint256,
         uint256
@@ -69,7 +69,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
      * @param tokens Array with one element - `fromToken` address.
      * @param amounts Array with one element - token amount to be exchanged.
      * @param amountTypes Array with one element - amount type.
-     * @param data Bytes array with `toToken` address.
+     * @param data Bytes array with ABI-encoded `toToken` address.
      * @return Asset sent back to the msg.sender.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -92,18 +92,21 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
 
         address toToken = abi.decode(data, (address));
 
-        address[] memory tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = toToken;
+        address[] memory tokensToBeWithdrawn;
 
         if (toToken == ETH) {
+            tokensToBeWithdrawn = new address[](0);
             toToken = address(0);
+        } else {
+            tokensToBeWithdrawn = new address[](1);
+            tokensToBeWithdrawn[0] = toToken;
         }
 
         if (tokens[0] == ETH) {
-            getParametersAndSwap(ONE_SPLIT, address(0), toToken, 0, amount);
+            getReturnAndSwap(address(0), toToken, 0, amount);
         } else {
             ERC20(tokens[0]).safeApprove(ONE_SPLIT, amount);
-            getParametersAndSwap(ONE_SPLIT, tokens[0], toToken, amount, 0);
+            getReturnAndSwap(tokens[0], toToken, amount, 0);
             ERC20(tokens[0]).safeApprove(ONE_SPLIT, 0);
         }
 
@@ -128,8 +131,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
         revert("OSIA: no withdraw!");
     }
 
-    function getParametersAndSwap(
-        address oneSplit,
+    function getReturnAndSwap(
         address fromToken,
         address toToken,
         uint256 tokenAmount,
@@ -137,23 +139,25 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
     )
         internal
     {
+        OneSplit oneSplit = OneSplit(ONE_SPLIT);
         uint256 amount = ethAmount > 0 ? ethAmount : tokenAmount;
         uint256 returnAmount;
         uint256[] memory distribution;
-//        (returnAmount, distribution) = OneSplit(oneSplit).getExpectedReturn(
-//            fromToken,
-//            toToken,
-//            amount,
-//            0,
-//            0
-//        );
-//        OneSplit(oneSplit).swap.value(ethAmount)(
-//            fromToken,
-//            toToken,
-//            amount,
-//            1,
-//            distribution,
-//            0
-//        );
+        require(amount == ethAmount);
+        oneSplit.getExpectedReturn(
+            ERC20(fromToken),
+            ERC20(toToken),
+            amount,
+            uint256(1),
+            0
+        );
+        oneSplit.swap.value(ethAmount)(
+            fromToken,
+            toToken,
+            amount,
+            uint256(1),
+            distribution,
+            0
+        );
     }
 }
