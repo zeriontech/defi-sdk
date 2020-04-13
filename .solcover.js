@@ -5,11 +5,15 @@ module.exports = {
     'Migrations.sol',
     'Logic.sol',
     'SignatureVerifier.sol',
+    'AdapterRegistry.sol',
+    'ProtocolManager.sol',
+    'TokenAdapterManager.sol',
+    'adapters/',
   ],
   providerOptions: {
     accounts: [
       {
-        secretKey: '0x60fabb813c1cd5a39a3d7a871a872a854017fd32979df9ca63079d50fa76cb8f',
+        secretKey: `${process.env.PRIVATE_KEY}`,
         balance: '0x56BC75E2D63100000',
       },
       {

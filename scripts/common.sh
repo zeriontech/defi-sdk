@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 
+if [[ -z $PRIVATE_KEY ]]; then
+  PRIVATE_KEY=$(grep PRIVATE_KEY .env | cut -d '=' -f2 | cut -d '"' -f2)
+fi
+
 balance="100000000000000000000"
 accounts=""
 
 acc=( \
+    $PRIVATE_KEY \
     0x60fabb813c1cd5a39a3d7a871a872a854017fd32979df9ca63079d50fa76cb8f \
     0xbe5d6e330de6c44c137f8fb45fa44dada079fb8bc29d290cadd8f882035dd189 \
     0x473acc210edb35998de9dc65495bafbf0a3804950482cd2b48af7bba7046d7de \

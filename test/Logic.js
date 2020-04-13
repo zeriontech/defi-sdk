@@ -410,7 +410,7 @@ contract('Logic', () => {
     });
   });
 
-  describe('1split tests', () => {
+  describe.only('1split tests', () => {
     beforeEach(async () => {
       accounts = await web3.eth.getAccounts();
       await OneSplitAdapter.new({ from: accounts[0] })
@@ -453,7 +453,7 @@ contract('Logic', () => {
         });
     });
 
-    it.only('should be correct 1split exchange (eth->dai)', async () => {
+    it('should be correct 1split exchange (eth->dai)', async () => {
       let DAI;
       await ERC20.at(daiAddress)
         .then((result) => {
@@ -485,6 +485,7 @@ contract('Logic', () => {
       )
         .send({
           from: accounts[0],
+          gas: 10000000,
           value: 10000000000000000,
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
@@ -527,7 +528,7 @@ contract('Logic', () => {
             'OneSplit',
             ADAPTER_EXCHANGE,
             [daiAddress],
-            ['1000000'],
+            ['1000000000000000000'],
             [AMOUNT_ABSOLUTE],
             web3.eth.abi.encodeParameter('address', usdcAddress),
           ],
@@ -535,6 +536,7 @@ contract('Logic', () => {
         [],
       )
         .send({
+          gas: 10000000,
           from: accounts[0],
         });
       await DAI.methods['balanceOf(address)'](accounts[0])

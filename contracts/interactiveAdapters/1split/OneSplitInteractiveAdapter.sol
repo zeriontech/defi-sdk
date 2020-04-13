@@ -41,8 +41,8 @@ interface OneSplit {
         external
         payable;
     function getExpectedReturn(
-        ERC20,
-        ERC20,
+        address,
+        address,
         uint256,
         uint256,
         uint256
@@ -90,10 +90,16 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
 
         uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
-        address toToken = abi.decode(data, (address));
-
         address[] memory tokensToBeWithdrawn;
 
+        address fromToken = tokens[0];
+        if (fromToken == ETH) {
+            fromToken = address(0);
+        } else {
+            ERC20(fromToken).safeApprove(ONE_SPLIT, amount);
+        }
+
+        address toToken = abi.decode(data, (address));
         if (toToken == ETH) {
             tokensToBeWithdrawn = new address[](0);
             toToken = address(0);
@@ -102,13 +108,24 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
             tokensToBeWithdrawn[0] = toToken;
         }
 
-        if (tokens[0] == ETH) {
-            getReturnAndSwap(address(0), toToken, 0, amount);
-        } else {
-            ERC20(tokens[0]).safeApprove(ONE_SPLIT, amount);
-            getReturnAndSwap(tokens[0], toToken, amount, 0);
-            ERC20(tokens[0]).safeApprove(ONE_SPLIT, 0);
-        }
+        OneSplit oneSplit = OneSplit(ONE_SPLIT);
+
+        (uint256 returnAmount, uint256[] memory distribution) = oneSplit.getExpectedReturn(
+            fromToken,
+            toToken,
+            amount,
+            uint256(1),
+            uint256(0)
+        );
+
+        oneSplit.swap.value(fromToken == address(0) ? amount : 0)(
+            fromToken,
+            toToken,
+            amount,
+            returnAmount,
+            distribution,
+            uint256(0)
+        );
 
         return tokensToBeWithdrawn;
     }
@@ -129,35 +146,5 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
         returns (address[] memory)
     {
         revert("OSIA: no withdraw!");
-    }
-
-    function getReturnAndSwap(
-        address fromToken,
-        address toToken,
-        uint256 tokenAmount,
-        uint256 ethAmount
-    )
-        internal
-    {
-        OneSplit oneSplit = OneSplit(ONE_SPLIT);
-        uint256 amount = ethAmount > 0 ? ethAmount : tokenAmount;
-        uint256 returnAmount;
-        uint256[] memory distribution;
-        require(amount == ethAmount);
-        oneSplit.getExpectedReturn(
-            ERC20(fromToken),
-            ERC20(toToken),
-            amount,
-            uint256(1),
-            0
-        );
-        oneSplit.swap.value(ethAmount)(
-            fromToken,
-            toToken,
-            amount,
-            uint256(1),
-            distribution,
-            0
-        );
     }
 }
