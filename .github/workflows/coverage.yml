@@ -19,6 +19,7 @@ jobs:
         run: npm run coverage
         env:
           INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
       - name: upload artifacts
         uses: actions/upload-artifact@v1
         if: always()

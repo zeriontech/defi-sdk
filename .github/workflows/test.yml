@@ -19,3 +19,4 @@ jobs:
         run: npm run test
         env:
           INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
