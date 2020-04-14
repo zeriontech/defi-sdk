@@ -5,10 +5,6 @@ module.exports = {
     'Migrations.sol',
     'Logic.sol',
     'SignatureVerifier.sol',
-    'AdapterRegistry.sol',
-    'ProtocolManager.sol',
-    'TokenAdapterManager.sol',
-    'adapters/',
   ],
   providerOptions: {
     accounts: [

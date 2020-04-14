@@ -110,7 +110,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
 
         OneSplit oneSplit = OneSplit(ONE_SPLIT);
 
-        (uint256 returnAmount, uint256[] memory distribution) = oneSplit.getExpectedReturn(
+        (, uint256[] memory distribution) = oneSplit.getExpectedReturn(
             fromToken,
             toToken,
             amount,
@@ -118,11 +118,11 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
             uint256(0)
         );
 
-        oneSplit.swap.value(fromToken == address(0) ? amount : 0)(
+        oneSplit.swap.value(fromToken != address(0) ? 0 : amount)(
             fromToken,
             toToken,
             amount,
-            returnAmount,
+            uint256(1),
             distribution,
             uint256(0)
         );

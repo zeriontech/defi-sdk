@@ -1,4 +1,5 @@
 import displayToken from './helpers/displayToken';
+import expectRevert from './helpers/expectRevert';
 
 const { BN } = web3.utils;
 
@@ -9,7 +10,7 @@ const AMOUNT_ABSOLUTE = 2;
 const RELATIVE_AMOUNT_BASE = 100;
 const EMPTY_BYTES = '0x';
 const ADAPTER_ASSET = 0;
-const ADAPTER_DEBT = 1;
+// const ADAPTER_DEBT = 1;
 const ADAPTER_EXCHANGE = 0;
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
@@ -28,7 +29,7 @@ contract('Logic', () => {
   const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-  const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+  const tusdAddress = '0x0000000000085d4780B73119b644AE5ecd22b376';
   const daiUniAddress = '0x2a1530C4C41db0B0b2bB646CB5Eb1A67b7158667';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
@@ -202,7 +203,7 @@ contract('Logic', () => {
           ],
         ],
         [
-          [cDAIAddress, 1000, 1, 0],
+          [cDAIAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0],
         ],
       )
         .send({
@@ -305,13 +306,13 @@ contract('Logic', () => {
             'Uniswap V1',
             ADAPTER_ASSET,
             [ethAddress, daiAddress],
-            [1000000000000000, RELATIVE_AMOUNT_BASE],
+            ['1000000000000000', RELATIVE_AMOUNT_BASE],
             [AMOUNT_ABSOLUTE, AMOUNT_RELATIVE],
             EMPTY_BYTES,
           ],
         ],
         [
-          [daiAddress, 1000, 1, 0],
+          [daiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0],
         ],
       )
         .send({
@@ -383,7 +384,7 @@ contract('Logic', () => {
           ],
         ],
         [
-          [daiUniAddress, 1000, 1, 0],
+          [daiUniAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0],
         ],
       )
         .send({
@@ -499,8 +500,9 @@ contract('Logic', () => {
         });
     });
 
-    it('should be correct 1split exchange (dai->usdc)', async () => {
+    it('should be correct 1split exchange (dai->tusd)', async () => {
       let DAI;
+      let daiAmount;
       await ERC20.at(daiAddress)
         .then((result) => {
           DAI = result.contract;
@@ -508,17 +510,23 @@ contract('Logic', () => {
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
+          daiAmount = result;
           console.log(`DAI amount before is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
         });
-      let USDC;
-      await ERC20.at(usdcAddress)
-        .then((result) => {
-          USDC = result.contract;
+      await DAI.methods['approve(address,uint256)'](tokenSpender, daiAmount)
+        .send({
+          gas: 10000000,
+          from: accounts[0],
         });
-      await USDC.methods['balanceOf(address)'](accounts[0])
+      let TUSD;
+      await ERC20.at(tusdAddress)
+        .then((result) => {
+          TUSD = result.contract;
+        });
+      await TUSD.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log(`USDC amount before is ${new BN(result).div(new BN('10000')).toNumber() / 100}`);
+          console.log(`TUSD amount before is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
         });
       console.log('calling logic with action...');
       await logic.methods.executeActions( // executeActions function call
@@ -528,12 +536,14 @@ contract('Logic', () => {
             'OneSplit',
             ADAPTER_EXCHANGE,
             [daiAddress],
-            ['1000000000000000000'],
-            [AMOUNT_ABSOLUTE],
-            web3.eth.abi.encodeParameter('address', usdcAddress),
+            [RELATIVE_AMOUNT_BASE],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', tusdAddress),
           ],
         ],
-        [],
+        [
+          [daiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0],
+        ],
       )
         .send({
           gas: 10000000,
@@ -544,11 +554,50 @@ contract('Logic', () => {
         .then((result) => {
           console.log(`DAI amount after is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
         });
-      await USDC.methods['balanceOf(address)'](accounts[0])
+      await TUSD.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log(`USDC amount after is ${new BN(result).div(new BN('10000')).toNumber() / 100}`);
+          console.log(`TUSD amount after is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
         });
+    });
+
+    it('revert on withdraw call', async () => {
+      let DAI;
+      let daiAmount;
+      await ERC20.at(daiAddress)
+        .then((result) => {
+          DAI = result.contract;
+        });
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+        });
+      await DAI.methods['approve(address,uint256)'](tokenSpender, daiAmount)
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        });
+      await expectRevert(logic.methods.executeActions( // executeActions function call
+        [
+          [
+            ACTION_WITHDRAW,
+            'OneSplit',
+            ADAPTER_EXCHANGE,
+            [daiAddress],
+            [RELATIVE_AMOUNT_BASE],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', daiAddress),
+          ],
+        ],
+        [
+          [daiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0],
+        ],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        }));
     });
   });
 });

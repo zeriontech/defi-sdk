@@ -53,10 +53,12 @@ library SafeERC20 {
         ERC20 token,
         address spender,
         uint256 value
-    ) internal {
+    )
+        internal
+    {
         require(
             (value == 0) || (token.allowance(address(this), spender) == 0),
-            "SafeERC20: approve from non-zero to non-zero allowance"
+            "SafeERC20: wrong approve call"
         );
         callOptionalReturn(
             token,
@@ -85,10 +87,10 @@ library SafeERC20 {
 
         // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory returndata) = address(token).call(data);
-        require(success, "SafeERC20: low-level call failed");
+        require(success, "SafeERC20: call failed");
 
         if (returndata.length > 0) { // Return data is optional
-            require(abi.decode(returndata, (bool)), "SafeERC20: ERC20 operation did not succeed");
+            require(abi.decode(returndata, (bool)), "SafeERC20: false returned");
         }
     }
 }

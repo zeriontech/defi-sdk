@@ -10,7 +10,7 @@ import { SafeERC20 } from "./SafeERC20.sol";
 contract TokenSpender is Ownable {
     using SafeERC20 for ERC20;
 
-    uint256 internal constant RELATIVE_AMOUNT_BASE = 1000;
+    uint256 internal constant RELATIVE_AMOUNT_BASE = 100;
 
     function issueTokens(
         Approval[] calldata approvals,
