@@ -57,7 +57,7 @@ contract ChaiTokenAdapter is TokenAdapter, MKRAdapter {
     }
 
     /**
-     * @return Array of Component structs with underlying tokens rates for the given asset.
+     * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address) external view override returns (Component[] memory) {
