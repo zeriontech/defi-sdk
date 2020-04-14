@@ -75,7 +75,7 @@ contract('ChaiAdapter', () => {
   });
 
   it('should return correct balances', async () => {
-    await adapterRegistry.methods['getBalances(address)'](accounts[0])
+    await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);

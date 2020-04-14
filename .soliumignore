@@ -3,6 +3,7 @@ node_modules
 ./contracts/Structs.sol
 ./contracts/AdapterRegistry.sol
 ./contracts/interactiveAdapters/InteractiveAdapter.sol
+./contracts/interactiveAdapters/1split/OneSplitInteractiveAdapter.sol
 ./contracts/TokenAdapterManager.sol
 ./contracts/ProtocolManager.sol
 ./contracts/Ownable.sol

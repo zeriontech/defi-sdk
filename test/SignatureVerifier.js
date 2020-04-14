@@ -1,4 +1,3 @@
-const { BN } = web3.utils;
 const SignatureVerifier = artifacts.require('./SignatureVerifier');
 
 async function signTypedData(account, data) {
@@ -12,7 +11,7 @@ async function signTypedData(account, data) {
       if (err) {
         return reject(err);
       }
-      resolve(response.result);
+      return resolve(response.result);
     });
   });
 }

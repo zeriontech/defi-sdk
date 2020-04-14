@@ -18,5 +18,6 @@ module.exports = {
     "indent": ["error", 2],
     "no-undef": "off",
     "prefer-const": "off",
+    "no-console": "off",
   },
 };
