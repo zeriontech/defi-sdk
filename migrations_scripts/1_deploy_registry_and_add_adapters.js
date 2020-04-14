@@ -1,10 +1,10 @@
 const AaveAssetAdapter = artifacts.require('AaveAssetAdapter');
 const AaveDebtAdapter = artifacts.require('AaveDebtAdapter');
 const BalancerAdapter = artifacts.require('BalancerAdapter');
-const DmmAssetAdapter = artifacts.require('DmmAssetAdapter');
 const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
 const CompoundDebtAdapter = artifacts.require('CompoundDebtAdapter');
 const CurveAdapter = artifacts.require('CurveAdapter');
+const DmmAssetAdapter = artifacts.require('DmmAssetAdapter');
 const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
 const IdleAdapter = artifacts.require('IdleAdapter');
@@ -23,6 +23,7 @@ const AaveTokenAdapter = artifacts.require('AaveTokenAdapter');
 const BalancerTokenAdapter = artifacts.require('BalancerTokenAdapter');
 const CompoundTokenAdapter = artifacts.require('CompoundTokenAdapter');
 const CurveTokenAdapter = artifacts.require('CurveTokenAdapter');
+const DmmTokenAdapter = artifacts.require('DmmTokenAdapter');
 const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
@@ -74,6 +75,10 @@ const cSAIAddress = '0xF5DCe57282A584D2746FaF1593d3121Fcac444dC';
 const cZRXAddress = '0xB3319f5D18Bc0D84dD1b4825Dcde5d5f7266d407';
 const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
 const cWBTCAddress = '0xC11b1268C1A384e55C48c2391d8d480264A3A7F4';
+
+const mDAIAddress = '0x06301057D77D54B6e14c7FafFB11Ffc7Cab4eaa7';
+const mETHAddress = '0xdF9307DFf0a1B57660F60f9457D32027a55ca0B2';
+const mUSDCAddress = '0x3564ad35b9E95340E5Ace2D6251dbfC76098669B';
 
 const saiAddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
 
@@ -166,6 +171,11 @@ const curveAdapterTokens = [
   ssCompoundTokenAddress,
   ssYTokenAddress,
   ssBusdTokenAddress,
+];
+const dmmAssetAdapterTokens = [
+  mDAIAddress,
+  mETHAddress,
+  mUSDCAddress,
 ];
 const dydxAdapterTokens = [
   wethAddress,
@@ -286,6 +296,19 @@ module.exports = async (deployer, network, accounts) => {
     'Exchange liquidity pool for stablecoin trading',
     'curve.fi',
     'protocol-icons.s3.amazonaws.com/curve.fi.png',
+    '0',
+  ]);
+  await deployer.deploy(DmmAssetAdapter, { from: accounts[0] })
+    .then(() => {
+      adapters[4].push(DmmAssetAdapter.address);
+      tokens[4].push(dmmAssetAdapterTokens);
+    });
+  protocolNames.push('DMM');
+  metadata.push([
+    'DMM',
+    'Earn interest on crypto through revenue-producing real world assets',
+    'defimoneymarket.com',
+    'defimoneymarket.com/dmm-logo-square.png',
     '0',
   ]);
   await deployer.deploy(DyDxAssetAdapter, { from: accounts[0] })
@@ -475,6 +498,12 @@ module.exports = async (deployer, network, accounts) => {
     .then(() => {
       tokenAdapters.push(
         CurveTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(DmmTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        DmmTokenAdapter.address,
       );
     });
   await deployer.deploy(IdleTokenAdapter, { from: accounts[0] })
