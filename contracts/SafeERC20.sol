@@ -26,7 +26,8 @@ library SafeERC20 {
                 token.transfer.selector,
                 to,
                 value
-            )
+            ),
+            "transfer"
         );
     }
 
@@ -45,7 +46,8 @@ library SafeERC20 {
                 from,
                 to,
                 value
-            )
+            ),
+            "transferFrom"
         );
     }
 
@@ -66,7 +68,8 @@ library SafeERC20 {
                 token.approve.selector,
                 spender,
                 value
-            )
+            ),
+            "approve"
         );
     }
 
@@ -77,7 +80,7 @@ library SafeERC20 {
      * @param token The token targeted by the call.
      * @param data The call data (encoded using abi.encode or one of its variants).
      */
-    function callOptionalReturn(ERC20 token, bytes memory data) private {
+    function callOptionalReturn(ERC20 token, bytes memory data, string memory reason) private {
         // We need to perform a low level call here, to bypass Solidity's return data size checking
         // mechanism, since we're implementing it ourselves.
 
@@ -87,7 +90,7 @@ library SafeERC20 {
 
         // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory returndata) = address(token).call(data);
-        require(success, "SafeERC20: call failed");
+        require(success, string(abi.encodePacked("SafeERC20: ", reason, " call failed")));
 
         if (returndata.length > 0) { // Return data is optional
             require(abi.decode(returndata, (bool)), "SafeERC20: false returned");

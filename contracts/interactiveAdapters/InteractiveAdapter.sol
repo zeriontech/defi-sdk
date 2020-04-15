@@ -29,7 +29,7 @@ import { ERC20 } from "../ERC20.sol";
  */
 abstract contract InteractiveAdapter is ProtocolAdapter {
 
-    uint256 internal constant RELATIVE_AMOUNT_BASE = 100;
+    uint256 internal constant RELATIVE_AMOUNT_BASE = 1e18;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**

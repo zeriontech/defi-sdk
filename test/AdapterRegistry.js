@@ -8,7 +8,7 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 const ONE = '0x1111111111111111111111111111111111111111';
 const TWO = '0x2222222222222222222222222222222222222222';
 
-contract.skip('AdapterRegistry', () => {
+contract('AdapterRegistry', () => {
   let accounts;
   let adapterRegistry;
   let protocolAdapterAddress;

@@ -539,7 +539,7 @@ contract.skip('Logic', () => {
       await TUSD.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log(`TUSD amount before is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
+          console.log(`TUSD amount before is ${new BN(result).div(new BN('10000')).toNumber() / 100}`);
         });
       console.log('calling logic with action...');
       await logic.methods.executeActions(
@@ -570,7 +570,17 @@ contract.skip('Logic', () => {
       await TUSD.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log(`TUSD amount after is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
+          console.log(`TUSD amount after is ${new BN(result).div(new BN('10000')).toNumber() / 100}`);
+        });
+      await DAI.methods['balanceOf(address)'](logic.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await TUSD.methods['balanceOf(address)'](logic.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
         });
     });
 

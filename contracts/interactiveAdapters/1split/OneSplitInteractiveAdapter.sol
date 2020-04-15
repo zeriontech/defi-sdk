@@ -90,14 +90,14 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
 
         uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
-        address[] memory tokensToBeWithdrawn;
-
         address fromToken = tokens[0];
         if (fromToken == ETH) {
             fromToken = address(0);
         } else {
             ERC20(fromToken).safeApprove(ONE_SPLIT, amount);
         }
+
+        address[] memory tokensToBeWithdrawn;
 
         address toToken = abi.decode(data, (address));
         if (toToken == ETH) {
@@ -108,24 +108,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
             tokensToBeWithdrawn[0] = toToken;
         }
 
-        OneSplit oneSplit = OneSplit(ONE_SPLIT);
-
-        (, uint256[] memory distribution) = oneSplit.getExpectedReturn(
-            fromToken,
-            toToken,
-            amount,
-            uint256(1),
-            uint256(0)
-        );
-
-        oneSplit.swap.value(fromToken != address(0) ? 0 : amount)(
-            fromToken,
-            toToken,
-            amount,
-            uint256(1),
-            distribution,
-            uint256(0)
-        );
+        swap(fromToken, toToken, amount);
 
         return tokensToBeWithdrawn;
     }
@@ -146,5 +129,37 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
         returns (address[] memory)
     {
         revert("OSIA: no withdraw!");
+    }
+
+    function swap(address fromToken, address toToken, uint256 amount) internal {
+        uint256[] memory distribution;
+
+        try OneSplit(ONE_SPLIT).getExpectedReturn(
+            fromToken,
+            toToken,
+            amount,
+            uint256(1),
+            uint256(0x0cfdfe) // 0x0c0dfc to enable curve; 0x0cfdf0 to enable base exchanges;
+        ) returns (uint256, uint256[] memory result) {
+            distribution = result;
+        } catch Error(string memory reason) {
+            revert(reason);
+        } catch (bytes memory) {
+            revert("OSIA: 1split fail![1]");
+        }
+
+        uint256 value = fromToken != address(0) ? 0 : amount;
+        try OneSplit(ONE_SPLIT).swap.value(value)(
+            fromToken,
+            toToken,
+            amount,
+            uint256(1),
+            distribution,
+            uint256(0x0cfdfe) // 0x0c0dfc to enable curve; 0x0cfdf0 to enable base exchanges;
+        ) {} catch Error(string memory reason) {
+            revert(reason);
+        } catch (bytes memory) {
+            revert("OSIA: 1split fail![2]");
+        }
     }
 }

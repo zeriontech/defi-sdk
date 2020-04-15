@@ -1,8 +1,8 @@
 const ACTION_DEPOSIT = 1;
-// const ACTION_WITHDRAW = 2;
+const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
 // const AMOUNT_ABSOLUTE = 2;
-const RELATIVE_AMOUNT_BASE = 100;
+const RELATIVE_AMOUNT_BASE = '1000000000000000000';
 const EMPTY_BYTES = '0x';
 const ADAPTER_ASSET = 0;
 // const ADAPTER_DEBT = 1;
@@ -56,7 +56,7 @@ contract.skip('Scenario DAI -> MKR pool', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('OneSplit'), web3.utils.toHex('Uniswap V1')],
+      [web3.utils.toHex('Uniswap V1'), web3.utils.toHex('OneSplit')],
       [
         [
           'Mock Protocol Name',
@@ -132,18 +132,18 @@ contract.skip('Scenario DAI -> MKR pool', () => {
     await DAI.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
-        console.log(`dai amount before is    ${result}`);
+        console.log(`dai amount before is    ${web3.utils.fromWei(result, 'ether')}`);
         daiAmount = result;
       });
     await MKR.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
-        console.log(`mkr amount before is    ${result}`);
+        console.log(`mkr amount before is    ${web3.utils.fromWei(result, 'ether')}`);
       });
     await MKRUNI.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
-        console.log(`mkruni amount before is ${result}`);
+        console.log(`mkruni amount before is ${web3.utils.fromWei(result, 'ether')}`);
       });
     await DAI.methods['approve(address,uint256)'](tokenSpender, daiAmount.toString())
       .send({
@@ -153,13 +153,13 @@ contract.skip('Scenario DAI -> MKR pool', () => {
     console.log('calling logic with actions...');
     await logic.methods.executeActions(
       [
-        // exchange 51% to MKR tokens
+        // exchange 50,2% to MKR tokens
         [
           ACTION_DEPOSIT,
           web3.utils.toHex('OneSplit'),
           ADAPTER_EXCHANGE,
           [daiAddress],
-          ['51'],
+          ['502000000000000000'],
           [AMOUNT_RELATIVE],
           web3.eth.abi.encodeParameter('address', mkrAddress),
         ],
@@ -205,18 +205,114 @@ contract.skip('Scenario DAI -> MKR pool', () => {
     await DAI.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
-        console.log(`dai amount after is     ${result}`);
-        daiAmount = result;
+        console.log(`dai amount after is     ${web3.utils.fromWei(result, 'ether')}`);
       });
     await MKR.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
-        console.log(`mkr amount after is     ${result}`);
+        console.log(`mkr amount after is     ${web3.utils.fromWei(result, 'ether')}`);
       });
     await MKRUNI.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
-        console.log(`mkruni amount after is  ${result}`);
+        console.log(`mkruni amount after is  ${web3.utils.fromWei(result, 'ether')}`);
+      });
+  });
+
+  it('reverse test', async () => {
+    let DAI;
+    let MKR;
+    let MKRUNI;
+    let mkrUniAmount;
+    await ERC20.at(daiAddress)
+      .then((result) => {
+        DAI = result.contract;
+      });
+    await ERC20.at(mkrAddress)
+      .then((result) => {
+        MKR = result.contract;
+      });
+    await ERC20.at(mkrUniAddress)
+      .then((result) => {
+        MKRUNI = result.contract;
+      });
+    await DAI.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`dai amount before is    ${web3.utils.fromWei(result, 'ether')}`);
+      });
+    await MKR.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`mkr amount before is    ${web3.utils.fromWei(result, 'ether')}`);
+      });
+    await MKRUNI.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`mkruni amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        mkrUniAmount = result;
+      });
+    await MKRUNI.methods['approve(address,uint256)'](tokenSpender, mkrUniAmount.toString())
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      });
+    console.log('calling logic with actions...');
+    await logic.methods.executeActions(
+      [
+        // withdraw MKRUNI tokens
+        [
+          ACTION_WITHDRAW,
+          web3.utils.toHex('Uniswap V1'),
+          ADAPTER_ASSET,
+          [mkrUniAddress],
+          [RELATIVE_AMOUNT_BASE],
+          [AMOUNT_RELATIVE],
+          EMPTY_BYTES,
+        ],
+        // exchange remaining ETH to DAI
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('OneSplit'),
+          ADAPTER_EXCHANGE,
+          [ethAddress],
+          [RELATIVE_AMOUNT_BASE],
+          [AMOUNT_RELATIVE],
+          web3.eth.abi.encodeParameter('address', daiAddress),
+        ],
+        // exchange remaining MKR to DAI
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('OneSplit'),
+          ADAPTER_EXCHANGE,
+          [mkrAddress],
+          [RELATIVE_AMOUNT_BASE],
+          [AMOUNT_RELATIVE],
+          web3.eth.abi.encodeParameter('address', daiAddress),
+        ],
+      ],
+      [
+        [mkrUniAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0],
+      ],
+    )
+      .send({
+        from: accounts[0],
+        gas: 10000000,
+      });
+    await DAI.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`dai amount after is     ${web3.utils.fromWei(result, 'ether')}`);
+      });
+    await MKR.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`mkr amount after is     ${web3.utils.fromWei(result, 'ether')}`);
+      });
+    await MKRUNI.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`mkruni amount after is  ${web3.utils.fromWei(result, 'ether')}`);
       });
   });
 });

@@ -12,6 +12,7 @@ contract('AaveAssetAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const batAddress = '0x0D8775F648430679A709E98d2b0Cb6250d2887EF';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
+  const ZERO = '0x0000000000000000000000000000000000000000';
 
   let accounts;
   let adapterRegistry;
