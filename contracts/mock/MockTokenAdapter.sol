@@ -27,6 +27,14 @@ import { TokenAdapter } from "../adapters/TokenAdapter.sol";
 contract MockTokenAdapter is TokenAdapter {
 
     /**
+     * @return Empty Component array.
+     * @dev Implementation of TokenAdapter abstract contract function.
+     */
+    function getComponents(address) external view override returns (Component[] memory) {
+        return new Component[](0);
+    }
+
+    /**
       * @return TokenMetadata struct with ERC20-style token info.
       * @dev Implementation of TokenAdapter abstract contract function.
       */
@@ -37,13 +45,5 @@ contract MockTokenAdapter is TokenAdapter {
             symbol: "MCK",
             decimals: 18
         });
-    }
-
-    /**
-     * @return Empty Component array.
-     * @dev Implementation of TokenAdapter abstract contract function.
-     */
-    function getComponents(address) external view override returns (Component[] memory) {
-        return new Component[](0);
     }
 }

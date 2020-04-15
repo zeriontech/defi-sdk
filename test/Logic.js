@@ -292,13 +292,23 @@ contract.skip('Logic', () => {
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log(`dai amount is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
+          console.log(`dai amount before is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
           daiAmount = result;
         });
       await DAI.methods['approve(address,uint256)'](tokenSpender, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
+        });
+      await adapterRegistry.methods['getBalances(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          displayToken(result[0].adapterBalances[0].balances[0].base);
+          displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
+          displayToken(result[0].adapterBalances[0].balances[0].underlying[1]);
+          assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, eth);
+          assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, daiUni);
+          assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[1].metadata, dai);
         });
       console.log('calling logic with action...');
       await logic.methods.executeActions(
@@ -437,7 +447,7 @@ contract.skip('Logic', () => {
         [[
           ZERO, ZERO, protocolAdapterAddress,
         ]],
-        [[[]]],
+        [[[], [], []]],
       )
         .send({
           from: accounts[0],

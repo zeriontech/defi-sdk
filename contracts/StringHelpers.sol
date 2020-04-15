@@ -52,7 +52,7 @@ library StringHelpers {
         uint256 length = 0;
 
         uint256 dataCopy = data;
-        while (dataCopy != 0){
+        while (dataCopy != 0) {
             length++;
             dataCopy /= 10;
         }

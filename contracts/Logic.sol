@@ -37,6 +37,21 @@ contract Logic is SignatureVerifier, Ownable {
     // solhint-disable-next-line no-empty-blocks
     receive() external payable {}
 
+    function returnLostTokens(
+        address token
+    )
+        external
+        onlyOwner
+    {
+        uint256 tokenBalance = ERC20(token).balanceOf(address(this));
+        ERC20(token).safeTransfer(msg.sender, tokenBalance);
+
+        uint256 ethBalance = address(this).balance;
+        if (ethBalance > 0) {
+            msg.sender.transfer(ethBalance);
+        }
+    }
+
     /**
      * @notice Execute actions on signer's behalf.
      * @param actions Array with actions.
@@ -157,21 +172,6 @@ contract Logic is SignatureVerifier, Ownable {
         uint256 ethBalance = address(this).balance;
         if (ethBalance > 0) {
             user.transfer(ethBalance);
-        }
-    }
-
-    function returnLostTokens(
-        address token
-    )
-        external
-        onlyOwner
-    {
-        uint256 tokenBalance = ERC20(token).balanceOf(address(this));
-        ERC20(token).safeTransfer(msg.sender, tokenBalance);
-
-        uint256 ethBalance = address(this).balance;
-        if (ethBalance > 0) {
-            msg.sender.transfer(ethBalance);
         }
     }
 }

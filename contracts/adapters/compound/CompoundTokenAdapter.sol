@@ -46,6 +46,22 @@ contract CompoundTokenAdapter is TokenAdapter {
     address internal constant CSAI = 0xF5DCe57282A584D2746FaF1593d3121Fcac444dC;
 
     /**
+     * @return Array of Component structs with underlying tokens rates for the given asset.
+     * @dev Implementation of TokenAdapter abstract contract function.
+     */
+    function getComponents(address token) external view override returns (Component[] memory) {
+        Component[] memory underlyingTokens = new Component[](1);
+
+        underlyingTokens[0] = Component({
+            token: getUnderlying(token),
+            tokenType: "ERC20",
+            rate: CToken(token).exchangeRateStored()
+        });
+
+        return underlyingTokens;
+    }
+
+    /**
      * @return TokenMetadata struct with ERC20-style token info.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
@@ -60,22 +76,6 @@ contract CompoundTokenAdapter is TokenAdapter {
         } else {
             return super.getMetadata(token);
         }
-    }
-
-    /**
-     * @return Array of Component structs with underlying tokens rates for the given token.
-     * @dev Implementation of TokenAdapter abstract contract function.
-     */
-    function getComponents(address token) external view override returns (Component[] memory) {
-        Component[] memory underlyingTokens = new Component[](1);
-
-        underlyingTokens[0] = Component({
-            token: getUnderlying(token),
-            tokenType: "ERC20",
-            rate: CToken(token).exchangeRateStored()
-        });
-
-        return underlyingTokens;
     }
 
     /**

@@ -28,6 +28,16 @@ import { TokenMetadata, Component } from "../Structs.sol";
 abstract contract TokenAdapter {
 
     /**
+     * @dev MUST return array of Component structs with underlying tokens rates for the given token.
+     * struct Component {
+     *     address token;    // Address of token contract
+     *     string tokenType; // Token type ("ERC20" by default)
+     *     uint256 rate;     // Price per share (1e18)
+     * }
+     */
+    function getComponents(address token) external view virtual returns (Component[] memory);
+
+    /**
      * @dev MUST return TokenMetadata struct with ERC20-style token info.
      * It is recommended to override getName(), getSymbol() and getDecimals() functions.
      * struct TokenMetadata {
@@ -45,16 +55,6 @@ abstract contract TokenAdapter {
             decimals: getDecimals(token)
         });
     }
-
-    /**
-     * @dev MUST return array of Component structs with underlying tokens rates for the given token.
-     * struct Component {
-     *     address token;    // Address of token contract
-     *     string tokenType; // Token type ("ERC20" by default)
-     *     uint256 rate;     // Price per share (1e18)
-     * }
-     */
-    function getComponents(address token) external view virtual returns (Component[] memory);
 
     /**
      * @dev MUST return string that will be treated like token name.

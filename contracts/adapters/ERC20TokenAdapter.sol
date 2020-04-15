@@ -36,6 +36,14 @@ contract ERC20TokenAdapter is TokenAdapter {
     address internal constant CSAI = 0x45A2FDfED7F7a2c791fb1bdF6075b83faD821ddE;
 
     /**
+     * @return Empty Component array.
+     * @dev Implementation of TokenAdapter abstract contract function.
+     */
+    function getComponents(address) external view override returns (Component[] memory) {
+        return new Component[](0);
+    }
+
+    /**
      * @return TokenMetadata struct with ERC20-style token info.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
@@ -64,14 +72,6 @@ contract ERC20TokenAdapter is TokenAdapter {
         } else {
             return super.getMetadata(token);
         }
-    }
-
-    /**
-     * @return Empty Component array.
-     * @dev Implementation of TokenAdapter abstract contract function.
-     */
-    function getComponents(address) external view override returns (Component[] memory) {
-        return new Component[](0);
     }
 
     /**
