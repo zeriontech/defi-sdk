@@ -117,7 +117,9 @@ contract Logic is SignatureVerifier, Ownable {
         require(action.actionType != ActionType.None, "L: wrong action type!");
         require(action.amounts.length == action.amountTypes.length, "L: inconsistent arrays![1]");
         require(action.amounts.length == action.tokens.length, "L: inconsistent arrays![2]");
-        address adapter = adapterRegistry.getProtocolAdapters(action.protocolName)[action.adapterIndex];
+        address[] memory adapters = adapterRegistry.getProtocolAdapters(action.protocolName);
+        require(action.adapterIndex <= adapters.length, "L: wrong index!");
+        address adapter = adapters[action.adapterIndex];
 
         bool success;
         bytes memory returnData;
