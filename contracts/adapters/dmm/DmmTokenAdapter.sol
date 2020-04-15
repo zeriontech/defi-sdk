@@ -70,7 +70,7 @@ contract DmmTokenAdapter is TokenAdapter {
      */
     function getComponents(address token) external view override returns (Component[] memory) {
         address underlying = IDmmToken(token).controller().getUnderlyingTokenForDmm(token);
-        uint rate = controller.getExchangeRate(token);
+        uint rate = IDmmToken(token).controller().getExchangeRate(token);
 
         Component[] memory underlyingTokens = new Component[](1);
 
