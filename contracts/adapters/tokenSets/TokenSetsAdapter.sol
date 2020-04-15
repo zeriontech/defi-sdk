@@ -27,16 +27,16 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  */
 contract TokenSetsAdapter is ProtocolAdapter {
 
-    string public constant override adapterType = "Asset";
+    bytes32 public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "SetToken";
+    bytes32 public constant override tokenType = "SetToken";
 
     /**
      * @return Amount of SetTokens held by the given account.
      * @param token Address of the SetToken contract.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address token, address account) external view override returns (uint256) {
+    function getBalance(address token, address account) public view override returns (uint256) {
         return ERC20(token).balanceOf(account);
     }
 }

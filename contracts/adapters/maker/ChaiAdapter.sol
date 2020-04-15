@@ -27,9 +27,9 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  */
 contract ChaiAdapter is ProtocolAdapter {
 
-    string public constant override adapterType = "Asset";
+    bytes32 public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "Chai token";
+    bytes32 public constant override tokenType = "Chai token";
 
     /**
      * @return Amount of Chai tokens held by the given account.

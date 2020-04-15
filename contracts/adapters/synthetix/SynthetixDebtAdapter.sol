@@ -50,9 +50,9 @@ contract SynthetixDebtAdapter is ProtocolAdapter {
 
     address internal constant SNX = 0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F;
 
-    string public constant override adapterType = "Debt";
+    bytes32 public constant override adapterType = "Debt";
 
-    string public constant override tokenType = "ERC20";
+    bytes32 public constant override tokenType = "ERC20";
 
     /**
      * @return Amount of debt of the given account for the protocol.

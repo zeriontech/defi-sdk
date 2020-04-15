@@ -27,9 +27,9 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  */
 contract IearnAdapter is ProtocolAdapter {
 
-    string public constant override adapterType = "Asset";
+    bytes32 public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "YToken";
+    bytes32 public constant override tokenType = "YToken";
 
     /**
      * @return Amount of YTokens held by the given account.

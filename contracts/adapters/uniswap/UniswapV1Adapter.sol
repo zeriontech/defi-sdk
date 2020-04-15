@@ -27,9 +27,9 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  */
 contract UniswapV1Adapter is ProtocolAdapter {
 
-    string public constant override adapterType = "Asset";
+    bytes32 public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "Uniswap V1 pool token";
+    bytes32 public constant override tokenType = "Uniswap V1 pool token";
 
     /**
      * @return Amount of Uniswap pool tokens held by the given account.

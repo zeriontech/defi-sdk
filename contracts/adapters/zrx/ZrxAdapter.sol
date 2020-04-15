@@ -38,9 +38,9 @@ interface Staking {
  */
 contract ZrxAdapter is ProtocolAdapter {
 
-    string public constant override adapterType = "Asset";
+    bytes32 public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "ERC20";
+    bytes32 public constant override tokenType = "ERC20";
 
     address internal constant STAKING = 0xa26e80e7Dea86279c6d778D702Cc413E6CFfA777;
 

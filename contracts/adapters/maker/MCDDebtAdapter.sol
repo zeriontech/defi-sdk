@@ -65,9 +65,9 @@ interface DssCdpManager {
  */
 contract MCDDebtAdapter is ProtocolAdapter, MKRAdapter {
 
-    string public constant override adapterType = "Debt";
+    bytes32 public constant override adapterType = "Debt";
 
-    string public constant override tokenType = "ERC20";
+    bytes32 public constant override tokenType = "ERC20";
 
     /**
      * @return Amount of debt of the given account for the protocol.

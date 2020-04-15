@@ -40,7 +40,7 @@ struct AdapterBalance {
 
 struct AdapterMetadata {
     address adapterAddress;
-    string adapterType; // "Asset", "Debt"
+    bytes32 adapterType; // "Asset", "Debt"
 }
 
 
@@ -69,7 +69,7 @@ struct TokenMetadata {
 
 struct Component {
     address token;
-    string tokenType;  // "ERC20" by default
+    bytes32 tokenType;  // "ERC20" by default
     uint256 rate;  // price per full share (1e18)
 }
 
@@ -79,7 +79,7 @@ struct Component {
 
 struct Action {
     ActionType actionType;
-    string protocolName;
+    bytes32 protocolName;
     uint256 adapterIndex;
     address[] tokens;
     uint256[] amounts;

@@ -50,9 +50,9 @@ contract CompoundDebtAdapter is ProtocolAdapter {
 
     address internal constant REGISTRY = 0xE6881a7d699d3A350Ce5bba0dbD59a9C36778Cb7;
 
-    string public constant override adapterType = "Debt";
+    bytes32 public constant override adapterType = "Debt";
 
-    string public constant override tokenType = "ERC20";
+    bytes32 public constant override tokenType = "ERC20";
 
     /**
      * @return Amount of debt of the given account for the protocol.

@@ -27,15 +27,15 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  */
 contract DmmAssetAdapter is ProtocolAdapter {
 
-    string public constant override adapterType = "Asset";
+    bytes32 public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "MToken";
+    bytes32 public constant override tokenType = "MToken";
 
     /**
      * @return Amount of MTokens held by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address token, address account) external view override returns (uint256) {
+    function getBalance(address token, address account) public view override returns (uint256) {
         return ERC20(token).balanceOf(account);
     }
 }

@@ -26,9 +26,9 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  */
 contract OneSplitAdapter is ProtocolAdapter {
 
-    string public constant override adapterType = "Exchange";
+    bytes32 public constant override adapterType = "Exchange";
 
-    string public constant override tokenType = "";
+    bytes32 public constant override tokenType = "";
 
     /**
      * @return Amount of Uniswap pool tokens held by the given account.

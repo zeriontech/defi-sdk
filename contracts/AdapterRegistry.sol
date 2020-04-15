@@ -49,7 +49,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
      * @return Full token balance by token type and token address.
      */
     function getFullTokenBalance(
-        string calldata tokenType,
+        bytes32 tokenType,
         address token
     )
         external
@@ -66,7 +66,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
      * @return Final full token balance by token type and token address.
      */
     function getFinalFullTokenBalance(
-        string calldata tokenType,
+        bytes32 tokenType,
         address token
     )
         external
@@ -88,7 +88,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         view
         returns (ProtocolBalance[] memory)
     {
-        string[] memory protocolNames = getProtocolNames();
+        bytes32[] memory protocolNames = getProtocolNames();
 
         return getProtocolBalances(account, protocolNames);
     }
@@ -100,7 +100,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
      */
     function getProtocolBalances(
         address account,
-        string[] memory protocolNames
+        bytes32[] memory protocolNames
     )
         public
         view
@@ -187,7 +187,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         view
         returns (AdapterBalance memory)
     {
-        string memory tokenType = ProtocolAdapter(adapter).tokenType();
+        bytes32 tokenType = ProtocolAdapter(adapter).tokenType();
         uint256[] memory amounts = new uint256[](tokens.length);
         uint256 counter;
 
@@ -234,7 +234,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
      * @return FullTokenBalance struct by the given components.
      */
     function getFullTokenBalance(
-        string memory tokenType,
+        bytes32 tokenType,
         address token,
         uint256 amount,
         Component[] memory components
@@ -266,7 +266,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
      * @return Final components by token type and token address.
      */
     function getFinalComponents(
-        string memory tokenType,
+        bytes32 tokenType,
         address token,
         uint256 amount
     )
@@ -313,7 +313,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
      * @return Final tokens number by token type and token.
      */
     function getFinalComponentsNumber(
-        string memory tokenType,
+        bytes32 tokenType,
         address token,
         bool initial
     )
@@ -346,7 +346,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
      * @return Components by token type and token address.
      */
     function getComponents(
-        string memory tokenType,
+        bytes32 tokenType,
         address token,
         uint256 amount
     )
@@ -382,7 +382,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
      * @return TokenBalance struct with token info and balance.
      */
     function getTokenBalance(
-        string memory tokenType,
+        bytes32 tokenType,
         address token,
         uint256 amount
     )

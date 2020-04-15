@@ -73,7 +73,7 @@ contract BalancerTokenAdapter is TokenAdapter {
         Component[] memory underlyingTokens = new Component[](underlyingTokensAddresses.length);
 
         address underlyingToken;
-        string memory underlyingTokenType;
+        bytes32 underlyingTokenType;
         for (uint256 i = 0; i < underlyingTokens.length; i++) {
             underlyingToken = underlyingTokensAddresses[i];
 

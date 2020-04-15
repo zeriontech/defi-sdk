@@ -27,9 +27,9 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  */
 contract CompoundAssetAdapter is ProtocolAdapter {
 
-    string public constant override adapterType = "Asset";
+    bytes32 public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "CToken";
+    bytes32 public constant override tokenType = "CToken";
 
     /**
      * @return Amount of CTokens held by the given account.

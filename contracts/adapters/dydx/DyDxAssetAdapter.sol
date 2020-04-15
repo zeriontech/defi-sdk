@@ -60,9 +60,9 @@ interface SoloMargin {
  */
 contract DyDxAssetAdapter is ProtocolAdapter, DyDxAdapter {
 
-    string public constant override adapterType = "Asset";
+    bytes32 public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "ERC20";
+    bytes32 public constant override tokenType = "ERC20";
 
     /**
      * @return Amount of tokens held by the given account.

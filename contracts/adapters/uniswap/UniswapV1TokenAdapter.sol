@@ -78,7 +78,7 @@ contract UniswapV1TokenAdapter is TokenAdapter {
     function getComponents(address token) external view override returns (Component[] memory) {
         address underlyingToken = Factory(FACTORY).getToken(token);
         uint256 totalSupply = ERC20(token).totalSupply();
-        string memory underlyingTokenType;
+        bytes32 underlyingTokenType;
         Component[] memory underlyingTokens = new Component[](2);
 
         underlyingTokens[0] = Component({

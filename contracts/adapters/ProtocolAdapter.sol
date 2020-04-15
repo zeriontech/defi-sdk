@@ -28,13 +28,13 @@ abstract contract ProtocolAdapter {
      * @dev MUST return "Asset" or "Debt".
      * SHOULD be implemented by the public constant state variable.
      */
-    function adapterType() external pure virtual returns (string memory);
+    function adapterType() external pure virtual returns (bytes32);
 
     /**
      * @dev MUST return token type (default is "ERC20").
      * SHOULD be implemented by the public constant state variable.
      */
-    function tokenType() external pure virtual returns (string memory);
+    function tokenType() external pure virtual returns (bytes32);
 
     /**
      * @dev MUST return amount of the given token locked on the protocol by the given account.

@@ -50,7 +50,7 @@ contract CurveTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        (stableswap ss, uint256 length, string memory tokenType) = getPoolInfo(token);
+        (stableswap ss, uint256 length, bytes32 tokenType) = getPoolInfo(token);
         Component[] memory underlyingTokens = new Component[](length);
 
         for (uint256 i = 0; i < length; i++) {
@@ -74,7 +74,7 @@ contract CurveTokenAdapter is TokenAdapter {
     /**
      * @return Stableswap address, number of coins, type of tokens inside.
      */
-    function getPoolInfo(address token) internal pure returns (stableswap, uint256, string memory) {
+    function getPoolInfo(address token) internal pure returns (stableswap, uint256, bytes32) {
         if (token == COMPOUND_POOL_TOKEN) {
             return (stableswap(0xA2B47E3D5c44877cca798226B7B8118F9BFb7A56), 2, "CToken");
         } else if (token == Y_POOL_TOKEN) {

@@ -29,12 +29,12 @@ abstract contract TokenAdapterManager is Ownable {
 
     using Strings for string;
 
-    string internal constant INITIAL_NAME = "Initial token name";
+    bytes32 internal constant INITIAL_NAME = "Initial token name";
 
     // adapter name => next adapter name (linked list)
-    mapping (string => string) internal nextTokenAdapterName;
+    mapping (bytes32 => bytes32) internal nextTokenAdapterName;
     // adapter name => adapter info
-    mapping (string => address) internal tokenAdapter;
+    mapping (bytes32 => address) internal tokenAdapter;
 
     /**
      * @notice Initializes contract storage.
@@ -50,7 +50,7 @@ abstract contract TokenAdapterManager is Ownable {
      * @param adapters Addresses of token adapters to be added.
      */
     function addTokenAdapters(
-        string[] memory tokenAdapterNames,
+        bytes32[] memory tokenAdapterNames,
         address[] memory adapters
     )
         public
@@ -71,7 +71,7 @@ abstract contract TokenAdapterManager is Ownable {
      * @param tokenAdapterNames Names of token adapters to be removed.
      */
     function removeTokenAdapters(
-        string[] memory tokenAdapterNames
+        bytes32[] memory tokenAdapterNames
     )
         public
         onlyOwner
@@ -90,7 +90,7 @@ abstract contract TokenAdapterManager is Ownable {
      * @param adapter Address of token adapter to be added instead.
      */
     function updateTokenAdapter(
-        string memory tokenAdapterName,
+        bytes32 tokenAdapterName,
         address adapter
     )
         public
@@ -108,27 +108,27 @@ abstract contract TokenAdapterManager is Ownable {
     function getTokenAdapterNames()
         public
         view
-        returns (string[] memory)
+        returns (bytes32[] memory)
     {
         uint256 counter = 0;
-        string memory currentTokenAdapterName = nextTokenAdapterName[INITIAL_NAME];
+        bytes32 currentTokenAdapterName = nextTokenAdapterName[INITIAL_NAME];
 
-        while (!currentTokenAdapterName.isEqualTo(INITIAL_NAME)) {
+        while (currentTokenAdapterName != INITIAL_NAME) {
             currentTokenAdapterName = nextTokenAdapterName[currentTokenAdapterName];
             counter++;
         }
 
-        string[] memory tokenAdapters = new string[](counter);
+        bytes32[] memory tokenAdapterNames = new bytes32[](counter);
         counter = 0;
         currentTokenAdapterName = nextTokenAdapterName[INITIAL_NAME];
 
-        while (!currentTokenAdapterName.isEqualTo(INITIAL_NAME)) {
-            tokenAdapters[counter] = currentTokenAdapterName;
+        while (currentTokenAdapterName != INITIAL_NAME) {
+            tokenAdapterNames[counter] = currentTokenAdapterName;
             currentTokenAdapterName = nextTokenAdapterName[currentTokenAdapterName];
             counter++;
         }
 
-        return tokenAdapters;
+        return tokenAdapterNames;
     }
 
     /**
@@ -136,7 +136,7 @@ abstract contract TokenAdapterManager is Ownable {
      * @return Address of token adapter.
      */
     function getTokenAdapter(
-        string memory tokenAdapterName
+        bytes32 tokenAdapterName
     )
         public
         view
@@ -150,13 +150,13 @@ abstract contract TokenAdapterManager is Ownable {
      * @return Whether token adapter is valid.
      */
     function isValidTokenAdapter(
-        string memory tokenAdapterName
+        bytes32 tokenAdapterName
     )
         public
         view
         returns (bool)
     {
-        return !nextTokenAdapterName[tokenAdapterName].isEmpty() && !tokenAdapterName.isEqualTo(INITIAL_NAME);
+        return nextTokenAdapterName[tokenAdapterName] != bytes32(0) && tokenAdapterName != INITIAL_NAME;
     }
 
     /**
@@ -166,14 +166,14 @@ abstract contract TokenAdapterManager is Ownable {
      * @param adapter Address of token adapter to be added.
      */
     function addTokenAdapter(
-        string memory tokenAdapterName,
+        bytes32 tokenAdapterName,
         address adapter
     )
         internal
     {
-        require(!tokenAdapterName.isEqualTo(INITIAL_NAME), "TAM: initial name!");
-        require(!tokenAdapterName.isEmpty(), "TAM: empty name!");
-        require(nextTokenAdapterName[tokenAdapterName].isEmpty(), "TAM: name exists!");
+        require(tokenAdapterName != INITIAL_NAME, "TAM: initial name!");
+        require(tokenAdapterName != bytes32(0), "TAM: empty name!");
+        require(nextTokenAdapterName[tokenAdapterName] == bytes32(0), "TAM: name exists!");
         require(adapter != address(0), "TAM: zero!");
 
         nextTokenAdapterName[tokenAdapterName] = nextTokenAdapterName[INITIAL_NAME];
@@ -187,15 +187,15 @@ abstract contract TokenAdapterManager is Ownable {
      * @param tokenAdapterName Name of token adapter to be removed.
      */
     function removeTokenAdapter(
-        string memory tokenAdapterName
+        bytes32 tokenAdapterName
     )
         internal
     {
         require(isValidTokenAdapter(tokenAdapterName), "TAM: bad name!");
 
-        string memory prevTokenAdapterName;
-        string memory currentTokenAdapterName = nextTokenAdapterName[tokenAdapterName];
-        while (!currentTokenAdapterName.isEqualTo(tokenAdapterName)) {
+        bytes32 prevTokenAdapterName;
+        bytes32 currentTokenAdapterName = nextTokenAdapterName[tokenAdapterName];
+        while (currentTokenAdapterName != tokenAdapterName) {
             prevTokenAdapterName = currentTokenAdapterName;
             currentTokenAdapterName = nextTokenAdapterName[currentTokenAdapterName];
         }

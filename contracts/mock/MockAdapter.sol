@@ -31,9 +31,9 @@ contract MockAdapter is ProtocolAdapter {
         balanceOf[msg.sender] = 1000;
     }
 
-    string public constant override adapterType = "Asset";
+    bytes32 public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "ERC20";
+    bytes32 public constant override tokenType = "ERC20";
 
     /**
      * @return Mock balance.

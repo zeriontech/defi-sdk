@@ -48,9 +48,9 @@ interface Synthetix {
  */
 contract SynthetixAssetAdapter is ProtocolAdapter {
 
-    string public constant override adapterType = "Asset";
+    bytes32 public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "ERC20";
+    bytes32 public constant override tokenType = "ERC20";
 
     /**
      * @return Amount of SNX locked on the protocol by the given account.

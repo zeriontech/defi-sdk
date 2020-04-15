@@ -37,9 +37,9 @@ interface BasePool {
  */
 contract PoolTogetherAdapter is ProtocolAdapter {
 
-    string public constant override adapterType = "Asset";
+    bytes32 public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "PoolTogether pool";
+    bytes32 public constant override tokenType = "PoolTogether pool";
 
     /**
      * @return Amount of tokens locked in the pool by the given account.
