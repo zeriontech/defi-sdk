@@ -36,26 +36,13 @@ interface IdleToken {
 
 /**
  * @title Token adapter for IdleTokens.
- * @dev Implementation of TokenAdapter interface.
+ * @dev Implementation of TokenAdapter abstract contract.
  */
 contract IdleTokenAdapter is TokenAdapter {
 
     /**
-     * @return TokenMetadata struct with ERC20-style token info.
-     * @dev Implementation of TokenAdapter interface function.
-     */
-    function getMetadata(address token) external view override returns (TokenMetadata memory) {
-        return TokenMetadata({
-            token: token,
-            name: ERC20(token).name(),
-            symbol: ERC20(token).symbol(),
-            decimals: ERC20(token).decimals()
-        });
-    }
-
-    /**
      * @return Array of Component structs with underlying tokens rates for the given token.
-     * @dev Implementation of TokenAdapter interface function.
+     * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
         Component[] memory underlyingTokens = new Component[](1);

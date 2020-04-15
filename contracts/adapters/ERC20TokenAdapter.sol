@@ -19,14 +19,17 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../ERC20.sol";
 import { TokenMetadata, Component } from "../Structs.sol";
 import { TokenAdapter } from "./TokenAdapter.sol";
+import { StringHelpers } from "../StringHelpers.sol";
 
 
 /**
  * @title Adapter for ERC20 tokens.
- * @dev Implementation of TokenAdapter interface function.
+ * @dev Implementation of TokenAdapter abstract contract function.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ERC20TokenAdapter is TokenAdapter {
+
+    using StringHelpers for bytes32;
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant SAI = 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359;
@@ -34,9 +37,9 @@ contract ERC20TokenAdapter is TokenAdapter {
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
-     * @dev Implementation of TokenAdapter interface function.
+     * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getMetadata(address token) external view override returns (TokenMetadata memory) {
+    function getMetadata(address token) public view override returns (TokenMetadata memory) {
         if (token == ETH) {
             return TokenMetadata({
                 token: ETH,
@@ -59,18 +62,13 @@ contract ERC20TokenAdapter is TokenAdapter {
                 decimals: uint8(8)
             });
         } else {
-            return TokenMetadata({
-                token: token,
-                name: getName(token),
-                symbol: getSymbol(token),
-                decimals: ERC20(token).decimals()
-            });
+            return super.getMetadata(token);
         }
     }
 
     /**
      * @return Empty Component array.
-     * @dev Implementation of TokenAdapter interface function.
+     * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address) external view override returns (Component[] memory) {
         return new Component[](0);
@@ -79,14 +77,14 @@ contract ERC20TokenAdapter is TokenAdapter {
     /**
      * @dev Internal function to get non-ERC20 token name.
      */
-    function getName(address token) internal view returns (string memory) {
+    function getName(address token) internal view override returns (string memory) {
         // solhint-disable-next-line avoid-low-level-calls
         (, bytes memory returnData) = token.staticcall(
             abi.encodeWithSelector(ERC20(token).name.selector)
         );
 
         if (returnData.length == 32) {
-            return convertToString(abi.decode(returnData, (bytes32)));
+            return abi.decode(returnData, (bytes32)).toString();
         } else {
             return abi.decode(returnData, (string));
         }
@@ -95,38 +93,16 @@ contract ERC20TokenAdapter is TokenAdapter {
     /**
      * @dev Internal function to get non-ERC20 token symbol.
      */
-    function getSymbol(address token) internal view returns (string memory) {
+    function getSymbol(address token) internal view override returns (string memory) {
         // solhint-disable-next-line avoid-low-level-calls
         (, bytes memory returnData) = token.staticcall(
             abi.encodeWithSelector(ERC20(token).symbol.selector)
         );
 
         if (returnData.length == 32) {
-            return convertToString(abi.decode(returnData, (bytes32)));
+            return abi.decode(returnData, (bytes32)).toString();
         } else {
             return abi.decode(returnData, (string));
         }
-    }
-
-    /**
-     * @dev Internal function to convert bytes32 to string.
-     */
-    function convertToString(bytes32 data) internal pure returns (string memory) {
-        uint256 length = 0;
-        bytes memory result;
-
-        for (uint256 i = 0; i < 32; i++) {
-            if (data[i] != byte(0)) {
-                length++;
-            }
-        }
-
-        result = new bytes(length);
-
-        for (uint256 i = 0; i < length; i++) {
-            result[i] = data[i];
-        }
-
-        return string(result);
     }
 }

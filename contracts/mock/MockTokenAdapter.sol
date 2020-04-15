@@ -28,9 +28,9 @@ contract MockTokenAdapter is TokenAdapter {
 
     /**
       * @return TokenMetadata struct with ERC20-style token info.
-      * @dev Implementation of TokenAdapter interface function.
+      * @dev Implementation of TokenAdapter abstract contract function.
       */
-    function getMetadata(address token) external view override returns (TokenMetadata memory) {
+    function getMetadata(address token) public view override returns (TokenMetadata memory) {
         return TokenMetadata({
             token: token,
             name: "Mock",
@@ -41,7 +41,7 @@ contract MockTokenAdapter is TokenAdapter {
 
     /**
      * @return Empty Component array.
-     * @dev Implementation of TokenAdapter interface function.
+     * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address) external view override returns (Component[] memory) {
         return new Component[](0);

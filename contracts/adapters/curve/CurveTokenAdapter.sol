@@ -36,7 +36,7 @@ interface stableswap {
 
 /**
  * @title Token adapter for Curve pool tokens.
- * @dev Implementation of TokenAdapter interface.
+ * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CurveTokenAdapter is TokenAdapter {
@@ -46,21 +46,8 @@ contract CurveTokenAdapter is TokenAdapter {
     address internal constant BUSD_POOL_TOKEN = 0x3B3Ac5386837Dc563660FB6a0937DFAa5924333B;
 
     /**
-     * @return TokenMetadata struct with ERC20-style token info.
-     * @dev Implementation of TokenAdapter interface function.
-     */
-    function getMetadata(address token) external view override returns (TokenMetadata memory) {
-        return TokenMetadata({
-            token: token,
-            name: string(abi.encodePacked(ERC20(token).symbol(), " pool")),
-            symbol: ERC20(token).symbol(),
-            decimals: ERC20(token).decimals()
-        });
-    }
-
-    /**
      * @return Array of Component structs with underlying tokens rates for the given token.
-     * @dev Implementation of TokenAdapter interface function.
+     * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
         (stableswap ss, uint256 length, string memory tokenType) = getPoolInfo(token);
@@ -75,6 +62,13 @@ contract CurveTokenAdapter is TokenAdapter {
         }
 
         return underlyingTokens;
+    }
+
+    /**
+     * @return Pool name.
+     */
+    function getName(address token) internal view override returns (string memory) {
+        return string(abi.encodePacked(ERC20(token).symbol(), " pool"));
     }
 
     /**

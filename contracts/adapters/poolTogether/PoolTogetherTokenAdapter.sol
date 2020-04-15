@@ -34,7 +34,7 @@ interface BasePool {
 
 /**
  * @title Token adapter for PoolTogether pools.
- * @dev Implementation of TokenAdapter interface.
+ * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract PoolTogetherTokenAdapter is TokenAdapter {
@@ -42,21 +42,8 @@ contract PoolTogetherTokenAdapter is TokenAdapter {
     address internal constant SAI_POOL = 0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84;
 
     /**
-     * @return TokenMetadata struct with ERC20-style token info.
-     * @dev Implementation of TokenAdapter interface function.
-     */
-    function getMetadata(address token) external view override returns (TokenMetadata memory) {
-        return TokenMetadata({
-            token: token,
-            name: getPoolName(token),
-            symbol: "PLT",
-            decimals: ERC20(BasePool(token).token()).decimals()
-        });
-    }
-
-    /**
      * @return Array of Component structs with underlying tokens rates for the given token.
-     * @dev Implementation of TokenAdapter interface function.
+     * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
         Component[] memory underlyingTokens = new Component[](1);
@@ -70,12 +57,34 @@ contract PoolTogetherTokenAdapter is TokenAdapter {
         return underlyingTokens;
     }
 
-    function getPoolName(address token) internal view returns (string memory) {
+    /**
+     * @return Pool name.
+     */
+    function getName(address token) internal view override returns (string memory) {
         if (token == SAI_POOL) {
             return "SAI pool";
         } else {
             address underlying = BasePool(token).token();
-            return string(abi.encodePacked(ERC20(underlying).symbol(), " pool"));
+            return string(
+                abi.encodePacked(
+                    ERC20(underlying).symbol(),
+                    " pool"
+                )
+            );
         }
+    }
+
+    /**
+     * @return Pool symbol.
+     */
+    function getSymbol(address) internal view override returns (string memory) {
+        return "PLT";
+    }
+
+    /**
+     * @return Pool decimals.
+     */
+    function getDecimals(address token) internal view override returns (uint8) {
+        return ERC20(BasePool(token).token()).decimals();
     }
 }

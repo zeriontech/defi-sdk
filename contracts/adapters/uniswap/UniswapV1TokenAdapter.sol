@@ -19,6 +19,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../ERC20.sol";
 import { TokenMetadata, Component } from "../../Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
+import { StringHelpers } from "../../StringHelpers.sol";
 
 
 /**
@@ -58,10 +59,12 @@ interface Factory {
 
 /**
  * @title Token adapter for Uniswap V1 pool tokens.
- * @dev Implementation of TokenAdapter interface.
+ * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract UniswapV1TokenAdapter is TokenAdapter {
+
+    using StringHelpers for bytes32;
 
     address internal constant FACTORY = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -69,21 +72,8 @@ contract UniswapV1TokenAdapter is TokenAdapter {
     address internal constant CSAI_POOL = 0x45A2FDfED7F7a2c791fb1bdF6075b83faD821ddE;
 
     /**
-     * @return TokenMetadata struct with ERC20-style token info.
-     * @dev Implementation of TokenAdapter interface function.
-     */
-    function getMetadata(address token) external view override returns (TokenMetadata memory) {
-        return TokenMetadata({
-            token: token,
-            name: getPoolName(token),
-            symbol: "UNI-V1",
-            decimals: uint8(Exchange(token).decimals())
-        });
-    }
-
-    /**
      * @return Array of Component structs with underlying tokens rates for the given token.
-     * @dev Implementation of TokenAdapter interface function.
+     * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
         address underlyingToken = Factory(FACTORY).getToken(token);
@@ -112,50 +102,47 @@ contract UniswapV1TokenAdapter is TokenAdapter {
         return underlyingTokens;
     }
 
-    function getPoolName(address token) internal view returns (string memory) {
+    /**
+     * @return Pool name.
+     */
+    function getName(address token) internal view override returns (string memory) {
         if (token == SAI_POOL) {
             return "SAI pool";
         } else if (token == CSAI_POOL) {
             return "cSAI pool";
         } else {
-            return string(abi.encodePacked(getSymbol(Factory(FACTORY).getToken(token)), " pool"));
+            return string(
+                abi.encodePacked(
+                    getUnderlyingSymbol(Factory(FACTORY).getToken(token)),
+                    " pool"
+                )
+            );
         }
     }
 
     /**
-     * @dev Internal function to get non-ERC20 token symbol.
+     * @return Pool symbol.
      */
-    function getSymbol(address token) internal view returns (string memory) {
+    function getSymbol(address) internal view override returns (string memory) {
+        return "UNI-V1";
+    }
+
+    /**
+     * @return Pool decimals.
+     */
+    function getDecimals(address token) internal view override returns (uint8) {
+        return uint8(Exchange(token).decimals());
+    }
+
+    function getUnderlyingSymbol(address token) internal view returns (string memory) {
         (, bytes memory returnData) = token.staticcall(
             abi.encodeWithSelector(ERC20(token).symbol.selector)
         );
 
         if (returnData.length == 32) {
-            return convertToString(abi.decode(returnData, (bytes32)));
+            return abi.decode(returnData, (bytes32)).toString();
         } else {
             return abi.decode(returnData, (string));
         }
-    }
-
-    /**
-     * @dev Internal function to convert bytes32 to string and trim zeroes.
-     */
-    function convertToString(bytes32 data) internal pure returns (string memory) {
-        uint256 length = 0;
-        bytes memory result;
-
-        for (uint256 i = 0; i < 32; i++) {
-            if (data[i] != byte(0)) {
-                length++;
-            }
-        }
-
-        result = new bytes(length);
-
-        for (uint256 i = 0; i < length; i++) {
-            result[i] = data[i];
-        }
-
-        return string(result);
     }
 }

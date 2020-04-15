@@ -36,7 +36,7 @@ interface CToken {
 
 /**
  * @title Token adapter for CTokens.
- * @dev Implementation of TokenAdapter interface.
+ * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CompoundTokenAdapter is TokenAdapter {
@@ -47,9 +47,9 @@ contract CompoundTokenAdapter is TokenAdapter {
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
-     * @dev Implementation of TokenAdapter interface function.
+     * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getMetadata(address token) external view override returns (TokenMetadata memory) {
+    function getMetadata(address token) public view override returns (TokenMetadata memory) {
         if (token == CSAI) {
             return TokenMetadata({
                 token: CSAI,
@@ -58,18 +58,13 @@ contract CompoundTokenAdapter is TokenAdapter {
                 decimals: uint8(8)
             });
         } else {
-            return TokenMetadata({
-                token: token,
-                name: ERC20(token).name(),
-                symbol: ERC20(token).symbol(),
-                decimals: ERC20(token).decimals()
-            });
+            return super.getMetadata(token);
         }
     }
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
-     * @dev Implementation of TokenAdapter interface function.
+     * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
         Component[] memory underlyingTokens = new Component[](1);

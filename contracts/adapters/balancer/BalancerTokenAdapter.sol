@@ -19,6 +19,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../ERC20.sol";
 import { TokenMetadata, Component } from "../../Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
+import { StringHelpers } from "../../StringHelpers.sol";
 
 
 /**
@@ -47,28 +48,17 @@ interface BPool {
 
 /**
  * @title Token adapter for Balancer pool tokens.
- * @dev Implementation of TokenAdapter interface.
+ * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract BalancerTokenAdapter is TokenAdapter {
 
-
-    /**
-     * @return TokenMetadata struct with ERC20-style token info.
-     * @dev Implementation of TokenAdapter interface function.
-     */
-    function getMetadata(address token) external view override returns (TokenMetadata memory) {
-        return TokenMetadata({
-            token: token,
-            name: getPoolName(token),
-            symbol: ERC20(token).symbol(),
-            decimals: ERC20(token).decimals()
-        });
-    }
+    using StringHelpers for bytes32;
+    using StringHelpers for uint256;
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
-     * @dev Implementation of TokenAdapter interface function.
+     * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
         address[] memory underlyingTokensAddresses;
@@ -103,7 +93,10 @@ contract BalancerTokenAdapter is TokenAdapter {
         return underlyingTokens;
     }
 
-    function getPoolName(address token) internal view returns (string memory) {
+    /**
+     * @return Pool name.
+     */
+    function getName(address token) internal view override returns (string memory) {
         address[] memory underlyingTokensAddresses;
         try BPool(token).getFinalTokens() returns (address[] memory result) {
             underlyingTokensAddresses = result;
@@ -125,65 +118,21 @@ contract BalancerTokenAdapter is TokenAdapter {
 
     function getPoolElement(address pool, address token) internal view returns (string memory) {
         return string(abi.encodePacked(
-            convertToString(BPool(pool).getNormalizedWeight(token) / 1e16),
+            (BPool(pool).getNormalizedWeight(token) / 1e16).toString(),
             "% ",
-            getSymbol(token)
+            getUnderlyingSymbol(token)
         ));
     }
 
-    function getSymbol(address token) internal view returns (string memory) {
+    function getUnderlyingSymbol(address token) internal view returns (string memory) {
         (, bytes memory returnData) = token.staticcall(
             abi.encodeWithSelector(ERC20(token).symbol.selector)
         );
 
         if (returnData.length == 32) {
-            return convertToString(abi.decode(returnData, (bytes32)));
+            return abi.decode(returnData, (bytes32)).toString();
         } else {
             return abi.decode(returnData, (string));
         }
-    }
-
-    /**
-     * @dev Internal function to convert bytes32 to string and trim zeroes.
-     */
-    function convertToString(bytes32 data) internal pure returns (string memory) {
-        uint256 length = 0;
-        bytes memory result;
-
-        for (uint256 i = 0; i < 32; i++) {
-            if (data[i] != bytes1(0)) {
-                length++;
-            }
-        }
-
-        result = new bytes(length);
-
-        for (uint256 i = 0; i < length; i++) {
-            result[i] = data[i];
-        }
-
-        return string(result);
-    }
-
-    /**
-     * @dev Internal function to convert uint256 to string and trim zeroes.
-     */
-    function convertToString(uint256 data) internal pure returns (string memory) {
-        uint256 length = 0;
-
-        uint256 dataCopy = data;
-        while (dataCopy != 0){
-            length++;
-            dataCopy /= 10;
-        }
-
-        bytes memory result = new bytes(length);
-        dataCopy = data;
-        for (uint256 i = length - 1; i < length; i--) {
-            result[i] = bytes1(uint8(48 + dataCopy % 10));
-            dataCopy /= 10;
-        }
-
-        return string(result);
     }
 }
