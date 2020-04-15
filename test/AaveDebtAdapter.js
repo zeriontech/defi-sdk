@@ -55,7 +55,7 @@ contract('AaveDebtAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Aave'],
+      [web3.utils.toHex('Aave')],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -90,7 +90,7 @@ contract('AaveDebtAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20'],
+      [web3.utils.toHex('ERC20')],
       [erc20TokenAdapterAddress],
     )
       .send({

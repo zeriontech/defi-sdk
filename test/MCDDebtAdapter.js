@@ -29,7 +29,7 @@ contract('MCDDebtAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['MCD'],
+      [web3.utils.toHex('MCD')],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -49,7 +49,7 @@ contract('MCDDebtAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20'],
+      [web3.utils.toHex('ERC20')],
       [tokenAdapterAddress],
     )
       .send({

@@ -6,6 +6,7 @@ import { InteractiveAdapter } from "./interactiveAdapters/InteractiveAdapter.sol
 import { ProtocolAdapter } from "./adapters/ProtocolAdapter.sol";
 import { ERC20 } from "./ERC20.sol";
 import { SignatureVerifier } from "./SignatureVerifier.sol";
+import { Ownable } from "./Ownable.sol";
 import { AdapterRegistry } from "./AdapterRegistry.sol";
 import { TokenSpender } from "./TokenSpender.sol";
 import { SafeERC20 } from "./SafeERC20.sol";
@@ -15,7 +16,7 @@ import { Strings } from "./Strings.sol";
 /**
  * @title Main contract executing actions.
  */
-contract Logic is SignatureVerifier {
+contract Logic is SignatureVerifier, Ownable {
     using SafeERC20 for ERC20;
     using Strings for string;
 
@@ -36,22 +37,22 @@ contract Logic is SignatureVerifier {
     // solhint-disable-next-line no-empty-blocks
     receive() external payable {}
 
-//    /**
-//     * @notice Execute actions on signer's behalf.
-//     * @param actions Array with actions.
-//     * @param approvals Array with tokens approvals for the actions.
-//     * @param signatures Array with signatures for the approvals.
-//     */
-//     function executeActions(
-//         Action[] memory actions,
-//         Approval[] memory approvals,
-//         bytes[] memory signatures
-//     )
-//         public
-//         payable
-//     {
-//         executeActions(actions, approvals, getUserFromSignatures(approvals, signatures));
-//     }
+    /**
+     * @notice Execute actions on signer's behalf.
+     * @param actions Array with actions.
+     * @param approvals Array with tokens approvals for the actions.
+     * @param signatures Array with signatures for the approvals.
+     */
+     function executeActions(
+         Action[] memory actions,
+         Approval[] memory approvals,
+         bytes[] memory signatures
+     )
+         public
+         payable
+     {
+         executeActions(actions, approvals, getUserFromSignatures(approvals, signatures));
+     }
 
     /**
      * @notice Execute actions on `msg.sender`'s behalf.
@@ -140,15 +141,15 @@ contract Logic is SignatureVerifier {
     )
         internal
     {
-        ERC20 asset;
-        uint256 assetBalance;
+        ERC20 token;
+        uint256 tokenBalance;
 
         for (uint256 i = 0; i < tokensToBeWithdrawn.length; i++) {
             for(uint256 j = 0; j < tokensToBeWithdrawn[i].length; j++) {
-                asset = ERC20(tokensToBeWithdrawn[i][j]);
-                assetBalance = asset.balanceOf(address(this));
-                if (assetBalance > 0) {
-                    asset.safeTransfer(user, assetBalance);
+                token = ERC20(tokensToBeWithdrawn[i][j]);
+                tokenBalance = token.balanceOf(address(this));
+                if (tokenBalance > 0) {
+                    token.safeTransfer(user, tokenBalance);
                 }
             }
         }
@@ -156,6 +157,21 @@ contract Logic is SignatureVerifier {
         uint256 ethBalance = address(this).balance;
         if (ethBalance > 0) {
             user.transfer(ethBalance);
+        }
+    }
+
+    function returnLostTokens(
+        address token
+    )
+        external
+        onlyOwner
+    {
+        uint256 tokenBalance = ERC20(token).balanceOf(address(this));
+        ERC20(token).safeTransfer(msg.sender, tokenBalance);
+
+        uint256 ethBalance = address(this).balance;
+        if (ethBalance > 0) {
+            msg.sender.transfer(ethBalance);
         }
     }
 }

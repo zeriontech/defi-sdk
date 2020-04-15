@@ -20,4 +20,4 @@ else
 fi
 
 # Run the truffle test or the solidity-coverage suite.
-node --max-old-space-size=4096 ./node_modules/.bin/truffle test "$@" --debug
+node --max-old-space-size=4096 ./node_modules/.bin/truffle test "$@"

@@ -64,7 +64,7 @@ contract('PoolTogetherAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['PoolTogether'],
+      [web3.utils.toHex('PoolTogether')],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -86,7 +86,7 @@ contract('PoolTogetherAdapter', () => {
         gasLimit: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20', 'PoolTogether pool'],
+      [web3.utils.toHex('ERC20'), web3.utils.toHex('PoolTogether pool')],
       [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({

@@ -34,7 +34,7 @@ contract('ZrxAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Zrx'],
+      [web3.utils.toHex('Zrx')],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -54,7 +54,7 @@ contract('ZrxAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20'],
+      [web3.utils.toHex('ERC20')],
       [tokenAdapterAddress],
     )
       .send({

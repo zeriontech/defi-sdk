@@ -138,7 +138,7 @@ contract('UniswapV1Adapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Uniswap V1'],
+      [web3.utils.toHex('Uniswap V1')],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -165,7 +165,11 @@ contract('UniswapV1Adapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20', 'Uniswap V1 pool token', 'CToken'],
+      [
+        web3.utils.toHex('ERC20'),
+        web3.utils.toHex('Uniswap V1 pool token'),
+        web3.utils.toHex('CToken'),
+      ],
       [erc20TokenAdapterAddress, tokenAdapterAddress, cTokenAdapterAddress],
     )
       .send({

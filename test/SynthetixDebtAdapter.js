@@ -34,7 +34,7 @@ contract('SynthetixDebtAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Synthetix'],
+      [web3.utils.toHex('Synthetix')],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -54,7 +54,7 @@ contract('SynthetixDebtAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20'],
+      [web3.utils.toHex('ERC20')],
       [erc20TokenAdapterAddress],
     )
       .send({

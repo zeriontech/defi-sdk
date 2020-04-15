@@ -34,7 +34,7 @@ contract('ERC20TokenAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Mock'],
+      [web3.utils.toHex('Mock')],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -54,7 +54,7 @@ contract('ERC20TokenAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20'],
+      [web3.utils.toHex('ERC20')],
       [erc20TokenAdapterAddress],
     )
       .send({

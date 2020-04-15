@@ -52,7 +52,7 @@ contract('IearnAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Iearn'],
+      [web3.utils.toHex('Iearn')],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -77,7 +77,7 @@ contract('IearnAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20', 'YToken'],
+      [web3.utils.toHex('ERC20'), web3.utils.toHex('YToken')],
       [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({
@@ -97,7 +97,7 @@ contract('IearnAdapter', () => {
 
   it('should not fail if token adapter is missing', async () => {
     await adapterRegistry.methods.removeTokenAdapters(
-      ['YToken'],
+      [web3.utils.toHex('YToken')],
     )
       .send({
         from: accounts[0],

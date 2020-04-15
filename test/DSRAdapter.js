@@ -35,7 +35,7 @@ contract('DSRAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['DSR'],
+      [web3.utils.toHex('DSR')],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -55,7 +55,7 @@ contract('DSRAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20'],
+      [web3.utils.toHex('ERC20')],
       [tokenAdapterAddress],
     )
       .send({

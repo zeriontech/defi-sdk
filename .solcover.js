@@ -3,7 +3,6 @@ require('dotenv').config();
 module.exports = {
   skipFiles: [
     'Migrations.sol',
-    'Logic.sol',
     'SignatureVerifier.sol',
   ],
   providerOptions: {

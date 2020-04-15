@@ -98,7 +98,7 @@ contract('CurveAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Curve'],
+      [web3.utils.toHex('Curve')],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -120,7 +120,12 @@ contract('CurveAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20', 'Curve pool token', 'CToken', 'YToken'],
+      [
+        web3.utils.toHex('ERC20'),
+        web3.utils.toHex('Curve pool token'),
+        web3.utils.toHex('CToken'),
+        web3.utils.toHex('YToken'),
+      ],
       [erc20TokenAdapterAddress, tokenAdapterAddress, cTokenAdapterAddress, yTokenAdapterAddress],
     )
       .send({
@@ -157,8 +162,8 @@ contract('CurveAdapter', () => {
   });
 
   it('should return correct full unit', async () => {
-    await adapterRegistry.methods['getFullTokenBalance(string,address)'](
-      'Curve pool token',
+    await adapterRegistry.methods['getFullTokenBalance(bytes32,address)'](
+      web3.utils.toHex('Curve pool token'),
       ssCompoundTokenAddress,
     )
       .call()
@@ -169,8 +174,8 @@ contract('CurveAdapter', () => {
   });
 
   it('should return correct final full unit', async () => {
-    await adapterRegistry.methods['getFinalFullTokenBalance(string,address)'](
-      'Curve pool token',
+    await adapterRegistry.methods['getFinalFullTokenBalance(bytes32,address)'](
+      web3.utils.toHex('Curve pool token'),
       ssCompoundTokenAddress,
     )
       .call()

@@ -42,7 +42,7 @@ contract('IdleAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Idle'],
+      [web3.utils.toHex('Idle')],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -63,7 +63,7 @@ contract('IdleAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20', 'IdleToken'],
+      [web3.utils.toHex('ERC20'), web3.utils.toHex('IdleToken')],
       [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({

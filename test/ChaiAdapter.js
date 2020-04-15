@@ -47,7 +47,7 @@ contract('ChaiAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Chai'],
+      [web3.utils.toHex('Chai')],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -65,7 +65,7 @@ contract('ChaiAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20', 'Chai token'],
+      [web3.utils.toHex('ERC20'), web3.utils.toHex('Chai token')],
       [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({
@@ -85,8 +85,8 @@ contract('ChaiAdapter', () => {
   });
 
   it('should return correct full unit', async () => {
-    await adapterRegistry.methods['getFinalFullTokenBalance(string,address)'](
-      'Chai token',
+    await adapterRegistry.methods['getFinalFullTokenBalance(bytes32,address)'](
+      web3.utils.toHex('Chai token'),
       chaiAddress,
     )
       .call()
