@@ -20,6 +20,7 @@ import { ERC20 } from "../../ERC20.sol";
 import { TokenMetadata, Component } from "../../Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
+
 /**
  * @dev IDmmToken contract interface.
  * Only the functions required for DmmTokenAdapter contract are added.
@@ -68,8 +69,7 @@ contract DmmTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        IDmmController controller = IDmmToken(token).controller();
-        address underlying = controller.getUnderlyingTokenForDmm(token);
+        address underlying = IDmmToken(token).controller().getUnderlyingTokenForDmm(token);
         uint rate = controller.getExchangeRate(token);
 
         Component[] memory underlyingTokens = new Component[](1);

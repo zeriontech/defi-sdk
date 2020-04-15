@@ -303,7 +303,7 @@ module.exports = async (deployer, network, accounts) => {
       adapters[4].push(DmmAssetAdapter.address);
       tokens[4].push(dmmAssetAdapterTokens);
     });
-  protocolNames.push('DMM');
+  protocolNames.push('DeFi Money Market');
   metadata.push([
     'DMM',
     'Earn interest on crypto through revenue-producing real world assets',
