@@ -69,17 +69,12 @@ contract DmmTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        address underlying = IDmmToken(token).controller().getUnderlyingTokenForDmm(token);
-        uint rate = IDmmToken(token).controller().getExchangeRate(token);
-
         Component[] memory underlyingTokens = new Component[](1);
-
         underlyingTokens[0] = Component({
-            token: underlying,
+            token: IDmmToken(token).controller().getUnderlyingTokenForDmm(token),
             tokenType: "ERC20",
-            rate: rate
+            rate: IDmmToken(token).controller().getExchangeRate(token)
         });
-
         return underlyingTokens;
     }
 }
