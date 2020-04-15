@@ -384,7 +384,9 @@ abstract contract ProtocolManager is Ownable {
     )
         internal
     {
-        require(adapter != address(0), "PM: zero!");
+        if (adapter == address(0)) {
+            require(tokens.length == 0, "PM: tokens for zero adapter!");
+        }
         require(supportedTokens[adapter].length == 0, "PM: exists!");
 
         protocolAdapters[protocolName].push(adapter);

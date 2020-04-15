@@ -187,6 +187,16 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         view
         returns (AdapterBalance memory)
     {
+        if (adapter == address(0)) {
+            return AdapterBalance({
+                metadata: AdapterMetadata({
+                    adapterAddress: address(0),
+                    adapterType: bytes32(0)
+                }),
+                balances: new FullTokenBalance[](0)
+            });
+        }
+
         bytes32 tokenType = ProtocolAdapter(adapter).tokenType();
         uint256[] memory amounts = new uint256[](tokens.length);
         uint256 counter;
