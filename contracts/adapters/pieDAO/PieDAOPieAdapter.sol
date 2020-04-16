@@ -29,7 +29,7 @@ contract PieDAOPieAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "PieDAO Pie token";
+    string public constant override tokenType = "PieDAO Pie Token";
 
     /**
      * @return Amount of PieDAO pool tokens held by the given account.

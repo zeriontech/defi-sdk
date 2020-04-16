@@ -6,13 +6,13 @@ const TokenAdapter = artifacts.require('./PieDAOPieTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
 contract('PieDAOPieAdapter', () => {
-  const BTCPPAddress = '0x0327112423f3a68efdf1fcf402f6c5cb9f7c33fd';
-  const wbtcAddress = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
-  const pbtcAddress = '0x5228a22e72ccc52d415ecfd199f99d0665e7733b';
+  const BTCPPAddress = '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd';
+  const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
+  const pbtcAddress = '0x5228a22e72ccC52d415EcFd199F99D0665E7733b';
   const imbtcAddress = '0x3212b29E33587A00FB1C83346f5dBFA69A458923';
   const sbtcAddress = '0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6';
   
-  const testAddress = '0xd4dbf96db2fdf8ed40296d8d104b371adf7dee12';
+  const testAddress = '0xd4DBF96Db2FDf8ED40296d8d104b371aDF7dEE12';
 
   let accounts;
   let adapterRegistry;
