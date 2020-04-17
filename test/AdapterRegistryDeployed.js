@@ -19,6 +19,7 @@ contract.skip('AdapterRegistry deployed', () => {
           [
             '0x Staking',
             'Uniswap V1',
+            'TokenSets',
             'Synthetix',
             'PoolTogether',
             'Multi-Collateral Dai',
@@ -41,6 +42,7 @@ contract.skip('AdapterRegistry deployed', () => {
           result,
           [
             'Uniswap V1 pool token',
+            'SetToken',
             'PoolTogether pool',
             'Chai token',
             'YToken',

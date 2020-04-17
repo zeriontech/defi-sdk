@@ -16,6 +16,7 @@ const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
+const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
 const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
@@ -28,6 +29,7 @@ const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
+const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 
@@ -231,21 +233,15 @@ const zrxAdapterTokens = [
 
 let protocolNames = [];
 let metadata = [];
-let adapters = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], []];
-let tokens = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], []];
+let adapters = [];
+let tokens = [];
 let tokenAdapters = [];
 
 module.exports = async (deployer, network, accounts) => {
-  await deployer.deploy(AaveAssetAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[0].push(AaveAssetAdapter.address);
-      tokens[0].push(aaveAssetAdapterTokens);
-    });
-  await deployer.deploy(AaveDebtAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[0].push(AaveDebtAdapter.address);
-      tokens[0].push(aaveDebtAdapterTokens);
-    });
+  await deployer.deploy(AaveAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(AaveDebtAdapter, { from: accounts[0] });
+  adapters.push([AaveAssetAdapter.address, AaveDebtAdapter.address]);
+  tokens.push([aaveAssetAdapterTokens, aaveDebtAdapterTokens]);
   protocolNames.push('Aave');
   metadata.push([
     'Aave',
@@ -254,11 +250,10 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/aave.png',
     '0',
   ]);
-  await deployer.deploy(BalancerAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[1].push(BalancerAdapter.address);
-      tokens[1].push([]);
-    });
+
+  await deployer.deploy(BalancerAdapter, { from: accounts[0] });
+  adapters.push([BalancerAdapter.address]);
+  tokens.push([[]]);
   protocolNames.push('Balancer');
   metadata.push([
     'Balancer',
@@ -267,16 +262,11 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/balancer.png',
     '0',
   ]);
-  await deployer.deploy(CompoundAssetAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[2].push(CompoundAssetAdapter.address);
-      tokens[2].push(compoundAssetAdapterTokens);
-    });
-  await deployer.deploy(CompoundDebtAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[2].push(CompoundDebtAdapter.address);
-      tokens[2].push(compoundDebtAdapterTokens);
-    });
+
+  await deployer.deploy(CompoundAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(CompoundDebtAdapter, { from: accounts[0] });
+  adapters.push([CompoundAssetAdapter.address, CompoundDebtAdapter.address]);
+  token.push([compoundAssetAdapterTokens, compoundDebtAdapterTokens]);
   protocolNames.push('Compound');
   metadata.push([
     'Compound',
@@ -285,11 +275,10 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/compound.png',
     '0',
   ]);
-  await deployer.deploy(CurveAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[3].push(CurveAdapter.address);
-      tokens[3].push(curveAdapterTokens);
-    });
+
+  await deployer.deploy(CurveAdapter, { from: accounts[0] });
+  adapters.push([CurveAdapter.address]);
+  tokens.push([curveAdapterTokens]);
   protocolNames.push('Curve');
   metadata.push([
     'Curve',
@@ -298,29 +287,23 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/curve.fi.png',
     '0',
   ]);
-  await deployer.deploy(DmmAssetAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[4].push(DmmAssetAdapter.address);
-      tokens[4].push(dmmAssetAdapterTokens);
-    });
-  protocolNames.push('DMM');
+
+  await deployer.deploy(DmmAssetAdapter, { from: accounts[0] });
+  adapters.push(DmmAssetAdapter.address);
+  tokens.push(dmmAssetAdapterTokens);
+  protocolNames.push('DeFi Money Market');
   metadata.push([
-    'DMM',
+    'DeFi Money Market',
     'Earn interest on crypto through revenue-producing real world assets',
     'defimoneymarket.com',
-    'defimoneymarket.com/dmm-logo-square.png',
+    'protocol-icons.s3.amazonaws.com/DMM.png',
     '0',
   ]);
-  await deployer.deploy(DyDxAssetAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[4].push(DyDxAssetAdapter.address);
-      tokens[4].push(dydxAdapterTokens);
-    });
-  await deployer.deploy(DyDxDebtAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[4].push(DyDxDebtAdapter.address);
-      tokens[4].push(dydxAdapterTokens);
-    });
+
+  await deployer.deploy(DyDxAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(DyDxDebtAdapter, { from: accounts[0] });
+  adapters.push([DyDxAssetAdapter.address, DyDxDebtAdapter.address]);
+  tokens.push([dydxAdapterTokens, dydxAdapterTokens]);
   protocolNames.push('dYdX');
   metadata.push([
     'dYdX',
@@ -329,11 +312,10 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/dYdX.png',
     '0',
   ]);
-  await deployer.deploy(IdleAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[5].push(IdleAdapter.address);
-      tokens[5].push(idleAdapterTokens);
-    });
+
+  await deployer.deploy(IdleAdapter, { from: accounts[0] });
+  adapters.push([IdleAdapter.address]);
+  tokens.push([idleAdapterTokens]);
   protocolNames.push('Idle');
   metadata.push([
     'Idle',
@@ -342,11 +324,10 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/idle.png',
     '0',
   ]);
-  await deployer.deploy(IearnAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[6].push(IearnAdapter.address);
-      tokens[6].push(iearn2AdapterTokens);
-    });
+
+  await deployer.deploy(IearnAdapter, { from: accounts[0] });
+  adapters.push([IearnAdapter.address]);
+  tokens.push([iearn2AdapterTokens]);
   protocolNames.push('iearn.finance (v2)');
   metadata.push([
     'iearn.finance (v2)',
@@ -355,11 +336,10 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/iearn.png',
     '0',
   ]);
-  await deployer.deploy(IearnAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[7].push(IearnAdapter.address);
-      tokens[7].push(iearn3AdapterTokens);
-    });
+
+  await deployer.deploy(IearnAdapter, { from: accounts[0] });
+  adapters.push([IearnAdapter.address]);
+  tokens.push([iearn3AdapterTokens]);
   protocolNames.push('iearn.finance (v3)');
   metadata.push([
     'iearn.finance (v3)',
@@ -368,11 +348,10 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/iearn.png',
     '0',
   ]);
-  await deployer.deploy(ChaiAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[8].push(ChaiAdapter.address);
-      tokens[8].push(chaiAdapterTokens);
-    });
+
+  await deployer.deploy(ChaiAdapter, { from: accounts[0] });
+  adapters.push([ChaiAdapter.address]);
+  tokens.push([chaiAdapterTokens]);
   protocolNames.push('Chai');
   metadata.push([
     'Chai',
@@ -381,11 +360,10 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/chai.png',
     '0',
   ]);
-  await deployer.deploy(DSRAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[9].push(DSRAdapter.address);
-      tokens[9].push(dsrAdapterTokens);
-    });
+
+  await deployer.deploy(DSRAdapter, { from: accounts[0] });
+  adapters.push([DSRAdapter.address]);
+  tokens.push([dsrAdapterTokens]);
   protocolNames.push('Dai Savings Rate');
   metadata.push([
     'Dai Savings Rate',
@@ -394,16 +372,11 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/dai.png',
     '0',
   ]);
-  await deployer.deploy(MCDAssetAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[10].push(MCDAssetAdapter.address);
-      tokens[10].push(mcdAssetAdapterTokens);
-    });
-  await deployer.deploy(MCDDebtAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[10].push(MCDDebtAdapter.address);
-      tokens[10].push(mcdDebtAdapterTokens);
-    });
+
+  await deployer.deploy(MCDAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(MCDDebtAdapter, { from: accounts[0] });
+  adapters.push([MCDAssetAdapter.address, MCDDebtAdapter.address]);
+  tokens.push([mcdAssetAdapterTokens, mcdDebtAdapterTokens]);
   protocolNames.push('Multi-Collateral Dai');
   metadata.push([
     'Multi-Collateral Dai',
@@ -412,11 +385,10 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/maker.png',
     '0',
   ]);
-  await deployer.deploy(PoolTogetherAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[11].push(PoolTogetherAdapter.address);
-      tokens[11].push(poolTogetherAdapterTokens);
-    });
+
+  await deployer.deploy(PoolTogetherAdapter, { from: accounts[0] });
+  adapters.push([PoolTogetherAdapter.address]);
+  tokens.push([poolTogetherAdapterTokens]);
   protocolNames.push('PoolTogether');
   metadata.push([
     'PoolTogether',
@@ -425,16 +397,11 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/pooltogether.png',
     '0',
   ]);
-  await deployer.deploy(SynthetixAssetAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[12].push(SynthetixAssetAdapter.address);
-      tokens[12].push(synthetixAssetAdapterTokens);
-    });
-  await deployer.deploy(SynthetixDebtAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[12].push(SynthetixDebtAdapter.address);
-      tokens[12].push(synthetixDebtAdapterTokens);
-    });
+
+  await deployer.deploy(SynthetixAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(SynthetixDebtAdapter, { from: accounts[0] });
+  adapters.push([SynthetixAssetAdapter.address, SynthetixDebtAdapter.address]);
+  tokens.push([synthetixAssetAdapterTokens, synthetixDebtAdapterTokens]);
   protocolNames.push('Synthetix');
   metadata.push([
     'Synthetix',
@@ -443,11 +410,22 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/synthetix.png',
     '0',
   ]);
-  await deployer.deploy(UniswapV1Adapter, { from: accounts[0] })
-    .then(() => {
-      adapters[13].push(UniswapV1Adapter.address);
-      tokens[13].push([]);
-    });
+
+  await deployer.deploy(TokenSetsAdapter, { from: accounts[0] });
+  adapters.push([TokenSetsAdapter.address]);
+  tokens.push([[]]);
+  protocolNames.push('TokenSets');
+  metadata.push([
+    'TokenSets',
+    'Automated asset management strategies',
+    'tokensets.com',
+    'protocol-icons.s3.amazonaws.com/SET.png',
+    '0',
+  ]);
+
+  await deployer.deploy(UniswapV1Adapter, { from: accounts[0] });
+  adapters.push([UniswapV1Adapter.address]);
+  tokens.push([[]]);
   protocolNames.push('Uniswap V1');
   metadata.push([
     'Uniswap V1',
@@ -456,11 +434,10 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/Uniswap.png',
     '0',
   ]);
-  await deployer.deploy(ZrxAdapter, { from: accounts[0] })
-    .then(() => {
-      adapters[14].push(ZrxAdapter.address);
-      tokens[14].push(zrxAdapterTokens);
-    });
+
+  await deployer.deploy(ZrxAdapter, { from: accounts[0] });
+  adapters.push([ZrxAdapter.address]);
+  tokens.push([zrxAdapterTokens]);
   protocolNames.push('0x Staking');
   metadata.push([
     '0x Staking',
@@ -530,13 +507,19 @@ module.exports = async (deployer, network, accounts) => {
         PoolTogetherTokenAdapter.address,
       );
     });
+  await deployer.deploy(TokenSetsTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        TokenSetsTokenAdapter.address,
+      );
+    });
   await deployer.deploy(UniswapV1TokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
         UniswapV1TokenAdapter.address,
       );
     });
-  await AdapterRegistry.at('0x9A2FB998c6bd001B8D4f235a260640136159e496') // kovan
+  await AdapterRegistry.at('0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672')
     .then(async (registry) => {
       await registry.contract.methods.addProtocols(
         protocolNames,
@@ -555,10 +538,12 @@ module.exports = async (deployer, network, accounts) => {
           'Balancer pool token',
           'CToken',
           'Curve pool token',
+          'MToken',
           'IdleToken',
           'YToken',
           'Chai token',
           'PoolTogether pool',
+          'SetToken',
           'Uniswap V1 pool token',
         ],
         tokenAdapters,

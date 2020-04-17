@@ -1,5 +1,3 @@
-![](https://i.ibb.co/RC54SjL/defisdk.png)
-
 # DeFi SDK
 
 [![Build status](https://github.com/zeriontech/protocol-wrappers/workflows/build/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:build)
@@ -14,8 +12,9 @@
 
 If you have any questions about DeFi SDK, feel free to reach out to us on our [Discord server](https://go.zerion.io/discord).
 
-## Features
+![](https://i.ibb.co/RC54SjL/defisdk.png)
 
+## Features
 
 #### 💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, dYdX*, etc. 
 > How much debt does `0xdead..beef` have on Compound?
@@ -173,6 +172,7 @@ All the deployed contracts' addresses are available [here](../../wiki/Addresses)
 | [MCD](./contracts/adapters/maker) | Collateralized loans on Maker. | [Asset adapter](./contracts/adapters/maker/MCDAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/maker/MCDDebtAdapter.sol) | — |
 | [PoolTogether](./contracts/adapters/poolTogether) | Decentralized no-loss lottery. Supports SAI, DAI, and USDC pools. | [Asset adapter](./contracts/adapters/poolTogether/PoolTogetherAdapter.sol) | ["PoolTogether pool"](./contracts/adapters/poolTogether/PoolTogetherTokenAdapter.sol) |
 | [Synthetix](./contracts/adapters/synthetix) | Synthetic assets protocol. Asset adapter returns amount of SNX locked as collateral. | [Asset adapter](./contracts/adapters/synthetix/SynthetixAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/synthetix/SynthetixDebtAdapter.sol) | — |
+| [TokenSets](./contracts/adapters/tokenSets) | TokenSets. Automated asset management strategies. | [Asset adapter](./contracts/adapters/tokenSets/TokenSetsAdapter.sol) | ["SetToken"](./contracts/adapters/tokenSets/TokenSetsTokenAdapter.sol) |
 | [Uniswap V1](./contracts/adapters/uniswap) | Automated liquidity protocol. Top 30 pools are added to the **AdapterRegistry** contract, however  adapter supports all Uniswap pools. | [Asset adapter](./contracts/adapters/uniswap/UniswapV1Adapter.sol) supports all Uniswap pools | ["Uniswap V1 pool token"](./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol) |
 | [0x Staking](./contracts/adapters/zrx) | Liquidity rewards for staking ZRX. | [Asset adapter](./contracts/adapters/zrx/ZrxAdapter.sol) | — |
 

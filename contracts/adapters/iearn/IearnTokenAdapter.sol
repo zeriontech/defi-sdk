@@ -54,7 +54,7 @@ contract IearnTokenAdapter is TokenAdapter {
     }
 
     /**
-     * @return Array of Component structs with underlying tokens rates for the given asset.
+     * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
