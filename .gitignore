@@ -8,3 +8,4 @@ cache
 coverage.json
 .log
 .env
+ganache.log
