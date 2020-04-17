@@ -97,7 +97,7 @@ contract UniswapV1TokenAdapter is TokenAdapter {
             rate: token.balance * 1e18 / totalSupply
         });
 
-        try CToken(underlyingToken).isCToken() returns (bool) {
+        try CToken(underlyingToken).isCToken{gas: 2000}() returns (bool) {
             underlyingTokenType = "CToken";
         } catch {
             underlyingTokenType = "ERC20";
