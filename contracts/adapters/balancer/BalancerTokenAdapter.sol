@@ -22,6 +22,17 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 
 
 /**
+ * @dev CToken contract interface.
+ * Only the functions required for BalancerTokenAdapter contract are added.
+ * The CToken contract is available here
+ * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
+ */
+interface CToken {
+    function isCToken() external view returns (bool);
+}
+
+
+/**
  * @dev BPool contract interface.
  * Only the functions required for UniswapAdapter contract are added.
  * The BPool contract is available here
@@ -71,11 +82,20 @@ contract BalancerTokenAdapter is TokenAdapter {
 
         Component[] memory underlyingTokens = new Component[](underlyingTokensAddresses.length);
 
+        address underlyingToken;
+        string memory underlyingTokenType;
         for (uint256 i = 0; i < underlyingTokens.length; i++) {
-            address underlyingToken = underlyingTokensAddresses[i];
+            underlyingToken = underlyingTokensAddresses[i];
+
+            try CToken(underlyingToken).isCToken{gas: 2000}() returns (bool) {
+                underlyingTokenType = "CToken";
+            } catch {
+                underlyingTokenType = "ERC20";
+            }
+
             underlyingTokens[i] = Component({
                 token: underlyingToken,
-                tokenType: "ERC20",
+                tokenType: underlyingTokenType,
                 rate: BPool(token).getBalance(underlyingToken) * 1e18 / totalSupply
             });
         }
