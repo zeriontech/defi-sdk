@@ -80,6 +80,7 @@ contract ERC20TokenAdapter is TokenAdapter {
      * @dev Internal function to get non-ERC20 tokens' names.
      */
     function getName(address token) internal view returns (string memory) {
+        // solhint-disable-next-line avoid-low-level-calls
         (, bytes memory returnData) = token.staticcall(
             abi.encodeWithSelector(ERC20(token).name.selector)
         );
@@ -95,6 +96,7 @@ contract ERC20TokenAdapter is TokenAdapter {
      * @dev Internal function to get non-ERC20 tokens' symbols.
      */
     function getSymbol(address token) internal view returns (string memory) {
+        // solhint-disable-next-line avoid-low-level-calls
         (, bytes memory returnData) = token.staticcall(
             abi.encodeWithSelector(ERC20(token).symbol.selector)
         );

@@ -20,6 +20,7 @@ import { ERC20 } from "../../ERC20.sol";
 import { TokenMetadata, Component } from "../../Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
+
 /**
  * @dev SetToken contract interface.
  * Only the functions required for TokenSetsTokenAdapter contract are added.
@@ -31,6 +32,7 @@ interface SetToken {
     function naturalUnit() external view returns (uint256);
     function getComponents() external view returns(address[] memory);
 }
+
 
 /**
  * @dev RebalancingSetToken contract interface.

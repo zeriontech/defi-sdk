@@ -64,6 +64,7 @@ abstract contract TokenAdapterManager is Ownable {
             addTokenAdapter(tokenAdapterNames[i], adapters[i]);
         }
     }
+
     /**
      * @notice Removes token adapters.
      * The function is callable only by the owner.
