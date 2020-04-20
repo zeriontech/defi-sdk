@@ -31,6 +31,7 @@ contract.skip('AdapterRegistry deployed', () => {
             'dYdX',
             'Curve',
             'Compound',
+            'Bancor',
             'Aave',
           ],
         );
@@ -42,6 +43,7 @@ contract.skip('AdapterRegistry deployed', () => {
           result,
           [
             'Uniswap V1 pool token',
+            'SmartToken',
             'SetToken',
             'PoolTogether pool',
             'Chai token',
