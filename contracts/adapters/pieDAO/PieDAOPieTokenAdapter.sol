@@ -73,15 +73,17 @@ contract PieDAOPieTokenAdapter is TokenAdapter {
     function getComponents(address token) external view override returns (Component[] memory) {
         address[] memory underlyingTokensAddresses = IPieSmartPool(token).getTokens();
         uint256 totalSupply = ERC20(token).totalSupply();
+        BPool bPool = BPool(IPieSmartPool(token).getBPool());
 
         Component[] memory underlyingTokens = new Component[](underlyingTokensAddresses.length);
+        address underlyingToken;
 
         for (uint256 i = 0; i < underlyingTokens.length; i++) {
-            address underlyingToken = underlyingTokensAddresses[i];
+            underlyingToken = underlyingTokensAddresses[i];
             underlyingTokens[i] = Component({
                 token: underlyingToken,
                 tokenType: "ERC20",
-                rate: BPool(IPieSmartPool(token).getBPool()).getBalance(underlyingToken) * 1e18 / totalSupply
+                rate: bPool.getBalance(underlyingToken) * 1e18 / totalSupply
             });
         }
 

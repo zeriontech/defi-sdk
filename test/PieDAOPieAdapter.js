@@ -99,11 +99,10 @@ contract('PieDAOPieAdapter', () => {
       });
   });
 
-  it('should return correct balances', async () => {
+  it.only('should return correct balances', async () => {
     await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then((result) => {
-        // TODO fix test
         displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
         displayToken(result[0].adapterBalances[0].balances[0].underlying[1]);
         displayToken(result[0].adapterBalances[0].balances[0].underlying[2]);
