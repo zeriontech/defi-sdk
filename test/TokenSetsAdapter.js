@@ -9,9 +9,6 @@ contract('TokenSetsAdapter', () => {
   const ETH12DayEMACrossoverSet = '0x2c5a9980B41861D91D30d0E0271d1c093452DcA5';
   const BTCRangeBoundMinVolatilitySet = '0x81c55017F7Ce6E72451cEd49FF7bAB1e3DF64d0C';
 
-  const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
-  const saiAddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
-  const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
@@ -30,24 +27,6 @@ contract('TokenSetsAdapter', () => {
     'BTC Min Volatility Set',
     'BTCMINVOL',
     '18',
-  ];
-  const sai = [
-    saiAddress,
-    'Sai Stablecoin v1.0',
-    'SAI',
-    '18',
-  ];
-  const wbtc = [
-    wbtcAddress,
-    'Wrapped BTC',
-    'WBTC',
-    '8',
-  ];
-  const usdc = [
-    usdcAddress,
-    'USD//C',
-    'USDC',
-    '6',
   ];
 
   beforeEach(async () => {
@@ -109,10 +88,7 @@ contract('TokenSetsAdapter', () => {
         displayToken(result[0].adapterBalances[0].balances[1].underlying[0]);
         displayToken(result[0].adapterBalances[0].balances[1].underlying[1]);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, eth12);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, usdc);
         assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, btc);
-        assert.deepEqual(result[0].adapterBalances[0].balances[1].underlying[0].metadata, sai);
-        assert.deepEqual(result[0].adapterBalances[0].balances[1].underlying[1].metadata, wbtc);
       });
   });
 });
