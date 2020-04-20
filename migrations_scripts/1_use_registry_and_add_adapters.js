@@ -1,6 +1,7 @@
 const AaveAssetAdapter = artifacts.require('AaveAssetAdapter');
 const AaveDebtAdapter = artifacts.require('AaveDebtAdapter');
 const BalancerAdapter = artifacts.require('BalancerAdapter');
+const BancorAdapter = artifacts.require('BancorAdapter');
 const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
 const CompoundDebtAdapter = artifacts.require('CompoundDebtAdapter');
 const CurveAdapter = artifacts.require('CurveAdapter');
@@ -22,6 +23,7 @@ const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const AaveTokenAdapter = artifacts.require('AaveTokenAdapter');
 const BalancerTokenAdapter = artifacts.require('BalancerTokenAdapter');
+const BancorTokenAdapter = artifacts.require('BancorTokenAdapter');
 const CompoundTokenAdapter = artifacts.require('CompoundTokenAdapter');
 const CurveTokenAdapter = artifacts.require('CurveTokenAdapter');
 const DmmTokenAdapter = artifacts.require('DmmTokenAdapter');
@@ -263,10 +265,22 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(BancorAdapter, { from: accounts[0] });
+  adapters.push([BancorAdapter.address]);
+  tokens.push([[]]);
+  protocolNames.push('Bancor');
+  metadata.push([
+    'Bancor',
+    'Automated liquidity protocol',
+    'bancor.network',
+    'protocol-icons.s3.amazonaws.com/bancor.png',
+    '0',
+  ]);
+
   await deployer.deploy(CompoundAssetAdapter, { from: accounts[0] });
   await deployer.deploy(CompoundDebtAdapter, { from: accounts[0] });
   adapters.push([CompoundAssetAdapter.address, CompoundDebtAdapter.address]);
-  token.push([compoundAssetAdapterTokens, compoundDebtAdapterTokens]);
+  tokens.push([compoundAssetAdapterTokens, compoundDebtAdapterTokens]);
   protocolNames.push('Compound');
   metadata.push([
     'Compound',
@@ -355,7 +369,7 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('Chai');
   metadata.push([
     'Chai',
-    'A simple ERC20 wrapper over the Dai Savings Rate',
+    'A simple ERC20 wrapper over the Dai Savings Protocol',
     'chai.money',
     'protocol-icons.s3.amazonaws.com/chai.png',
     '0',
@@ -364,9 +378,9 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(DSRAdapter, { from: accounts[0] });
   adapters.push([DSRAdapter.address]);
   tokens.push([dsrAdapterTokens]);
-  protocolNames.push('Dai Savings Rate');
+  protocolNames.push('Dai Savings Protocol');
   metadata.push([
-    'Dai Savings Rate',
+    'Dai Savings Protocol',
     'Decentralized lending protocol',
     'makerdao.com',
     'protocol-icons.s3.amazonaws.com/dai.png',
@@ -465,6 +479,12 @@ module.exports = async (deployer, network, accounts) => {
         BalancerTokenAdapter.address,
       );
     });
+  await deployer.deploy(BancorTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        BancorTokenAdapter.address,
+      );
+    });
   await deployer.deploy(CompoundTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -529,7 +549,7 @@ module.exports = async (deployer, network, accounts) => {
       )
         .send({
           from: accounts[0],
-          gasLimit: '5000000',
+          gas: '5000000',
         });
       await registry.contract.methods.addTokenAdapters(
         [
@@ -544,13 +564,14 @@ module.exports = async (deployer, network, accounts) => {
           'Chai token',
           'PoolTogether pool',
           'SetToken',
+          'SmartToken',
           'Uniswap V1 pool token',
         ],
         tokenAdapters,
       )
         .send({
           from: accounts[0],
-          gasLimit: '5000000',
+          gas: '5000000',
         });
     });
 };

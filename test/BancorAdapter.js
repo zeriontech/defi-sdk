@@ -1,14 +1,14 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./TokenSetsAdapter');
-const TokenAdapter = artifacts.require('./TokenSetsTokenAdapter');
+const ProtocolAdapter = artifacts.require('./BancorAdapter');
+const TokenAdapter = artifacts.require('./BancorTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('TokenSetsAdapter', () => {
-  const ETH12DayEMACrossoverSet = '0x2c5a9980B41861D91D30d0E0271d1c093452DcA5';
-  const BTCRangeBoundMinVolatilitySet = '0x81c55017F7Ce6E72451cEd49FF7bAB1e3DF64d0C';
-
+contract('BalancerAdapter', () => {
+  const bntBethPoolAddress = '0xb1CD6e4153B2a390Cf00A6556b0fC1458C4A5533';
+  const bntAddress = '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C';
+  const bethAddress = '0xc0829421C1d260BD3cB3E0F06cfE2D52db2cE315';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
@@ -16,16 +16,22 @@ contract('TokenSetsAdapter', () => {
   let protocolAdapterAddress;
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
-  const eth12 = [
-    ETH12DayEMACrossoverSet,
-    'ETH 12 EMA Crossover Set',
-    'ETH12EMACO',
+  const bntBethPool = [
+    bntBethPoolAddress,
+    'BNT Smart Token Relay',
+    'ETHBNT',
     '18',
   ];
-  const btc = [
-    BTCRangeBoundMinVolatilitySet,
-    'BTC Min Volatility Set',
-    'BTCMINVOL',
+  const bnt = [
+    bntAddress,
+    'Bancor Network Token',
+    'BNT',
+    '18',
+  ];
+  const beth = [
+    bethAddress,
+    'Ether Token',
+    'ETH',
     '18',
   ];
 
@@ -48,7 +54,7 @@ contract('TokenSetsAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['TokenSets'],
+      ['Bancor'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -60,8 +66,7 @@ contract('TokenSetsAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        ETH12DayEMACrossoverSet,
-        BTCRangeBoundMinVolatilitySet,
+        bntBethPoolAddress,
       ]]],
     )
       .send({
@@ -69,7 +74,7 @@ contract('TokenSetsAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20', 'SetToken'],
+      ['ERC20', 'SmartToken'],
       [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({
@@ -84,11 +89,10 @@ contract('TokenSetsAdapter', () => {
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
         displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
-        displayToken(result[0].adapterBalances[0].balances[1].base);
-        displayToken(result[0].adapterBalances[0].balances[1].underlying[0]);
-        displayToken(result[0].adapterBalances[0].balances[1].underlying[1]);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, eth12);
-        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, btc);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[1]);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, bntBethPool);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, bnt);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[1].metadata, beth);
       });
   });
 });

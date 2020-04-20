@@ -59,7 +59,7 @@ module.exports = {
       },
     ],
     fork: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
-    gasLimit: 50000000,
+    gasLimit: 0x1fffffffffffff,
   },
   mocha: {
     enableTimeouts: false,
