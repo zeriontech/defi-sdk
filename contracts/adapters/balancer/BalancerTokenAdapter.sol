@@ -34,7 +34,7 @@ interface CToken {
 
 /**
  * @dev BPool contract interface.
- * Only the functions required for UniswapAdapter contract are added.
+ * Only the functions required for BalancerTokenAdapter contract are added.
  * The BPool contract is available here
  * github.com/balancer-labs/balancer-core/blob/master/contracts/BPool.sol.
  */
