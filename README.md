@@ -43,7 +43,7 @@ As of now, to get all cTokens along with a user's debt on Compound you need to p
 getProtocolBalances('0xdead...beef', ['Compound'])
 ```
 
-on the `api.zerion.eth` smart contract and get all borrowed and supplied tokens
+on the [api.zerion.eth](https://etherscan.io/address/0x06fe76b2f432fdfecaef1a7d4f6c3d41b5861672#code) smart contract and get all borrowed and supplied tokens
 
 ```javascript
 [{
