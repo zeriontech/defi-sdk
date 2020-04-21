@@ -15,7 +15,7 @@ contract('CompoundAssetAdapter', () => {
   const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
   const cWBTCAddress = '0xC11b1268C1A384e55C48c2391d8d480264A3A7F4';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-  const saiAddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359';
+  const repAddress = '0x1985365e9f78359a9B6AD760e32412f4a445E862';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
@@ -24,10 +24,10 @@ contract('CompoundAssetAdapter', () => {
   let protocolAdapterAddress;
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
-  const sai = [
-    saiAddress,
-    'Sai Stablecoin v1.0',
-    'SAI',
+  const rep = [
+    repAddress,
+    'Reputation',
+    'REP',
     '18',
   ];
   const dai = [
@@ -102,11 +102,11 @@ contract('CompoundAssetAdapter', () => {
     await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then((result) => {
+        displayToken(result[0].adapterBalances[0].balances[3].underlying[0]);
         displayToken(result[0].adapterBalances[0].balances[4].underlying[0]);
-        displayToken(result[0].adapterBalances[0].balances[5].underlying[0]);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, dai);
-        assert.deepEqual(result[0].adapterBalances[0].balances[3].underlying[0].metadata, sai);
-        assert.deepEqual(result[0].adapterBalances[0].balances[4].underlying[0].metadata, usdc);
+        assert.deepEqual(result[0].adapterBalances[0].balances[2].underlying[0].metadata, rep);
+        assert.deepEqual(result[0].adapterBalances[0].balances[3].underlying[0].metadata, usdc);
       });
   });
 });
