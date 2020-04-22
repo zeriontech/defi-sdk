@@ -7,7 +7,7 @@ const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;
-const RELATIVE_AMOUNT_BASE = 100;
+const RELATIVE_AMOUNT_BASE = '1000000000000000000';
 const EMPTY_BYTES = '0x';
 const ADAPTER_ASSET = 0;
 // const ADAPTER_DEBT = 1;
@@ -27,11 +27,11 @@ const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const Logic = artifacts.require('./Logic');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.skip('Logic', () => {
+contract.only('Logic', () => {
   const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-  const tusdAddress = '0x0000000000085d4780B73119b644AE5ecd22b376';
+  const usdcAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
   const daiUniAddress = '0x2a1530C4C41db0B0b2bB646CB5Eb1A67b7158667';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
@@ -467,6 +467,77 @@ contract.skip('Logic', () => {
         });
     });
 
+    it('should be correct 1split exchange (dai->usdc) with 100% DAI', async () => {
+      let DAI;
+      let daiAmount;
+      await ERC20.at(daiAddress)
+        .then((result) => {
+          DAI = result.contract;
+        });
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+          console.log(`DAI amount before is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
+        });
+      await DAI.methods['approve(address,uint256)'](tokenSpender, daiAmount)
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        });
+      let USDC;
+      await ERC20.at(usdcAddress)
+        .then((result) => {
+          USDC = result.contract;
+        });
+      await USDC.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`USDC amount before is ${new BN(result).div(new BN('10000')).toNumber() / 100}`);
+        });
+      console.log('calling logic with action...');
+      await logic.methods.executeActions(
+        [
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('OneSplit'),
+            ADAPTER_EXCHANGE,
+            [daiAddress],
+            [RELATIVE_AMOUNT_BASE],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', usdcAddress),
+          ],
+        ],
+        [
+          [daiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0],
+        ],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        });
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`DAI amount after is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
+        });
+      await USDC.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`USDC amount after is ${new BN(result).div(new BN('10000')).toNumber() / 100}`);
+        });
+      await DAI.methods['balanceOf(address)'](logic.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await USDC.methods['balanceOf(address)'](logic.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
     it('should be correct 1split exchange (eth->dai) with 0.01 ETH', async () => {
       let DAI;
       await ERC20.at(daiAddress)
@@ -510,77 +581,6 @@ contract.skip('Logic', () => {
       await web3.eth.getBalance(accounts[0])
         .then((result) => {
           console.log(`eth amount before is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
-        });
-    });
-
-    it('should be correct 1split exchange (dai->tusd) with 100% DAI', async () => {
-      let DAI;
-      let daiAmount;
-      await ERC20.at(daiAddress)
-        .then((result) => {
-          DAI = result.contract;
-        });
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          daiAmount = result;
-          console.log(`DAI amount before is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
-        });
-      await DAI.methods['approve(address,uint256)'](tokenSpender, daiAmount)
-        .send({
-          gas: 10000000,
-          from: accounts[0],
-        });
-      let TUSD;
-      await ERC20.at(tusdAddress)
-        .then((result) => {
-          TUSD = result.contract;
-        });
-      await TUSD.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`TUSD amount before is ${new BN(result).div(new BN('10000')).toNumber() / 100}`);
-        });
-      console.log('calling logic with action...');
-      await logic.methods.executeActions(
-        [
-          [
-            ACTION_DEPOSIT,
-            web3.utils.toHex('OneSplit'),
-            ADAPTER_EXCHANGE,
-            [daiAddress],
-            [RELATIVE_AMOUNT_BASE],
-            [AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', tusdAddress),
-          ],
-        ],
-        [
-          [daiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0],
-        ],
-      )
-        .send({
-          gas: 10000000,
-          from: accounts[0],
-        });
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`DAI amount after is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
-        });
-      await TUSD.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`TUSD amount after is ${new BN(result).div(new BN('10000')).toNumber() / 100}`);
-        });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
-        .call()
-        .then((result) => {
-          assert.equal(result, 0);
-        });
-      await TUSD.methods['balanceOf(address)'](logic.options.address)
-        .call()
-        .then((result) => {
-          assert.equal(result, 0);
         });
     });
 

@@ -18,7 +18,7 @@ const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const Logic = artifacts.require('./Logic');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.skip('Scenario DAI -> MKR pool', () => {
+contract.only('Scenario DAI -> MKR pool', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const mkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2';
   const mkrUniAddress = '0x2C4Bd064b998838076fa341A83d007FC2FA50957';

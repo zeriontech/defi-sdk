@@ -139,7 +139,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
             toToken,
             amount,
             uint256(1),
-            uint256(0x0cfdfe) // 0x0c0dfc to enable curve; 0x0cfdf0 to enable base exchanges;
+            uint256(0x0c0df0) // 0x0c0dfc to enable curve; 0x0cfdf0 to enable base exchanges;
         ) returns (uint256, uint256[] memory result) {
             distribution = result;
         } catch Error(string memory reason) {
@@ -155,7 +155,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
             amount,
             uint256(1),
             distribution,
-            uint256(0x0cfdfe) // 0x0c0dfc to enable curve; 0x0cfdf0 to enable base exchanges;
+            uint256(0x0c0df0) // 0x0c0dfc to enable curve; 0x0cfdf0 to enable base exchanges;
         ) {} catch Error(string memory reason) {
             revert(reason);
         } catch (bytes memory) {
