@@ -92,8 +92,8 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
         returns (address[] memory)
     {
         require(tokens.length == 2, "UIA: should be 2 tokens!");
-        require(amounts.length == 2,  "UIA: should be 2 amounts!");
-        require(amountTypes.length == 2,  "UIA: should be 2 types!");
+        require(amounts.length == 2, "UIA: should be 2 amounts!");
+        require(amountTypes.length == 2, "UIA: should be 2 types!");
         require(tokens[0] == ETH, "UIA: should be ETH!");
         address exchange = Factory(FACTORY).getExchange(tokens[1]);
         require(exchange != address(0), "UIA: no exchange!");
@@ -121,7 +121,7 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
     }
 
     /**
-     * @notice Withdraws tokens from the Compound protocol.
+     * @notice Withdraws tokens from the Uniswap pool.
      * @param tokens Array with one element - exchange address.
      * @param amounts Array with one element - UNI-token amount to be withdrawn.
      * @param amountTypes Array with one element - amount type.
@@ -141,7 +141,7 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
     {
         require(tokens.length == 1, "UIA: should be 1 token!");
         require(amounts.length == 1, "UIA: should be 1 amount!");
-        require(amountTypes.length == 1,  "UIA: should be 1 type!");
+        require(amountTypes.length == 1, "UIA: should be 1 type!");
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
 
