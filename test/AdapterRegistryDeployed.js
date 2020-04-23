@@ -1,4 +1,4 @@
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const AdapterRegistry = artifacts.require('AdapterRegistry');
 
 contract.skip('AdapterRegistry deployed', () => {
   let adapterRegistry;
@@ -22,6 +22,7 @@ contract.skip('AdapterRegistry deployed', () => {
             'TokenSets',
             'Synthetix',
             'PoolTogether',
+            'PieDAO',
             'Multi-Collateral Dai',
             'Dai Savings Protocol',
             'Chai',
@@ -48,6 +49,7 @@ contract.skip('AdapterRegistry deployed', () => {
             'SmartToken',
             'SetToken',
             'PoolTogether pool',
+            'PieDAO Pie Token',
             'Chai token',
             'YToken',
             'IdleToken',

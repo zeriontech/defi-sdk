@@ -14,6 +14,7 @@ const ChaiAdapter = artifacts.require('ChaiAdapter');
 const DSRAdapter = artifacts.require('DSRAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
+const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
@@ -30,6 +31,7 @@ const DmmTokenAdapter = artifacts.require('DmmTokenAdapter');
 const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
+const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
@@ -112,6 +114,8 @@ const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
 const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
 
 const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
+
+const BTCPPAddress = '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -217,6 +221,9 @@ const mcdAssetAdapterTokens = [
 ];
 const mcdDebtAdapterTokens = [
   daiAddress,
+];
+const pieDAOPieAdapterTokens = [
+  BTCPPAddress,
 ];
 const poolTogetherAdapterTokens = [
   saiPoolAddress,
@@ -412,6 +419,18 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(PieDAOPieAdapter, { from: accounts[0] });
+  adapters.push([PieDAOPieAdapter.address]);
+  tokens.push([pieDAOPieAdapterTokens]);
+  protocolNames.push('PieDAO');
+  metadata.push([
+    'PieDAO BTC++',
+    'BTC on Ethereum diversified',
+    'btc.piedao.org',
+    'protocol-icons.s3.us-east-1.amazonaws.com/piedao.png',
+    '0',
+  ]);
+
   await deployer.deploy(SynthetixAssetAdapter, { from: accounts[0] });
   await deployer.deploy(SynthetixDebtAdapter, { from: accounts[0] });
   adapters.push([SynthetixAssetAdapter.address, SynthetixDebtAdapter.address]);
@@ -519,6 +538,12 @@ module.exports = async (deployer, network, accounts) => {
     .then(() => {
       tokenAdapters.push(
         ChaiTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(PieDAOPieTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        PieDAOPieTokenAdapter.address,
       );
     });
   await deployer.deploy(PoolTogetherTokenAdapter, { from: accounts[0] })
