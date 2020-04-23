@@ -27,7 +27,7 @@ const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const Logic = artifacts.require('./Logic');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('Logic', () => {
+contract('Logic', () => {
   const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
