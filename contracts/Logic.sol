@@ -98,10 +98,10 @@ contract Logic is SignatureVerifier, Ownable {
     {
         address[][] memory tokensToBeWithdrawn = new address[][](actions.length + 1);
 
-        tokensToBeWithdrawn[0] = tokenSpender.issueTokens(approvals, user);
+        tokensToBeWithdrawn[actions.length] = tokenSpender.issueTokens(approvals, user);
 
         for (uint256 i = 0; i < actions.length; i++) {
-            tokensToBeWithdrawn[i + 1] = callInteractiveAdapter(actions[i]);
+            tokensToBeWithdrawn[i] = callInteractiveAdapter(actions[i]);
             emit ExecutedAction(i);
         }
 
@@ -161,12 +161,9 @@ contract Logic is SignatureVerifier, Ownable {
         uint256 tokenBalance;
 
         for (uint256 i = 0; i < tokensToBeWithdrawn.length; i++) {
-            for(uint256 j = 0; j < tokensToBeWithdrawn[i].length; j++) {
+            for (uint256 j = 0; j < tokensToBeWithdrawn[i].length; j++) {
                 token = ERC20(tokensToBeWithdrawn[i][j]);
-                tokenBalance = token.balanceOf(address(this));
-                if (tokenBalance > 0) {
-                    token.safeTransfer(user, tokenBalance);
-                }
+                token.safeTransfer(user, token.balanceOf(address(this)));
             }
         }
 

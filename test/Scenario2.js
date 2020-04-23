@@ -134,7 +134,7 @@ contract('Scenario ETH -> ETH/WBTC set', () => {
     await WBTC.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
-        console.log(`wbtc amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        console.log(`wbtc amount before is ${web3.utils.fromWei(result, 'gwei') * 10}`);
       });
     await SET.methods['balanceOf(address)'](accounts[0])
       .call()
@@ -144,25 +144,25 @@ contract('Scenario ETH -> ETH/WBTC set', () => {
     console.log('calling logic with actions...');
     await logic.methods.executeActions(
       [
-        // exchange 0.4 ETH to WBTC
-        [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('OneSplit'),
-          ADAPTER_EXCHANGE,
-          [ethAddress],
-          [web3.utils.toWei('0.5', 'ether')], // 50% = 0.4 ETH
-          [AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter('address', wbtcAddress),
-        ],
         // exchange 0.4 ETH to WETH
         [
           ACTION_DEPOSIT,
           web3.utils.toHex('OneSplit'),
           ADAPTER_EXCHANGE,
           [ethAddress],
-          [web3.utils.toWei('0.5', 'ether')], // 50% = 0.4 ETH
+          [web3.utils.toWei('0.5', 'ether')], // 100% of the remaining is 50% (= 0.4 ETH)
           [AMOUNT_RELATIVE],
           web3.eth.abi.encodeParameter('address', wethAddress),
+        ],
+        // exchange 0.4 ETH to WBTC
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('OneSplit'),
+          ADAPTER_EXCHANGE,
+          [ethAddress],
+          [web3.utils.toWei('1', 'ether')], // 50% = 0.4 ETH
+          [AMOUNT_RELATIVE],
+          web3.eth.abi.encodeParameter('address', wbtcAddress),
         ],
         // deposit to token set (1 full share of SetToken)
         [
@@ -214,7 +214,7 @@ contract('Scenario ETH -> ETH/WBTC set', () => {
     await WBTC.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
-        console.log(`wbtc amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        console.log(`wbtc amount after is ${web3.utils.fromWei(result, 'gwei') * 10}`);
       });
     await SET.methods['balanceOf(address)'](accounts[0])
       .call()
@@ -233,6 +233,10 @@ contract('Scenario ETH -> ETH/WBTC set', () => {
       });
     await SET.methods['balanceOf(address)'](logic.options.address)
       .call()
+      .then((result) => {
+        assert.equal(result, 0);
+      });
+    await web3.eth.getBalance(logic.options.address)
       .then((result) => {
         assert.equal(result, 0);
       });

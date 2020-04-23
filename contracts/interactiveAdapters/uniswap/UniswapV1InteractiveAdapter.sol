@@ -104,15 +104,19 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
         tokensToBeWithdrawn[1] = tokens[1];
 
         ERC20(tokens[1]).safeApprove(exchange, tokenAmount);
-        require(
-            Exchange(exchange).addLiquidity.value(ethAmount)(
-                uint256(1),
-                tokenAmount,
-                // solhint-disable-next-line not-rely-on-time
-                now + 1 hours
-            ) > 0,
-            "UIA: deposit failed!"
-        );
+        try Exchange(exchange).addLiquidity.value(ethAmount)(
+            uint256(1),
+            tokenAmount,
+            // solhint-disable-next-line not-rely-on-time
+            now + 1 hours
+        ) returns (uint256 addedLiquidity) {
+            require(addedLiquidity > 0, "UIA: deposit fail![1]");
+        } catch Error(string memory reason) {
+            revert(reason);
+        } catch (bytes memory) {
+            revert("UIA: deposit fail![2]");
+        }
+
         ERC20(tokens[1]).safeApprove(exchange, 0);
 
         return tokensToBeWithdrawn;
@@ -144,13 +148,17 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
         address[] memory tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = Factory(FACTORY).getToken(tokens[0]);
 
-        Exchange(tokens[0]).removeLiquidity(
+        try Exchange(tokens[0]).removeLiquidity(
             amount,
             uint256(1),
             uint256(1),
             // solhint-disable-next-line not-rely-on-time
             now + 1 hours
-        );
+        ) {} catch Error(string memory reason) {
+            revert(reason);
+        } catch (bytes memory) {
+            revert("UIA: withdraw fail!");
+        }
 
         return tokensToBeWithdrawn;
     }

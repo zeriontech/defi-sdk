@@ -104,11 +104,15 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         address[] memory tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = setAddress;
 
-        RebalancingSetIssuanceModule(ISSUANCE_MODULE).issueRebalancingSet(
+        try RebalancingSetIssuanceModule(ISSUANCE_MODULE).issueRebalancingSet(
             setAddress,
             setQuantity,
             false
-        );
+        ) {} catch Error(string memory reason) {
+            revert(reason);
+        } catch (bytes memory) {
+            revert("TSIA: tokenSet fail!");
+        }
 
         for (uint256 i = 0; i < tokens.length; i++) {
             ERC20(tokens[i]).safeApprove(TRANSFER_PROXY, 0);
@@ -144,11 +148,15 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         SetToken setToken = rebalancingSetToken.currentSet();
         address[] memory tokensToBeWithdrawn = setToken.getComponents();
 
-        issuanceModule.redeemRebalancingSet(
+        try issuanceModule.redeemRebalancingSet(
             tokens[0],
             amount,
             false
-        );
+        ) {} catch Error(string memory reason) {
+            revert(reason);
+        } catch (bytes memory) {
+            revert("TSIA: tokenSet fail!");
+        }
 
         return tokensToBeWithdrawn;
     }
