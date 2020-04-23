@@ -55,7 +55,7 @@ interface OneSplit {
 
 /**
  * @title Interactive adapter for OneSplit exchange.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
@@ -74,19 +74,17 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] calldata tokens,
-        uint256[] calldata amounts,
-        AmountType[] calldata amountTypes,
-        bytes calldata data
+        address[] memory tokens,
+        uint256[] memory amounts,
+        AmountType[] memory amountTypes,
+        bytes memory data
     )
-        external
+        public
         payable
         override
         returns (address[] memory)
     {
-        require(tokens.length == 1, "OSIA: should be 1 token!");
-        require(amounts.length == 1, "OSIA: should be 1 amount!");
-        require(amountTypes.length == 1, "OSIA: should be 1 type!");
+        require(tokens.length == 1, "OSIA: should be 1 token/amount/type!");
 
         uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
@@ -118,12 +116,12 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] calldata,
-        uint256[] calldata,
-        AmountType[] calldata,
-        bytes calldata
+        address[] memory,
+        uint256[] memory,
+        AmountType[] memory,
+        bytes memory
     )
-        external
+        public
         payable
         override
         returns (address[] memory)
@@ -139,7 +137,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
             toToken,
             amount,
             uint256(1),
-            uint256(0x0c0df0) // 0x0c0dfc to enable curve; 0x0cfdf0 to enable base exchanges;
+            uint256(0x040df0) // 0x040dfc to enable curve; 0x04fdf0 to enable base exchanges;
         ) returns (uint256, uint256[] memory result) {
             distribution = result;
         } catch Error(string memory reason) {
@@ -155,7 +153,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
             amount,
             uint256(1),
             distribution,
-            uint256(0x0c0df0) // 0x0c0dfc to enable curve; 0x0cfdf0 to enable base exchanges;
+            uint256(0x040df0) // 0x040dfc to enable curve; 0x04fdf0 to enable base exchanges;
         ) {} catch Error(string memory reason) {
             revert(reason);
         } catch (bytes memory) {

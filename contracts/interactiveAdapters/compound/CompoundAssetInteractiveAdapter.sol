@@ -34,7 +34,7 @@ interface CToken {
 
 /**
  * @title Interactive adapter for Compound protocol.
- * @dev Implementation of InteractiveAdapter interface.
+ * @dev Implementation of InteractiveAdapter abstract contract.
  */
 contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAdapter {
 
@@ -51,19 +51,17 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] calldata tokens,
-        uint256[] calldata amounts,
-        AmountType[] calldata amountTypes,
-        bytes calldata
+        address[] memory tokens,
+        uint256[] memory amounts,
+        AmountType[] memory amountTypes,
+        bytes memory
     )
-        external
+        public
         payable
         override
         returns (address[] memory)
     {
-        require(tokens.length == 1, "CAIA: should be 1 token!");
-        require(amounts.length == 1,  "CAIA: should be 1 amount!");
-        require(amountTypes.length == 1,  "CAIA: should be 1 type!");
+        require(tokens.length == 1, "CAIA: should be 1 token/amount/type!");
 
         uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
@@ -95,19 +93,17 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] calldata tokens,
-        uint256[] calldata amounts,
-        AmountType[] calldata amountTypes,
-        bytes calldata
+        address[] memory tokens,
+        uint256[] memory amounts,
+        AmountType[] memory amountTypes,
+        bytes memory
     )
-        external
+        public
         payable
         override
         returns (address[] memory)
     {
-        require(tokens.length == 1, "CAIA: should be 1 token!");
-        require(amounts.length == 1, "CAIA: should be 1 amount!");
-        require(amountTypes.length == 1,  "CAIA: should be 1 type!");
+        require(tokens.length == 1, "CAIA: should be 1 token/amount/type!");
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
 
@@ -126,19 +122,4 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
 
         return tokensToBeWithdrawn;
     }
-
-//    /**
-//     * @dev This implementation resolves the ambiguity due to inheritance.
-//     */
-//    function getBalance(
-//        address token,
-//        address account
-//    )
-//        public
-//        view
-//        override(InteractiveAdapter, CompoundAssetAdapter)
-//        returns (uint256)
-//    {
-//        return CompoundAssetAdapter.getBalance(token, account);
-//    }
 }

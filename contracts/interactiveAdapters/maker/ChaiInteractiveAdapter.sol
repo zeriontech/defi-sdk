@@ -22,7 +22,7 @@ interface Chai {
 
 /**
  * @title Interactive adapter for Chai contract.
- * @dev Implementation of InteractiveAdapter interface.
+ * @dev Implementation of InteractiveAdapter abstract contract.
  */
 contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
 
@@ -38,18 +38,17 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] calldata,
-        uint256[] calldata amounts,
-        AmountType[] calldata amountTypes,
-        bytes calldata
+        address[] memory,
+        uint256[] memory amounts,
+        AmountType[] memory amountTypes,
+        bytes memory
     )
-        external
+        public
         payable
         override
         returns (address[] memory)
     {
-        require(amounts.length == 1,  "CIA: should be 1 amount!");
-        require(amountTypes.length == 1,  "CIA: should be 1 type!");
+        require(amounts.length == 1,  "CIA: should be 1 token/amount/type!");
 
         uint256 amount = getAbsoluteAmountDeposit(DAI, amounts[0], amountTypes[0]);
         ERC20(DAI).safeApprove(CHAI, amount);
@@ -67,17 +66,17 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] calldata,
-        uint256[] calldata amounts,
-        AmountType[] calldata amountTypes,
-        bytes calldata
+        address[] memory,
+        uint256[] memory amounts,
+        AmountType[] memory amountTypes,
+        bytes memory
     )
-        external
+        public
         payable
         override
         returns (address[] memory)
     {
-        require(amounts.length == 1, "CIA: should be 1 amount!");
+        require(amounts.length == 1, "CIA: should be 1 token/amount/type!");
 
         uint256 amount = getAbsoluteAmountWithdraw(CHAI, amounts[0], amountTypes[0]);
         Chai(CHAI).exit(address(this), amount);

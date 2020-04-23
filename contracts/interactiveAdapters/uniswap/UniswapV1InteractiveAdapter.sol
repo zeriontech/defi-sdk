@@ -62,8 +62,8 @@ interface Factory {
 
 
 /**
- * @title Adapter for Uniswap V1 protocol.
- * @dev Implementation of ProtocolAdapter interface.
+ * @title Interactive adapter for Uniswap V1 protocol.
+ * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
@@ -81,19 +81,17 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] calldata tokens,
-        uint256[] calldata amounts,
-        AmountType[] calldata amountTypes,
-        bytes calldata
+        address[] memory tokens,
+        uint256[] memory amounts,
+        AmountType[] memory amountTypes,
+        bytes memory
     )
-        external
+        public
         payable
         override
         returns (address[] memory)
     {
-        require(tokens.length == 2, "UIA: should be 2 tokens!");
-        require(amounts.length == 2, "UIA: should be 2 amounts!");
-        require(amountTypes.length == 2, "UIA: should be 2 types!");
+        require(tokens.length == 2, "UIA: should be 2 tokens/amounts/types!");
         require(tokens[0] == ETH, "UIA: should be ETH!");
         address exchange = Factory(FACTORY).getExchange(tokens[1]);
         require(exchange != address(0), "UIA: no exchange!");
@@ -129,19 +127,17 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] calldata tokens,
-        uint256[] calldata amounts,
-        AmountType[] calldata amountTypes,
-        bytes calldata
+        address[] memory tokens,
+        uint256[] memory amounts,
+        AmountType[] memory amountTypes,
+        bytes memory
     )
-        external
+        public
         payable
         override
         returns (address[] memory)
     {
-        require(tokens.length == 1, "UIA: should be 1 token!");
-        require(amounts.length == 1, "UIA: should be 1 amount!");
-        require(amountTypes.length == 1, "UIA: should be 1 type!");
+        require(tokens.length == 1, "UIA: should be 1 token/amount/type!");
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
 

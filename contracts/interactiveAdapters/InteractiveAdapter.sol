@@ -37,12 +37,12 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
      * @return MUST return assets to be sent back to the `msg.sender`.
      */
     function deposit(
-        address[] calldata assets,
-        uint256[] calldata amounts,
-        AmountType[] calldata amountTypes,
-        bytes calldata data
+        address[] memory tokens,
+        uint256[] memory amounts,
+        AmountType[] memory amountTypes,
+        bytes memory data
     )
-        external
+        public
         payable
         virtual
         returns (address[] memory);
@@ -52,12 +52,12 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
      * @return MUST return assets to be sent back to the `msg.sender`.
      */
     function withdraw(
-        address[] calldata assets,
-        uint256[] calldata amounts,
-        AmountType[] calldata amountTypes,
-        bytes calldata data
+        address[] memory tokens,
+        uint256[] memory amounts,
+        AmountType[] memory amountTypes,
+        bytes memory data
     )
-        external
+        public
         payable
         virtual
         returns (address[] memory);
