@@ -169,7 +169,7 @@ contract('Scenario ETH -> ETH/WBTC set', () => {
           ACTION_DEPOSIT,
           web3.utils.toHex('TokenSets'),
           ADAPTER_ASSET,
-          [ethAddress, wbtcAddress],
+          [wethAddress, wbtcAddress],
           [RELATIVE_AMOUNT_BASE, RELATIVE_AMOUNT_BASE],
           [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
           web3.eth.abi.encodeParameters(['address', 'uint256'], [setAddress, web3.utils.toWei('1', 'ether')]),
