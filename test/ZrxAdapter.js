@@ -1,8 +1,8 @@
 import displayToken from './helpers/displayToken';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./ZrxAdapter');
-const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+const AdapterRegistry = artifacts.require('AdapterRegistry');
+const ProtocolAdapter = artifacts.require('ZrxAdapter');
+const TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('ZrxAdapter', () => {
   const zrxAddress = '0xE41d2489571d322189246DaFA5ebDe1F4699F498';

@@ -1,9 +1,9 @@
 import displayToken from './helpers/displayToken';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./PieDAOPieAdapter');
-const TokenAdapter = artifacts.require('./PieDAOPieTokenAdapter');
-const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+const AdapterRegistry = artifacts.require('AdapterRegistry');
+const ProtocolAdapter = artifacts.require('PieDAOPieAdapter');
+const TokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
+const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('PieDAOPieAdapter', () => {
   const BTCPPAddress = '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd';
@@ -11,7 +11,7 @@ contract('PieDAOPieAdapter', () => {
   const pbtcAddress = '0x5228a22e72ccC52d415EcFd199F99D0665E7733b';
   const imbtcAddress = '0x3212b29E33587A00FB1C83346f5dBFA69A458923';
   const sbtcAddress = '0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6';
-  
+
   const testAddress = '0xd4DBF96Db2FDf8ED40296d8d104b371aDF7dEE12';
 
   let accounts;
@@ -19,7 +19,7 @@ contract('PieDAOPieAdapter', () => {
   let protocolAdapterAddress;
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
-  
+
   const btcpp = [
     BTCPPAddress,
     'PieDAO BTC++',

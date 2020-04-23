@@ -1,8 +1,8 @@
 // import displayToken from './helpers/displayToken';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./SynthetixAssetAdapter');
-const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+const AdapterRegistry = artifacts.require('AdapterRegistry');
+const ProtocolAdapter = artifacts.require('SynthetixAssetAdapter');
+const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('ERC20TokenAdapter', () => {
   const badAddress = '0x101571584659dC31bF3E3E5E29F55D8BdfBAecEC';

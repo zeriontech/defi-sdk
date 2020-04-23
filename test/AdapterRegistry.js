@@ -1,8 +1,8 @@
 import expectRevert from './helpers/expectRevert';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./MockAdapter');
-const TokenAdapter = artifacts.require('./MockTokenAdapter');
+const AdapterRegistry = artifacts.require('AdapterRegistry');
+const ProtocolAdapter = artifacts.require('MockAdapter');
+const TokenAdapter = artifacts.require('MockTokenAdapter');
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 const ONE = '0x1111111111111111111111111111111111111111';
