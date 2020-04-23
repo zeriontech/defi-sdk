@@ -82,7 +82,7 @@ contract('PieDAOPieAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        BTCPPAddress
+        BTCPPAddress,
       ]]],
     )
       .send({
