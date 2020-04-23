@@ -1,4 +1,4 @@
-![](https://i.ibb.co/7QCQKPD/MEDIUM-FINAL.png)
+![](https://i.ibb.co/JFgRB6H/cover.png)
 [![Build status](https://github.com/zeriontech/protocol-wrappers/workflows/build/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:build)
 [![Test status](https://github.com/zeriontech/protocol-wrappers/workflows/test/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:test)
 [![Coverage status](https://github.com/zeriontech/protocol-wrappers/workflows/coverage/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:coverage)
@@ -11,15 +11,18 @@
 
 If you have any questions about DeFi SDK, feel free to reach out to us on our [Discord server](https://go.zerion.io/discord).
 
-![](https://i.ibb.co/RC54SjL/defisdk.png)
-
 ## Features
 
-#### 💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, dYdX*, etc. 
+#### 💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, dYdX*, etc.
+
 > How much debt does `0xdead..beef` have on Compound?
-#### 📊Get the underlying components of complex derivative ERC20 tokens 
+
+#### 📊Get the underlying components of complex derivative ERC20 tokens
+
 > How much `cUSDC` vs `ETH` does `ETHMACOAPY` have?
+
 #### ✨Interact with multiple DeFi protocols in a unified way (coming soon)
+
 > See [What’s next for DeFi SDK](#whats-next-for-defi-sdk-)
 
 ## Table of Contents
@@ -141,6 +144,10 @@ and obtain all balances for a given account. The response from the smart-contrac
 
 ## DeFi SDK Architecture
 
+<p align="center">
+  <img src="https://i.ibb.co/9WHj59L/architecture.png" width="650">
+</p>
+
 - **ProtocolAdapter** is a special contract for every protocol. Its main purpose is to wrap all the protocol interactions.
 There are different types of protocol adapters: "Asset" adapter returns the amount of the account's tokens held on the protocol and the "Debt" adapter returns the amount of the account's debt to the protocol. Some protocols do not use "simple" ERC20 tokens but instead have complex derivatives, for example the Compound protocol has CTokens. The **ProtocolAdapter** contract also provides information about the type of tokens used within it.
 - **TokenAdapter** is a contract for every derivative token type (e.g cTokens, aTokens, yTokens, etc.)
@@ -160,8 +167,8 @@ All the deployed contracts' addresses are available [here](../../wiki/Addresses)
 | Protocol Name | Description | Protocol Adapters | Token Adapters |
 | :-----------: | :---------: | :---------------: | :------------: |
 | [Aave](./contracts/adapters/aave) | Decentralized lending & borrowing protocol. | [Asset adapter](./contracts/adapters/aave/AaveAssetAdapter.sol) <br> [Debt adapter](contracts/adapters/aave/AaveDebtAdapter.sol) | ["AToken"](./contracts/adapters/aave/AaveTokenAdapter.sol) |
-| [Balancer](./contracts/adapters/balancer) | Non-custodial portfolio manager, liquidity provider, and price sensor. | [Asset adapter](./contracts/adapters/balancer/BalancerAdapter.sol) supports all Balancer pools | ["Balancer pool token"](./contracts/adapters/aave/BalancerTokenAdapter.sol) |
-| [Bancor](./contracts/adapters/bancor) | Automated liquidity protocol. | [Asset adapter](./contracts/adapters/bancor/BancorAdapter.sol) supports Bancor pools starting from version 11 | ["SmartToken"](./contracts/adapters/aave/BancorTokenAdapter.sol) |
+| [Balancer](./contracts/adapters/balancer) | Non-custodial portfolio manager, liquidity provider, and price sensor. | [Asset adapter](./contracts/adapters/balancer/BalancerAdapter.sol) supports all Balancer pools | ["Balancer pool token"](./contracts/adapters/balancer/BalancerTokenAdapter.sol) |
+| [Bancor](./contracts/adapters/bancor) | Automated liquidity protocol. | [Asset adapter](./contracts/adapters/bancor/BancorAdapter.sol) supports Bancor pools starting from version 11 | ["SmartToken"](./contracts/adapters/bancor/BancorTokenAdapter.sol) |
 | [Compound](./contracts/adapters/compound) | Decentralized lending & borrowing protocol. | [Asset adapter](./contracts/adapters/compound/CompoundAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/compound/CompoundDebtAdapter.sol) | ["CToken"](./contracts/adapters/compound/CompoundTokenAdapter.sol) |
 | [Curve](./contracts/adapters/curve) | Exchange liquidity pool for stablecoin trading. Supports Compound, Y, and BUSD pools. | [Asset adapter](./contracts/adapters/curve/CurveAdapter.sol) | ["Curve pool token"](contracts/adapters/curve/CurveTokenAdapter.sol) |
 | [DeFi Money Market](./contracts/adapters/dmm) | Crypto through revenue-producing real world assets. | [Asset adapter](./contracts/adapters/dmm/DmmAssetAdapter.sol) | ["MToken"](contracts/adapters/dmm/DmmTokenAdapter.sol) |
