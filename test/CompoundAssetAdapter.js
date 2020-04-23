@@ -1,9 +1,9 @@
 import displayToken from './helpers/displayToken';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./CompoundAssetAdapter');
-const TokenAdapter = artifacts.require('./CompoundTokenAdapter');
-const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+const AdapterRegistry = artifacts.require('AdapterRegistry');
+const ProtocolAdapter = artifacts.require('CompoundAssetAdapter');
+const TokenAdapter = artifacts.require('CompoundTokenAdapter');
+const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('CompoundAssetAdapter', () => {
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';

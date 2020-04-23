@@ -1,9 +1,9 @@
 import displayToken from './helpers/displayToken';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./MCDAssetAdapter');
-const DebtProtocolAdapter = artifacts.require('./MCDDebtAdapter');
-const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+const AdapterRegistry = artifacts.require('AdapterRegistry');
+const ProtocolAdapter = artifacts.require('MCDAssetAdapter');
+const DebtProtocolAdapter = artifacts.require('MCDDebtAdapter');
+const TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('MCDAssetAdapter', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';

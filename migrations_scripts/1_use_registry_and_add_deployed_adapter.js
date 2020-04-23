@@ -8,7 +8,7 @@ let tokenAdapters = [];
 
 module.exports = async (deployer, network, accounts) => {
   adapters.push(['']);
-  tokens.push([dmmAssetAdapterTokens]);
+  tokens.push([[]]);
   protocolNames.push('Initial protocol name');
   metadata.push([
     'Name',

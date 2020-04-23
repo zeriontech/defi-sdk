@@ -1,9 +1,9 @@
 import displayToken from './helpers/displayToken';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./TokenSetsAdapter');
-const TokenAdapter = artifacts.require('./TokenSetsTokenAdapter');
-const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+const AdapterRegistry = artifacts.require('AdapterRegistry');
+const ProtocolAdapter = artifacts.require('TokenSetsAdapter');
+const TokenAdapter = artifacts.require('TokenSetsTokenAdapter');
+const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('TokenSetsAdapter', () => {
   const ETH12DayEMACrossoverSet = '0x2c5a9980B41861D91D30d0E0271d1c093452DcA5';
