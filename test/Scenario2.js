@@ -17,11 +17,11 @@ const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const Logic = artifacts.require('./Logic');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('Scenario ETH -> ETH/WBTC set', () => {
-  const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
-  const setAddress = '0x3E6941521c85C7233632BF76e3ADB05dB8e2F1db';
+contract('Scenario ETH -> WETH/WBTC set', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+  const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+  const setAddress = '0x3E6941521c85C7233632BF76e3ADB05dB8e2F1db';
 
   let accounts;
   let logic;
@@ -169,31 +169,31 @@ contract('Scenario ETH -> ETH/WBTC set', () => {
           ACTION_DEPOSIT,
           web3.utils.toHex('TokenSets'),
           ADAPTER_ASSET,
-          [wethAddress, wbtcAddress],
-          [RELATIVE_AMOUNT_BASE, RELATIVE_AMOUNT_BASE],
-          [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
+          [wethAddress/*, wbtcAddress*/],
+          [RELATIVE_AMOUNT_BASE/*, RELATIVE_AMOUNT_BASE*/],
+          [AMOUNT_RELATIVE/*, AMOUNT_RELATIVE*/],
           web3.eth.abi.encodeParameters(['address', 'uint256'], [setAddress, web3.utils.toWei('1', 'ether')]),
         ],
-        // swap change (in WBTC) back to ETH
-        [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('OneSplit'),
-          ADAPTER_EXCHANGE,
-          [wbtcAddress],
-          [RELATIVE_AMOUNT_BASE],
-          [AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter('address', ethAddress),
-        ],
-        // swap change (in WETH) back to ETH
-        [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('OneSplit'),
-          ADAPTER_EXCHANGE,
-          [wethAddress],
-          [RELATIVE_AMOUNT_BASE],
-          [AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter('address', ethAddress),
-        ],
+        // // swap change (in WBTC) back to ETH
+        // [
+        //   ACTION_DEPOSIT,
+        //   web3.utils.toHex('OneSplit'),
+        //   ADAPTER_EXCHANGE,
+        //   [wbtcAddress],
+        //   [RELATIVE_AMOUNT_BASE],
+        //   [AMOUNT_RELATIVE],
+        //   web3.eth.abi.encodeParameter('address', ethAddress),
+        // ],
+        // // swap change (in WETH) back to ETH
+        // [
+        //   ACTION_DEPOSIT,
+        //   web3.utils.toHex('OneSplit'),
+        //   ADAPTER_EXCHANGE,
+        //   [wethAddress],
+        //   [RELATIVE_AMOUNT_BASE],
+        //   [AMOUNT_RELATIVE],
+        //   web3.eth.abi.encodeParameter('address', ethAddress),
+        // ],
       ],
       [],
     )

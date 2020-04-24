@@ -69,7 +69,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant TRANSFER_PROXY = 0x882d80D3a191859d64477eb78Cca46599307ec1C;
-    address internal constant ISSUANCE_MODULE = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
+    address internal constant ISSUANCE_MODULE = 0xDA6786379FF88729264d31d472FA917f5E561443;
 
     /**
      * @notice Deposits tokens to the TokenSet.

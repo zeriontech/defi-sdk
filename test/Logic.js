@@ -538,6 +538,69 @@ contract('Logic', () => {
         });
     });
 
+    it.only('should be correct 1split exchange (dai->eth) with 100% DAI', async () => {
+      let DAI;
+      let daiAmount;
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`eth amount before is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await ERC20.at(daiAddress)
+        .then((result) => {
+          DAI = result.contract;
+        });
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+          console.log(`DAI amount before is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
+        });
+      await DAI.methods['approve(address,uint256)'](tokenSpender, daiAmount)
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        });
+      console.log('calling logic with action...');
+      await logic.methods.executeActions(
+        [
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('OneSplit'),
+            ADAPTER_EXCHANGE,
+            [daiAddress],
+            [RELATIVE_AMOUNT_BASE],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', ethAddress),
+          ],
+        ],
+        [
+          [daiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0],
+        ],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        });
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`DAI amount after is ${new BN(result).div(new BN('10000000000000000')).toNumber() / 100}`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`eth amount after is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await DAI.methods['balanceOf(address)'](logic.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await web3.eth.getBalance(logic.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
     it('should be correct 1split exchange (eth->dai) with 0.01 ETH', async () => {
       let DAI;
       await ERC20.at(daiAddress)

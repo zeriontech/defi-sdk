@@ -146,7 +146,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
             revert("OSIA: 1split fail![1]");
         }
 
-        uint256 value = fromToken != address(0) ? 0 : amount;
+        uint256 value = fromToken == address(0) ? amount : 0;
         try OneSplit(ONE_SPLIT).swap.value(value)(
             fromToken,
             toToken,

@@ -41,7 +41,7 @@ contract TokenSpender is Ownable {
     )
         internal
         view
-        returns (uint256 absoluteAmount)
+        returns (uint256)
     {
         address token = approval.token;
         AmountType amountType = approval.amountType;
@@ -51,10 +51,13 @@ contract TokenSpender is Ownable {
 
         if (amountType == AmountType.Relative) {
             require(amount <= RELATIVE_AMOUNT_BASE, "TS: wrong relative value!");
-
-            absoluteAmount = ERC20(token).balanceOf(user) * amount / RELATIVE_AMOUNT_BASE;
+            if (amount == RELATIVE_AMOUNT_BASE) {
+                return ERC20(token).balanceOf(user);
+            } else {
+                return ERC20(token).balanceOf(user) * amount / RELATIVE_AMOUNT_BASE;
+            }
         } else {
-            absoluteAmount = amount;
+            return amount;
         }
     }
 }
