@@ -38,13 +38,12 @@ contract Logic is SignatureVerifier, Ownable {
     receive() external payable {}
 
     function returnLostTokens(
-        address token
+        ERC20 token
     )
         external
         onlyOwner
     {
-        uint256 tokenBalance = ERC20(token).balanceOf(address(this));
-        ERC20(token).safeTransfer(msg.sender, tokenBalance);
+        token.safeTransfer(msg.sender, token.balanceOf(address(this)), "L![1]");
 
         uint256 ethBalance = address(this).balance;
         if (ethBalance > 0) {
@@ -158,12 +157,11 @@ contract Logic is SignatureVerifier, Ownable {
         internal
     {
         ERC20 token;
-        uint256 tokenBalance;
 
         for (uint256 i = 0; i < tokensToBeWithdrawn.length; i++) {
             for (uint256 j = 0; j < tokensToBeWithdrawn[i].length; j++) {
                 token = ERC20(tokensToBeWithdrawn[i][j]);
-                token.safeTransfer(user, token.balanceOf(address(this)));
+                token.safeTransfer(user, token.balanceOf(address(this)), "L!");
             }
         }
 

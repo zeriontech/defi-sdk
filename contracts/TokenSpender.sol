@@ -29,7 +29,7 @@ contract TokenSpender is Ownable {
 
             assetsToBeWithdrawn[i] = token;
             uint256 absoluteAmount = getAbsoluteAmount(approval, user);
-            ERC20(token).safeTransferFrom(user, msg.sender, absoluteAmount);
+            ERC20(token).safeTransferFrom(user, msg.sender, absoluteAmount, "TS!");
         }
 
         return assetsToBeWithdrawn;

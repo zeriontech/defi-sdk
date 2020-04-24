@@ -76,7 +76,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
             CToken cToken = CToken(tokens[0]);
             ERC20 underlying = ERC20(cToken.underlying());
 
-            underlying.safeApprove(tokens[0], amount);
+            underlying.safeApprove(tokens[0], amount, "CAIA!");
             require(cToken.mint(amount) == 0, "CAIA: deposit failed!");
 
             tokensToBeWithdrawn[0] = tokens[0];

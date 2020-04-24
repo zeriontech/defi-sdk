@@ -92,7 +92,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
         if (fromToken == ETH) {
             fromToken = address(0);
         } else {
-            ERC20(fromToken).safeApprove(ONE_SPLIT, amount);
+            ERC20(fromToken).safeApprove(ONE_SPLIT, amount, "OSIA!");
         }
 
         address[] memory tokensToBeWithdrawn;

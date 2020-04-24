@@ -103,7 +103,7 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
         tokensToBeWithdrawn[0] = exchange;
         tokensToBeWithdrawn[1] = tokens[1];
 
-        ERC20(tokens[1]).safeApprove(exchange, tokenAmount);
+        ERC20(tokens[1]).safeApprove(exchange, tokenAmount, "UIA![1]");
         try Exchange(exchange).addLiquidity.value(ethAmount)(
             uint256(1),
             tokenAmount,
@@ -117,7 +117,7 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
             revert("UIA: deposit fail![2]");
         }
 
-        ERC20(tokens[1]).safeApprove(exchange, 0);
+        ERC20(tokens[1]).safeApprove(exchange, 0, "UIA![2]");
 
         return tokensToBeWithdrawn;
     }

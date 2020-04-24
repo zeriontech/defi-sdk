@@ -96,7 +96,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         uint256 absoluteAmount;
         for (uint256 i = 0; i < tokens.length; i++) {
             absoluteAmount = getAbsoluteAmountDeposit(tokens[i], amounts[i], amountTypes[i]);
-            ERC20(tokens[i]).safeApprove(TRANSFER_PROXY, absoluteAmount);
+            ERC20(tokens[i]).safeApprove(TRANSFER_PROXY, absoluteAmount, "TSIA![1]");
         }
 
         (address setAddress, uint256 setQuantity) = abi.decode(data, (address, uint256));
@@ -115,7 +115,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         }
 
         for (uint256 i = 0; i < tokens.length; i++) {
-            ERC20(tokens[i]).safeApprove(TRANSFER_PROXY, 0);
+            ERC20(tokens[i]).safeApprove(TRANSFER_PROXY, 0, "TSIA![2]");
         }
 
         return tokensToBeWithdrawn;

@@ -51,7 +51,7 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
         require(amounts.length == 1,  "CIA: should be 1 token/amount/type!");
 
         uint256 amount = getAbsoluteAmountDeposit(DAI, amounts[0], amountTypes[0]);
-        ERC20(DAI).safeApprove(CHAI, amount);
+        ERC20(DAI).safeApprove(CHAI, amount, "CIA!");
         Chai(CHAI).join(address(this), amount);
 
         address[] memory tokensToBeWithdrawn = new address[](1);

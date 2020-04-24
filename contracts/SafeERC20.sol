@@ -16,7 +16,8 @@ library SafeERC20 {
     function safeTransfer(
         ERC20 token,
         address to,
-        uint256 value
+        uint256 value,
+        string memory location
     )
         internal
     {
@@ -27,7 +28,8 @@ library SafeERC20 {
                 to,
                 value
             ),
-            "transfer"
+            "transfer",
+            location
         );
     }
 
@@ -35,7 +37,8 @@ library SafeERC20 {
         ERC20 token,
         address from,
         address to,
-        uint256 value
+        uint256 value,
+        string memory location
     )
         internal
     {
@@ -47,14 +50,16 @@ library SafeERC20 {
                 to,
                 value
             ),
-            "transferFrom"
+            "transferFrom",
+            location
         );
     }
 
     function safeApprove(
         ERC20 token,
         address spender,
-        uint256 value
+        uint256 value,
+        string memory location
     )
         internal
     {
@@ -69,7 +74,8 @@ library SafeERC20 {
                 spender,
                 value
             ),
-            "approve"
+            "approve",
+            location
         );
     }
 
@@ -79,8 +85,16 @@ library SafeERC20 {
      * (but if data is returned, it must not be false).
      * @param token The token targeted by the call.
      * @param data The call data (encoded using abi.encode or one of its variants).
+     * @param location Location of the call (for debug).
      */
-    function callOptionalReturn(ERC20 token, bytes memory data, string memory reason) private {
+    function callOptionalReturn(
+        ERC20 token,
+        bytes memory data,
+        string memory functionName,
+        string memory location
+    )
+        private
+    {
         // We need to perform a low level call here, to bypass Solidity's return data size checking
         // mechanism, since we're implementing it ourselves.
 
@@ -90,7 +104,17 @@ library SafeERC20 {
 
         // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory returndata) = address(token).call(data);
-        require(success, string(abi.encodePacked("SafeERC20: ", reason, " call failed")));
+        require(
+            success,
+            string(
+                abi.encodePacked(
+                    "SafeERC20: ",
+                    functionName,
+                    " failed in ",
+                    location
+                )
+            )
+        );
 
         if (returndata.length > 0) { // Return data is optional
             require(abi.decode(returndata, (bool)), "SafeERC20: false returned");
