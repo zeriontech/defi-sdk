@@ -26,7 +26,6 @@ import {
     TokenMetadata,
     Component
 } from "./Structs.sol";
-import { Strings } from "./Strings.sol";
 import { Ownable } from "./Ownable.sol";
 import { ProtocolManager } from "./ProtocolManager.sol";
 import { TokenAdapterManager } from "./TokenAdapterManager.sol";
@@ -40,8 +39,6 @@ import { TokenAdapter } from "./adapters/TokenAdapter.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
-
-    using Strings for string;
 
     /**
      * @param tokenType String with type of the token.

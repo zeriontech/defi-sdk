@@ -17,7 +17,6 @@ pragma solidity 0.6.6;
 pragma experimental ABIEncoderV2;
 
 import { Ownable } from "./Ownable.sol";
-import { Strings } from "./Strings.sol";
 
 
 /**
@@ -26,8 +25,6 @@ import { Strings } from "./Strings.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract TokenAdapterManager is Ownable {
-
-    using Strings for string;
 
     bytes32 internal constant INITIAL_NAME = "Initial token name";
 

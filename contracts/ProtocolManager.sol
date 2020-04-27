@@ -18,7 +18,6 @@ pragma experimental ABIEncoderV2;
 
 import { Ownable } from "./Ownable.sol";
 import { ProtocolMetadata } from "./Structs.sol";
-import { Strings } from "./Strings.sol";
 
 
 /**
@@ -27,8 +26,6 @@ import { Strings } from "./Strings.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract ProtocolManager is Ownable {
-
-    using Strings for string;
 
     bytes32 internal constant INITIAL_PROTOCOL_NAME = "Initial protocol name";
 
@@ -117,19 +114,19 @@ abstract contract ProtocolManager is Ownable {
 
         ProtocolMetadata storage metadata = protocolMetadata[protocolName];
 
-        if (!name.isEmpty()) {
+        if (bytes(name).length != 0) {
             metadata.name = name;
         }
 
-        if (!description.isEmpty()) {
+        if (bytes(description).length != 0) {
             metadata.description = description;
         }
 
-        if (!websiteURL.isEmpty()) {
+        if (bytes(websiteURL).length != 0) {
             metadata.websiteURL = websiteURL;
         }
 
-        if (!iconURL.isEmpty()) {
+        if (bytes(iconURL).length != 0) {
             metadata.iconURL = iconURL;
         }
 
