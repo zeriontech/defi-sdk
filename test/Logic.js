@@ -538,7 +538,7 @@ contract('Logic', () => {
         });
     });
 
-    it.only('should be correct 1split exchange (dai->eth) with 100% DAI', async () => {
+    it('should be correct 1split exchange (dai->eth) with 100% DAI', async () => {
       let DAI;
       let daiAmount;
       await web3.eth.getBalance(accounts[0])
