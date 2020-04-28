@@ -170,11 +170,14 @@ contract Logic is SignatureVerifier, Ownable {
         internal
     {
         ERC20 token;
-
+        uint256 tokenBalance;
         for (uint256 i = 0; i < tokensToBeWithdrawn.length; i++) {
             for (uint256 j = 0; j < tokensToBeWithdrawn[i].length; j++) {
                 token = ERC20(tokensToBeWithdrawn[i][j]);
-                token.safeTransfer(user, token.balanceOf(address(this)), "L!");
+                tokenBalance = token.balanceOf(address(this));
+                if (tokenBalance > 0) {
+                    token.safeTransfer(user, tokenBalance, "L!");
+                }
             }
         }
 
