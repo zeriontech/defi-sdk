@@ -23,6 +23,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 /**
  * @title Asset adapter for Compound protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * Base contract for Compound Asset interactive adapter.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CompoundAssetAdapter is ProtocolAdapter {

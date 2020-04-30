@@ -23,6 +23,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 /**
  * @title Adapter for TokenSets.
  * @dev Implementation of ProtocolAdapter interface.
+ * Base contract for TokenSets interactive adapter.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract TokenSetsAdapter is ProtocolAdapter {

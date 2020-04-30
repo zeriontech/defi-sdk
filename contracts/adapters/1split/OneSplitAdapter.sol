@@ -22,6 +22,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 /**
  * @title Adapter for OneSplit exchange.
  * @dev Implementation of ProtocolAdapter interface.
+ * Base contract for OneSplit interactive adapter.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract OneSplitAdapter is ProtocolAdapter {

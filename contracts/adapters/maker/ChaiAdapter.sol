@@ -23,6 +23,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 /**
  * @title Adapter for Chai protocol.
  * @dev Implementation of ProtocolAdapter interface.
+ * Base contract for Chai interactive adapter.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ChaiAdapter is ProtocolAdapter {
