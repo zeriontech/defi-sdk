@@ -22,6 +22,17 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 
 
 /**
+ * @dev CToken contract interface.
+ * Only the functions required for UniswapV1TokenAdapter contract are added.
+ * The CToken contract is available here
+ * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
+ */
+interface CToken {
+    function isCToken() external view returns (bool);
+}
+
+
+/**
  * @dev SetToken contract interface.
  * Only the functions required for TokenSetsTokenAdapter contract are added.
  * The SetToken contract is available here
@@ -54,6 +65,8 @@ interface RebalancingSetToken {
  */
 contract TokenSetsTokenAdapter is TokenAdapter {
 
+    address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter interface function.
@@ -71,7 +84,18 @@ contract TokenSetsTokenAdapter is TokenAdapter {
 
         Component[] memory underlyingTokens = new Component[](components.length);
 
+        bytes32 underlyingTokenType;
         for (uint256 i = 0; i < underlyingTokens.length; i++) {
+            if (components[i] == WETH) {
+                underlyingTokenType = "Weth";
+            } else {
+                try CToken(components[i]).isCToken{gas: 2000}() returns (bool) {
+                    underlyingTokenType = "CToken";
+                } catch {
+                    underlyingTokenType = "ERC20";
+                }
+            }
+
             underlyingTokens[i] = Component({
                 token: components[i],
                 tokenType: "ERC20",
