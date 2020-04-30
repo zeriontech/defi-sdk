@@ -6,6 +6,9 @@ const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('SynthetixAssetAdapter', () => {
   const snxAddress = '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F';
+  const sethUniAddress = '0xe9Cf7887b93150D4F2Da7dFc6D502B216438F244';
+  const curveSnxAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
+  const iETHAddress = '0xA9859874e1743A32409f75bB11549892138BBA1E';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
@@ -16,6 +19,30 @@ contract('SynthetixAssetAdapter', () => {
     snxAddress,
     'Synthetix Network Token',
     'SNX',
+    '18',
+  ];
+  // const sethUni = [
+  //   sethUniAddress,
+  //   'sETH pool',
+  //   'UNI-V1',
+  //   '18',
+  // ];
+  const sethUni = [
+    sethUniAddress,
+    'Not available',
+    'N/A',
+    '0',
+  ];
+  // const ieth = [
+  //   iETHAddress,
+  //   'Synth iETH',
+  //   'iETH',
+  //   '18',
+  // ];
+  const curveSusd = [
+    curveSnxAddress,
+    'Curve.fi DAI/USDC/USDT/sUSD',
+    'crvPlain3andSUSD',
     '18',
   ];
 
@@ -47,6 +74,9 @@ contract('SynthetixAssetAdapter', () => {
       ]],
       [[[
         snxAddress,
+        sethUniAddress,
+        curveSnxAddress,
+        iETHAddress,
       ]]],
     )
       .send({
@@ -70,6 +100,15 @@ contract('SynthetixAssetAdapter', () => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, snx);
         assert.equal(result[0].adapterBalances[0].balances[0].underlying.length, 0);
+        displayToken(result[0].adapterBalances[0].balances[1].base);
+        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, sethUni);
+        assert.equal(result[0].adapterBalances[0].balances[1].underlying.length, 0);
+        displayToken(result[0].adapterBalances[0].balances[2].base);
+        assert.deepEqual(result[0].adapterBalances[0].balances[2].base.metadata, curveSusd);
+        assert.equal(result[0].adapterBalances[0].balances[2].underlying.length, 0);
+        // displayToken(result[0].adapterBalances[0].balances[3].base);
+        // assert.deepEqual(result[0].adapterBalances[0].balances[3].base.metadata, ieth);
+        // assert.equal(result[0].adapterBalances[0].balances[3].underlying.length, 0);
       });
   });
 });

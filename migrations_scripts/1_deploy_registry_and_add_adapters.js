@@ -107,6 +107,10 @@ const ssCompoundTokenAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
 const ssYTokenAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
 const ssBusdTokenAddress = '0x3B3Ac5386837Dc563660FB6a0937DFAa5924333B';
 
+const sethUniAddress = '0xe9Cf7887b93150D4F2Da7dFc6D502B216438F244';
+const curveSnxAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
+const iETHAddress = '0xA9859874e1743A32409f75bB11549892138BBA1E';
+
 const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
 const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
@@ -232,6 +236,9 @@ const poolTogetherAdapterTokens = [
 ];
 const synthetixAssetAdapterTokens = [
   snxAddress,
+  sethUniAddress,
+  curveSnxAddress,
+  iETHAddress,
 ];
 const synthetixDebtAdapterTokens = [
   susdAddress,
