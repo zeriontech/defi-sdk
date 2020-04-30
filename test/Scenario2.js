@@ -21,7 +21,7 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
-  const setAddress = '0xbf70A33A13fBe8D0106Df321Da0Cf654d2E9Ab50';
+  const setAddress = '0xA6c040045d962e4B8eFa00954c7d23CCd0a2b8AD';
 
   let accounts;
   let logic;
@@ -106,7 +106,7 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
       });
   });
 
-  it.only('main test', async () => {
+  it('main test', async () => {
     let WBTC;
     let WETH;
     let SET;
@@ -144,15 +144,15 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
     console.log('calling logic with actions...');
     const actions = [
       // // exchange ETH to WBTC
-      // [
-      //   ACTION_DEPOSIT,
-      //   web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('OneSplit')),
-      //   ADAPTER_EXCHANGE,
-      //   [ethAddress],
-      //   [web3.utils.toWei('0.24', 'ether')],
-      //   [AMOUNT_RELATIVE],
-      //   web3.eth.abi.encodeParameter('address', wbtcAddress),
-      // ],
+      [
+        ACTION_DEPOSIT,
+        web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('OneSplit')),
+        ADAPTER_EXCHANGE,
+        [ethAddress],
+        [web3.utils.toWei('0.24', 'ether')],
+        [AMOUNT_RELATIVE],
+        web3.eth.abi.encodeParameter('address', wbtcAddress),
+      ],
       // exchange ETH to WETH
       [
         ACTION_DEPOSIT,
@@ -164,63 +164,62 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
         web3.eth.abi.encodeParameter('address', wethAddress),
       ],
       // deposit to token set (1 full share of SetToken)
-      // [
-      //   ACTION_DEPOSIT,
-      //   web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('TokenSets')),
-      //   ADAPTER_ASSET,
-      //   [
-      //     wethAddress,
-      //     // wbtcAddress,
-      //   ],
-      //   [
-      //     RELATIVE_AMOUNT_BASE,
-      //     // RELATIVE_AMOUNT_BASE,
-      //   ],
-      //   [
-      //     AMOUNT_RELATIVE,
-      //     // AMOUNT_RELATIVE,
-      //   ],
-      //   web3.eth.abi.encodeParameters(
-      //     ['address', 'uint256'],
-      //     [setAddress, web3.utils.toWei('0.01', 'ether')],
-      //   ),
-      // ],
+      [
+        ACTION_DEPOSIT,
+        web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('TokenSets')),
+        ADAPTER_ASSET,
+        [
+          wethAddress,
+          wbtcAddress,
+        ],
+        [
+          RELATIVE_AMOUNT_BASE,
+          RELATIVE_AMOUNT_BASE,
+        ],
+        [
+          AMOUNT_RELATIVE,
+          AMOUNT_RELATIVE,
+        ],
+        web3.eth.abi.encodeParameters(
+          ['address', 'uint256'],
+          [setAddress, web3.utils.toWei('0.01', 'ether')],
+        ),
+      ],
       // swap change (in WBTC) back to ETH
-      // [
-      //   ACTION_DEPOSIT,
-      //   web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('OneSplit')),
-      //   ADAPTER_EXCHANGE,
-      //   [wbtcAddress],
-      //   [RELATIVE_AMOUNT_BASE],
-      //   [AMOUNT_RELATIVE],
-      //   web3.eth.abi.encodeParameter('address', ethAddress),
-      // ],
-      // // swap change (in WETH) back to ETH
-      // [
-      //   ACTION_DEPOSIT,
-      //   web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('OneSplit')),
-      //   ADAPTER_EXCHANGE,
-      //   [wethAddress],
-      //   [RELATIVE_AMOUNT_BASE],
-      //   [AMOUNT_RELATIVE],
-      //   web3.eth.abi.encodeParameter('address', ethAddress),
-      // ],
+      [
+        ACTION_DEPOSIT,
+        web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('OneSplit')),
+        ADAPTER_EXCHANGE,
+        [wbtcAddress],
+        [RELATIVE_AMOUNT_BASE],
+        [AMOUNT_RELATIVE],
+        web3.eth.abi.encodeParameter('address', ethAddress),
+      ],
+      // swap change (in WETH) back to ETH
+      [
+        ACTION_DEPOSIT,
+        web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('OneSplit')),
+        ADAPTER_EXCHANGE,
+        [wethAddress],
+        [RELATIVE_AMOUNT_BASE],
+        [AMOUNT_RELATIVE],
+        web3.eth.abi.encodeParameter('address', ethAddress),
+      ],
     ];
     console.log(actions);
-    await logic.methods.executeActions(
-      actions,
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: 5000000,
-        value: web3.utils.toWei('1', 'ether'),
-      });
+    // await logic.methods.executeActions(
+    //   actions,
+    //   [],
+    // )
+    //   .send({
+    //     from: accounts[0],
+    //     gas: 5000000,
+    //     value: web3.utils.toWei('1', 'ether'),
+    //   });
     console.log(logic.methods.executeActions(
       actions,
       [],
-    ).encodeABI())
-
+    ).encodeABI());
     await web3.eth.getBalance(accounts[0])
       .then((result) => {
         console.log(`eth amount after is  ${web3.utils.fromWei(result, 'ether')}`);

@@ -17,7 +17,7 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ChaiAdapter = artifacts.require('./ChaiInteractiveAdapter');
-const UniswapV1Adapter = artifacts.require('./UniswapV1InteractiveAdapter');
+const UniswapV1Adapter = artifacts.require('./UniswapV1LiquidityAdapter');
 const CompoundAssetAdapter = artifacts.require('./CompoundAssetInteractiveAdapter');
 const OneSplitAdapter = artifacts.require('./OneSplitInteractiveAdapter');
 const ChaiTokenAdapter = artifacts.require('./ChaiTokenAdapter');

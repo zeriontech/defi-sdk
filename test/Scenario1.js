@@ -11,7 +11,7 @@ const ADAPTER_EXCHANGE = 2;
 const ZERO = '0x0000000000000000000000000000000000000000';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const UniswapV1Adapter = artifacts.require('./UniswapV1InteractiveAdapter');
+const UniswapV1Adapter = artifacts.require('./UniswapV1LiquidityAdapter');
 const OneSplitAdapter = artifacts.require('./OneSplitInteractiveAdapter');
 const UniswapV1TokenAdapter = artifacts.require('./UniswapV1TokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');

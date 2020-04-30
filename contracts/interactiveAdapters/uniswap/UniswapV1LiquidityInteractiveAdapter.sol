@@ -19,13 +19,13 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../ERC20.sol";
 import { SafeERC20 } from "../../SafeERC20.sol";
 import { Action, AmountType } from "../../Structs.sol";
-import { UniswapV1Adapter } from "../../adapters/uniswap/UniswapV1Adapter.sol";
+import { UniswapV1LiquidityAdapter } from "../../adapters/uniswap/UniswapV1LiquidityAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
 
 /**
  * @dev Exchange contract interface.
- * Only the functions required for UniswapV1InteractiveAdapter contract are added.
+ * Only the functions required for UniswapV1LiquidityAdapter contract are added.
  * The Exchange contract is available here
  * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_exchange.vy.
  */
@@ -51,7 +51,7 @@ interface Exchange {
 
 /**
  * @dev Factory contract interface.
- * Only the functions required for UniswapV1InteractiveAdapter contract are added.
+ * Only the functions required for UniswapV1LiquidityAdapter contract are added.
  * The Factory contract is available here
  * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_factory.vy.
  */
@@ -62,11 +62,11 @@ interface Factory {
 
 
 /**
- * @title Interactive adapter for Uniswap V1 protocol.
+ * @title Interactive adapter for Uniswap V1 protocol (liquidity).
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
+contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1LiquidityAdapter {
 
     using SafeERC20 for ERC20;
 
@@ -91,10 +91,10 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
         override
         returns (address[] memory)
     {
-        require(tokens.length == 2, "UIA: should be 2 tokens/amounts/types!");
-        require(tokens[0] == ETH, "UIA: should be ETH!");
+        require(tokens.length == 2, "ULIA: should be 2 tokens/amounts/types!");
+        require(tokens[0] == ETH, "ULIA: should be ETH!");
         address exchange = Factory(FACTORY).getExchange(tokens[1]);
-        require(exchange != address(0), "UIA: no exchange!");
+        require(exchange != address(0), "ULIA: no exchange!");
 
         uint256 ethAmount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
         uint256 tokenAmount = getAbsoluteAmountDeposit(tokens[1], amounts[1], amountTypes[1]);
@@ -103,21 +103,21 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
         tokensToBeWithdrawn[0] = exchange;
         tokensToBeWithdrawn[1] = tokens[1];
 
-        ERC20(tokens[1]).safeApprove(exchange, tokenAmount, "UIA![1]");
+        ERC20(tokens[1]).safeApprove(exchange, tokenAmount, "ULIA![1]");
         try Exchange(exchange).addLiquidity.value(ethAmount)(
             uint256(1),
             tokenAmount,
             // solhint-disable-next-line not-rely-on-time
-            now + 1 hours
+            now + 1
         ) returns (uint256 addedLiquidity) {
-            require(addedLiquidity > 0, "UIA: deposit fail![1]");
+            require(addedLiquidity > 0, "ULIA: deposit fail![1]");
         } catch Error(string memory reason) {
             revert(reason);
         } catch (bytes memory) {
-            revert("UIA: deposit fail![2]");
+            revert("ULIA: deposit fail![2]");
         }
 
-        ERC20(tokens[1]).safeApprove(exchange, 0, "UIA![2]");
+        ERC20(tokens[1]).safeApprove(exchange, 0, "ULIA![2]");
 
         return tokensToBeWithdrawn;
     }
@@ -141,7 +141,7 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
         override
         returns (address[] memory)
     {
-        require(tokens.length == 1, "UIA: should be 1 token/amount/type!");
+        require(tokens.length == 1, "ULIA: should be 1 token/amount/type!");
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
 
@@ -153,11 +153,11 @@ contract UniswapV1InteractiveAdapter is InteractiveAdapter, UniswapV1Adapter {
             uint256(1),
             uint256(1),
             // solhint-disable-next-line not-rely-on-time
-            now + 1 hours
+            now + 1
         ) {} catch Error(string memory reason) {
             revert(reason);
         } catch (bytes memory) {
-            revert("UIA: withdraw fail!");
+            revert("ULIA: withdraw fail!");
         }
 
         return tokensToBeWithdrawn;

@@ -21,11 +21,11 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @title Adapter for Uniswap V1 protocol.
+ * @title Adapter for Uniswap V1 protocol (liquidity).
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UniswapV1Adapter is ProtocolAdapter {
+contract UniswapV1LiquidityAdapter is ProtocolAdapter {
 
     bytes32 public constant override adapterType = "Asset";
 
