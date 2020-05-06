@@ -8,8 +8,8 @@ let tokenAdapters = [];
 
 module.exports = async (deployer, network, accounts) => {
   adapters.push(['']);
-  tokens.push([dmmAssetAdapterTokens]);
-  protocolNames.push('Initial protocol name');
+  tokens.push([[]]);
+  protocolNames.push(web3.utils.toHex('Initial protocol name'));
   metadata.push([
     'Name',
     'Description',
@@ -36,7 +36,7 @@ module.exports = async (deployer, network, accounts) => {
         });
       await registry.contract.methods.addTokenAdapters(
         [
-          'Initial token name',
+          web3.utils.toHex('Initial token name'),
         ],
         tokenAdapters,
       )

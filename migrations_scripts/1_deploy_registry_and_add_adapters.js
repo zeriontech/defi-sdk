@@ -19,6 +19,7 @@ const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
 const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
+const WethAdapter = artifacts.require('WethAdapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const AaveTokenAdapter = artifacts.require('AaveTokenAdapter');
@@ -33,6 +34,7 @@ const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
+const WethTokenAdapter = artifacts.require('WethTokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 
 const aDaiAddress = '0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d';
@@ -244,7 +246,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(AaveDebtAdapter, { from: accounts[0] });
   adapters.push([AaveAssetAdapter.address, AaveDebtAdapter.address]);
   tokens.push([aaveAssetAdapterTokens, aaveDebtAdapterTokens]);
-  protocolNames.push('Aave');
+  protocolNames.push(web3.utils.toHex('Aave'));
   metadata.push([
     'Aave',
     'Decentralized lending & borrowing protocol',
@@ -256,7 +258,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(BalancerAdapter, { from: accounts[0] });
   adapters.push([BalancerAdapter.address]);
   tokens.push([[]]);
-  protocolNames.push('Balancer');
+  protocolNames.push(web3.utils.toHex('Balancer'));
   metadata.push([
     'Balancer',
     'Non-custodial portfolio manager, liquidity provider, and price sensor',
@@ -268,7 +270,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(BancorAdapter, { from: accounts[0] });
   adapters.push([BancorAdapter.address]);
   tokens.push([[]]);
-  protocolNames.push('Bancor');
+  protocolNames.push(web3.utils.toHex('Bancor'));
   metadata.push([
     'Bancor',
     'Automated liquidity protocol',
@@ -281,7 +283,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(CompoundDebtAdapter, { from: accounts[0] });
   adapters.push([CompoundAssetAdapter.address, CompoundDebtAdapter.address]);
   tokens.push([compoundAssetAdapterTokens, compoundDebtAdapterTokens]);
-  protocolNames.push('Compound');
+  protocolNames.push(web3.utils.toHex('Compound'));
   metadata.push([
     'Compound',
     'Decentralized lending & borrowing protocol',
@@ -293,7 +295,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(CurveAdapter, { from: accounts[0] });
   adapters.push([CurveAdapter.address]);
   tokens.push([curveAdapterTokens]);
-  protocolNames.push('Curve');
+  protocolNames.push(web3.utils.toHex('Curve'));
   metadata.push([
     'Curve',
     'Exchange liquidity pool for stablecoin trading',
@@ -303,9 +305,9 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(DmmAssetAdapter, { from: accounts[0] });
-  adapters.push(DmmAssetAdapter.address);
-  tokens.push(dmmAssetAdapterTokens);
-  protocolNames.push('DeFi Money Market');
+  adapters.push([DmmAssetAdapter.address]);
+  tokens.push([dmmAssetAdapterTokens]);
+  protocolNames.push(web3.utils.toHex('DeFi Money Market'));
   metadata.push([
     'DeFi Money Market',
     'Earn interest on crypto through revenue-producing real world assets',
@@ -318,7 +320,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(DyDxDebtAdapter, { from: accounts[0] });
   adapters.push([DyDxAssetAdapter.address, DyDxDebtAdapter.address]);
   tokens.push([dydxAdapterTokens, dydxAdapterTokens]);
-  protocolNames.push('dYdX');
+  protocolNames.push(web3.utils.toHex('dYdX'));
   metadata.push([
     'dYdX',
     'Decentralized trading platform',
@@ -330,7 +332,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(IdleAdapter, { from: accounts[0] });
   adapters.push([IdleAdapter.address]);
   tokens.push([idleAdapterTokens]);
-  protocolNames.push('Idle');
+  protocolNames.push(web3.utils.toHex('Idle'));
   metadata.push([
     'Idle',
     'Yield aggregator for lending platforms',
@@ -342,7 +344,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(IearnAdapter, { from: accounts[0] });
   adapters.push([IearnAdapter.address]);
   tokens.push([iearn2AdapterTokens]);
-  protocolNames.push('iearn.finance (v2)');
+  protocolNames.push(web3.utils.toHex('iearn.finance (v2)'));
   metadata.push([
     'iearn.finance (v2)',
     'Yield aggregator for lending platforms',
@@ -354,7 +356,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(IearnAdapter, { from: accounts[0] });
   adapters.push([IearnAdapter.address]);
   tokens.push([iearn3AdapterTokens]);
-  protocolNames.push('iearn.finance (v3)');
+  protocolNames.push(web3.utils.toHex('iearn.finance (v3)'));
   metadata.push([
     'iearn.finance (v3)',
     'Yield aggregator for lending platforms',
@@ -366,7 +368,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(ChaiAdapter, { from: accounts[0] });
   adapters.push([ChaiAdapter.address]);
   tokens.push([chaiAdapterTokens]);
-  protocolNames.push('Chai');
+  protocolNames.push(web3.utils.toHex('Chai'));
   metadata.push([
     'Chai',
     'A simple ERC20 wrapper over the Dai Savings Protocol',
@@ -378,7 +380,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(DSRAdapter, { from: accounts[0] });
   adapters.push([DSRAdapter.address]);
   tokens.push([dsrAdapterTokens]);
-  protocolNames.push('Dai Savings Protocol');
+  protocolNames.push(web3.utils.toHex('Dai Savings Protocol'));
   metadata.push([
     'Dai Savings Protocol',
     'Decentralized lending protocol',
@@ -391,7 +393,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(MCDDebtAdapter, { from: accounts[0] });
   adapters.push([MCDAssetAdapter.address, MCDDebtAdapter.address]);
   tokens.push([mcdAssetAdapterTokens, mcdDebtAdapterTokens]);
-  protocolNames.push('Multi-Collateral Dai');
+  protocolNames.push(web3.utils.toHex('Multi-Collateral Dai'));
   metadata.push([
     'Multi-Collateral Dai',
     'Collateralized loans on Maker',
@@ -403,7 +405,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(PoolTogetherAdapter, { from: accounts[0] });
   adapters.push([PoolTogetherAdapter.address]);
   tokens.push([poolTogetherAdapterTokens]);
-  protocolNames.push('PoolTogether');
+  protocolNames.push(web3.utils.toHex('PoolTogether'));
   metadata.push([
     'PoolTogether',
     'Decentralized no-loss lottery',
@@ -416,7 +418,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(SynthetixDebtAdapter, { from: accounts[0] });
   adapters.push([SynthetixAssetAdapter.address, SynthetixDebtAdapter.address]);
   tokens.push([synthetixAssetAdapterTokens, synthetixDebtAdapterTokens]);
-  protocolNames.push('Synthetix');
+  protocolNames.push(web3.utils.toHex('Synthetix'));
   metadata.push([
     'Synthetix',
     'Synthetic assets protocol',
@@ -428,7 +430,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(TokenSetsAdapter, { from: accounts[0] });
   adapters.push([TokenSetsAdapter.address]);
   tokens.push([[]]);
-  protocolNames.push('TokenSets');
+  protocolNames.push(web3.utils.toHex('TokenSets'));
   metadata.push([
     'TokenSets',
     'Automated asset management strategies',
@@ -440,7 +442,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(UniswapV1Adapter, { from: accounts[0] });
   adapters.push([UniswapV1Adapter.address]);
   tokens.push([[]]);
-  protocolNames.push('Uniswap V1');
+  protocolNames.push(web3.utils.toHex('Uniswap V1'));
   metadata.push([
     'Uniswap V1',
     'Automated liquidity protocol',
@@ -449,10 +451,22 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(WethAdapter, { from: accounts[0] });
+  adapters.push([WethAdapter.address]);
+  tokens.push([[wethAddress]]);
+  protocolNames.push(web3.utils.toHex('Weth'));
+  metadata.push([
+    'Weth',
+    'ERC20 tradable version of ETH',
+    'weth.io',
+    '',
+    '0',
+  ]);
+
   await deployer.deploy(ZrxAdapter, { from: accounts[0] });
   adapters.push([ZrxAdapter.address]);
   tokens.push([zrxAdapterTokens]);
-  protocolNames.push('0x Staking');
+  protocolNames.push('0x3078205374616b696e67');
   metadata.push([
     '0x Staking',
     'Liquidity rewards with ZRX',
@@ -539,6 +553,12 @@ module.exports = async (deployer, network, accounts) => {
         UniswapV1TokenAdapter.address,
       );
     });
+  await deployer.deploy(WethTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        WethTokenAdapter.address,
+      );
+    });
   await deployer.deploy(AdapterRegistry, { from: accounts[0] })
     .then(async (registry) => {
       await registry.contract.methods.addProtocols(
@@ -553,19 +573,20 @@ module.exports = async (deployer, network, accounts) => {
         });
       await registry.contract.methods.addTokenAdapters(
         [
-          'ERC20',
-          'AToken',
-          'Balancer pool token',
-          'CToken',
-          'Curve pool token',
-          'MToken',
-          'IdleToken',
-          'YToken',
-          'Chai token',
-          'PoolTogether pool',
-          'SetToken',
-          'SmartToken',
-          'Uniswap V1 pool token',
+          web3.utils.toHex('ERC20'),
+          web3.utils.toHex('AToken'),
+          web3.utils.toHex('Balancer pool token'),
+          web3.utils.toHex('CToken'),
+          web3.utils.toHex('Curve pool token'),
+          web3.utils.toHex('MToken'),
+          web3.utils.toHex('IdleToken'),
+          web3.utils.toHex('YToken'),
+          web3.utils.toHex('Chai token'),
+          web3.utils.toHex('PoolTogether pool'),
+          web3.utils.toHex('SetToken'),
+          web3.utils.toHex('SmartToken'),
+          web3.utils.toHex('Uniswap V1 pool token'),
+          web3.utils.toHex('Weth'),
         ],
         tokenAdapters,
       )
