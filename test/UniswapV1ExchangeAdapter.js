@@ -20,7 +20,7 @@ const InteractiveAdapter = artifacts.require('./UniswapV1ExchangeInteractiveAdap
 const Logic = artifacts.require('./Logic');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('Logic', () => {
+contract('Uniswap interactive adapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const mkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -454,9 +454,11 @@ contract.only('Logic', () => {
         .then((result) => {
           console.log(`dai amount after is    ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await web3.eth.getBalance(accounts[0])
+      await MKR.methods['balanceOf(address)'](accounts[0])
+        .call()
         .then((result) => {
-          console.log(`eth amount after is  ${web3.utils.fromWei(result, 'ether')}`);
+          console.log(`mkr amount before is    ${web3.utils.fromWei(result, 'ether')}`);
+          mkrAmount = result;
         });
       await DAI.methods['balanceOf(address)'](logic.options.address)
         .call()
