@@ -20,6 +20,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@0x/sol-compiler": "4.0.8",
     "@babel/core": "7.9.0",
     "@babel/preset-env": "7.9.0",
     "@babel/register": "7.9.0",
@@ -27,7 +28,7 @@
     "core-js": "3.6.4",
     "dotenv": "8.2.0",
     "regenerator-runtime": "0.13.5",
-    "truffle": "5.1.22",
+    "truffle": "5.1.24",
     "truffle-plugin-verify": "0.3.10"
   },
   "devDependencies": {
@@ -38,7 +39,7 @@
     "eth-gas-reporter": "0.2.17",
     "ethlint": "1.2.5",
     "ganache-cli": "6.9.1",
-    "solhint": "3.0.0-rc.8",
+    "solhint": "3.0.0",
     "solidity-coverage": "0.7.4"
   }
 }
