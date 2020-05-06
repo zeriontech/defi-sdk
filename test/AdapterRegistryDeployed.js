@@ -17,7 +17,8 @@ contract.skip('AdapterRegistry deployed', () => {
         assert.deepEqual(
           result,
           [
-            web3.utils.toHex('0x Staking'),
+            '0x3078205374616b696e67',
+            web3.utils.toHex('Weth'),
             web3.utils.toHex('Uniswap V1'),
             web3.utils.toHex('TokenSets'),
             web3.utils.toHex('Synthetix'),
@@ -44,6 +45,7 @@ contract.skip('AdapterRegistry deployed', () => {
         assert.deepEqual(
           result,
           [
+            web3.utils.toHex('Weth'),
             web3.utils.toHex('Uniswap V1 pool token'),
             web3.utils.toHex('SmartToken'),
             web3.utils.toHex('SetToken'),
