@@ -24,7 +24,7 @@ interface WETH9 {
  * @title Interactive adapter for Wrapped Ether.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
-contract CompoundAssetInteractiveAdapter is InteractiveAdapter, WethAdapter {
+contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
 
     using SafeERC20 for ERC20;
 
@@ -33,7 +33,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, WethAdapter {
     /**
      * @notice Wraps Ether in Wrapped Ether.
      * @param tokens Array with one element - 0xEeee...EEeE constant.
-     * @param amounts Array with one element - ETH amount to be deposited.
+     * @param amounts Array with one element - ETH amount to be converted to WETH.
      * @param amountTypes Array with one element - amount type.
      * @return Tokens sent back to the msg.sender.
      * @dev Implementation of InteractiveAdapter function.
@@ -50,21 +50,27 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, WethAdapter {
         returns (address[] memory)
     {
         require(tokens.length == 1, "WIA: should be 1 token/amount/type!");
+        require(tokens[0] == ETH, "WIA: ETH only!");
 
         uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
         address[] memory tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = WETH;
 
-        WETH9(WETH).deposit.value(amount)();
+        try WETH9(WETH).deposit.value(amount)() {
+        } catch Error(string memory reason) {
+            revert(reason);
+        } catch (bytes memory) {
+            revert("WIA: deposit fail!");
+        }
 
         return tokensToBeWithdrawn;
     }
 
     /**
      * @notice Unwraps Ether from Wrapped Ether.
-     * @param tokens Array with one element - ETH constant.
-     * @param amounts Array with one element - ETH amount to be withdrawn.
+     * @param tokens Array with one element - WETH address.
+     * @param amounts Array with one element - WETH amount to be converted to ETH.
      * @param amountTypes Array with one element - amount type.
      * @return Tokens sent back to the msg.sender.
      * @dev Implementation of InteractiveAdapter function.
@@ -81,6 +87,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, WethAdapter {
         returns (address[] memory)
     {
         require(tokens.length == 1, "WIA: should be 1 token/amount/type!");
+        require(tokens[0] == WETH, "WIA: ETH only!");
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
 
