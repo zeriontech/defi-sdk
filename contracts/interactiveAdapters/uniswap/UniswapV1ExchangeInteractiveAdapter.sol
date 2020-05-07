@@ -102,10 +102,11 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
     address internal constant FACTORY = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
 
     /**
-     * @notice Deposits tokens to the Uniswap pool.
-     * @param tokens Array with one element - token address.
-     * @param amounts Array with one element - token amount to be deposited.
+     * @notice Exchange tokens using Uniswap pool.
+     * @param tokens Array with one element - token address to be exchanged from.
+     * @param amounts Array with one element - token amount to be exchanged from.
      * @param amountTypes Array with one element - amount type.
+     * @param data Token address to be exchanged to (ABI-encoded).
      * @return Asset sent back to the msg.sender.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -184,10 +185,11 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
     }
 
     /**
-     * @notice Withdraws tokens from the Uniswap pool.
-     * @param tokens Array with one element - exchange address.
-     * @param amounts Array with one element - UNI-token amount to be withdrawn.
-     * @param amountTypes Array with one element - amount type.
+     * @notice Exchange tokens using Uniswap pool.
+     * @param tokens Array with one element - token address to be exchanged to.
+     * @param amounts Array with one element - token amount to be exchanged to.
+     * @param amountTypes Array with one element - amount type (can be `AmountType.Absolute` only).
+     * @param data Token address to be exchanged from (ABI-encoded).
      * @return Asset sent back to the msg.sender.
      * @dev Implementation of InteractiveAdapter function.
      */

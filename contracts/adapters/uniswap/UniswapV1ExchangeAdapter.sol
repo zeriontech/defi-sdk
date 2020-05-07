@@ -33,7 +33,7 @@ contract UniswapV1ExchangeAdapter is ProtocolAdapter {
     bytes32 public constant override tokenType = "";
 
     /**
-     * @return Amount of Uniswap pool tokens held by the given account.
+     * @notice This function is unavailable for exchange adapter.
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address, address) public view override returns (uint256) {
