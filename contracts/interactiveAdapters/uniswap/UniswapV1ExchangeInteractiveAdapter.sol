@@ -134,6 +134,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
             tokensToBeWithdrawn[0] = toToken;
             try Exchange(exchange).ethToTokenSwapInput.value(amount)(
                 uint256(1),
+                // solhint-disable-next-line not-rely-on-time
                 now
             ) returns (uint256 boughtAmount) {
                 require(boughtAmount > 0, "UEIA: deposit fail![1]");
@@ -153,6 +154,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
                 try Exchange(exchange).tokenToEthSwapInput(
                     amount,
                     uint256(1),
+                    // solhint-disable-next-line not-rely-on-time
                     now
                 ) returns (uint256 boughtAmount) {
                     require(boughtAmount > 0, "UEIA: deposit fail![3]");
@@ -168,6 +170,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
                     amount,
                     uint256(1),
                     uint256(1),
+                    // solhint-disable-next-line not-rely-on-time
                     now,
                     toToken
                 ) returns (uint256 boughtAmount) {
@@ -214,6 +217,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
             tokensToBeWithdrawn[0] = tokens[0];
             try Exchange(exchange).ethToTokenSwapOutput.value(msg.value)(
                 amounts[0],
+                // solhint-disable-next-line not-rely-on-time
                 now
             ) returns (uint256 boughtAmount) {
                 require(boughtAmount > 0, "UEIA: withdraw fail![1]");
@@ -235,6 +239,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
                 try Exchange(exchange).tokenToEthSwapOutput(
                     amounts[0],
                     balance,
+                    // solhint-disable-next-line not-rely-on-time
                     now
                 ) returns (uint256 boughtAmount) {
                     require(boughtAmount > 0, "UEIA: withdraw fail![3]");
@@ -250,6 +255,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
                     amounts[0],
                     balance,
                     uint256(-1),
+                    // solhint-disable-next-line not-rely-on-time
                     now,
                     tokens[0]
                 ) returns (uint256 boughtAmount) {

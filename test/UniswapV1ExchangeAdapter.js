@@ -1,8 +1,6 @@
 // import displayToken from './helpers/displayToken';
 // import expectRevert from './helpers/expectRevert';
 
-const { BN } = web3.utils;
-
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
@@ -472,7 +470,7 @@ contract('Uniswap interactive adapter', () => {
         });
     });
 
-    it('should be correct noe-side exchange withdraw-like', async () => {
+    it('should be correct one-side exchange withdraw-like', async () => {
       let daiAmount;
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()

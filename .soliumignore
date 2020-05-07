@@ -16,3 +16,4 @@ node_modules
 ./contracts/Logic.sol
 ./contracts/SignatureVerifier.sol
 ./contracts/SafeERC20.sol
+./contracts/interactiveAdapters

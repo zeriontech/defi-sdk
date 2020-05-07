@@ -1,8 +1,6 @@
 // import displayToken from './helpers/displayToken';
 // import expectRevert from './helpers/expectRevert';
 
-const { BN } = web3.utils;
-
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
@@ -12,8 +10,6 @@ const EMPTY_BYTES = '0x';
 const ADAPTER_ASSET = 0;
 // const ADAPTER_DEBT = 1;
 // const ADAPTER_EXCHANGE = 2;
-
-const ZERO = '0x0000000000000000000000000000000000000000';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const InteractiveAdapter = artifacts.require('./WethInteractiveAdapter');

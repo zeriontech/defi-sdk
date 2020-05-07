@@ -25,7 +25,6 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
 
   let accounts;
   let logic;
-  let tokenSpender;
   let adapterRegistry;
   let tokenSetsAdapterAddress;
   let oneSplitAdapterAddress;
@@ -100,10 +99,7 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
         logic = result.contract;
       });
     await logic.methods.tokenSpender()
-      .call({ gas: 1000000 })
-      .then((result) => {
-        tokenSpender = result;
-      });
+      .call({ gas: 1000000 });
   });
 
   it('main test', async () => {

@@ -152,7 +152,7 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
             uint256(1),
             // solhint-disable-next-line not-rely-on-time
             now + 1
-        ) {} catch Error(string memory reason) {
+        ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
         } catch (bytes memory) {
             revert("ULIA: withdraw fail!");

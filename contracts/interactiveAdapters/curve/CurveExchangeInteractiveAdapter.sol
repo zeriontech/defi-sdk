@@ -29,12 +29,13 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
  * The stableswap contract is available here
  * github.com/curvefi/curve-contract/blob/compounded/vyper/stableswap.vy.
  */
-// solhint-disable-next-line contract-name-camelcase
+/* solhint-disable contract-name-camelcase, func-name-mixedcase */
 interface stableswap {
     function exchange_underlying(int128, int128, uint256, uint256) external;
     function get_dy_underlying(int128, int128, uint256) external view returns (uint256);
     function get_dx_underlying(int128, int128, uint256) external view returns (uint256);
 }
+/* solhint-enable contract-name-camelcase, func-name-mixedcase */
 
 
 /**
@@ -107,6 +108,7 @@ contract CurveExchangeInteractiveAdapter is InteractiveAdapter, CurveExchangeAda
         }
 
         ERC20(tokens[0]).safeApprove(pools[index], amount, "CEIA!");
+        // solhint-disable-next-line no-empty-blocks
         try stableswap(pools[index]).exchange_underlying(i, j, amount, 0) {
         } catch Error(string memory reason) {
             revert(reason);
@@ -163,6 +165,7 @@ contract CurveExchangeInteractiveAdapter is InteractiveAdapter, CurveExchangeAda
         }
 
         ERC20(fromToken).safeApprove(pools[index], rate, "CEIA!");
+        // solhint-disable-next-line no-empty-blocks
         try stableswap(pools[index]).exchange_underlying(i, j, rate, amounts[0]) {
         } catch Error(string memory reason) {
             revert(reason);

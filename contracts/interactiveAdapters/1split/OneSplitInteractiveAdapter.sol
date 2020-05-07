@@ -150,7 +150,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
             uint256(1),
             distribution,
             uint256(0x040df0) // 0x040dfc to enable curve; 0x04fdf0 to enable base exchanges;
-        ) {} catch Error(string memory reason) {
+        ) {} catch Error(string memory reason) { //solhint-disable-line no-empty-blocks
             revert(reason);
         } catch (bytes memory) {
             revert("OSIA: 1split fail![2]");

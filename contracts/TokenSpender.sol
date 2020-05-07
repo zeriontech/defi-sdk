@@ -28,10 +28,10 @@ contract TokenSpender is Ownable {
     uint256 internal constant RELATIVE_AMOUNT_BASE = 1e18;
 
     function issueTokens(
-        Approval[] calldata approvals,
+        Approval[] memory approvals,
         address user
     )
-        external
+        public
         onlyOwner
         returns (address[] memory)
     {
@@ -44,6 +44,7 @@ contract TokenSpender is Ownable {
 
             assetsToBeWithdrawn[i] = token;
             uint256 absoluteAmount = getAbsoluteAmount(approval, user);
+            // solium-disable-next-line arg-overflow
             ERC20(token).safeTransferFrom(user, msg.sender, absoluteAmount, "TS!");
         }
 

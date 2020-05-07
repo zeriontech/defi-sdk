@@ -57,7 +57,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = WETH;
 
-        try WETH9(WETH).deposit.value(amount)() {
+        try WETH9(WETH).deposit.value(amount)() { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);
         } catch (bytes memory) {
@@ -89,7 +89,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
 
-        try WETH9(WETH).withdraw(amount) {
+        try WETH9(WETH).withdraw(amount) { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);
         } catch (bytes memory) {
