@@ -29,6 +29,8 @@ import { SafeERC20 } from "./SafeERC20.sol";
 
 /**
  * @title Main contract executing actions.
+ * TODO: reentrancy lock
+ * TODO: safe math
  */
 contract Logic is SignatureVerifier, Ownable {
     using SafeERC20 for ERC20;
