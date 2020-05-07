@@ -23,7 +23,7 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 
 /**
  * @dev stableswap contract interface.
- * Only the functions required for CurveAdapter contract are added.
+ * Only the functions required for CurveTokenAdapter contract are added.
  * The stableswap contract is available here
  * github.com/curvefi/curve-contract/blob/compounded/vyper/stableswap.vy.
  */

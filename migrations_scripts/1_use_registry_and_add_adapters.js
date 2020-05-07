@@ -4,7 +4,7 @@ const BalancerAdapter = artifacts.require('BalancerAdapter');
 const BancorAdapter = artifacts.require('BancorAdapter');
 const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
 const CompoundDebtAdapter = artifacts.require('CompoundDebtAdapter');
-const CurveAdapter = artifacts.require('CurveAdapter');
+const CurveLiquidityAdater = artifacts.require('CurveLiquidityAdater');
 const DmmAssetAdapter = artifacts.require('DmmAssetAdapter');
 const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
@@ -292,8 +292,8 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
-  await deployer.deploy(CurveAdapter, { from: accounts[0] });
-  adapters.push([CurveAdapter.address]);
+  await deployer.deploy(CurveLiquidityAdater, { from: accounts[0] });
+  adapters.push([CurveLiquidityAdater.address]);
   tokens.push([curveAdapterTokens]);
   protocolNames.push(web3.utils.toHex('Curve'));
   metadata.push([
