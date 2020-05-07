@@ -21,11 +21,11 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @title Adapter for Curve protocol.
+ * @title Adapter for Curve protocol (liquidity).
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CurveAdapter is ProtocolAdapter {
+contract CurveLiquidityAdapter is ProtocolAdapter {
 
     bytes32 public constant override adapterType = "Asset";
 
