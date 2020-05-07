@@ -77,7 +77,7 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
      * @param tokens Array with one element - token address.
      * @param amounts Array with one element - token amount to be deposited.
      * @param amountTypes Array with one element - amount type.
-     * @return Asset sent back to the msg.sender.
+     * @return tokensToBeWithdrawn Array with tokens sent back.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -89,7 +89,7 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokens.length == 2, "ULIA: should be 2 tokens/amounts/types!");
         require(tokens[0] == ETH, "ULIA: should be ETH!");
@@ -99,7 +99,7 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
         uint256 ethAmount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
         uint256 tokenAmount = getAbsoluteAmountDeposit(tokens[1], amounts[1], amountTypes[1]);
 
-        address[] memory tokensToBeWithdrawn = new address[](2);
+        tokensToBeWithdrawn = new address[](2);
         tokensToBeWithdrawn[0] = exchange;
         tokensToBeWithdrawn[1] = tokens[1];
 
@@ -118,8 +118,6 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
         }
 
         ERC20(tokens[1]).safeApprove(exchange, 0, "ULIA![2]");
-
-        return tokensToBeWithdrawn;
     }
 
     /**
@@ -127,7 +125,7 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
      * @param tokens Array with one element - exchange address.
      * @param amounts Array with one element - UNI-token amount to be withdrawn.
      * @param amountTypes Array with one element - amount type.
-     * @return Asset sent back to the msg.sender.
+     * @return tokensToBeWithdrawn Array with on element - underlying token.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
@@ -139,13 +137,13 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokens.length == 1, "ULIA: should be 1 token/amount/type!");
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
 
-        address[] memory tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = Factory(FACTORY).getToken(tokens[0]);
 
         try Exchange(tokens[0]).removeLiquidity(
@@ -159,7 +157,5 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
         } catch (bytes memory) {
             revert("ULIA: withdraw fail!");
         }
-
-        return tokensToBeWithdrawn;
     }
 }

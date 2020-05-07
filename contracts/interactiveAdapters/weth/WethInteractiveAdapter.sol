@@ -35,7 +35,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
      * @param tokens Array with one element - 0xEeee...EEeE constant.
      * @param amounts Array with one element - ETH amount to be converted to WETH.
      * @param amountTypes Array with one element - amount type.
-     * @return Tokens sent back to the msg.sender.
+     * @return tokensToBeWithdrawn Array with one element - WETH.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -47,14 +47,14 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokens.length == 1, "WIA: should be 1 token/amount/type!");
         require(tokens[0] == ETH, "WIA: ETH only!");
 
         uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
-        address[] memory tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = WETH;
 
         try WETH9(WETH).deposit.value(amount)() {
@@ -63,8 +63,6 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         } catch (bytes memory) {
             revert("WIA: deposit fail!");
         }
-
-        return tokensToBeWithdrawn;
     }
 
     /**
@@ -72,7 +70,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
      * @param tokens Array with one element - WETH address.
      * @param amounts Array with one element - WETH amount to be converted to ETH.
      * @param amountTypes Array with one element - amount type.
-     * @return Tokens sent back to the msg.sender.
+     * @return tokensToBeWithdrawn Empty array (ETH is sent back).
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
@@ -84,7 +82,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokens.length == 1, "WIA: should be 1 token/amount/type!");
         require(tokens[0] == WETH, "WIA: ETH only!");
@@ -98,8 +96,6 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
             revert("WIA: withdraw fail!");
         }
 
-        address[] memory tokensToBeWithdrawn = new address[](0);
-
-        return tokensToBeWithdrawn;
+        tokensToBeWithdrawn = new address[](0);
     }
 }

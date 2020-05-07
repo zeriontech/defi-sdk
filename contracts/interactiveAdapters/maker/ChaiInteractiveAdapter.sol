@@ -34,7 +34,8 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
     /**
      * @notice Deposits tokens to the Chai contract.
      * @param amounts Array with one element - DAI amount to be deposited.
-     * @return Tokens sent back to the msg.sender.
+     * @param amountTypes Array with one element - amount type.
+     * @return tokensToBeWithdrawn Array with one element - CHAI address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -46,7 +47,7 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(amounts.length == 1,  "CIA: should be 1 token/amount/type!");
 
@@ -54,15 +55,15 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
         ERC20(DAI).safeApprove(CHAI, amount, "CIA!");
         Chai(CHAI).join(address(this), amount);
 
-        address[] memory tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = CHAI;
-        return tokensToBeWithdrawn;
     }
 
     /**
      * @notice Withdraws tokens from the Chai contract.
      * @param amounts Array with one element - CHAI amount to be withdrawn.
-     * @return Tokens sent back to the msg.sender.
+     * @param amountTypes Array with one element - amount type.
+     * @return tokensToBeWithdrawn Array with one element - DAI address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
@@ -74,15 +75,14 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(amounts.length == 1, "CIA: should be 1 token/amount/type!");
 
         uint256 amount = getAbsoluteAmountWithdraw(CHAI, amounts[0], amountTypes[0]);
         Chai(CHAI).exit(address(this), amount);
 
-        address[] memory tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = DAI;
-        return tokensToBeWithdrawn;
     }
 }

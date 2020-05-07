@@ -70,7 +70,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
      * @param amounts Array with one element - token amount to be exchanged.
      * @param amountTypes Array with one element - amount type.
      * @param data Bytes array with ABI-encoded `toToken` address.
-     * @return Asset sent back to the msg.sender.
+     * @return tokensToBeWithdrawn Array with one element - `toToken` address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -82,7 +82,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokens.length == 1, "OSIA: should be 1 token/amount/type!");
 
@@ -95,8 +95,6 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
             ERC20(fromToken).safeApprove(ONE_SPLIT, amount, "OSIA!");
         }
 
-        address[] memory tokensToBeWithdrawn;
-
         address toToken = abi.decode(data, (address));
         if (toToken == ETH) {
             tokensToBeWithdrawn = new address[](0);
@@ -107,8 +105,6 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
         }
 
         swap(fromToken, toToken, amount);
-
-        return tokensToBeWithdrawn;
     }
 
     /**

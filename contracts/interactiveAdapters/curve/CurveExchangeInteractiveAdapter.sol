@@ -64,7 +64,7 @@ contract CurveExchangeInteractiveAdapter is InteractiveAdapter, CurveExchangeAda
      * @param amounts Array with one element - token amount to be exchanged from.
      * @param amountTypes Array with one element - amount type.
      * @param data Token address to be exchanged to (ABI-encoded).
-     * @return tokensToBeWithdrawn Array with one element - token sent back to the msg.sender.
+     * @return tokensToBeWithdrawn Array with one element - token address to be exchanged to.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -113,8 +113,6 @@ contract CurveExchangeInteractiveAdapter is InteractiveAdapter, CurveExchangeAda
         } catch (bytes memory) {
             revert("CEIA: deposit fail!");
         }
-
-        return tokensToBeWithdrawn;
     }
 
     /**
@@ -123,7 +121,7 @@ contract CurveExchangeInteractiveAdapter is InteractiveAdapter, CurveExchangeAda
      * @param amounts Array with one element - token amount to be exchanged to.
      * @param amountTypes Array with one element - amount type (can be `AmountType.Absolute` only).
      * @param data Token address to be exchanged from (ABI-encoded).
-     * @return Asset sent back to the msg.sender.
+     * @return tokensToBeWithdrawn Array with one element - token address to be exchanged to.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
@@ -135,12 +133,12 @@ contract CurveExchangeInteractiveAdapter is InteractiveAdapter, CurveExchangeAda
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokens.length == 1, "CEIA: should be 1 tokens/amounts/types!");
         require(amountTypes[0] == AmountType.Absolute, "CEIA: wrong type!");
         address fromToken = abi.decode(data, (address));
-        address[] memory tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = tokens[0];
 
         address[5] memory pools = getCurvePools(fromToken, tokens[0], true);
@@ -171,8 +169,6 @@ contract CurveExchangeInteractiveAdapter is InteractiveAdapter, CurveExchangeAda
         } catch (bytes memory) {
             revert("CEIA: withdraw fail!");
         }
-
-        return tokensToBeWithdrawn;
     }
 
     function getCurvePools(

@@ -79,7 +79,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
      * @param data ABI-encoded additional parameters:
      *     - rebalancingSetAddress - rebalancing set address;
      *     - rebalancingSetQuantity - rebalancing set amount to be minted;
-     * @return Asset sent back to the msg.sender.
+     * @return tokensToBeWithdrawn Array with one element - rebalancing set address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -91,7 +91,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         uint256 absoluteAmount;
         for (uint256 i = 0; i < tokens.length; i++) {
@@ -101,7 +101,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
 
         (address setAddress, uint256 setQuantity) = abi.decode(data, (address, uint256));
 
-        address[] memory tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = setAddress;
 
         try RebalancingSetIssuanceModule(ISSUANCE_MODULE).issueRebalancingSet(
@@ -117,8 +117,6 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         for (uint256 i = 0; i < tokens.length; i++) {
             ERC20(tokens[i]).safeApprove(TRANSFER_PROXY, 0, "TSIA![2]");
         }
-
-        return tokensToBeWithdrawn;
     }
 
     /**
@@ -126,7 +124,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
      * @param tokens Array with one element - rebalancing set address.
      * @param amounts Array with one element - rebalancing set amount to be burned.
      * @param amountTypes Array with one element - amount type.
-     * @return Asset sent back to the msg.sender.
+     * @return tokensToBeWithdrawn Array with one element - set token components.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
@@ -138,7 +136,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokens.length == 1, "TSIA: should be 1 token/amount/type!");
 
@@ -146,7 +144,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         RebalancingSetIssuanceModule issuanceModule = RebalancingSetIssuanceModule(ISSUANCE_MODULE);
         RebalancingSetToken rebalancingSetToken = RebalancingSetToken(tokens[0]);
         SetToken setToken = rebalancingSetToken.currentSet();
-        address[] memory tokensToBeWithdrawn = setToken.getComponents();
+        tokensToBeWithdrawn = setToken.getComponents();
 
         try issuanceModule.redeemRebalancingSet(
             tokens[0],
@@ -157,7 +155,5 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         } catch (bytes memory) {
             revert("TSIA: tokenSet fail!");
         }
-
-        return tokensToBeWithdrawn;
     }
 }

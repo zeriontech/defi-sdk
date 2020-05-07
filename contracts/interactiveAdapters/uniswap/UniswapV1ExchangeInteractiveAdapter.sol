@@ -107,7 +107,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
      * @param amounts Array with one element - token amount to be exchanged from.
      * @param amountTypes Array with one element - amount type.
      * @param data Token address to be exchanged to (ABI-encoded).
-     * @return Asset sent back to the msg.sender.
+     * @return tokensToBeWithdrawn Array with one element - token address to be exchanged to.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -119,13 +119,12 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokens.length == 1, "UEIA: should be 1 tokens/amounts/types!");
 
         uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
         address toToken = abi.decode(data, (address));
-        address[] memory tokensToBeWithdrawn;
 
         if (tokens[0] == ETH) {
             address exchange = Factory(FACTORY).getExchange(toToken);
@@ -180,8 +179,6 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
                 }
             }
         }
-
-        return tokensToBeWithdrawn;
     }
 
     /**
@@ -190,7 +187,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
      * @param amounts Array with one element - token amount to be exchanged to.
      * @param amountTypes Array with one element - amount type (can be `AmountType.Absolute` only).
      * @param data Token address to be exchanged from (ABI-encoded).
-     * @return Asset sent back to the msg.sender.
+     * @return tokensToBeWithdrawn Array with one element - token address to be changed to.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
@@ -202,12 +199,12 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokens.length == 1, "UEIA: should be 1 tokens/amounts/types!");
         require(amountTypes[0] == AmountType.Absolute, "UEIA: wrong type!");
         address fromToken = abi.decode(data, (address));
-        address[] memory tokensToBeWithdrawn;
+        tokensToBeWithdrawn;
 
         if (fromToken == ETH) {
             address exchange = Factory(FACTORY).getExchange(tokens[0]);
@@ -265,7 +262,5 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
             }
             ERC20(fromToken).safeApprove(exchange, 0, "UEIA![3]");
         }
-
-        return tokensToBeWithdrawn;
     }
 }

@@ -31,6 +31,15 @@ interface CToken {
     function underlying() external view returns (address);
 }
 
+/**
+ * @dev CompoundRegistry contract interface.
+ * Only the functions required for CompoundAssetInteractiveAdapter contract are added.
+ * The CompoundRegistry contract is available in this repository.
+ */
+interface CompoundRegistry {
+    function getCToken(address) external view returns (address);
+}
+
 
 /**
  * @title Interactive adapter for Compound protocol.
@@ -41,13 +50,14 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
     using SafeERC20 for ERC20;
 
     address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;
+    address internal constant REGISTRY = 0xE6881a7d699d3A350Ce5bba0dbD59a9C36778Cb7;
 
     /**
      * @notice Deposits tokens to the Compound protocol.
-     * @param tokens Array with one element - cToken address.
+     * @param tokens Array with one element - underlying token address.
      * @param amounts Array with one element - underlying token amount to be deposited.
      * @param amountTypes Array with one element - amount type.
-     * @return Tokens sent back to the msg.sender.
+     * @return tokensToBeWithdrawn Array with one element - cToken address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -59,28 +69,25 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokens.length == 1, "CAIA: should be 1 token/amount/type!");
 
         uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
-        address[] memory tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn = new address[](1);
 
         if (tokens[0] == CETH) {
             CEther(CETH).mint.value(amount)();
 
             tokensToBeWithdrawn[0] = CETH;
-            return tokensToBeWithdrawn;
         } else {
-            CToken cToken = CToken(tokens[0]);
-            ERC20 underlying = ERC20(cToken.underlying());
+            address cToken = CompoundRegistry(REGISTRY).getCToken(tokens[0]);
 
-            underlying.safeApprove(tokens[0], amount, "CAIA!");
-            require(cToken.mint(amount) == 0, "CAIA: deposit failed!");
+            ERC20(tokens[0]).safeApprove(cToken, amount, "CAIA!");
+            require(CToken(cToken).mint(amount) == 0, "CAIA: deposit failed!");
 
-            tokensToBeWithdrawn[0] = tokens[0];
-            return tokensToBeWithdrawn;
+            tokensToBeWithdrawn[0] = cToken;
         }
     }
 
@@ -89,7 +96,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
      * @param tokens Array with one element - cToken address.
      * @param amounts Array with one element - cToken amount to be withdrawn.
      * @param amountTypes Array with one element - amount type.
-     * @return Tokens sent back to the msg.sender.
+     * @return tokensToBeWithdrawn Array with one element - underlying token (empty in ETH case).
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
@@ -101,7 +108,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         public
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokens.length == 1, "CAIA: should be 1 token/amount/type!");
 
@@ -111,15 +118,11 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
 
         require(cToken.redeem(amount) == 0, "CAIA: withdraw failed!");
 
-        address[] memory tokensToBeWithdrawn;
-
         if (tokens[0] == CETH) {
             tokensToBeWithdrawn = new address[](0);
         } else {
             tokensToBeWithdrawn = new address[](1);
             tokensToBeWithdrawn[0] = cToken.underlying();
         }
-
-        return tokensToBeWithdrawn;
     }
 }
