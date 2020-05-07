@@ -1,13 +1,13 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./CurveLiquidityAdater');
+const ProtocolAdapter = artifacts.require('./CurveLiquidityAdapter');
 const TokenAdapter = artifacts.require('./CurveTokenAdapter');
 const CTokenAdapter = artifacts.require('./CompoundTokenAdapter');
 const YTokenAdapter = artifacts.require('./IearnTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('CurveLiquidityAdater', () => {
+contract('CurveLiquidityAdapter', () => {
   const ssCompoundTokenAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
   const ssUSDTTokenAddress = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
   const ssYTokenAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
