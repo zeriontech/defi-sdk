@@ -81,6 +81,7 @@ const cSAIAddress = '0xF5DCe57282A584D2746FaF1593d3121Fcac444dC';
 const cZRXAddress = '0xB3319f5D18Bc0D84dD1b4825Dcde5d5f7266d407';
 const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
 const cWBTCAddress = '0xC11b1268C1A384e55C48c2391d8d480264A3A7F4';
+const cUSDTAddress = '0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9';
 
 const mDAIAddress = '0x06301057D77D54B6e14c7FafFB11Ffc7Cab4eaa7';
 const mETHAddress = '0xdF9307DFf0a1B57660F60f9457D32027a55ca0B2';
@@ -168,6 +169,7 @@ const compoundAssetAdapterTokens = [
   cZRXAddress,
   cUSDCAddress,
   cWBTCAddress,
+  cUSDTAddress,
 ];
 const compoundDebtAdapterTokens = [
   daiAddress,
@@ -178,6 +180,7 @@ const compoundDebtAdapterTokens = [
   zrxAddress,
   usdcAddress,
   wbtcAddress,
+  usdtAddress,
 ];
 const curveAdapterTokens = [
   ssCompoundTokenAddress,
