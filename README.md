@@ -37,6 +37,8 @@ If you have any questions about DeFi SDK, feel free to reach out to us on our [D
 
 ## Examples
 
+Find more examples of defi-sdk usage [here](https://github.com/zeriontech/defi-sdk-examples) (`web3js`, `ethers.js`).
+
 ### Fetch Compound debt and collateral
 
 As of now, to get all cTokens along with a user's debt on Compound you need to perform over 10 calls to the Ethereum node to different contracts or rely on a centralized API. With DeFi SDK, you can call
@@ -113,7 +115,7 @@ Sometimes, a DeFi token contains several other tokens, and to calculate their pr
 
 ```solidity 
 // Uniswap V1 cDAI pool
-getFinalFullTokenBalance('0x34E89740adF97C3A9D3f63Cc2cE4a914382c230b', "Uniswap V1 pool token")
+getFinalFullTokenBalance("Uniswap V1 pool token", 0x34E89740adF97C3A9D3f63Cc2cE4a914382c230b)
 ```
 
  and fetch the decomposition of UNI-token into ERC20 tokens, like `ETH` and `DAI`
@@ -129,7 +131,7 @@ In case you want to get account balances across all supported DeFi protocols, yo
 
 ```solidity 
 // bankless.zerion.eth portfolio 
-getBalances('0x0ef51b7dac3933b8109482e7d910c21848e45da0f') 
+getBalances(0x0ef51b7dac3933b8109482e7d910c21848e45da0f) 
 ```
 
 and obtain all balances for a given account. The response from the smart-contract will contain information about each of the protocols
@@ -140,6 +142,27 @@ and obtain all balances for a given account. The response from the smart-contrac
 100 USDC // locked in PoolTogether
 213 TUSD + 201 USDC + 82 USDT + 11 DAI // Curve Y pool
 ...
+```
+
+### Get account balances across DeFi protocols that uses liquidity pools
+
+For the protocols that uses a lot of liquidity pools (Bancor, Balancer, Uniswap) balances are not available by default in `getBalances()` function.
+Balances for such protocols must be fetched by `getAdapterBalance()` function with a list of pools passed as a function parameter. If you call
+
+```solidity
+getBalances(
+    0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990, // account address
+    0x581Ae5AF7afa6f8171Bbf40d1981779F168A9523, // balancer adapter address
+    [0x53b89CE35928dda346c574D9105A5479CB87231c,
+        0x987D7Cc04652710b74Fff380403f5c02f82e290a] // balancer pools addresses 
+) 
+```
+
+you will obtain Balancer balances for given pools. The response from the smart-contract will contain information about each of the pools
+
+```javascript
+1.3 ETH + 552.4 DAI // 30% WETH + 70% DAI pool
+4.2 MKR + 2.5 WETH // 75% MKR + 25% WETH pool
 ```
 
 ## DeFi SDK Architecture
@@ -158,7 +181,8 @@ More detailed documentation about contracts can be found in [adapters](../../wik
 
 ## Addresses
 
-**AdapterRegistry** contract is deployed to the mainnet and its source code is verified on [etherscan](https://etherscan.io/address/0x06fe76b2f432fdfecaef1a7d4f6c3d41b5861672#code).
+**AdapterRegistry** contract's mainnet address is **0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672**.
+Its source code is verified on [etherscan](https://etherscan.io/address/0x06fe76b2f432fdfecaef1a7d4f6c3d41b5861672#code).
 
 All the deployed contracts' addresses are available [here](../../wiki/Addresses).
 
@@ -180,7 +204,7 @@ All the deployed contracts' addresses are available [here](../../wiki/Addresses)
 | [Multi-Collateral Dai](./contracts/adapters/maker) | Collateralized loans on Maker. | [Asset adapter](./contracts/adapters/maker/MCDAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/maker/MCDDebtAdapter.sol) | — |
 | [PoolTogether](./contracts/adapters/poolTogether) | Decentralized no-loss lottery. Supports SAI, DAI, and USDC pools. | [Asset adapter](./contracts/adapters/poolTogether/PoolTogetherAdapter.sol) | ["PoolTogether pool"](./contracts/adapters/poolTogether/PoolTogetherTokenAdapter.sol) |
 | [Synthetix](./contracts/adapters/synthetix) | Synthetic assets protocol. Asset adapter returns amount of SNX locked as collateral. | [Asset adapter](./contracts/adapters/synthetix/SynthetixAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/synthetix/SynthetixDebtAdapter.sol) | — |
-| [TokenSets](./contracts/adapters/tokenSets) | TokenSets. Automated asset management strategies. | [Asset adapter](./contracts/adapters/tokenSets/TokenSetsAdapter.sol) | ["SetToken"](./contracts/adapters/tokenSets/TokenSetsTokenAdapter.sol) |
+| [TokenSets](./contracts/adapters/tokenSets) | Automated asset management strategies. | [Asset adapter](./contracts/adapters/tokenSets/TokenSetsAdapter.sol) | ["SetToken"](./contracts/adapters/tokenSets/TokenSetsTokenAdapter.sol) |
 | [Uniswap V1](./contracts/adapters/uniswap) | Automated liquidity protocol. | [Asset adapter](./contracts/adapters/uniswap/UniswapV1Adapter.sol) supports all Uniswap pools | ["Uniswap V1 pool token"](./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol) |
 | [0x Staking](./contracts/adapters/zrx) | Liquidity rewards for staking ZRX. | [Asset adapter](./contracts/adapters/zrx/ZrxAdapter.sol) | — |
 

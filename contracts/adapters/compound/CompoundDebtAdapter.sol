@@ -48,7 +48,7 @@ interface CompoundRegistry {
  */
 contract CompoundDebtAdapter is ProtocolAdapter {
 
-    address internal constant REGISTRY = 0xE6881a7d699d3A350Ce5bba0dbD59a9C36778Cb7;
+    address internal constant REGISTRY = 0xD0ff11EA62C867F6dF8E9cc37bb5339107FAb141;
 
     string public constant override adapterType = "Debt";
 

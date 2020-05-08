@@ -8,14 +8,11 @@ const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 contract('DmmAssetAdapter', () => {
   const mDAIAddress = '0x06301057D77D54B6e14c7FafFB11Ffc7Cab4eaa7';
   const mUSDCAddress = '0x3564ad35b9E95340E5Ace2D6251dbfC76098669B';
+  const mETHAddress = '0xdF9307DFf0a1B57660F60f9457D32027a55ca0B2';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 
-  /**
-   * This address is the first holder of mDAI and mUSDC - it's a DMMF-associated address and will
-   * always hold a little of each token.
-   */
-  const testAddress = '0x0f9dd46b0e1f77cec0f66c20b9a1f56cb34a4556';
+  const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
   let adapterRegistry;
@@ -68,6 +65,7 @@ contract('DmmAssetAdapter', () => {
       [[[
         mDAIAddress,
         mUSDCAddress,
+        mETHAddress,
       ]]],
     )
       .send({
