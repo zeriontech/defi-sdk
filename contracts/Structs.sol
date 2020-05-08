@@ -93,6 +93,14 @@ struct Approval {
     uint256 amount;
     AmountType amountType;
     uint256 nonce;
+    uint256 fee;
+    address beneficiary;
+}
+
+
+struct TokenAmount {
+    address token;
+    uint256 amount;
 }
 
 

@@ -60,6 +60,10 @@ contract Logic is SignatureVerifier, Ownable {
     {
         token.safeTransfer(msg.sender, token.balanceOf(address(this)), "L![1]");
 
+        if (token.balanceOf(tokenSpender) > 0) {
+            tokenSpender.returnLostTokens(token, msg.sender);
+        }
+
         uint256 ethBalance = address(this).balance;
         if (ethBalance > 0) {
             msg.sender.transfer(ethBalance);
@@ -110,6 +114,7 @@ contract Logic is SignatureVerifier, Ownable {
     )
         internal
     {
+        uint256 gas = gasleft();
         address[][] memory tokensToBeWithdrawn = new address[][](actions.length + 1);
 
         tokensToBeWithdrawn[actions.length] = tokenSpender.issueTokens(approvals, user);
@@ -120,6 +125,7 @@ contract Logic is SignatureVerifier, Ownable {
         }
 
         returnTokens(tokensToBeWithdrawn, user);
+        tokenSpender.freeGasToken(gas - gasleft());
     }
 
     function callInteractiveAdapter(
