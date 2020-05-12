@@ -27,9 +27,9 @@ import { TokenAdapter } from "../adapters/TokenAdapter.sol";
 contract MockTokenAdapter is TokenAdapter {
 
     /**
-      * @return TokenMetadata struct with ERC20-style token info.
-      * @dev Implementation of TokenAdapter interface function.
-      */
+     * @return TokenMetadata struct with ERC20-style token info.
+     * @dev Implementation of TokenAdapter interface function.
+     */
     function getMetadata(address token) external view override returns (TokenMetadata memory) {
         return TokenMetadata({
             token: token,

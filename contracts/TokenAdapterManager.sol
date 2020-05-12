@@ -32,9 +32,9 @@ abstract contract TokenAdapterManager is Ownable {
     string internal constant INITIAL_NAME = "Initial token name";
 
     // adapter name => next adapter name (linked list)
-    mapping (string => string) internal nextTokenAdapterName;
+    mapping(string => string) internal nextTokenAdapterName;
     // adapter name => adapter info
-    mapping (string => address) internal tokenAdapter;
+    mapping(string => address) internal tokenAdapter;
 
     /**
      * @notice Initializes contract storage.

@@ -25,7 +25,7 @@ import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
  */
 contract MockAdapter is ProtocolAdapter {
 
-    mapping (address => uint256) internal balanceOf;
+    mapping(address => uint256) internal balanceOf;
 
     constructor() public {
         balanceOf[msg.sender] = 1000;

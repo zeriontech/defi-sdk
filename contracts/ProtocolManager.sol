@@ -33,13 +33,13 @@ abstract contract ProtocolManager is Ownable {
     string internal constant INITIAL_PROTOCOL_NAME = "Initial protocol name";
 
     // protocol name => next protocol name (linked list)
-    mapping (string => string) internal nextProtocolName;
+    mapping(string => string) internal nextProtocolName;
     // protocol name => protocol struct with info and adapters
-    mapping (string => ProtocolMetadata) internal protocolMetadata;
+    mapping(string => ProtocolMetadata) internal protocolMetadata;
     // protocol name => array of protocol adapters
-    mapping (string => address[]) internal protocolAdapters;
+    mapping(string => address[]) internal protocolAdapters;
     // protocol adapter => array of supported tokens
-    mapping (address => address[]) internal supportedTokens;
+    mapping(address => address[]) internal supportedTokens;
 
     /**
      * @notice Initializes contract storage.

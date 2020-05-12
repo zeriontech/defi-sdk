@@ -116,7 +116,7 @@ contract ERC20TokenAdapter is TokenAdapter {
         bytes memory result;
 
         for (uint256 i = 0; i < 32; i++) {
-            if (data[i] != byte(0)) {
+            if (data[i] != bytes1(0)) {
                 length++;
             }
         }
