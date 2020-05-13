@@ -74,9 +74,9 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
 
     /**
      * @notice Deposits tokens to the Uniswap pool.
-     * @param tokens Array with one element - token address.
-     * @param amounts Array with one element - token amount to be deposited.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokens Array with two elements - 0xEeee...EEeE and token address.
+     * @param amounts Array with two elements - ETH and token amounts to be deposited.
+     * @param amountTypes Array with two elements - amount types.
      * @return tokensToBeWithdrawn Array with tokens sent back.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -122,7 +122,7 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
 
     /**
      * @notice Withdraws tokens from the Uniswap pool.
-     * @param tokens Array with one element - exchange address.
+     * @param tokens Array with one element - UNI-token (exchange) address.
      * @param amounts Array with one element - UNI-token amount to be withdrawn.
      * @param amountTypes Array with one element - amount type.
      * @return tokensToBeWithdrawn Array with on element - underlying token.

@@ -73,9 +73,9 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
 
     /**
      * @notice Deposits tokens to the TokenSet.
-     * @param tokens Array with one element - payment token address.
-     * @param amounts Array with one element - payment token amount to be deposited.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokens Payment tokens addresses.
+     * @param amounts Payment tokens amounts to be deposited.
+     * @param amountTypes Amount types.
      * @param data ABI-encoded additional parameters:
      *     - rebalancingSetAddress - rebalancing set address;
      *     - rebalancingSetQuantity - rebalancing set amount to be minted;
@@ -111,7 +111,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
         } catch (bytes memory) {
-            revert("TSIA: tokenSet fail!");
+            revert("TSIA: tokenSet fail![1]");
         }
 
         for (uint256 i = 0; i < tokens.length; i++) {
@@ -124,7 +124,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
      * @param tokens Array with one element - rebalancing set address.
      * @param amounts Array with one element - rebalancing set amount to be burned.
      * @param amountTypes Array with one element - amount type.
-     * @return tokensToBeWithdrawn Array with one element - set token components.
+     * @return tokensToBeWithdrawn Array with set token components.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
@@ -153,7 +153,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
         } catch (bytes memory) {
-            revert("TSIA: tokenSet fail!");
+            revert("TSIA: tokenSet fail![2]");
         }
     }
 }
