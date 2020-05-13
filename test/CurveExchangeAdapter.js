@@ -105,7 +105,7 @@ contract('Uniswap interactive adapter', () => {
         });
     });
 
-    it.only('DAI -> SUSD (deposit/relative)', async () => {
+    it('DAI -> SUSD (deposit/relative)', async () => {
       let daiAmount;
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -166,7 +166,7 @@ contract('Uniswap interactive adapter', () => {
         });
     });
 
-    it.only('SUSD -> USDC (deposit/absolute)', async () => {
+    it('SUSD -> USDC (deposit/absolute)', async () => {
       let susdAmount = web3.utils.toWei('1', 'ether');
       await SUSD.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -226,7 +226,7 @@ contract('Uniswap interactive adapter', () => {
         });
     });
 
-    it.only('USDC -> BUSD (withdraw/absolute)', async () => {
+    it('USDC -> BUSD (withdraw/absolute)', async () => {
       let busdAmount = web3.utils.toWei('1', 'ether');
       let usdcAmount;
       await USDC.methods['balanceOf(address)'](accounts[0])
