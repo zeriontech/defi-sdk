@@ -60,7 +60,7 @@ contract Logic is SignatureVerifier, Ownable {
     {
         token.safeTransfer(msg.sender, token.balanceOf(address(this)), "L![1]");
 
-        if (token.balanceOf(tokenSpender) > 0) {
+        if (token.balanceOf(address(tokenSpender)) > 0) {
             tokenSpender.returnLostTokens(token, msg.sender);
         }
 

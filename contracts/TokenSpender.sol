@@ -16,10 +16,14 @@
 pragma solidity 0.6.6;
 pragma experimental ABIEncoderV2;
 
-import { Approval, AmountType } from "./Structs.sol";
+import { Approval, AmountType, TokenAmount } from "./Structs.sol";
 import { Ownable } from "./Ownable.sol";
 import { ERC20 } from "./ERC20.sol";
 import { SafeERC20 } from "./SafeERC20.sol";
+
+interface GST2 {
+    function freeUpTo(uint256) external;
+}
 
 
 contract TokenSpender is Ownable {
@@ -32,7 +36,7 @@ contract TokenSpender is Ownable {
 
     function returnLostTokens(
         ERC20 token,
-        address beneficiary
+        address payable beneficiary
     )
         external
         onlyOwner
@@ -83,36 +87,36 @@ contract TokenSpender is Ownable {
         for (uint256 i = 0; i < approvals.length; i++) {
             assetsToBeWithdrawn[i] = approvals[i].token;
 
-            if (fee > 0) {
-                require(beneficiary != address(0), "TS: bad beneficiary!");
-                require(fee < BENEFICIARY_FEE_LIMIT, "TS: bad fee!");
+            if (approvals[i].fee > 0) {
+                require(approvals[i].beneficiary != address(0), "TS: bad beneficiary!");
+                require(approvals[i].fee < BENEFICIARY_FEE_LIMIT, "TS: bad fee!");
 
                 absoluteAmount = getAbsoluteAmount(approvals[i], user);
                 logicAmount = absoluteAmount * (BASE - approvals[i].fee) / BASE;
                 beneficiaryAmount = absoluteAmount * approvals[i].fee * BENEFICIARY_SHARE / BASE;
 
-                ERC20(approval.token).safeTransferFrom(
+                ERC20(approvals[i].token).safeTransferFrom(
                     user,
                     msg.sender,
                     logicAmount,
                     "TS![1]"
                 );
 
-                ERC20(approval.token).safeTransferFrom(
+                ERC20(approvals[i].token).safeTransferFrom(
                     user,
                     approvals[i].beneficiary,
                     beneficiaryAmount,
                     "TS![2]"
                 );
 
-                ERC20(approval.token).safeTransferFrom(
+                ERC20(approvals[i].token).safeTransferFrom(
                     user,
                     address(this),
                     absoluteAmount - logicAmount - beneficiaryAmount,
                     "TS![3]"
                 );
             } else {
-                ERC20(approval.token).safeTransferFrom(
+                ERC20(approvals[i].token).safeTransferFrom(
                     user,
                     msg.sender,
                     getAbsoluteAmount(approvals[i], user),
@@ -135,10 +139,10 @@ contract TokenSpender is Ownable {
         uint256 current;
 
         for (uint256 i = 0; i < approvals.length; i++) {
-            required = getAbsoluteAmount(approval, user);
+            required = getAbsoluteAmount(approvals[i], user);
             current = ERC20(approvals[i].token).allowance(user, address(this));
 
-            allowances[i] = Allowance({
+            allowances[i] = TokenAmount({
                 token: approvals[i].token,
                 amount: required > current ? required - current : 0
             });
