@@ -466,7 +466,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(ZrxAdapter, { from: accounts[0] });
   adapters.push([ZrxAdapter.address]);
   tokens.push([zrxAdapterTokens]);
-  protocolNames.push('0x3078205374616b696e67');
+  protocolNames.push('0x3078205374616b696e67'); // '0x Staking'
   metadata.push([
     '0x Staking',
     'Liquidity rewards with ZRX',
@@ -576,6 +576,7 @@ module.exports = async (deployer, network, accounts) => {
           web3.utils.toHex('ERC20'),
           web3.utils.toHex('AToken'),
           web3.utils.toHex('Balancer pool token'),
+          web3.utils.toHex('SmartToken'),
           web3.utils.toHex('CToken'),
           web3.utils.toHex('Curve pool token'),
           web3.utils.toHex('MToken'),
@@ -584,7 +585,6 @@ module.exports = async (deployer, network, accounts) => {
           web3.utils.toHex('Chai token'),
           web3.utils.toHex('PoolTogether pool'),
           web3.utils.toHex('SetToken'),
-          web3.utils.toHex('SmartToken'),
           web3.utils.toHex('Uniswap V1 pool token'),
           web3.utils.toHex('Weth'),
         ],
