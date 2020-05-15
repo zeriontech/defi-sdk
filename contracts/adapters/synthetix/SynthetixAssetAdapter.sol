@@ -39,6 +39,7 @@ interface CurveRewards {
  * The iETHRewards contract is available here
  * github.com/Synthetixio/Unipool/blob/master/contracts/iETHRewards.sol.
  */
+// solhint-disable-next-line contract-name-camelcase
 interface iETHRewards {
     function earned(address) external view returns (uint256);
 }
