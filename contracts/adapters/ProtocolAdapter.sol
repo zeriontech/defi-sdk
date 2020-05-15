@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 
@@ -24,20 +26,22 @@ pragma experimental ABIEncoderV2;
  */
 abstract contract ProtocolAdapter {
 
-    /**
-     * @dev MUST return "Asset" or "Debt".
-     * SHOULD be implemented by the public constant state variable.
-     */
-    function adapterType() external pure virtual returns (bytes32);
+    bytes32 public immutable adapterType;
+
+    constructor(bytes32 _adapterType) internal {
+        adapterType = _adapterType;
+    }
 
     /**
-     * @dev MUST return token type (default is "ERC20").
-     * SHOULD be implemented by the public constant state variable.
+     * @dev MUST return amount and type of the given token
+     * locked on the protocol by the given account.
      */
-    function tokenType() external pure virtual returns (bytes32);
-
-    /**
-     * @dev MUST return amount of the given token locked on the protocol by the given account.
-     */
-    function getBalance(address token, address account) public view virtual returns (uint256);
+    function getBalance(
+        address token,
+        address account
+    )
+        public
+        view
+        virtual
+        returns (uint256, bytes32);
 }

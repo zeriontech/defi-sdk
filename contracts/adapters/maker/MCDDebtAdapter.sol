@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
@@ -63,17 +65,21 @@ interface DssCdpManager {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract MCDDebtAdapter is ProtocolAdapter, MKRAdapter {
-
-    bytes32 public constant override adapterType = "Debt";
-
-    bytes32 public constant override tokenType = "ERC20";
+contract MCDDebtAdapter is ProtocolAdapter("Debt"), MKRAdapter {
 
     /**
      * @return Amount of debt of the given account for the protocol.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address, address account) public view override returns (uint256) {
+    function getBalance(
+        address,
+        address account
+    )
+        public
+        view
+        override
+        returns (uint256, bytes32)
+    {
         DssCdpManager manager = DssCdpManager(MANAGER);
         Vat vat = Vat(VAT);
         Jug jug = Jug(JUG);
@@ -93,6 +99,6 @@ contract MCDDebtAdapter is ProtocolAdapter, MKRAdapter {
             totalValue = totalValue + mkrRmul(art, currentRate);
         }
 
-        return totalValue;
+        return (totalValue, "ERC20");
     }
 }

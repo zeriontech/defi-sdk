@@ -12,11 +12,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { Ownable } from "./Ownable.sol";
+import { TokenAdapter } from "./adapters/TokenAdapter.sol";
 
 
 /**
@@ -26,19 +29,10 @@ import { Ownable } from "./Ownable.sol";
  */
 abstract contract TokenAdapterManager is Ownable {
 
-    bytes32 internal constant INITIAL_NAME = "Initial token name";
-
-    // adapter name => next adapter name (linked list)
-    mapping (bytes32 => bytes32) internal nextTokenAdapterName;
-    // adapter name => adapter info
-    mapping (bytes32 => address) internal tokenAdapter;
-
-    /**
-     * @notice Initializes contract storage.
-     */
-    constructor() internal {
-        nextTokenAdapterName[INITIAL_NAME] = INITIAL_NAME;
-    }
+    // token adapters names
+    bytes32[] internal tokenAdapters;
+    // token adapter tokenAdapterName => adapter address
+    mapping (bytes32 => address) internal tokenAdapterAddress;
 
     /**
      * @notice Adds new token adapters.
@@ -93,10 +87,10 @@ abstract contract TokenAdapterManager is Ownable {
         public
         onlyOwner
     {
-        require(isValidTokenAdapter(tokenAdapterName), "TAM: bad name!");
+        require(isValidTokenAdapter(tokenAdapterName), "TAM: bad tokenAdapterName!");
         require(adapter != address(0), "TAM: zero!");
 
-        tokenAdapter[tokenAdapterName] = adapter;
+        tokenAdapterAddress[tokenAdapterName] = adapter;
     }
 
     /**
@@ -107,39 +101,21 @@ abstract contract TokenAdapterManager is Ownable {
         view
         returns (bytes32[] memory)
     {
-        uint256 counter = 0;
-        bytes32 currentTokenAdapterName = nextTokenAdapterName[INITIAL_NAME];
-
-        while (currentTokenAdapterName != INITIAL_NAME) {
-            currentTokenAdapterName = nextTokenAdapterName[currentTokenAdapterName];
-            counter++;
-        }
-
-        bytes32[] memory tokenAdapterNames = new bytes32[](counter);
-        counter = 0;
-        currentTokenAdapterName = nextTokenAdapterName[INITIAL_NAME];
-
-        while (currentTokenAdapterName != INITIAL_NAME) {
-            tokenAdapterNames[counter] = currentTokenAdapterName;
-            currentTokenAdapterName = nextTokenAdapterName[currentTokenAdapterName];
-            counter++;
-        }
-
-        return tokenAdapterNames;
+        return tokenAdapters;
     }
 
     /**
      * @param tokenAdapterName Name of token adapter.
      * @return Address of token adapter.
      */
-    function getTokenAdapter(
+    function getTokenAdapterAddress(
         bytes32 tokenAdapterName
     )
         public
         view
         returns (address)
     {
-        return tokenAdapter[tokenAdapterName];
+        return tokenAdapterAddress[tokenAdapterName];
     }
 
     /**
@@ -153,7 +129,7 @@ abstract contract TokenAdapterManager is Ownable {
         view
         returns (bool)
     {
-        return nextTokenAdapterName[tokenAdapterName] != bytes32(0) && tokenAdapterName != INITIAL_NAME;
+        return tokenAdapterAddress[tokenAdapterName] != address(0);
     }
 
     /**
@@ -168,15 +144,13 @@ abstract contract TokenAdapterManager is Ownable {
     )
         internal
     {
-        require(tokenAdapterName != INITIAL_NAME, "TAM: initial name!");
-        require(tokenAdapterName != bytes32(0), "TAM: empty name!");
-        require(nextTokenAdapterName[tokenAdapterName] == bytes32(0), "TAM: name exists!");
+        require(!isValidTokenAdapter(tokenAdapterName), "TAM: tokenAdapterName exists!");
         require(adapter != address(0), "TAM: zero!");
+        require(TokenAdapter(adapter).tokenType() == tokenAdapterName, "TAM: wrong tokenAdapterName/type!");
 
-        nextTokenAdapterName[tokenAdapterName] = nextTokenAdapterName[INITIAL_NAME];
-        nextTokenAdapterName[INITIAL_NAME] = tokenAdapterName;
+        tokenAdapters.push(tokenAdapterName);
 
-        tokenAdapter[tokenAdapterName] = adapter;
+        tokenAdapterAddress[tokenAdapterName] = adapter;
     }
 
     /**
@@ -188,18 +162,20 @@ abstract contract TokenAdapterManager is Ownable {
     )
         internal
     {
-        require(isValidTokenAdapter(tokenAdapterName), "TAM: bad name!");
+        require(isValidTokenAdapter(tokenAdapterName), "TAM: bad tokenAdapterName!");
 
-        bytes32 prevTokenAdapterName;
-        bytes32 currentTokenAdapterName = nextTokenAdapterName[tokenAdapterName];
-        while (currentTokenAdapterName != tokenAdapterName) {
-            prevTokenAdapterName = currentTokenAdapterName;
-            currentTokenAdapterName = nextTokenAdapterName[currentTokenAdapterName];
+        delete tokenAdapterAddress[tokenAdapterName];
+
+        uint256 index = 0;
+        while (tokenAdapters[index] != tokenAdapterName) {
+            index++;
         }
 
-        nextTokenAdapterName[prevTokenAdapterName] = nextTokenAdapterName[tokenAdapterName];
-        delete nextTokenAdapterName[tokenAdapterName];
+        uint256 length = tokenAdapters.length;
+        if (index != length - 1) {
+            tokenAdapters[index] = tokenAdapters[length - 1];
+        }
 
-        delete tokenAdapter[tokenAdapterName];
+        tokenAdapters.pop();
     }
 }

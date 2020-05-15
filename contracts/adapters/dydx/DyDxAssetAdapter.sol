@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { DyDxAdapter } from "./DyDxAdapter.sol";
@@ -58,18 +60,22 @@ interface SoloMargin {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract DyDxAssetAdapter is ProtocolAdapter, DyDxAdapter {
-
-    bytes32 public constant override adapterType = "Asset";
-
-    bytes32 public constant override tokenType = "ERC20";
+contract DyDxAssetAdapter is ProtocolAdapter("Asset"), DyDxAdapter {
 
     /**
      * @return Amount of tokens held by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address token, address account) public view override returns (uint256) {
+    function getBalance(
+        address token,
+        address account
+    )
+        public
+        view
+        override
+        returns (uint256, bytes32)
+    {
         Wei memory accountWei = SoloMargin(SOLO).getAccountWei(Info(account, 0), getMarketId(token));
-        return accountWei.sign ? accountWei.value : 0;
+        return (accountWei.sign ? accountWei.value : 0, "ERC20");
     }
 }

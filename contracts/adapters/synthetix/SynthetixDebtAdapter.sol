@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
@@ -46,21 +48,25 @@ interface Synthetix {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract SynthetixDebtAdapter is ProtocolAdapter {
+contract SynthetixDebtAdapter is ProtocolAdapter("Debt") {
 
     address internal constant SNX = 0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F;
-
-    bytes32 public constant override adapterType = "Debt";
-
-    bytes32 public constant override tokenType = "ERC20";
 
     /**
      * @return Amount of debt of the given account for the protocol.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address, address account) public view override returns (uint256) {
+    function getBalance(
+        address,
+        address account
+    )
+        public
+        view
+        override
+        returns (uint256, bytes32)
+    {
         Synthetix synthetix = Synthetix(Proxy(SNX).target());
 
-        return synthetix.debtBalanceOf(account, "sUSD");
+        return (synthetix.debtBalanceOf(account, "sUSD"), "ERC20");
     }
 }

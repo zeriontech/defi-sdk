@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../ERC20.sol";
@@ -27,7 +29,7 @@ import { StringHelpers } from "../StringHelpers.sol";
  * @dev Implementation of TokenAdapter abstract contract function.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract ERC20TokenAdapter is TokenAdapter {
+contract ERC20TokenAdapter is TokenAdapter("ERC20") {
 
     using StringHelpers for bytes32;
 
@@ -51,6 +53,7 @@ contract ERC20TokenAdapter is TokenAdapter {
         if (token == ETH) {
             return TokenMetadata({
                 token: ETH,
+                tokenType: tokenType,
                 name: "Ether",
                 symbol: "ETH",
                 decimals: uint8(18)
@@ -58,6 +61,7 @@ contract ERC20TokenAdapter is TokenAdapter {
         } else if (token == SAI) {
             return TokenMetadata({
                 token: SAI,
+                tokenType: tokenType,
                 name: "Sai Stablecoin v1.0",
                 symbol: "SAI",
                 decimals: uint8(18)
@@ -65,6 +69,7 @@ contract ERC20TokenAdapter is TokenAdapter {
         } else if (token == CSAI) {
             return TokenMetadata({
                 token: CSAI,
+                tokenType: tokenType,
                 name: "Compound Sai",
                 symbol: "cSAI",
                 decimals: uint8(8)

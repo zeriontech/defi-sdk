@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -39,7 +41,7 @@ interface CToken {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CompoundTokenAdapter is TokenAdapter {
+contract CompoundTokenAdapter is TokenAdapter("CToken") {
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;
@@ -50,15 +52,15 @@ contract CompoundTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        Component[] memory underlyingTokens = new Component[](1);
+        Component[] memory underlyingComponents= new Component[](1);
 
-        underlyingTokens[0] = Component({
+        underlyingComponents[0] = Component({
             token: getUnderlying(token),
             tokenType: "ERC20",
             rate: CToken(token).exchangeRateStored()
         });
 
-        return underlyingTokens;
+        return underlyingComponents;
     }
 
     /**
@@ -69,6 +71,7 @@ contract CompoundTokenAdapter is TokenAdapter {
         if (token == CSAI) {
             return TokenMetadata({
                 token: CSAI,
+                tokenType: tokenType,
                 name: "Compound Sai",
                 symbol: "cSAI",
                 decimals: uint8(8)

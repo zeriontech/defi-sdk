@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -37,7 +39,7 @@ interface BasePool {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract PoolTogetherTokenAdapter is TokenAdapter {
+contract PoolTogetherTokenAdapter is TokenAdapter("Pool together pool") {
 
     address internal constant SAI_POOL = 0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84;
 
@@ -46,15 +48,15 @@ contract PoolTogetherTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        Component[] memory underlyingTokens = new Component[](1);
+        Component[] memory underlyingComponents= new Component[](1);
 
-        underlyingTokens[0] = Component({
+        underlyingComponents[0] = Component({
             token: BasePool(token).token(),
             tokenType: "ERC20",
             rate: 1e18
         });
 
-        return underlyingTokens;
+        return underlyingComponents;
     }
 
     /**

@@ -12,11 +12,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
-import { Approval } from "./Structs.sol";
+import { TransactionData, Action, Input, Output } from "./Structs.sol";
 
 
 contract SignatureVerifier {
@@ -38,32 +40,68 @@ contract SignatureVerifier {
         )
     );
 
-    bytes32 public constant APPROVAL_TYPEHASH = keccak256(
+    bytes32 public constant TX_DATA_TYPEHASH = keccak256(
         abi.encodePacked(
-            "Approval(",
-            "address token,",
-            "uint256 amount,",
-            "uint8 amountType,",
-            "uint256 nonce",
+            "TransactionData(Action[] actions,Input[] inputs,Output[] outputs,uint256 nonce)",
+            ACTION_ENCODED_TYPE,
+            INPUT_ENCODED_TYPE,
+            OUTPUT_ENCODED_TYPE
+        )
+    );
+
+    bytes32 public constant ACTION_TYPEHASH = keccak256(abi.encodePacked(ACTION_ENCODED_TYPE));
+    string internal constant ACTION_ENCODED_TYPE = string(
+        abi.encodePacked(
+            "Action(",
+            "uint8 actionType,",
+            "bytes32 protocolName,",
+            "uint256 adapterIndex,",
+            "address[] tokens,",
+            "uint256[] amounts,",
+            "uint8[] amountTypes,",
+            "bytes data",
             ")"
         )
     );
 
-    /// @return Hash to be signed by assets supplier.
-    function hashApproval(
-        Approval memory approval
+    bytes32 public constant INPUT_TYPEHASH = keccak256(abi.encodePacked(INPUT_ENCODED_TYPE));
+    string internal constant INPUT_ENCODED_TYPE = string(
+        abi.encodePacked(
+            "Input(",
+            "address token,",
+            "uint256 amount,",
+            "uint8 amountType,",
+            "uint256 fee,",
+            "address beneficiary",
+            ")"
+        )
+    );
+
+    bytes32 public constant OUTPUT_TYPEHASH = keccak256(abi.encodePacked(OUTPUT_ENCODED_TYPE));
+    string internal constant OUTPUT_ENCODED_TYPE = string(
+        abi.encodePacked(
+            "Output(",
+            "address token,",
+            "uint256 amount",
+            ")"
+        )
+    );
+
+    /// @return Hash to be signed by tokens supplier.
+    function hashTransactionData(
+        TransactionData memory data
     )
-        public
+        internal
         view
         returns (bytes32)
     {
-        bytes32 approvalHash = keccak256(
+        bytes32 transactionDataHash = keccak256(
             abi.encode(
-                APPROVAL_TYPEHASH,
-                approval.token,
-                approval.amount,
-                approval.amountType,
-                approval.nonce
+                TX_DATA_TYPEHASH,
+                hashActions(data.actions),
+                hashInputs(data.inputs),
+                hashOutputs(data.outputs),
+                data.nonce
             )
         );
 
@@ -72,58 +110,170 @@ contract SignatureVerifier {
                 bytes1(0x19),
                 bytes1(0x01),
                 domainSeparator,
-                approvalHash
+                transactionDataHash
             )
         );
     }
 
-    function getUserFromSignatures(
-        Approval[] memory approvals,
-        bytes[] memory signatures
-    )
-        internal
-        returns (address payable)
-    {
-        address initialSigner = getUserFromSignature(approvals[0], signatures[0]);
-        require(nonces[initialSigner] == approvals[0].nonce, "SV: wrong nonce!");
-
-        address signer;
-        for (uint256 i = 1; i < approvals.length; i++) {
-            signer = getUserFromSignature(approvals[i], signatures[i]);
-            require(initialSigner == signer, "SV: wrong sig!");
-            require(nonces[signer] == approvals[i].nonce, "SV: wrong nonce!");
-        }
-
-        nonces[initialSigner]++;
-        return payable(initialSigner);
-    }
-
-    function getUserFromSignature(
-        Approval memory approval,
-        bytes memory signature
+    function hashActions(
+        Action[] memory actions
     )
         internal
         view
-        returns (address)
+        returns (bytes32)
+    {
+        bytes memory actionsData = new bytes(0);
+        for (uint256 i = 0; i < actions.length; i++) {
+            actionsData = abi.encode(actionsData, hashAction(actions[i]));
+        }
+
+        return keccak256(actionsData);
+    }
+
+    function hashAction(
+        Action memory action
+    )
+        internal
+        view
+        returns (bytes32)
+    {
+        bytes32 actionHash = keccak256(
+            abi.encode(
+                ACTION_TYPEHASH,
+                action.actionType,
+                action.protocolName,
+                action.adapterIndex,
+                keccak256(abi.encodePacked(action.tokens)),
+                keccak256(abi.encodePacked(action.amounts)),
+                keccak256(abi.encodePacked(action.amountTypes)),
+                keccak256(action.data)
+            )
+        );
+
+        return keccak256(
+            abi.encodePacked(
+                bytes1(0x19),
+                bytes1(0x01),
+                domainSeparator,
+                actionHash
+            )
+        );
+    }
+
+    function hashInputs(
+        Input[] memory inputs
+    )
+        internal
+        view
+        returns (bytes32)
+    {
+        bytes memory inputsData = new bytes(0);
+        for (uint256 i = 0; i < inputs.length; i++) {
+            inputsData = abi.encode(inputsData, hashInput(inputs[i]));
+        }
+
+        return keccak256(inputsData);
+    }
+
+    function hashInput(
+        Input memory input
+    )
+        internal
+        view
+        returns (bytes32)
+    {
+        bytes32 inputHash = keccak256(
+            abi.encode(
+                INPUT_TYPEHASH,
+                input.token,
+                input.amount,
+                input.amountType,
+                input.fee,
+                input.beneficiary
+            )
+        );
+
+        return keccak256(
+            abi.encodePacked(
+                bytes1(0x19),
+                bytes1(0x01),
+                domainSeparator,
+                inputHash
+            )
+        );
+    }
+
+    function hashOutputs(
+        Output[] memory outputs
+    )
+        internal
+        view
+        returns (bytes32)
+    {
+        bytes memory outputsData = new bytes(0);
+        for (uint256 i = 0; i < outputs.length; i++) {
+            outputsData = abi.encode(outputsData, hashOutput(outputs[i]));
+        }
+
+        return keccak256(outputsData);
+    }
+
+    function hashOutput(
+        Output memory output
+    )
+        internal
+        view
+        returns (bytes32)
+    {
+        bytes32 outputHash = keccak256(
+            abi.encode(
+                OUTPUT_TYPEHASH,
+                output.token,
+                output.amount
+            )
+        );
+
+        return keccak256(
+            abi.encodePacked(
+                bytes1(0x19),
+                bytes1(0x01),
+                domainSeparator,
+                outputHash
+            )
+        );
+    }
+
+    function getAccountFromSignature(
+        TransactionData memory data,
+        bytes memory signature
+    )
+        internal
+        returns (address payable)
     {
         require(signature.length == 65, "SV: wrong sig length!");
         bytes32 r;
         bytes32 s;
         uint8 v;
 
-        // solhint-disable-next-line no-inline-assembly
         // solium-disable-next-line no-inline-assembly
+        // solhint-disable-next-line no-inline-assembly
         assembly {
             r := mload(add(signature, 0x20))
             s := mload(add(signature, 0x40))
             v := byte(0, mload(add(signature, 0x60)))
         }
 
-        return ecrecover(
-            hashApproval(approval),
+        address signer = ecrecover(
+            hashTransactionData(data),
             v,
             r,
             s
         );
+
+        require(nonces[signer] == data.nonce, "SV: wrong nonce!");
+
+        nonces[signer]++;
+
+        return payable(signer);
     }
 }

@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -46,21 +48,25 @@ interface CompoundRegistry {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CompoundDebtAdapter is ProtocolAdapter {
+contract CompoundDebtAdapter is ProtocolAdapter("Debt") {
 
-    address internal constant REGISTRY = 0xE6881a7d699d3A350Ce5bba0dbD59a9C36778Cb7;
-
-    bytes32 public constant override adapterType = "Debt";
-
-    bytes32 public constant override tokenType = "ERC20";
+    address internal constant REGISTRY = 0xD0ff11EA62C867F6dF8E9cc37bb5339107FAb141;
 
     /**
      * @return Amount of debt of the given account for the protocol.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address token, address account) public view override returns (uint256) {
+    function getBalance(
+        address token,
+        address account
+    )
+        public
+        view
+        override
+        returns (uint256, bytes32)
+    {
         CToken cToken = CToken(CompoundRegistry(REGISTRY).getCToken(token));
 
-        return cToken.borrowBalanceStored(account);
+        return (cToken.borrowBalanceStored(account), "ERC20");
     }
 }

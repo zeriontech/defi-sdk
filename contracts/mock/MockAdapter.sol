@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
@@ -23,7 +25,7 @@ import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
  * @notice Mock protocol adapter for tests.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract MockAdapter is ProtocolAdapter {
+contract MockAdapter is ProtocolAdapter("Asset") {
 
     mapping (address => uint256) internal balanceOf;
 
@@ -31,14 +33,18 @@ contract MockAdapter is ProtocolAdapter {
         balanceOf[msg.sender] = 1000;
     }
 
-    bytes32 public constant override adapterType = "Asset";
-
-    bytes32 public constant override tokenType = "ERC20";
-
     /**
      * @return Mock balance.
      */
-    function getBalance(address, address account) public view override returns (uint256) {
-        return balanceOf[account];
+    function getBalance(
+        address,
+        address account
+    )
+        public
+        view
+        override
+        returns (uint256, bytes32)
+    {
+        return (balanceOf[account], "ERC20");
     }
 }

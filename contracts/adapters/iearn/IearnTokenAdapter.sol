@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -38,21 +40,21 @@ interface YToken {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract IearnTokenAdapter is TokenAdapter {
+contract IearnTokenAdapter is TokenAdapter("YToken") {
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        Component[] memory underlyingTokens = new Component[](1);
+        Component[] memory underlyingComponents= new Component[](1);
 
-        underlyingTokens[0] = Component({
+        underlyingComponents[0] = Component({
             token: YToken(token).token(),
             tokenType: "ERC20",
             rate: YToken(token).getPricePerFullShare()
         });
 
-        return underlyingTokens;
+        return underlyingComponents;
     }
 }

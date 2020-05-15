@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -26,7 +28,7 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  * @dev Implementation of TokenAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract WethTokenAdapter is TokenAdapter {
+contract WethTokenAdapter is TokenAdapter("Weth") {
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
@@ -35,14 +37,14 @@ contract WethTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address) external view override returns (Component[] memory) {
-        Component[] memory underlyingTokens = new Component[](1);
+        Component[] memory underlyingComponents= new Component[](1);
 
-        underlyingTokens[0] = Component({
+        underlyingComponents[0] = Component({
             token: ETH,
             tokenType: "ERC20",
             rate: 1e18
         });
 
-        return underlyingTokens;
+        return underlyingComponents;
     }
 }

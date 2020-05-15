@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../ERC20.sol";
@@ -26,6 +28,12 @@ import { TokenMetadata, Component } from "../Structs.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract TokenAdapter {
+
+    bytes32 public immutable tokenType;
+
+    constructor(bytes32 _tokenType) internal {
+        tokenType = _tokenType;
+    }
 
     /**
      * @dev MUST return array of Component structs with underlying tokens rates for the given token.
@@ -50,6 +58,7 @@ abstract contract TokenAdapter {
     function getMetadata(address token) public view virtual returns (TokenMetadata memory) {
         return TokenMetadata({
             token: token,
+            tokenType: tokenType,
             name: getName(token),
             symbol: getSymbol(token),
             decimals: getDecimals(token)

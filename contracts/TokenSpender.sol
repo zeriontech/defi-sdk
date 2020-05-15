@@ -12,27 +12,36 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
-import { Approval, AmountType, TokenAmount } from "./Structs.sol";
-import { Ownable } from "./Ownable.sol";
+import { TransactionData, AmountType, Input, Output } from "./Structs.sol";
 import { ERC20 } from "./ERC20.sol";
 import { SafeERC20 } from "./SafeERC20.sol";
+import { SignatureVerifier } from "./SignatureVerifier.sol";
+import { Ownable } from "./Ownable.sol";
+import { Logic } from "./Logic.sol";
 
 interface GST2 {
     function freeUpTo(uint256) external;
 }
 
 
-contract TokenSpender is Ownable {
+contract TokenSpender is SignatureVerifier, Ownable {
     using SafeERC20 for ERC20;
 
+    Logic public immutable logic;
     address internal constant GAS_TOKEN = 0x0000000000b3F879cb30FE243b4Dfee438691c04;
     uint256 internal constant BASE = 1e18;
     uint256 internal constant BENEFICIARY_FEE_LIMIT = 1e16; // 1%
     uint256 internal constant BENEFICIARY_SHARE = 2e17; // 80%
+
+    constructor(address payable _logic) public {
+        logic = Logic(_logic);
+    }
 
     function returnLostTokens(
         ERC20 token,
@@ -49,11 +58,157 @@ contract TokenSpender is Ownable {
         }
     }
 
+    function startExecution(
+        TransactionData memory data,
+        bytes memory signature
+    )
+        public
+        payable
+    {
+        startExecution(data, getAccountFromSignature(data, signature));
+    }
+
+    function startExecution(
+        TransactionData memory data
+    )
+        public
+        payable
+    {
+        startExecution(data, msg.sender);
+    }
+
+    function getRequiredAllowances(
+        Input[] memory inputs,
+        address account
+    )
+        public
+        view
+        returns (Output[] memory allowances)
+    {
+        allowances = new Output[](inputs.length);
+        uint256 required;
+        uint256 current;
+
+        for (uint256 i = 0; i < inputs.length; i++) {
+            required = getAbsoluteAmount(inputs[i], account);
+            current = ERC20(inputs[i].token).allowance(account, address(this));
+
+            allowances[i] = Output({
+                token: inputs[i].token,
+                amount: required > current ? required - current : 0
+            });
+        }
+    }
+
+    function startExecution(
+        TransactionData memory data,
+        address payable account
+    )
+        internal
+    {
+        // save initial gas to burn gas token later
+        uint256 gas = gasleft();
+        // transfer tokens to logic and handle fees (if any)
+        transferTokens(data.inputs, account);
+        // call Logic contract with all provided ETH, actions, expected outputs and account address
+        logic.executeActions{value: msg.value}(data.actions, data.outputs, account);
+        // burn gas token to save some gas
+        freeGasToken(gas - gasleft());
+    }
+
+    function transferTokens(
+        Input[] memory inputs,
+        address account
+    )
+        internal
+    {
+        uint256 absoluteAmount;
+
+        for (uint256 i = 0; i < inputs.length; i++) {
+            absoluteAmount = getAbsoluteAmount(inputs[i], account);
+            require(absoluteAmount > 0, "TS: 0 amount!");
+
+            // in case inputs includes fees:
+            //     - absolute amount is amount calculated based on inputs
+            //     - logic amount is absolute amount excluding fee set in inputs
+            //     - beneficiary amount is beneficiary share (80%) of non-logic amount
+            //     - this contract fee is the rest of beneficiary fee (~20%)
+            // otherwise no fees are charged!
+            if (inputs[i].fee > 0) {
+                require(inputs[i].beneficiary != address(0), "TS: bad beneficiary!");
+                require(inputs[i].fee < BENEFICIARY_FEE_LIMIT, "TS: bad fee!");
+
+                uint256 logicAmount = mul(absoluteAmount, BASE - inputs[i].fee) / BASE;
+                uint256 beneficiaryAmount = mul(absoluteAmount - logicAmount, BENEFICIARY_SHARE) / BASE;
+                uint256 thisAmount = absoluteAmount - logicAmount - beneficiaryAmount;
+
+                if (logicAmount > 0) {
+                    ERC20(inputs[i].token).safeTransferFrom(
+                        account,
+                        address(logic),
+                        logicAmount,
+                        "TS![1]"
+                    );
+                }
+
+                if (beneficiaryAmount > 0) {
+                    ERC20(inputs[i].token).safeTransferFrom(
+                        account,
+                        inputs[i].beneficiary,
+                        beneficiaryAmount,
+                        "TS![2]"
+                    );
+                }
+
+                if (thisAmount > 0) {
+                    ERC20(inputs[i].token).safeTransferFrom(
+                        account,
+                        address(this),
+                        absoluteAmount - logicAmount - beneficiaryAmount,
+                        "TS![3]"
+                    );
+                }
+            } else {
+                ERC20(inputs[i].token).safeTransferFrom(
+                    account,
+                    address(logic),
+                    absoluteAmount,
+                    "TS!"
+                );
+            }
+        }
+    }
+
+    function getAbsoluteAmount(
+        Input memory input,
+        address account
+    )
+        internal
+        view
+        returns (uint256)
+    {
+        address token = input.token;
+        AmountType amountType = input.amountType;
+        uint256 amount = input.amount;
+
+        require(amountType != AmountType.None, "TS: bad type!");
+
+        if (amountType == AmountType.Relative) {
+            require(amount <= BASE, "TS: bad value!");
+            if (amount == BASE) {
+                return ERC20(token).balanceOf(account);
+            } else {
+                return ERC20(token).balanceOf(account) * amount / BASE;
+            }
+        } else {
+            return amount;
+        }
+    }
+
     function freeGasToken(
         uint256 desiredAmount
     )
-        external
-        onlyOwner
+        internal
     {
         uint256 safeAmount = 0;
         uint256 gas = gasleft();
@@ -71,107 +226,17 @@ contract TokenSpender is Ownable {
         }
     }
 
-    function issueTokens(
-        Approval[] memory approvals,
-        address user
-    )
-        public
-        onlyOwner
-        returns (address[] memory assetsToBeWithdrawn)
-    {
-        assetsToBeWithdrawn = new address[](approvals.length);
-        uint256 absoluteAmount;
-        uint256 logicAmount;
-        uint256 beneficiaryAmount;
-
-        for (uint256 i = 0; i < approvals.length; i++) {
-            assetsToBeWithdrawn[i] = approvals[i].token;
-
-            if (approvals[i].fee > 0) {
-                require(approvals[i].beneficiary != address(0), "TS: bad beneficiary!");
-                require(approvals[i].fee < BENEFICIARY_FEE_LIMIT, "TS: bad fee!");
-
-                absoluteAmount = getAbsoluteAmount(approvals[i], user);
-                logicAmount = absoluteAmount * (BASE - approvals[i].fee) / BASE;
-                beneficiaryAmount = absoluteAmount * approvals[i].fee * BENEFICIARY_SHARE / BASE;
-
-                ERC20(approvals[i].token).safeTransferFrom(
-                    user,
-                    msg.sender,
-                    logicAmount,
-                    "TS![1]"
-                );
-
-                ERC20(approvals[i].token).safeTransferFrom(
-                    user,
-                    approvals[i].beneficiary,
-                    beneficiaryAmount,
-                    "TS![2]"
-                );
-
-                ERC20(approvals[i].token).safeTransferFrom(
-                    user,
-                    address(this),
-                    absoluteAmount - logicAmount - beneficiaryAmount,
-                    "TS![3]"
-                );
-            } else {
-                ERC20(approvals[i].token).safeTransferFrom(
-                    user,
-                    msg.sender,
-                    getAbsoluteAmount(approvals[i], user),
-                    "TS!"
-                );
-            }
-        }
-    }
-
-    function getRequiredAllowances(
-        Approval[] memory approvals,
-        address user
-    )
-        public
-        view
-        returns (TokenAmount[] memory allowances)
-    {
-        allowances = new TokenAmount[](approvals.length);
-        uint256 required;
-        uint256 current;
-
-        for (uint256 i = 0; i < approvals.length; i++) {
-            required = getAbsoluteAmount(approvals[i], user);
-            current = ERC20(approvals[i].token).allowance(user, address(this));
-
-            allowances[i] = TokenAmount({
-                token: approvals[i].token,
-                amount: required > current ? required - current : 0
-            });
-        }
-    }
-
-    function getAbsoluteAmount(
-        Approval memory approval,
-        address user
+    function mul(
+        uint256 a,
+        uint256 b
     )
         internal
-        view
+        pure
         returns (uint256)
     {
-        address token = approval.token;
-        AmountType amountType = approval.amountType;
-        uint256 amount = approval.amount;
+        uint256 c = a * b;
+        require(c / a == b, "TS: multiplication overflow");
 
-        require(amountType != AmountType.None, "TS: bad type!");
-
-        if (amountType == AmountType.Relative) {
-            require(amount <= BASE, "TS: bad value!");
-            if (amount == BASE) {
-                return ERC20(token).balanceOf(user);
-            } else {
-                return ERC20(token).balanceOf(user) * amount / BASE;
-            }
-        } else {
-            return amount;
-        }
+        return c;
     }
 }

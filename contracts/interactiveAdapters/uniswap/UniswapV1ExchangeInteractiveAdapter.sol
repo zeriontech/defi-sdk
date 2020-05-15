@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -132,7 +134,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
 
             tokensToBeWithdrawn = new address[](1);
             tokensToBeWithdrawn[0] = toToken;
-            try Exchange(exchange).ethToTokenSwapInput.value(amount)(
+            try Exchange(exchange).ethToTokenSwapInput{value: amount}(
                 uint256(1),
                 // solhint-disable-next-line not-rely-on-time
                 now
@@ -207,7 +209,6 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
         require(tokens.length == 1, "UEIA: should be 1 tokens/amounts/types!");
         require(amountTypes[0] == AmountType.Absolute, "UEIA: wrong type!");
         address fromToken = abi.decode(data, (address));
-        tokensToBeWithdrawn;
 
         if (fromToken == ETH) {
             address exchange = Factory(FACTORY).getExchange(tokens[0]);
@@ -215,7 +216,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
 
             tokensToBeWithdrawn = new address[](1);
             tokensToBeWithdrawn[0] = tokens[0];
-            try Exchange(exchange).ethToTokenSwapOutput.value(msg.value)(
+            try Exchange(exchange).ethToTokenSwapOutput{value: msg.value}(
                 amounts[0],
                 // solhint-disable-next-line not-rely-on-time
                 now
@@ -254,7 +255,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
                 try Exchange(exchange).tokenToTokenSwapOutput(
                     amounts[0],
                     balance,
-                    uint256(-1),
+                    type(uint256).max,
                     // solhint-disable-next-line not-rely-on-time
                     now,
                     tokens[0]

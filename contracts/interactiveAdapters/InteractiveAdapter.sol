@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
@@ -104,14 +106,29 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
     {
         if (amountType == AmountType.Relative) {
             require(amount <= RELATIVE_AMOUNT_BASE, "L: wrong relative value!");
-
+            (uint256 balance, ) = getBalance(token, address(this));
             if (amount == RELATIVE_AMOUNT_BASE) {
-                return getBalance(token, address(this));
+                return balance;
             } else {
-                return getBalance(token, address(this)) * amount / RELATIVE_AMOUNT_BASE; // TODO overflow check
+                // TODO overflow check
+                return mul(balance, amount) / RELATIVE_AMOUNT_BASE;
             }
         } else {
             return amount;
         }
+    }
+
+    function mul(
+        uint256 a,
+        uint256 b
+    )
+        internal
+        pure
+        returns (uint256)
+    {
+        uint256 c = a * b;
+        require(c / a == b, "IA: multiplication overflow");
+
+        return c;
     }
 }

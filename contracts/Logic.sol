@@ -12,11 +12,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
-import { Action, Approval, ActionType, AmountType } from "./Structs.sol";
+import { Action, Output, ActionType, AmountType } from "./Structs.sol";
 import { InteractiveAdapter } from "./interactiveAdapters/InteractiveAdapter.sol";
 import { ProtocolAdapter } from "./adapters/ProtocolAdapter.sol";
 import { ERC20 } from "./ERC20.sol";
@@ -32,10 +34,10 @@ import { SafeERC20 } from "./SafeERC20.sol";
  * TODO: reentrancy lock
  * TODO: safe math
  */
-contract Logic is SignatureVerifier, Ownable {
+contract Logic {
     using SafeERC20 for ERC20;
 
-    TokenSpender public tokenSpender;
+    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     AdapterRegistry public adapterRegistry;
 
     event ExecutedAction(uint256 index);
@@ -45,87 +47,34 @@ contract Logic is SignatureVerifier, Ownable {
     )
         public
     {
-        tokenSpender = new TokenSpender();
         adapterRegistry = AdapterRegistry(_adapterRegistry);
     }
 
     // solhint-disable-next-line no-empty-blocks
     receive() external payable {}
 
-    function returnLostTokens(
-        ERC20 token
-    )
-        external
-        onlyOwner
-    {
-        token.safeTransfer(msg.sender, token.balanceOf(address(this)), "L![1]");
-
-        if (token.balanceOf(address(tokenSpender)) > 0) {
-            tokenSpender.returnLostTokens(token, msg.sender);
-        }
-
-        uint256 ethBalance = address(this).balance;
-        if (ethBalance > 0) {
-            msg.sender.transfer(ethBalance);
-        }
-    }
-
     /**
-     * @notice Execute actions on signer's behalf.
+     * @notice Execute actions on `account`'s behalf.
      * @param actions Array with actions.
-     * @param approvals Array with tokens approvals for the actions.
-     * @param signatures Array with signatures for the approvals.
-     */
-     function executeActions(
-         Action[] memory actions,
-         Approval[] memory approvals,
-         bytes[] memory signatures
-     )
-         public
-         payable
-     {
-         executeActions(actions, approvals, getUserFromSignatures(approvals, signatures));
-     }
-
-    /**
-     * @notice Execute actions on `msg.sender`'s behalf.
-     * @param actions Array with actions.
-     * @param approvals Array with tokens approvals for the actions.
+     * @param minReturns Array with tokens approvals for the actions.
+     * @param account address that will receive all the resulting funds.
      */
     function executeActions(
         Action[] memory actions,
-        Approval[] memory approvals
+        Output[] memory minReturns,
+        address payable account
     )
         public
         payable
     {
-        executeActions(actions, approvals, msg.sender);
-    }
-
-    /**
-     * @notice Execute actions on `user`'s behalf.
-     * @param actions Array with actions.
-     * @param approvals Array with tokens approvals for the actions.
-     */
-    function executeActions(
-        Action[] memory actions,
-        Approval[] memory approvals,
-        address payable user
-    )
-        internal
-    {
-        uint256 gas = gasleft();
-        address[][] memory tokensToBeWithdrawn = new address[][](actions.length + 1);
-
-        tokensToBeWithdrawn[actions.length] = tokenSpender.issueTokens(approvals, user);
+        address[][] memory tokensToBeWithdrawn = new address[][](actions.length);
 
         for (uint256 i = 0; i < actions.length; i++) {
             tokensToBeWithdrawn[i] = callInteractiveAdapter(actions[i]);
             emit ExecutedAction(i);
         }
 
-        returnTokens(tokensToBeWithdrawn, user);
-        tokenSpender.freeGasToken(gas - gasleft());
+        returnTokens(minReturns, tokensToBeWithdrawn, account);
     }
 
     function callInteractiveAdapter(
@@ -172,26 +121,41 @@ contract Logic is SignatureVerifier, Ownable {
     }
 
     function returnTokens(
+        Output[] memory minReturns,
         address[][] memory tokensToBeWithdrawn,
-        address payable user
+        address payable account
     )
         internal
     {
-        ERC20 token;
-        uint256 tokenBalance;
+        address token;
+        uint256 amount;
+
+        for (uint256 i = 0; i < minReturns.length; i++) {
+            token = minReturns[i].token;
+            if (token == ETH) {
+                amount = address(this).balance;
+                require(amount > minReturns[i].amount, "L: less then min!");
+                account.transfer(amount);
+            } else {
+                amount = ERC20(token).balanceOf(address(this));
+                require(amount > minReturns[i].amount, "L: less then min!");
+                ERC20(token).safeTransfer(account, amount, "L!");
+            }
+        }
+
         for (uint256 i = 0; i < tokensToBeWithdrawn.length; i++) {
             for (uint256 j = 0; j < tokensToBeWithdrawn[i].length; j++) {
-                token = ERC20(tokensToBeWithdrawn[i][j]);
-                tokenBalance = token.balanceOf(address(this));
-                if (tokenBalance > 0) {
-                    token.safeTransfer(user, tokenBalance, "L!");
+                token = tokensToBeWithdrawn[i][j];
+                amount = ERC20(token).balanceOf(address(this));
+                if (amount > 0) {
+                    ERC20(token).safeTransfer(account, amount, "L!");
                 }
             }
         }
 
-        uint256 ethBalance = address(this).balance;
-        if (ethBalance > 0) {
-            user.transfer(ethBalance);
+        amount = address(this).balance;
+        if (amount > 0) {
+            account.transfer(amount);
         }
     }
 }

@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -63,7 +65,7 @@ interface RebalancingSetToken {
  * @dev Implementation of TokenAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract TokenSetsTokenAdapter is TokenAdapter {
+contract TokenSetsTokenAdapter is TokenAdapter("SetToken") {
 
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
@@ -82,10 +84,10 @@ contract TokenSetsTokenAdapter is TokenAdapter {
         uint256 naturalUnit = setToken.naturalUnit();
         address[] memory components = setToken.getComponents();
 
-        Component[] memory underlyingTokens = new Component[](components.length);
+        Component[] memory underlyingComponents= new Component[](components.length);
 
         bytes32 underlyingTokenType;
-        for (uint256 i = 0; i < underlyingTokens.length; i++) {
+        for (uint256 i = 0; i < underlyingComponents.length; i++) {
             if (components[i] == WETH) {
                 underlyingTokenType = "Weth";
             } else {
@@ -96,13 +98,13 @@ contract TokenSetsTokenAdapter is TokenAdapter {
                 }
             }
 
-            underlyingTokens[i] = Component({
+            underlyingComponents[i] = Component({
                 token: components[i],
                 tokenType: "ERC20",
                 rate: tokenRate * unitShares[i] / naturalUnit
             });
         }
 
-        return underlyingTokens;
+        return underlyingComponents;
     }
 }

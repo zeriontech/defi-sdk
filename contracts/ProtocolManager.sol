@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { Ownable } from "./Ownable.sol";
@@ -27,11 +29,9 @@ import { ProtocolMetadata } from "./Structs.sol";
  */
 abstract contract ProtocolManager is Ownable {
 
-    bytes32 internal constant INITIAL_PROTOCOL_NAME = "Initial protocol name";
-
-    // protocol name => next protocol name (linked list)
-    mapping (bytes32 => bytes32) internal nextProtocolName;
-    // protocol name => protocol struct with info and adapters
+    // protocol names
+    bytes32[] internal protocols;
+    // protocol name => ProtocolMetadata struct with protocol info
     mapping (bytes32 => ProtocolMetadata) internal protocolMetadata;
     // protocol name => array of protocol adapters
     mapping (bytes32 => address[]) internal protocolAdapters;
@@ -39,17 +39,10 @@ abstract contract ProtocolManager is Ownable {
     mapping (address => address[]) internal supportedTokens;
 
     /**
-     * @notice Initializes contract storage.
-     */
-    constructor() internal {
-        nextProtocolName[INITIAL_PROTOCOL_NAME] = INITIAL_PROTOCOL_NAME;
-    }
-
-    /**
      * @notice Adds new protocols.
      * The function is callable only by the owner.
      * @param protocolNames Names of the protocols to be added.
-     * @param metadata Array with new protocols metadata.
+     * @param metadata Array with new protocols' metadata.
      * @param adapters Nested arrays with new protocols' adapters.
      * @param tokens Nested arrays with adapters' supported tokens.
      */
@@ -62,12 +55,13 @@ abstract contract ProtocolManager is Ownable {
         public
         onlyOwner
     {
-        require(protocolNames.length == metadata.length, "PM: names & metadata differ!");
-        require(protocolNames.length == adapters.length, "PM: names & adapters differ!");
-        require(protocolNames.length == tokens.length, "PM: names & tokens differ!");
-        require(protocolNames.length != 0, "PM: empty!");
+        uint256 length = protocolNames.length;
+        require(length == metadata.length, "PM: protocols & metadata differ!");
+        require(length == adapters.length, "PM: protocols & adapters differ!");
+        require(length == tokens.length, "PM: protocols & tokens differ!");
+        require(length != 0, "PM: empty!");
 
-        for (uint256 i = 0; i < protocolNames.length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             addProtocol(protocolNames[i], metadata[i], adapters[i], tokens[i]);
         }
     }
@@ -188,7 +182,9 @@ abstract contract ProtocolManager is Ownable {
      * @param protocolName Name of the protocol to be updated.
      * @param index Index of the adapter to be updated.
      * @param newAdapterAddress New adapter address to be added instead.
+     * Zero address is allowed, but only with empty newSupportedTokens array.
      * @param newSupportedTokens New supported tokens to be added instead.
+     * Empty array is always allowed.
      */
     function updateProtocolAdapter(
         bytes32 protocolName,
@@ -201,7 +197,9 @@ abstract contract ProtocolManager is Ownable {
     {
         require(isValidProtocol(protocolName), "PM: bad name!");
         require(index < protocolAdapters[protocolName].length, "PM: bad index!");
-        require(newAdapterAddress != address(0), "PM: empty!");
+        if (newAdapterAddress == address(0)) {
+            require(newSupportedTokens.length == 0, "PM: tokens for zero adapter!");
+        }
 
         address adapterAddress = protocolAdapters[protocolName][index];
 
@@ -224,44 +222,32 @@ abstract contract ProtocolManager is Ownable {
         view
         returns (bytes32[] memory)
     {
-        uint256 counter = 0;
-        bytes32 currentProtocolName = nextProtocolName[INITIAL_PROTOCOL_NAME];
-
-        while (currentProtocolName != INITIAL_PROTOCOL_NAME) {
-            currentProtocolName = nextProtocolName[currentProtocolName];
-            counter++;
-        }
-
-        bytes32[] memory protocolNames = new bytes32[](counter);
-        counter = 0;
-        currentProtocolName = nextProtocolName[INITIAL_PROTOCOL_NAME];
-
-        while (currentProtocolName != INITIAL_PROTOCOL_NAME) {
-            protocolNames[counter] = currentProtocolName;
-            currentProtocolName = nextProtocolName[currentProtocolName];
-            counter++;
-        }
-
-        return protocolNames;
+        return protocols;
     }
 
     /**
-     * @param protocolName Name of the protocol.
-     * @return Metadata of the protocol.
+     * @param protocolNames Array of protocols protocols.
+     * @return Array of protocols metadata.
      */
-    function getProtocolMetadata(
-        bytes32 protocolName
+    function getProtocolsMetadata(
+        bytes32[] memory protocolNames
     )
         public
         view
-        returns (ProtocolMetadata memory)
+        returns (ProtocolMetadata[] memory)
     {
-        return (protocolMetadata[protocolName]);
+        ProtocolMetadata[] memory protocolsMetadata = new ProtocolMetadata[](protocolNames.length);
+
+        for (uint256 i = 0; i < protocolNames.length; i++) {
+            protocolsMetadata[i] = getProtocolMetadata(protocolNames[i]);
+        }
+
+        return protocolsMetadata;
     }
 
     /**
      * @param protocolName Name of the protocol.
-     * @return Array of protocol adapters.
+     * @return Array of protocol's adapters.
      */
     function getProtocolAdapters(
         bytes32 protocolName
@@ -274,7 +260,7 @@ abstract contract ProtocolManager is Ownable {
     }
 
     /**
-     * @param adapter Address of the protocol adapter.
+     * @param adapter Address of the adapter.
      * @return Array of supported tokens.
      */
     function getSupportedTokens(
@@ -298,7 +284,7 @@ abstract contract ProtocolManager is Ownable {
         view
         returns (bool)
     {
-        return nextProtocolName[protocolName] != bytes32(0) && protocolName != INITIAL_PROTOCOL_NAME;
+        return protocolMetadata[protocolName].version > 0;
     }
 
     /**
@@ -317,20 +303,17 @@ abstract contract ProtocolManager is Ownable {
     )
         internal
     {
-        require(protocolName != INITIAL_PROTOCOL_NAME, "PM: initial name!");
-        require(protocolName != bytes32(0), "PM: empty name!");
-        require(nextProtocolName[protocolName] == bytes32(0), "PM: name exists!");
+        require(!isValidProtocol(protocolName), "PM: name exists!");
         require(adapters.length == tokens.length, "PM: adapters & tokens differ!");
 
-        nextProtocolName[protocolName] = nextProtocolName[INITIAL_PROTOCOL_NAME];
-        nextProtocolName[INITIAL_PROTOCOL_NAME] = protocolName;
+        protocols.push(protocolName);
 
         protocolMetadata[protocolName] = ProtocolMetadata({
             name: metadata.name,
             description: metadata.description,
             websiteURL: metadata.websiteURL,
             iconURL: metadata.iconURL,
-            version: metadata.version
+            version: 1
         });
 
         for (uint256 i = 0; i < adapters.length; i++) {
@@ -349,22 +332,24 @@ abstract contract ProtocolManager is Ownable {
     {
         require(isValidProtocol(protocolName), "PM: bad name!");
 
-        bytes32 prevProtocolName;
-        bytes32 currentProtocolName = nextProtocolName[protocolName];
-        while (currentProtocolName != protocolName) {
-            prevProtocolName = currentProtocolName;
-            currentProtocolName = nextProtocolName[currentProtocolName];
-        }
-
-        delete protocolMetadata[protocolName];
-
-        nextProtocolName[prevProtocolName] = nextProtocolName[protocolName];
-        delete nextProtocolName[protocolName];
-
         uint256 length = protocolAdapters[protocolName].length;
         for (uint256 i = length - 1; i < length; i--) {
             removeProtocolAdapter(protocolName, i);
         }
+
+        delete protocolMetadata[protocolName];
+
+        uint256 index = 0;
+        while (protocols[index] != protocolName) {
+            index++;
+        }
+
+        length = protocols.length;
+        if (index != length - 1) {
+            protocols[index] = protocols[length - 1];
+        }
+
+        protocols.pop();
     }
 
     /**
@@ -372,7 +357,9 @@ abstract contract ProtocolManager is Ownable {
      * The function is callable only by the owner.
      * @param protocolName Name of the protocol to be updated.
      * @param adapter New adapter to be added.
+     * Zero address is allowed, but only with empty tokens array.
      * @param tokens New adapter's supported tokens.
+     * Empty array is always allowed.
      */
     function addProtocolAdapter(
         bytes32 protocolName,
@@ -412,5 +399,15 @@ abstract contract ProtocolManager is Ownable {
         }
 
         protocolAdapters[protocolName].pop();
+    }
+
+    function getProtocolMetadata(
+        bytes32 protocolName
+    )
+        internal
+        view
+        returns (ProtocolMetadata memory)
+    {
+        return protocolMetadata[protocolName];
     }
 }

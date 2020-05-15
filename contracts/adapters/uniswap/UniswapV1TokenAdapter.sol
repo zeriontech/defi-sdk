@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -62,7 +64,7 @@ interface Factory {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UniswapV1TokenAdapter is TokenAdapter {
+contract UniswapV1TokenAdapter is TokenAdapter("Uniswap V1 pool token") {
 
     using StringHelpers for bytes32;
 
@@ -79,9 +81,9 @@ contract UniswapV1TokenAdapter is TokenAdapter {
         address underlyingToken = Factory(FACTORY).getToken(token);
         uint256 totalSupply = ERC20(token).totalSupply();
         bytes32 underlyingTokenType;
-        Component[] memory underlyingTokens = new Component[](2);
+        Component[] memory underlyingComponents= new Component[](2);
 
-        underlyingTokens[0] = Component({
+        underlyingComponents[0] = Component({
             token: ETH,
             tokenType: "ERC20",
             rate: token.balance * 1e18 / totalSupply
@@ -93,13 +95,13 @@ contract UniswapV1TokenAdapter is TokenAdapter {
             underlyingTokenType = "ERC20";
         }
 
-        underlyingTokens[1] = Component({
+        underlyingComponents[1] = Component({
             token: underlyingToken,
             tokenType: underlyingTokenType,
             rate: ERC20(underlyingToken).balanceOf(token) * 1e18 / totalSupply
         });
 
-        return underlyingTokens;
+        return underlyingComponents;
     }
 
     /**

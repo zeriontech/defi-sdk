@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -26,18 +28,22 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * Base contract for TokenSets interactive adapter.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract TokenSetsAdapter is ProtocolAdapter {
-
-    bytes32 public constant override adapterType = "Asset";
-
-    bytes32 public constant override tokenType = "SetToken";
+contract TokenSetsAdapter is ProtocolAdapter("Asset") {
 
     /**
      * @return Amount of SetTokens held by the given account.
      * @param token Address of the SetToken contract.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address token, address account) public view override returns (uint256) {
-        return ERC20(token).balanceOf(account);
+    function getBalance(
+        address token,
+        address account
+    )
+        public
+        view
+        override
+        returns (uint256, bytes32)
+    {
+        return (ERC20(token).balanceOf(account), "SetToken");
     }
 }

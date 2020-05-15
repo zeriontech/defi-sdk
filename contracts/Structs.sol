@@ -12,13 +12,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 
 struct ProtocolBalance {
-    ProtocolMetadata metadata;
     AdapterBalance[] adapterBalances;
 }
 
@@ -34,7 +35,7 @@ struct ProtocolMetadata {
 
 struct AdapterBalance {
     AdapterMetadata metadata;
-    FullTokenBalance[] balances;
+    TokenBalance[] balances;
 }
 
 
@@ -57,10 +58,12 @@ struct TokenBalance {
 }
 
 
-// ERC20-style token metadata
-// 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE address is used for ETH
+// Token address and tokenType
+// and ERC20-style token metadata
+// 0xEeee...EEeE address is used for ETH
 struct TokenMetadata {
     address token;
+    bytes32 tokenType;
     string name;
     string symbol;
     uint8 decimals;
@@ -77,6 +80,14 @@ struct Component {
 //================================InteractiveAdapters structs=====================================
 
 
+struct TransactionData {
+    Action[] actions;
+    Input[] inputs;
+    Output[] outputs;
+    uint256 nonce;
+}
+
+
 struct Action {
     ActionType actionType;
     bytes32 protocolName;
@@ -88,17 +99,16 @@ struct Action {
 }
 
 
-struct Approval {
+struct Input {
     address token;
     uint256 amount;
     AmountType amountType;
-    uint256 nonce;
     uint256 fee;
     address beneficiary;
 }
 
 
-struct TokenAmount {
+struct Output {
     address token;
     uint256 amount;
 }

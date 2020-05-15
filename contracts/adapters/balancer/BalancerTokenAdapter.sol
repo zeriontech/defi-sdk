@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -51,7 +53,7 @@ interface BPool {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract BalancerTokenAdapter is TokenAdapter {
+contract BalancerTokenAdapter is TokenAdapter("Balancer pool token") {
 
     using StringHelpers for bytes32;
     using StringHelpers for uint256;
@@ -61,58 +63,56 @@ contract BalancerTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        address[] memory underlyingTokensAddresses;
+        address[] memory underlyingTokens;
         try BPool(token).getFinalTokens() returns (address[] memory result) {
-            underlyingTokensAddresses = result;
+            underlyingTokens = result;
         } catch {
-            underlyingTokensAddresses = new address[](0);
+            underlyingTokens = new address[](0);
         }
 
         uint256 totalSupply = ERC20(token).totalSupply();
 
-        Component[] memory underlyingTokens = new Component[](underlyingTokensAddresses.length);
+        Component[] memory underlyingComponents= new Component[](underlyingTokens.length);
 
-        address underlyingToken;
         bytes32 underlyingTokenType;
-        for (uint256 i = 0; i < underlyingTokens.length; i++) {
-            underlyingToken = underlyingTokensAddresses[i];
-
-            try CToken(underlyingToken).isCToken{gas: 2000}() returns (bool) {
+        for (uint256 i = 0; i < underlyingComponents.length; i++) {
+            try CToken(underlyingTokens[i]).isCToken{gas: 2000}() returns (bool) {
                 underlyingTokenType = "CToken";
             } catch {
                 underlyingTokenType = "ERC20";
             }
 
-            underlyingTokens[i] = Component({
-                token: underlyingToken,
+            underlyingComponents[i] = Component({
+                token: underlyingTokens[i],
                 tokenType: underlyingTokenType,
-                rate: BPool(token).getBalance(underlyingToken) * 1e18 / totalSupply
+                rate: BPool(token).getBalance(underlyingTokens[i]) * 1e18 / totalSupply
             });
         }
 
-        return underlyingTokens;
+        return underlyingComponents;
     }
 
     /**
      * @return Pool name.
      */
     function getName(address token) internal view override returns (string memory) {
-        address[] memory underlyingTokensAddresses;
+        address[] memory underlyingTokens;
         try BPool(token).getFinalTokens() returns (address[] memory result) {
-            underlyingTokensAddresses = result;
+            underlyingTokens = result;
         } catch {
-            return "Unknown pool";
+            return "Unknown Pool";
         }
 
         string memory poolName = "";
-        uint256 lastIndex = underlyingTokensAddresses.length - 1;
-        for (uint256 i = 0; i < underlyingTokensAddresses.length; i++) {
+        uint256 lastIndex = underlyingTokens.length - 1;
+        for (uint256 i = 0; i < underlyingTokens.length; i++) {
             poolName = string(abi.encodePacked(
                 poolName,
-                getPoolElement(token, underlyingTokensAddresses[i]),
-                i == lastIndex ? " pool" : " + "
+                getPoolElement(token, underlyingTokens[i]),
+                i == lastIndex ? " Pool" : " + "
             ));
         }
+
         return poolName;
     }
 

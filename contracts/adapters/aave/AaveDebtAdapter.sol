@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
@@ -46,23 +48,27 @@ interface LendingPool {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract AaveDebtAdapter is ProtocolAdapter {
+contract AaveDebtAdapter is ProtocolAdapter("Debt") {
 
     address internal constant PROVIDER = 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8;
-
-    bytes32 public constant override adapterType = "Debt";
-
-    bytes32 public constant override tokenType = "ERC20";
 
     /**
      * @return Amount of debt of the given account for the protocol.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address token, address account) public view override returns (uint256) {
+    function getBalance(
+        address token,
+        address account
+    )
+        public
+        view
+        override
+        returns (uint256, bytes32)
+    {
         LendingPool pool = LendingPoolAddressesProvider(PROVIDER).getLendingPool();
 
         (, uint256 debtAmount) = pool.getUserReserveData(token, account);
 
-        return debtAmount;
+        return (debtAmount, "ERC20");
     }
 }

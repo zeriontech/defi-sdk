@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -41,7 +43,7 @@ interface Pot {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract ChaiTokenAdapter is TokenAdapter, MKRAdapter {
+contract ChaiTokenAdapter is TokenAdapter("Chai token"), MKRAdapter {
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
@@ -49,15 +51,15 @@ contract ChaiTokenAdapter is TokenAdapter, MKRAdapter {
      */
     function getComponents(address) external view override returns (Component[] memory) {
         Pot pot = Pot(POT);
-        Component[] memory underlyingTokens = new Component[](1);
+        Component[] memory underlyingComponents= new Component[](1);
 
-        underlyingTokens[0] = Component({
+        underlyingComponents[0] = Component({
             token: DAI,
             tokenType: "ERC20",
             // solhint-disable-next-line not-rely-on-time
             rate: mkrRmul(mkrRmul(mkrRpow(pot.dsr(), now - pot.rho(), ONE), pot.chi()), 1e18)
         });
 
-        return underlyingTokens;
+        return underlyingComponents;
     }
 }

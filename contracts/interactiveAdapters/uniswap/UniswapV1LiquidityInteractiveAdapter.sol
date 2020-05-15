@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -104,7 +106,7 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
         tokensToBeWithdrawn[1] = tokens[1];
 
         ERC20(tokens[1]).safeApprove(exchange, tokenAmount, "ULIA![1]");
-        try Exchange(exchange).addLiquidity.value(ethAmount)(
+        try Exchange(exchange).addLiquidity{value: ethAmount}(
             uint256(1),
             tokenAmount,
             // solhint-disable-next-line not-rely-on-time

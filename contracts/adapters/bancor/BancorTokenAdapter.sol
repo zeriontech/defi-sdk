@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -80,7 +82,7 @@ interface BancorFormula {
  * @dev Implementation of TokenAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract BancorTokenAdapter is TokenAdapter {
+contract BancorTokenAdapter is TokenAdapter("SmartToken") {
 
     address internal constant REGISTRY = 0x52Ae12ABe5D8BD778BD5397F99cA900624CfADD4;
 
@@ -94,13 +96,13 @@ contract BancorTokenAdapter is TokenAdapter {
         address converter = SmartToken(token).owner();
         uint256 length = BancorConverter(converter).connectorTokenCount();
 
-        Component[] memory underlyingTokens = new Component[](length);
+        Component[] memory underlyingComponents= new Component[](length);
 
         address underlyingToken;
         for (uint256 i = 0; i < length; i++) {
             underlyingToken = BancorConverter(converter).connectorTokens(i);
 
-            underlyingTokens[i] = Component({
+            underlyingComponents[i] = Component({
                 token: underlyingToken,
                 tokenType: "ERC20",
                 rate: BancorFormula(formula).calculateLiquidateReturn(
@@ -112,6 +114,6 @@ contract BancorTokenAdapter is TokenAdapter {
             });
         }
 
-        return underlyingTokens;
+        return underlyingComponents;
     }
 }

@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { TokenMetadata, Component } from "../Structs.sol";
@@ -24,7 +26,7 @@ import { TokenAdapter } from "../adapters/TokenAdapter.sol";
  * @notice Mock token adapter for tests.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract MockTokenAdapter is TokenAdapter {
+contract MockTokenAdapter is TokenAdapter("Mock") {
 
     /**
      * @return Empty Component array.
@@ -41,6 +43,7 @@ contract MockTokenAdapter is TokenAdapter {
     function getMetadata(address token) public view override returns (TokenMetadata memory) {
         return TokenMetadata({
             token: token,
+            tokenType: tokenType,
             name: "Mock",
             symbol: "MCK",
             decimals: 18

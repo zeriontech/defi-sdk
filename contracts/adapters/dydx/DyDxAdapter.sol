@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 
@@ -41,7 +43,7 @@ abstract contract DyDxAdapter {
         } else if (token == DAI) {
             return uint256(3);
         } else {
-            return uint256(-1);
+            return type(uint256).max;
         }
     }
 }

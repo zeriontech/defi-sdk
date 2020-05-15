@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -36,11 +38,7 @@ interface Staking {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract ZrxAdapter is ProtocolAdapter {
-
-    bytes32 public constant override adapterType = "Asset";
-
-    bytes32 public constant override tokenType = "ERC20";
+contract ZrxAdapter is ProtocolAdapter("Asset") {
 
     address internal constant STAKING = 0xa26e80e7Dea86279c6d778D702Cc413E6CFfA777;
 
@@ -48,7 +46,15 @@ contract ZrxAdapter is ProtocolAdapter {
      * @return Amount of ZRX locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address, address account) public view override returns (uint256) {
-        return Staking(STAKING).getTotalStake(account);
+    function getBalance(
+        address,
+        address account
+    )
+        public
+        view
+        override
+        returns (uint256, bytes32)
+    {
+        return (Staking(STAKING).getTotalStake(account), "ERC20");
     }
 }

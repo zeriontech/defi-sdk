@@ -12,8 +12,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.6;
+pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
@@ -39,22 +41,26 @@ interface Pot {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract DSRAdapter is ProtocolAdapter, MKRAdapter {
-
-    bytes32 public constant override adapterType = "Asset";
-
-    bytes32 public constant override tokenType = "ERC20";
+contract DSRAdapter is ProtocolAdapter("Asset"), MKRAdapter {
 
     /**
      * @return Amount of DAI locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      * This function repeats the calculations made in drip() function of Pot contract.
      */
-    function getBalance(address, address account) public view override returns (uint256) {
+    function getBalance(
+        address,
+        address account
+    )
+        public
+        view
+        override
+        returns (uint256, bytes32)
+    {
         Pot pot = Pot(POT);
         // solhint-disable-next-line not-rely-on-time
         uint256 chi = mkrRmul(mkrRpow(pot.dsr(), now - pot.rho(), ONE), pot.chi());
 
-        return mkrRmul(chi, pot.pie(account));
+        return (mkrRmul(chi, pot.pie(account)), "ERC20");
     }
 }
