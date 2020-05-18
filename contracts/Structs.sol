@@ -20,6 +20,7 @@ pragma experimental ABIEncoderV2;
 
 
 struct ProtocolBalance {
+    bytes32 protocolName;
     AdapterBalance[] adapterBalances;
 }
 
@@ -40,12 +41,12 @@ struct AdapterBalance {
 
 
 struct AdapterMetadata {
-    address adapterAddress;
-    bytes32 adapterType; // "Asset", "Debt"
+    address adapterAddress; // Address of the adapter.
+    bytes32 adapterType;    // May be "Asset", "Debt", or "Exchange".
 }
 
 
-// token and its underlying tokens (if exist) balances
+// The struct consists of token and its underlying tokens (if exist) balances.
 struct FullTokenBalance {
     TokenBalance base;
     TokenBalance[] underlying;
@@ -58,12 +59,16 @@ struct TokenBalance {
 }
 
 
-// Token address and tokenType
-// and ERC20-style token metadata
-// 0xEeee...EEeE address is used for ETH
+// The struct consists of token address, token type, and ERC20-style token metadata.
+// NOTE: 0xEeee...EEeE address is used for ETH.
 struct TokenMetadata {
     address token;
     bytes32 tokenType;
+    ERC20Metadata erc20;
+}
+
+
+struct ERC20Metadata {
     string name;
     string symbol;
     uint8 decimals;
@@ -71,9 +76,9 @@ struct TokenMetadata {
 
 
 struct Component {
-    address token;
-    bytes32 tokenType;  // "ERC20" by default
-    uint256 rate;  // price per full share (1e18)
+    address token;     // Token address.
+    bytes32 tokenType; // "ERC20" by default.
+    uint256 rate;      // Price per full share (1e18).
 }
 
 

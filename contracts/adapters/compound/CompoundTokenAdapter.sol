@@ -19,7 +19,7 @@ pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
-import { TokenMetadata, Component } from "../../Structs.sol";
+import { ERC20Metadata, Component } from "../../Structs.sol";
 import { CompoundRegistry } from "./CompoundRegistry.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
@@ -64,14 +64,12 @@ contract CompoundTokenAdapter is TokenAdapter("CToken") {
     }
 
     /**
-     * @return TokenMetadata struct with ERC20-style token info.
+     * @return ERC20Metadata struct with ERC20-style token info.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getMetadata(address token) public view override returns (TokenMetadata memory) {
+    function getMetadata(address token) public view override returns (ERC20Metadata memory) {
         if (token == CSAI) {
-            return TokenMetadata({
-                token: CSAI,
-                tokenType: tokenType,
+            return ERC20Metadata({
                 name: "Compound Sai",
                 symbol: "cSAI",
                 decimals: uint8(8)

@@ -19,7 +19,7 @@ pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
-import { TokenMetadata, Component } from "../../Structs.sol";
+import { Component } from "../../Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { MKRAdapter } from "./MKRAdapter.sol";
 

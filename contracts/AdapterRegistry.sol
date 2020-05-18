@@ -26,6 +26,7 @@ import {
     FullTokenBalance,
     TokenBalance,
     TokenMetadata,
+    ERC20Metadata,
     Component
 } from "./Structs.sol";
 import { Ownable } from "./Ownable.sol";
@@ -128,6 +129,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
 
         for (uint256 i = 0; i < protocolNames.length; i++) {
             protocolBalances[i] = ProtocolBalance({
+                protocolName: protocolNames[i],
                 adapterBalances: getAdapterBalances(account, protocolAdapters[protocolNames[i]])
             });
             if (protocolBalances[i].adapterBalances.length > 0) {
@@ -425,24 +427,36 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         tokenBalance.amount = amount;
 
         if (address(adapter) != address(0)) {
-            try adapter.getMetadata(token) returns (TokenMetadata memory result) {
-                tokenBalance.metadata = result;
+            try adapter.getMetadata(
+                token
+            )
+                returns (ERC20Metadata memory erc20)
+            {
+                tokenBalance.metadata = TokenMetadata({
+                    token: token,
+                    tokenType: tokenType,
+                    erc20: erc20
+                });
             } catch {
                 tokenBalance.metadata = TokenMetadata({
                     token: token,
                     tokenType: tokenType,
-                    name: "Not available",
-                    symbol: "N/A",
-                    decimals: 0
+                    erc20: ERC20Metadata({
+                        name: "Not available",
+                        symbol: "N/A",
+                        decimals: 0
+                    })
                 });
             }
         } else {
             tokenBalance.metadata = TokenMetadata({
                 token: token,
                 tokenType: tokenType,
-                name: "Not available",
-                symbol: "N/A",
-                decimals: 0
+                erc20: ERC20Metadata({
+                    name: "Not available",
+                    symbol: "N/A",
+                    decimals: 0
+                })
             });
         }
 

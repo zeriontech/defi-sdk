@@ -48,8 +48,8 @@ abstract contract TokenAdapterManager is Ownable {
         onlyOwner
     {
         uint256 length = tokenAdapterNames.length;
+        require(length != 0, "TAM: empty![1]");
         require(length == adapters.length, "TAM: lengths differ!");
-        require(length != 0, "PM: empty!");
 
         for (uint256 i = 0; i < length; i++) {
             addTokenAdapter(tokenAdapterNames[i], adapters[i]);
@@ -67,7 +67,7 @@ abstract contract TokenAdapterManager is Ownable {
         public
         onlyOwner
     {
-        require(tokenAdapterNames.length != 0, "PM: empty!");
+        require(tokenAdapterNames.length != 0, "TAM: empty![2]");
 
         for (uint256 i = 0; i < tokenAdapterNames.length; i++) {
             removeTokenAdapter(tokenAdapterNames[i]);
@@ -80,15 +80,15 @@ abstract contract TokenAdapterManager is Ownable {
      * @param tokenAdapterName Name of token adapter to be updated.
      * @param adapter Address of token adapter to be added instead.
      */
-    function updateTokenAdapter(
+    function updateTokenAdapterAddress(
         bytes32 tokenAdapterName,
         address adapter
     )
         public
         onlyOwner
     {
-        require(isValidTokenAdapter(tokenAdapterName), "TAM: bad tokenAdapterName!");
-        require(adapter != address(0), "TAM: zero!");
+        require(isValidTokenAdapterName(tokenAdapterName), "TAM: bad name![1]");
+        require(adapter != address(0), "TAM: zero![1]");
 
         tokenAdapterAddress[tokenAdapterName] = adapter;
     }
@@ -122,7 +122,7 @@ abstract contract TokenAdapterManager is Ownable {
      * @param tokenAdapterName Name of token adapter.
      * @return Whether token adapter is valid.
      */
-    function isValidTokenAdapter(
+    function isValidTokenAdapterName(
         bytes32 tokenAdapterName
     )
         public
@@ -144,9 +144,9 @@ abstract contract TokenAdapterManager is Ownable {
     )
         internal
     {
-        require(!isValidTokenAdapter(tokenAdapterName), "TAM: tokenAdapterName exists!");
-        require(adapter != address(0), "TAM: zero!");
-        require(TokenAdapter(adapter).tokenType() == tokenAdapterName, "TAM: wrong tokenAdapterName/type!");
+        require(!isValidTokenAdapterName(tokenAdapterName), "TAM: name exists!");
+        require(adapter != address(0), "TAM: zero![2]");
+        require(TokenAdapter(adapter).tokenType() == tokenAdapterName, "TAM: wrong name/type!");
 
         tokenAdapters.push(tokenAdapterName);
 
@@ -162,7 +162,7 @@ abstract contract TokenAdapterManager is Ownable {
     )
         internal
     {
-        require(isValidTokenAdapter(tokenAdapterName), "TAM: bad tokenAdapterName!");
+        require(isValidTokenAdapterName(tokenAdapterName), "TAM: bad name![2]");
 
         delete tokenAdapterAddress[tokenAdapterName];
 
