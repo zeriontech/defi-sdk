@@ -43,27 +43,47 @@ contract.skip('SignatureVerifier', () => {
     console.log(`Approval hash to be signed: ${hashApproval}`);
 
     // sign
-    async function signer(token, amount, amountType, nonce) {
+    async function signer(actions, inputs, outputs, nonce) {
       const typedData = {
         types: {
           EIP712Domain: [
             { name: 'verifyingContract', type: 'address' },
           ],
-          Approval: [
+          TransactionData: [
+            { name: 'actions', type: 'Action[]' },
+            { name: 'inputs', type: 'Input[]' },
+            { name: 'outputs', type: 'Output[]' },
+            { name: 'nonce', type: 'uint256' },
+          ],
+          Action: [
+            { name: 'actionType', type: 'uint8' },
+            { name: 'protocolName', type: 'bytes32' },
+            { name: 'adapterIndex', type: 'uint256' },
+            { name: 'tokens', type: 'address[]' },
+            { name: 'amounts', type: 'uint256[]' },
+            { name: 'amountTypes', type: 'uint8[]' },
+            { name: 'data', type: 'bytes' },
+          ],
+          Input: [
             { name: 'token', type: 'address' },
             { name: 'amount', type: 'uint256' },
             { name: 'amountType', type: 'uint8' },
-            { name: 'nonce', type: 'uint256' },
+            { name: 'fee', type: 'uint256' },
+            { name: 'beneficiary', type: 'address' },
+          ],
+          Output: [
+            { name: 'token', type: 'address' },
+            { name: 'amount', type: 'uint256' },
           ],
         },
         domain: {
           verifyingContract: signatureVerifier.options.address,
         },
-        primaryType: 'Approval',
+        primaryType: 'TransacionData',
         message: {
-          token,
-          amount,
-          amountType,
+          actions,
+          inputs,
+          outputs,
           nonce,
         },
       };
@@ -79,9 +99,14 @@ contract.skip('SignatureVerifier', () => {
     );
 
     // decode signature
-    await signatureVerifier.methods['getUserFromSignatures((address,uint256,uint8,uint256)[],bytes[])'](
-      [['0x6B175474E89094C44Da98b954EedeAC495271d0F', 1000, 0, 0]],
-      [signature],
+    await signatureVerifier.methods.getAccountFromSignature(
+      [
+        [],
+        [],
+        [],
+        0,
+      ],
+      signature,
     )
       .call()
       .then((result) => {
