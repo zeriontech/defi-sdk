@@ -24,98 +24,93 @@ import { TransactionData, Action, Input, Output } from "./Structs.sol";
 contract SignatureVerifier {
     mapping (address => uint256) public nonces;
 
-    bytes32 public immutable domainSeparator = keccak256(
-        abi.encode(
-            DOMAIN_SEPARATOR_TYPEHASH,
-            address(this)
-        )
-    );
+    bytes32 internal immutable domainSeparator;
 
-    // 0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f
-    bytes32 public constant DOMAIN_SEPARATOR_TYPEHASH = keccak256(
+    bytes32 internal constant DOMAIN_SEPARATOR_TYPEHASH = keccak256(
         abi.encodePacked(
             "EIP712Domain(",
+            "string name,",
             "address verifyingContract",
             ")"
         )
     );
-
-    bytes32 public constant TX_DATA_TYPEHASH = keccak256(
+    bytes32 internal constant TX_DATA_TYPEHASH = keccak256(
         abi.encodePacked(
-            "TransactionData(Action[] actions,Input[] inputs,Output[] outputs,uint256 nonce)",
+            TX_DATA_ENCODED_TYPE,
             ACTION_ENCODED_TYPE,
             INPUT_ENCODED_TYPE,
             OUTPUT_ENCODED_TYPE
         )
     );
+    bytes32 internal constant ACTION_TYPEHASH = keccak256(ACTION_ENCODED_TYPE);
+    bytes32 internal constant INPUT_TYPEHASH = keccak256(INPUT_ENCODED_TYPE);
+    bytes32 internal constant OUTPUT_TYPEHASH = keccak256(OUTPUT_ENCODED_TYPE);
 
-    bytes32 public constant ACTION_TYPEHASH = keccak256(abi.encodePacked(ACTION_ENCODED_TYPE));
-    string internal constant ACTION_ENCODED_TYPE = string(
-        abi.encodePacked(
-            "Action(",
-            "uint8 actionType,",
-            "bytes32 protocolName,",
-            "uint256 adapterIndex,",
-            "address[] tokens,",
-            "uint256[] amounts,",
-            "uint8[] amountTypes,",
-            "bytes data",
-            ")"
-        )
+    bytes internal constant TX_DATA_ENCODED_TYPE = abi.encodePacked(
+        "TransactionData(",
+        "Action[] actions,",
+        "Input[] inputs,",
+        "Output[] outputs,",
+        "uint256 nonce",
+        ")"
+    );
+    bytes internal constant ACTION_ENCODED_TYPE = abi.encodePacked(
+        "Action(",
+        "uint8 actionType,",
+        "bytes32 protocolName,",
+        "uint256 adapterIndex,",
+        "address[] tokens,",
+        "uint256[] amounts,",
+        "uint8[] amountTypes,",
+        "bytes data",
+        ")"
+    );
+    bytes internal constant INPUT_ENCODED_TYPE = abi.encodePacked(
+        "Input(",
+        "address token,",
+        "uint256 amount,",
+        "uint8 amountType,",
+        "uint256 fee,",
+        "address beneficiary",
+        ")"
+    );
+    bytes internal constant OUTPUT_ENCODED_TYPE = abi.encodePacked(
+        "Output(",
+        "address token,",
+        "uint256 amount",
+        ")"
     );
 
-    bytes32 public constant INPUT_TYPEHASH = keccak256(abi.encodePacked(INPUT_ENCODED_TYPE));
-    string internal constant INPUT_ENCODED_TYPE = string(
-        abi.encodePacked(
-            "Input(",
-            "address token,",
-            "uint256 amount,",
-            "uint8 amountType,",
-            "uint256 fee,",
-            "address beneficiary",
-            ")"
-        )
-    );
-
-    bytes32 public constant OUTPUT_TYPEHASH = keccak256(abi.encodePacked(OUTPUT_ENCODED_TYPE));
-    string internal constant OUTPUT_ENCODED_TYPE = string(
-        abi.encodePacked(
-            "Output(",
-            "address token,",
-            "uint256 amount",
-            ")"
-        )
-    );
+    constructor(string memory name) public {
+        domainSeparator = keccak256(
+            abi.encode(
+                DOMAIN_SEPARATOR_TYPEHASH,
+                keccak256(abi.encodePacked(name)),
+                address(this)
+            )
+        );
+    }
 
     /// @return Hash to be signed by tokens supplier.
-    function hashTransactionData(
+    function hash(
         TransactionData memory data
     )
         internal
         view
         returns (bytes32)
     {
-        bytes32 transactionDataHash = keccak256(
+        return keccak256(
             abi.encode(
                 TX_DATA_TYPEHASH,
-                hashActions(data.actions),
-                hashInputs(data.inputs),
-                hashOutputs(data.outputs),
+                hash(data.actions),
+                hash(data.inputs),
+                hash(data.outputs),
                 data.nonce
-            )
-        );
-
-        return keccak256(
-            abi.encodePacked(
-                bytes1(0x19),
-                bytes1(0x01),
-                domainSeparator,
-                transactionDataHash
             )
         );
     }
 
-    function hashActions(
+    function hash(
         Action[] memory actions
     )
         internal
@@ -124,43 +119,27 @@ contract SignatureVerifier {
     {
         bytes memory actionsData = new bytes(0);
         for (uint256 i = 0; i < actions.length; i++) {
-            actionsData = abi.encode(actionsData, hashAction(actions[i]));
+            actionsData = abi.encodePacked(
+                actionsData,
+                keccak256(
+                    abi.encode(
+                        ACTION_TYPEHASH,
+                        actions[i].actionType,
+                        actions[i].protocolName,
+                        actions[i].adapterIndex,
+                        keccak256(abi.encodePacked(actions[i].tokens)),
+                        keccak256(abi.encodePacked(actions[i].amounts)),
+                        keccak256(abi.encodePacked(actions[i].amountTypes)),
+                        keccak256(actions[i].data)
+                    )
+                )
+            );
         }
 
         return keccak256(actionsData);
     }
 
-    function hashAction(
-        Action memory action
-    )
-        internal
-        view
-        returns (bytes32)
-    {
-        bytes32 actionHash = keccak256(
-            abi.encode(
-                ACTION_TYPEHASH,
-                action.actionType,
-                action.protocolName,
-                action.adapterIndex,
-                keccak256(abi.encodePacked(action.tokens)),
-                keccak256(abi.encodePacked(action.amounts)),
-                keccak256(abi.encodePacked(action.amountTypes)),
-                keccak256(action.data)
-            )
-        );
-
-        return keccak256(
-            abi.encodePacked(
-                bytes1(0x19),
-                bytes1(0x01),
-                domainSeparator,
-                actionHash
-            )
-        );
-    }
-
-    function hashInputs(
+    function hash(
         Input[] memory inputs
     )
         internal
@@ -169,41 +148,25 @@ contract SignatureVerifier {
     {
         bytes memory inputsData = new bytes(0);
         for (uint256 i = 0; i < inputs.length; i++) {
-            inputsData = abi.encode(inputsData, hashInput(inputs[i]));
+            inputsData = abi.encodePacked(
+                inputsData,
+                keccak256(
+                    abi.encode(
+                        INPUT_TYPEHASH,
+                        inputs[i].token,
+                        inputs[i].amount,
+                        inputs[i].amountType,
+                        inputs[i].fee,
+                        inputs[i].beneficiary
+                    )
+                )
+            );
         }
 
         return keccak256(inputsData);
     }
 
-    function hashInput(
-        Input memory input
-    )
-        internal
-        view
-        returns (bytes32)
-    {
-        bytes32 inputHash = keccak256(
-            abi.encode(
-                INPUT_TYPEHASH,
-                input.token,
-                input.amount,
-                input.amountType,
-                input.fee,
-                input.beneficiary
-            )
-        );
-
-        return keccak256(
-            abi.encodePacked(
-                bytes1(0x19),
-                bytes1(0x01),
-                domainSeparator,
-                inputHash
-            )
-        );
-    }
-
-    function hashOutputs(
+    function hash(
         Output[] memory outputs
     )
         internal
@@ -212,42 +175,26 @@ contract SignatureVerifier {
     {
         bytes memory outputsData = new bytes(0);
         for (uint256 i = 0; i < outputs.length; i++) {
-            outputsData = abi.encode(outputsData, hashOutput(outputs[i]));
+            outputsData = abi.encodePacked(
+                outputsData,
+                keccak256(
+                    abi.encode(
+                        OUTPUT_TYPEHASH,
+                        outputs[i].token,
+                        outputs[i].amount
+                    )
+                )
+            );
         }
 
         return keccak256(outputsData);
-    }
-
-    function hashOutput(
-        Output memory output
-    )
-        internal
-        view
-        returns (bytes32)
-    {
-        bytes32 outputHash = keccak256(
-            abi.encode(
-                OUTPUT_TYPEHASH,
-                output.token,
-                output.amount
-            )
-        );
-
-        return keccak256(
-            abi.encodePacked(
-                bytes1(0x19),
-                bytes1(0x01),
-                domainSeparator,
-                outputHash
-            )
-        );
     }
 
     function getAccountFromSignature(
         TransactionData memory data,
         bytes memory signature
     )
-        internal
+        public
         returns (address payable)
     {
         require(signature.length == 65, "SV: wrong sig length!");
@@ -264,7 +211,14 @@ contract SignatureVerifier {
         }
 
         address signer = ecrecover(
-            hashTransactionData(data),
+            keccak256(
+                abi.encodePacked(
+                    bytes1(0x19),
+                    bytes1(0x01),
+                    domainSeparator,
+                    hash(data)
+                )
+            ),
             v,
             r,
             s

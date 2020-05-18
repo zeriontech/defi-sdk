@@ -43,7 +43,7 @@ interface Pot {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract ChaiTokenAdapter is TokenAdapter("Chai token"), MKRAdapter {
+contract ChaiTokenAdapter is TokenAdapter("Chai Token"), MKRAdapter {
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
@@ -54,7 +54,7 @@ contract ChaiTokenAdapter is TokenAdapter("Chai token"), MKRAdapter {
         Component[] memory underlyingComponents= new Component[](1);
 
         underlyingComponents[0] = Component({
-            token: DAI,
+            tokenAddress: DAI,
             tokenType: "ERC20",
             // solhint-disable-next-line not-rely-on-time
             rate: mkrRmul(mkrRmul(mkrRpow(pot.dsr(), now - pot.rho(), ONE), pot.chi()), 1e18)

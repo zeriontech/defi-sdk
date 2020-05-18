@@ -50,7 +50,7 @@ contract IdleTokenAdapter is TokenAdapter("IdleToken") {
         Component[] memory underlyingComponents= new Component[](1);
 
         underlyingComponents[0] = Component({
-            token: IdleToken(token).token(),
+            tokenAddress: IdleToken(token).token(),
             tokenType: "ERC20",
             rate: IdleToken(token).tokenPrice()
         });

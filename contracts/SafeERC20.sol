@@ -134,7 +134,17 @@ library SafeERC20 {
         );
 
         if (returndata.length > 0) { // Return data is optional
-            require(abi.decode(returndata, (bool)), "SafeERC20: false returned");
+            require(
+                abi.decode(returndata, (bool)),
+                string(
+                    abi.encodePacked(
+                        "SafeERC20: ",
+                        functionName,
+                        " returned false in ",
+                        location
+                    )
+                )
+            );
         }
     }
 }

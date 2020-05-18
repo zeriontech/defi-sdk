@@ -60,11 +60,11 @@ interface Factory {
 
 
 /**
- * @title Token adapter for Uniswap V1 pool tokens.
+ * @title Token adapter for Uniswap V1 Pool Tokens.
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UniswapV1TokenAdapter is TokenAdapter("Uniswap V1 pool token") {
+contract UniswapV1TokenAdapter is TokenAdapter("Uniswap V1 Pool Token") {
 
     using StringHelpers for bytes32;
 
@@ -84,7 +84,7 @@ contract UniswapV1TokenAdapter is TokenAdapter("Uniswap V1 pool token") {
         Component[] memory underlyingComponents= new Component[](2);
 
         underlyingComponents[0] = Component({
-            token: ETH,
+            tokenAddress: ETH,
             tokenType: "ERC20",
             rate: token.balance * 1e18 / totalSupply
         });
@@ -96,7 +96,7 @@ contract UniswapV1TokenAdapter is TokenAdapter("Uniswap V1 pool token") {
         }
 
         underlyingComponents[1] = Component({
-            token: underlyingToken,
+            tokenAddress: underlyingToken,
             tokenType: underlyingTokenType,
             rate: ERC20(underlyingToken).balanceOf(token) * 1e18 / totalSupply
         });
@@ -109,14 +109,14 @@ contract UniswapV1TokenAdapter is TokenAdapter("Uniswap V1 pool token") {
      */
     function getName(address token) internal view override returns (string memory) {
         if (token == SAI_POOL) {
-            return "SAI pool";
+            return "SAI Pool";
         } else if (token == CSAI_POOL) {
-            return "cSAI pool";
+            return "cSAI Pool";
         } else {
             return string(
                 abi.encodePacked(
                     getUnderlyingSymbol(Factory(FACTORY).getToken(token)),
-                    " pool"
+                    " Pool"
                 )
             );
         }

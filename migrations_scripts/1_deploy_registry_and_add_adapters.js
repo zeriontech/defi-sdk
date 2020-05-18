@@ -4,7 +4,7 @@ const BalancerAdapter = artifacts.require('BalancerAdapter');
 const BancorAdapter = artifacts.require('BancorAdapter');
 const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
 const CompoundDebtAdapter = artifacts.require('CompoundDebtAdapter');
-const CurveLiquidityAdater = artifacts.require('CurveLiquidityAdater');
+const CurveLiquidityAdapter = artifacts.require('CurveLiquidityAdapter');
 const DmmAssetAdapter = artifacts.require('DmmAssetAdapter');
 const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
@@ -18,7 +18,7 @@ const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
-const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
+const UniswapV1LiquidityAdapter = artifacts.require('UniswapV1LiquidityAdapter');
 const WethAdapter = artifacts.require('WethAdapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
@@ -103,9 +103,14 @@ const yBUSDv3 = '0x04bC0Ab673d88aE9dbC9DA2380cB6B79C4BCa9aE';
 const idleDAI = '0x10eC0D497824e342bCB0EDcE00959142aAa766dD';
 const idleUSDC = '0xeB66ACc3d011056B00ea521F8203580C2E5d3991';
 
-const ssCompoundTokenAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
-const ssYTokenAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
-const ssBusdTokenAddress = '0x3B3Ac5386837Dc563660FB6a0937DFAa5924333B';
+const cPoolToken = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
+const tPoolToken = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
+const yPoolToken = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
+const bPoolToken = '0x3B3Ac5386837Dc563660FB6a0937DFAa5924333B';
+const sPoolToken = '0xC25a3A3b969415c80451098fa907EC722572917F';
+const pPoolToken = '0xD905e2eaeBe188fc92179b6350807D8bd91Db0D8';
+const tbtcPoolToken = '0x1f2a662FB513441f06b8dB91ebD9a1466462b275';
+const renPoolToken = '0x7771F704490F9C0C3B06aFe8960dBB6c58CBC812';
 
 const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
@@ -174,9 +179,14 @@ const compoundDebtAdapterTokens = [
   wbtcAddress,
 ];
 const curveAdapterTokens = [
-  ssCompoundTokenAddress,
-  ssYTokenAddress,
-  ssBusdTokenAddress,
+  cPoolToken,
+  tPoolToken,
+  yPoolToken,
+  bPoolToken,
+  sPoolToken,
+  pPoolToken,
+  tbtcPoolToken,
+  renPoolToken,
 ];
 const dmmAssetAdapterTokens = [
   mDAIAddress,
@@ -292,8 +302,8 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
-  await deployer.deploy(CurveLiquidityAdater, { from: accounts[0] });
-  adapters.push([CurveLiquidityAdater.address]);
+  await deployer.deploy(CurveLiquidityAdapter, { from: accounts[0] });
+  adapters.push([CurveLiquidityAdapter.address]);
   tokens.push([curveAdapterTokens]);
   protocolNames.push(web3.utils.toHex('Curve'));
   metadata.push([
@@ -439,8 +449,8 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
-  await deployer.deploy(UniswapV1Adapter, { from: accounts[0] });
-  adapters.push([UniswapV1Adapter.address]);
+  await deployer.deploy(UniswapV1LiquidityAdapter, { from: accounts[0] });
+  adapters.push([UniswapV1LiquidityAdapter.address]);
   tokens.push([[]]);
   protocolNames.push(web3.utils.toHex('Uniswap V1'));
   metadata.push([
@@ -575,17 +585,17 @@ module.exports = async (deployer, network, accounts) => {
         [
           web3.utils.toHex('ERC20'),
           web3.utils.toHex('AToken'),
-          web3.utils.toHex('Balancer pool token'),
+          web3.utils.toHex('Balancer Pool Token'),
           web3.utils.toHex('SmartToken'),
           web3.utils.toHex('CToken'),
-          web3.utils.toHex('Curve pool token'),
+          web3.utils.toHex('Curve Pool Token'),
           web3.utils.toHex('MToken'),
           web3.utils.toHex('IdleToken'),
           web3.utils.toHex('YToken'),
           web3.utils.toHex('Chai token'),
-          web3.utils.toHex('PoolTogether pool'),
+          web3.utils.toHex('PoolTogether Pool'),
           web3.utils.toHex('SetToken'),
-          web3.utils.toHex('Uniswap V1 pool token'),
+          web3.utils.toHex('Uniswap V1 Pool Token'),
           web3.utils.toHex('Weth'),
         ],
         tokenAdapters,

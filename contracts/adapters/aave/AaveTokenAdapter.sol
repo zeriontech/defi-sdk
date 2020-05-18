@@ -51,7 +51,7 @@ contract AaveTokenAdapter is TokenAdapter("AToken") {
         Component[] memory underlyingComponents= new Component[](1);
 
         underlyingComponents[0] = Component({
-            token: underlying,
+            tokenAddress: underlying,
             tokenType: "ERC20",
             rate: uint256(1e18)
         });

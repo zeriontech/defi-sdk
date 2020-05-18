@@ -50,7 +50,7 @@ contract IearnTokenAdapter is TokenAdapter("YToken") {
         Component[] memory underlyingComponents= new Component[](1);
 
         underlyingComponents[0] = Component({
-            token: YToken(token).token(),
+            tokenAddress: YToken(token).token(),
             tokenType: "ERC20",
             rate: YToken(token).getPricePerFullShare()
         });

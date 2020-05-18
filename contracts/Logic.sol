@@ -54,7 +54,7 @@ contract Logic {
     receive() external payable {}
 
     /**
-     * @notice Execute actions on `account`'s behalf.
+     * @notice Executes actions and returns tokens to account.
      * @param actions Array with actions.
      * @param minReturns Array with tokens approvals for the actions.
      * @param account address that will receive all the resulting funds.
@@ -67,25 +67,42 @@ contract Logic {
         public
         payable
     {
+        require(account != address(0), "L: empty account!");
         address[][] memory tokensToBeWithdrawn = new address[][](actions.length);
 
         for (uint256 i = 0; i < actions.length; i++) {
-            tokensToBeWithdrawn[i] = callInteractiveAdapter(actions[i]);
+            tokensToBeWithdrawn[i] = executeAction(actions[i]);
             emit ExecutedAction(i);
         }
 
         returnTokens(minReturns, tokensToBeWithdrawn, account);
     }
 
-    function callInteractiveAdapter(
+    /**
+     * @notice Execute one action via external call.
+     * @param action Action struct.
+     * @dev Can be called only by this contract.
+     * This function is used to create cross-protocol adapters.
+     */
+    function executeActionExternal(
+        Action memory action
+    )
+        public
+        returns (address[] memory)
+    {
+        require(msg.sender == address(this), "L: only address(this)!");
+        return executeAction(action);
+    }
+
+    function executeAction(
         Action memory action
     )
         internal
         returns (address[] memory)
     {
         require(action.actionType != ActionType.None, "L: wrong action type!");
-        require(action.amounts.length == action.amountTypes.length, "L: inconsistent arrays![1]");
-        require(action.amounts.length == action.tokens.length, "L: inconsistent arrays![2]");
+        require(action.amounts.length == action.amountTypes.length, "L: inconsistent arrays!");
+        require(adapterRegistry.isValidProtocol(action.protocolName), "L: wrong name!");
         address[] memory adapters = adapterRegistry.getProtocolAdapters(action.protocolName);
         require(action.adapterIndex <= adapters.length, "L: wrong index!");
         address adapter = adapters[action.adapterIndex];
@@ -127,35 +144,53 @@ contract Logic {
     )
         internal
     {
-        address token;
-        uint256 amount;
-
         for (uint256 i = 0; i < minReturns.length; i++) {
-            token = minReturns[i].token;
-            if (token == ETH) {
-                amount = address(this).balance;
-                require(amount > minReturns[i].amount, "L: less then min!");
-                account.transfer(amount);
-            } else {
-                amount = ERC20(token).balanceOf(address(this));
-                require(amount > minReturns[i].amount, "L: less then min!");
-                ERC20(token).safeTransfer(account, amount, "L!");
-            }
+            checkRequirementAndTransfer(account, minReturns[i].token, minReturns[i].amount);
         }
 
         for (uint256 i = 0; i < tokensToBeWithdrawn.length; i++) {
             for (uint256 j = 0; j < tokensToBeWithdrawn[i].length; j++) {
-                token = tokensToBeWithdrawn[i][j];
-                amount = ERC20(token).balanceOf(address(this));
-                if (amount > 0) {
-                    ERC20(token).safeTransfer(account, amount, "L!");
-                }
+                checkRequirementAndTransfer(account, tokensToBeWithdrawn[i][j], 0);
             }
         }
+    }
 
-        amount = address(this).balance;
+    function checkRequirementAndTransfer(
+        address account,
+        address token,
+        uint256 requirement
+    )
+        internal
+    {
+        uint256 amount;
+        if (token == ETH) {
+            amount = address(this).balance;
+        } else {
+            amount = ERC20(token).balanceOf(address(this));
+        }
+
+        require(
+            amount >= requirement,
+            string(
+                abi.encodePacked(
+                    "L: ",
+                    amount,
+                    " is less then ",
+                    requirement,
+                    " for ",
+                    token
+                )
+            )
+        );
+
         if (amount > 0) {
-            account.transfer(amount);
+            if (token == ETH) {
+                // solhint-disable-next-line avoid-low-level-calls
+                (bool success, ) = account.call{gas: 4999, value: amount}(new bytes(0));
+                require(success, "L: ETH transfer to account failed!");
+            } else {
+                ERC20(token).safeTransfer(account, amount, "L!");
+            }
         }
     }
 }

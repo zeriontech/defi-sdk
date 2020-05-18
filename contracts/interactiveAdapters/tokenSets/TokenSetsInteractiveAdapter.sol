@@ -80,9 +80,10 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
      * @param amountTypes Amount types.
      * @param data ABI-encoded additional parameters:
      *     - rebalancingSetAddress - rebalancing set address;
-     *     - rebalancingSetQuantity - rebalancing set amount to be minted;
+     *     - rebalancingSetQuantity - rebalancing set amount to be minted.
      * @return tokensToBeWithdrawn Array with one element - rebalancing set address.
      * @dev Implementation of InteractiveAdapter function.
+     * TODO remove tokens, amount, approve exact amount
      */
     function deposit(
         address[] memory tokens,
@@ -95,6 +96,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
+        require(tokens.length == amounts.length, "TSIA: inconsistent arrays![1]");
         uint256 absoluteAmount;
         for (uint256 i = 0; i < tokens.length; i++) {
             absoluteAmount = getAbsoluteAmountDeposit(tokens[i], amounts[i], amountTypes[i]);
@@ -140,7 +142,8 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "TSIA: should be 1 token/amount/type!");
+        require(tokens.length == 1, "TSIA: should be 1 token!");
+        require(tokens.length == amounts.length, "TSIA: inconsistent arrays![2]");
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
         RebalancingSetIssuanceModule issuanceModule = RebalancingSetIssuanceModule(ISSUANCE_MODULE);

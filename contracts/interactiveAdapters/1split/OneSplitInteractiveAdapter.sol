@@ -86,7 +86,8 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "OSIA: should be 1 token/amount/type!");
+        require(tokens.length == 1, "OSIA: should be 1 token!");
+        require(tokens.length == amounts.length, "OSIA: inconsistent arrays!");
 
         uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
@@ -98,19 +99,19 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
         }
 
         address toToken = abi.decode(data, (address));
+
+        tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn[0] = toToken;
+
         if (toToken == ETH) {
-            tokensToBeWithdrawn = new address[](0);
             toToken = address(0);
-        } else {
-            tokensToBeWithdrawn = new address[](1);
-            tokensToBeWithdrawn[0] = toToken;
         }
 
         swap(fromToken, toToken, amount);
     }
 
     /**
-     * @notice This function is unavailable in Exchange type adapters.
+     * @notice Withdraw functionality is not supported.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(

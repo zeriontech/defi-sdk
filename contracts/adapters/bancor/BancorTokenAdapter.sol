@@ -103,7 +103,7 @@ contract BancorTokenAdapter is TokenAdapter("SmartToken") {
             underlyingToken = BancorConverter(converter).connectorTokens(i);
 
             underlyingComponents[i] = Component({
-                token: underlyingToken,
+                tokenAddress: underlyingToken,
                 tokenType: "ERC20",
                 rate: BancorFormula(formula).calculateLiquidateReturn(
                     totalSupply,

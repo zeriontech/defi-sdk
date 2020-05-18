@@ -27,7 +27,7 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
 /**
  * @dev Exchange contract interface.
- * Only the functions required for UniswapV1LiquidityAdapter contract are added.
+ * Only the functions required for UniswapV1LiquidityInteractiveAdapter contract are added.
  * The Exchange contract is available here
  * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_exchange.vy.
  */
@@ -53,7 +53,7 @@ interface Exchange {
 
 /**
  * @dev Factory contract interface.
- * Only the functions required for UniswapV1LiquidityAdapter contract are added.
+ * Only the functions required for UniswapV1LiquidityInteractiveAdapter contract are added.
  * The Factory contract is available here
  * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_factory.vy.
  */
@@ -93,7 +93,8 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 2, "ULIA: should be 2 tokens/amounts/types!");
+        require(tokens.length == 2, "ULIA: should be 2 tokens!");
+        require(tokens.length == amounts.length, "ULIA: inconsistent arrays![1]");
         require(tokens[0] == ETH, "ULIA: should be ETH!");
         address exchange = Factory(FACTORY).getExchange(tokens[1]);
         require(exchange != address(0), "ULIA: no exchange!");
@@ -101,9 +102,9 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
         uint256 ethAmount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
         uint256 tokenAmount = getAbsoluteAmountDeposit(tokens[1], amounts[1], amountTypes[1]);
 
-        tokensToBeWithdrawn = new address[](2);
+        tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = exchange;
-        tokensToBeWithdrawn[1] = tokens[1];
+//        tokensToBeWithdrawn[1] = tokens[1];
 
         ERC20(tokens[1]).safeApprove(exchange, tokenAmount, "ULIA![1]");
         try Exchange(exchange).addLiquidity{value: ethAmount}(
@@ -141,12 +142,14 @@ contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1Li
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "ULIA: should be 1 token/amount/type!");
+        require(tokens.length == 1, "ULIA: should be 1 token!");
+        require(tokens.length == amounts.length, "ULIA: inconsistent arrays![2]");
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
 
-        tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn = new address[](2);
         tokensToBeWithdrawn[0] = Factory(FACTORY).getToken(tokens[0]);
+        tokensToBeWithdrawn[1] = ETH;
 
         try Exchange(tokens[0]).removeLiquidity(
             amount,

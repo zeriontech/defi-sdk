@@ -30,7 +30,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 contract OneSplitAdapter is ProtocolAdapter("Exchange") {
 
     /**
-     * @return Amount of Uniswap pool tokens held by the given account.
+     * @return Amount of Uniswap Pool Tokens held by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(

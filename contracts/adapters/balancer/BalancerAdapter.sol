@@ -30,7 +30,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 contract BalancerAdapter is ProtocolAdapter("Asset") {
 
     /**
-     * @return Amount of Balancer pool tokens held by the given account.
+     * @return Amount of Balancer Pool Tokens held by the given account.
      * @param token Address of the pool!
      * @dev Implementation of ProtocolAdapter interface function.
      */
@@ -43,6 +43,6 @@ contract BalancerAdapter is ProtocolAdapter("Asset") {
         override
         returns (uint256, bytes32)
     {
-        return (ERC20(token).balanceOf(account), "Balancer pool token");
+        return (ERC20(token).balanceOf(account), "Balancer Pool Token");
     }
 }

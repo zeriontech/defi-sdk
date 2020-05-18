@@ -18,7 +18,7 @@
 pragma solidity 0.6.8;
 pragma experimental ABIEncoderV2;
 
-import { TransactionData, AmountType, Input, Output } from "./Structs.sol";
+import { TransactionData, Action, Input, Output, AmountType } from "./Structs.sol";
 import { ERC20 } from "./ERC20.sol";
 import { SafeERC20 } from "./SafeERC20.sol";
 import { SignatureVerifier } from "./SignatureVerifier.sol";
@@ -30,16 +30,18 @@ interface GST2 {
 }
 
 
-contract TokenSpender is SignatureVerifier, Ownable {
+contract TokenSpender is SignatureVerifier("Zerion Router"), Ownable {
     using SafeERC20 for ERC20;
 
     Logic public immutable logic;
     address internal constant GAS_TOKEN = 0x0000000000b3F879cb30FE243b4Dfee438691c04;
-    uint256 internal constant BASE = 1e18;
+    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    uint256 internal constant BASE = 1e18; // 100%
     uint256 internal constant BENEFICIARY_FEE_LIMIT = 1e16; // 1%
     uint256 internal constant BENEFICIARY_SHARE = 2e17; // 80%
 
     constructor(address payable _logic) public {
+        require(_logic != address(0), "TS: empty logic!");
         logic = Logic(_logic);
     }
 
@@ -58,30 +60,11 @@ contract TokenSpender is SignatureVerifier, Ownable {
         }
     }
 
-    function startExecution(
-        TransactionData memory data,
-        bytes memory signature
-    )
-        public
-        payable
-    {
-        startExecution(data, getAccountFromSignature(data, signature));
-    }
-
-    function startExecution(
-        TransactionData memory data
-    )
-        public
-        payable
-    {
-        startExecution(data, msg.sender);
-    }
-
     function getRequiredAllowances(
-        Input[] memory inputs,
+        Input[] calldata inputs,
         address account
     )
-        public
+        external
         view
         returns (Output[] memory allowances)
     {
@@ -100,18 +83,75 @@ contract TokenSpender is SignatureVerifier, Ownable {
         }
     }
 
+    function getRequiredBalances(
+        Input[] calldata inputs,
+        address account
+    )
+        external
+        view
+        returns (Output[] memory balances)
+    {
+        balances = new Output[](inputs.length);
+        uint256 required;
+        uint256 current;
+
+        for (uint256 i = 0; i < inputs.length; i++) {
+            required = getAbsoluteAmount(inputs[i], account);
+            current = ERC20(inputs[i].token).balanceOf(account);
+
+            balances[i] = Output({
+                token: inputs[i].token,
+                amount: required > current ? required - current : 0
+            });
+        }
+    }
+
     function startExecution(
         TransactionData memory data,
+        bytes memory signature
+    )
+        public
+        payable
+    {
+        startExecution(
+            data.actions,
+            data.inputs,
+            data.outputs,
+            getAccountFromSignature(data, signature)
+        );
+    }
+
+    function startExecution(
+        Action[] memory actions,
+        Input[] memory inputs,
+        Output[] memory outputs
+    )
+        public
+        payable
+    {
+        startExecution(
+            actions,
+            inputs,
+            outputs,
+            msg.sender
+        );
+    }
+
+    function startExecution(
+        Action[] memory actions,
+        Input[] memory inputs,
+        Output[] memory outputs,
         address payable account
     )
         internal
     {
         // save initial gas to burn gas token later
         uint256 gas = gasleft();
-        // transfer tokens to logic and handle fees (if any)
-        transferTokens(data.inputs, account);
+        // transfer tokens to logic, handle fees (if any), and add these tokens to outputs
+        address[] memory inputTokens = transferTokens(inputs, account);
+        Output[] memory modifiedOutputs = modifyOutputs(outputs, inputTokens);
         // call Logic contract with all provided ETH, actions, expected outputs and account address
-        logic.executeActions{value: msg.value}(data.actions, data.outputs, account);
+        logic.executeActions{value: msg.value}(actions, modifiedOutputs, account);
         // burn gas token to save some gas
         freeGasToken(gas - gasleft());
     }
@@ -121,12 +161,15 @@ contract TokenSpender is SignatureVerifier, Ownable {
         address account
     )
         internal
+        returns (address[] memory)
     {
+        address[] memory tokensToBeWithdrawn = new address[](inputs.length);
         uint256 absoluteAmount;
 
         for (uint256 i = 0; i < inputs.length; i++) {
             absoluteAmount = getAbsoluteAmount(inputs[i], account);
             require(absoluteAmount > 0, "TS: 0 amount!");
+            tokensToBeWithdrawn[i] = inputs[i].token;
 
             // in case inputs includes fees:
             //     - absolute amount is amount calculated based on inputs
@@ -177,6 +220,8 @@ contract TokenSpender is SignatureVerifier, Ownable {
                 );
             }
         }
+
+        return tokensToBeWithdrawn;
     }
 
     function getAbsoluteAmount(
@@ -198,7 +243,7 @@ contract TokenSpender is SignatureVerifier, Ownable {
             if (amount == BASE) {
                 return ERC20(token).balanceOf(account);
             } else {
-                return ERC20(token).balanceOf(account) * amount / BASE;
+                return mul(ERC20(token).balanceOf(account), amount) / BASE;
             }
         } else {
             return amount;
@@ -226,6 +271,36 @@ contract TokenSpender is SignatureVerifier, Ownable {
         }
     }
 
+    function modifyOutputs(
+        Output[] memory outputs,
+        address[] memory additionalTokens
+    )
+        internal
+        view
+        returns (Output[] memory modifiedOutputs)
+    {
+        uint256 ethInput = msg.value > 0 ? 1 : 0;
+        modifiedOutputs = new Output[](outputs.length + additionalTokens.length + ethInput);
+
+        for (uint256 i = 0; i < outputs.length; i++) {
+            modifiedOutputs[i] = outputs[i];
+        }
+
+        for (uint256 i = 0; i < additionalTokens.length; i++) {
+            modifiedOutputs[outputs.length + i] = Output({
+                token: additionalTokens[i],
+                amount: 0
+            });
+        }
+
+        if (ethInput > 0) {
+            modifiedOutputs[outputs.length + additionalTokens.length] = Output({
+                token: ETH,
+                amount: 0
+            });
+        }
+    }
+
     function mul(
         uint256 a,
         uint256 b
@@ -235,7 +310,7 @@ contract TokenSpender is SignatureVerifier, Ownable {
         returns (uint256)
     {
         uint256 c = a * b;
-        require(c / a == b, "TS: multiplication overflow");
+        require(c / a == b, "TS: mul overflow");
 
         return c;
     }

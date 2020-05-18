@@ -113,11 +113,11 @@ contract SynthetixAssetAdapter is ProtocolAdapter("Asset") {
             balance += Unipool(LP_REWARD_UNISWAP).earned(account);
             return (balance, "ERC20");
         } else if (token == SUSD_POOL_TOKEN) {
-            return (ERC20(LP_REWARD_CURVE).balanceOf(account), "Curve pool token");
+            return (ERC20(LP_REWARD_CURVE).balanceOf(account), "Curve Pool Token");
         } else if (token == IETH) {
             return (ERC20(LP_REWARD_IETH).balanceOf(account), "ERC20");
         } else if (token == UNISWAP_SETH) {
-            return (ERC20(LP_REWARD_UNISWAP).balanceOf(account), "Uniswap V1 pool token");
+            return (ERC20(LP_REWARD_UNISWAP).balanceOf(account), "Uniswap V1 Pool Token");
         } else {
             return (0, "");
         }

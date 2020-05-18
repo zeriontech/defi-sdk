@@ -30,7 +30,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 contract UniswapV1LiquidityAdapter is ProtocolAdapter("Asset") {
 
     /**
-     * @return Amount of Uniswap pool tokens held by the given account.
+     * @return Amount of Uniswap Pool Tokens held by the given account.
      * @param token Address of the exchange (pool)!
      * @dev Implementation of ProtocolAdapter interface function.
      */
@@ -43,6 +43,6 @@ contract UniswapV1LiquidityAdapter is ProtocolAdapter("Asset") {
         override
         returns (uint256, bytes32)
     {
-        return (ERC20(token).balanceOf(account), "Uniswap V1 pool token");
+        return (ERC20(token).balanceOf(account), "Uniswap V1 Pool Token");
     }
 }

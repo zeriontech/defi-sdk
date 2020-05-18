@@ -102,9 +102,12 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokens.length == 1, "WIA: should be 1 token/amount/type!");
-        require(tokens[0] == WETH, "WIA: ETH only!");
+        require(tokens[0] == WETH, "WIA: WETH only!");
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
+
+        tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn[0] = ETH;
 
         try WETH9(WETH).withdraw(amount) { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
@@ -112,7 +115,5 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         } catch (bytes memory) {
             revert("WIA: withdraw fail!");
         }
-
-        tokensToBeWithdrawn = new address[](0);
     }
 }

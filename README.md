@@ -110,7 +110,7 @@ Sometimes, a DeFi token contains several other tokens, and to calculate their pr
 
 ```solidity 
 // Uniswap V1 cDAI pool
-getFinalFullTokenBalance('0x34E89740adF97C3A9D3f63Cc2cE4a914382c230b', "Uniswap V1 pool token")
+getFinalFullTokenBalance('0x34E89740adF97C3A9D3f63Cc2cE4a914382c230b', "Uniswap V1 Pool Token")
 ```
 
  and fetch the decomposition of UNI-token into ERC20 tokens, like `ETH` and `DAI`
@@ -135,7 +135,7 @@ and obtain all balances for a given account. The response from the smart-contrac
 100 DAI // collateral on Compound
 0.1 ETH // debt on Compound
 100 USDC // locked in PoolTogether
-213 TUSD + 201 USDC + 82 USDT + 11 DAI // Curve Y pool
+213 TUSD + 201 USDC + 82 USDT + 11 DAI // Curve Y Pool
 ...
 ```
 
@@ -160,10 +160,10 @@ All the deployed contracts' addresses are available [here](../../wiki/Addresses)
 | Protocol Name | Description | Protocol Adapters | Token Adapters |
 | :-----------: | :---------: | :---------------: | :------------: |
 | [Aave](./contracts/adapters/aave) | Decentralized lending & borrowing protocol. | [Asset adapter](./contracts/adapters/aave/AaveAssetAdapter.sol) <br> [Debt adapter](contracts/adapters/aave/AaveDebtAdapter.sol) | ["AToken"](./contracts/adapters/aave/AaveTokenAdapter.sol) |
-| [Balancer](./contracts/adapters/balancer) | Non-custodial portfolio manager, liquidity provider, and price sensor. | [Asset adapter](./contracts/adapters/balancer/BalancerAdapter.sol) supports all Balancer pools | ["Balancer pool token"](./contracts/adapters/aave/BalancerTokenAdapter.sol) |
+| [Balancer](./contracts/adapters/balancer) | Non-custodial portfolio manager, liquidity provider, and price sensor. | [Asset adapter](./contracts/adapters/balancer/BalancerAdapter.sol) supports all Balancer pools | ["Balancer Pool Token"](./contracts/adapters/aave/BalancerTokenAdapter.sol) |
 | [Bancor](./contracts/adapters/bancor) | Automated liquidity protocol. | [Asset adapter](./contracts/adapters/bancor/BancorAdapter.sol) supports Bancor pools starting from version 11 | ["SmartToken"](./contracts/adapters/aave/BancorTokenAdapter.sol) |
 | [Compound](./contracts/adapters/compound) | Decentralized lending & borrowing protocol. | [Asset adapter](./contracts/adapters/compound/CompoundAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/compound/CompoundDebtAdapter.sol) | ["CToken"](./contracts/adapters/compound/CompoundTokenAdapter.sol) |
-| [Curve](./contracts/adapters/curve) | Exchange liquidity pool for stablecoin trading. Supports Compound, Y, and BUSD pools. | [Asset adapter](./contracts/adapters/curve/CurveLiquidityAdapter.sol) | ["Curve pool token"](contracts/adapters/curve/CurveTokenAdapter.sol) |
+| [Curve](./contracts/adapters/curve) | Exchange liquidity pool for stablecoin trading. Supports Compound, Y, and BUSD pools. | [Asset adapter](./contracts/adapters/curve/CurveLiquidityAdapter.sol) | ["Curve Pool Token"](contracts/adapters/curve/CurveTokenAdapter.sol) |
 | [DeFi Money Market](./contracts/adapters/dmm) | Crypto through revenue-producing real world assets. | [Asset adapter](./contracts/adapters/dmm/DmmAssetAdapter.sol) | ["MToken"](contracts/adapters/dmm/DmmTokenAdapter.sol) |
 | [dYdX](./contracts/adapters/dydx) | Decentralized trading platform. All 4 markets (WETH, SAI, USDC, DAI) are supported. | [Asset adapter](./contracts/adapters/dydx/DyDxAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/dydx/DyDxDebtAdapter.sol) | — |
 | [Idle](./contracts/adapters/idle) | Yield aggregator for lending platforms. | [Asset adapter](./contracts/adapters/idle/IdleAdapter.sol) | ["IdleToken"](./contracts/adapters/idle/IdleTokenAdapter.sol) |
@@ -174,7 +174,7 @@ All the deployed contracts' addresses are available [here](../../wiki/Addresses)
 | [PoolTogether](./contracts/adapters/poolTogether) | Decentralized no-loss lottery. Supports SAI, DAI, and USDC pools. | [Asset adapter](./contracts/adapters/poolTogether/PoolTogetherAdapter.sol) | ["PoolTogether pool"](./contracts/adapters/poolTogether/PoolTogetherTokenAdapter.sol) |
 | [Synthetix](./contracts/adapters/synthetix) | Synthetic assets protocol. Asset adapter returns amount of SNX locked as collateral. | [Asset adapter](./contracts/adapters/synthetix/SynthetixAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/synthetix/SynthetixDebtAdapter.sol) | — |
 | [TokenSets](./contracts/adapters/tokenSets) | TokenSets. Automated asset management strategies. | [Asset adapter](./contracts/adapters/tokenSets/TokenSetsAdapter.sol) | ["SetToken"](./contracts/adapters/tokenSets/TokenSetsTokenAdapter.sol) |
-| [Uniswap V1](./contracts/adapters/uniswap) | Automated liquidity protocol. | [Asset adapter](contracts/adapters/uniswap/UniswapV1LiquidityAdapter.sol) supports all Uniswap pools | ["Uniswap V1 pool token"](./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol) |
+| [Uniswap V1](./contracts/adapters/uniswap) | Automated liquidity protocol. | [Asset adapter](contracts/adapters/uniswap/UniswapV1LiquidityAdapter.sol) supports all Uniswap pools | ["Uniswap V1 Pool Token"](./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol) |
 | [0x Staking](./contracts/adapters/zrx) | Liquidity rewards for staking ZRX. | [Asset adapter](./contracts/adapters/zrx/ZrxAdapter.sol) | — |
 
 ## How to Add Your Adapter

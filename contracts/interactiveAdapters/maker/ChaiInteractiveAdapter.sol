@@ -66,11 +66,17 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(amounts.length == 1,  "CIA: should be 1 token/amount/type!");
+        require(amounts.length == 1, "CIA: should be 1 amount/type![1]");
 
         uint256 amount = getAbsoluteAmountDeposit(DAI, amounts[0], amountTypes[0]);
         ERC20(DAI).safeApprove(CHAI, amount, "CIA!");
-        Chai(CHAI).join(address(this), amount);
+
+        try Chai(CHAI).join(address(this), amount) { // solhint-disable-line no-empty-blocks
+        } catch Error(string memory reason) {
+            revert(reason);
+        } catch (bytes memory) {
+            revert("CIA: deposit fail!");
+        }
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = CHAI;
@@ -94,10 +100,15 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(amounts.length == 1, "CIA: should be 1 token/amount/type!");
+        require(amounts.length == 1, "CIA: should be 1 amount/type![2]");
 
         uint256 amount = getAbsoluteAmountWithdraw(CHAI, amounts[0], amountTypes[0]);
-        Chai(CHAI).exit(address(this), amount);
+        try Chai(CHAI).exit(address(this), amount) { // solhint-disable-line no-empty-blocks
+        } catch Error(string memory reason) {
+            revert(reason);
+        } catch (bytes memory) {
+            revert("CIA: deposit fail!");
+        }
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = DAI;

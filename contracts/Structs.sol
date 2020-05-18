@@ -40,13 +40,16 @@ struct AdapterBalance {
 }
 
 
+// The struct consists of adapter address and
+// adapter type, which may be "Asset", "Debt", or "Exchange".
 struct AdapterMetadata {
-    address adapterAddress; // Address of the adapter.
-    bytes32 adapterType;    // May be "Asset", "Debt", or "Exchange".
+    address adapterAddress;
+    bytes32 adapterType;
 }
 
 
-// The struct consists of token and its underlying tokens (if exist) balances.
+// The struct consists of (base) token and
+// its underlying tokens (if exist) balances.
 struct FullTokenBalance {
     TokenBalance base;
     TokenBalance[] underlying;
@@ -59,10 +62,11 @@ struct TokenBalance {
 }
 
 
-// The struct consists of token address, token type, and ERC20-style token metadata.
+// The struct consists of token address,
+// token type, and ERC20-style token metadata.
 // NOTE: 0xEeee...EEeE address is used for ETH.
 struct TokenMetadata {
-    address token;
+    address tokenAddress;
     bytes32 tokenType;
     ERC20Metadata erc20;
 }
@@ -75,10 +79,12 @@ struct ERC20Metadata {
 }
 
 
+// The struct consists of token address,
+// token type, and price per full share (1e18).
 struct Component {
-    address token;     // Token address.
-    bytes32 tokenType; // "ERC20" by default.
-    uint256 rate;      // Price per full share (1e18).
+    address tokenAddress;
+    bytes32 tokenType;
+    uint256 rate;
 }
 
 

@@ -88,7 +88,8 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "CAIA: should be 1 token/amount/type!");
+        require(tokens.length == 1, "CAIA: should be 1 token![1]");
+        require(tokens.length == amounts.length, "CAIA: inconsistent arrays![2]");
 
         uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
@@ -127,7 +128,8 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "CAIA: should be 1 token/amount/type!");
+        require(tokens.length == 1, "CAIA: should be 1 token![1]");
+        require(tokens.length == amounts.length, "CAIA: inconsistent arrays![2]");
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
 
@@ -136,7 +138,8 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         require(cToken.redeem(amount) == 0, "CAIA: withdraw failed!");
 
         if (tokens[0] == CETH) {
-            tokensToBeWithdrawn = new address[](0);
+            tokensToBeWithdrawn = new address[](1);
+            tokensToBeWithdrawn[0] = ETH;
         } else {
             tokensToBeWithdrawn = new address[](1);
             tokensToBeWithdrawn[0] = cToken.underlying();

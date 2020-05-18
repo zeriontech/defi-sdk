@@ -39,7 +39,7 @@ interface BasePool {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract PoolTogetherTokenAdapter is TokenAdapter("Pool together pool") {
+contract PoolTogetherTokenAdapter is TokenAdapter("PoolTogether Pool") {
 
     address internal constant SAI_POOL = 0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84;
 
@@ -51,7 +51,7 @@ contract PoolTogetherTokenAdapter is TokenAdapter("Pool together pool") {
         Component[] memory underlyingComponents= new Component[](1);
 
         underlyingComponents[0] = Component({
-            token: BasePool(token).token(),
+            tokenAddress: BasePool(token).token(),
             tokenType: "ERC20",
             rate: 1e18
         });
@@ -64,13 +64,13 @@ contract PoolTogetherTokenAdapter is TokenAdapter("Pool together pool") {
      */
     function getName(address token) internal view override returns (string memory) {
         if (token == SAI_POOL) {
-            return "SAI pool";
+            return "SAI Pool";
         } else {
             address underlying = BasePool(token).token();
             return string(
                 abi.encodePacked(
                     ERC20(underlying).symbol(),
-                    " pool"
+                    " Pool"
                 )
             );
         }

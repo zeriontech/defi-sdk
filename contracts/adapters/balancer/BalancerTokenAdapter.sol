@@ -49,11 +49,11 @@ interface BPool {
 
 
 /**
- * @title Token adapter for Balancer pool tokens.
+ * @title Token adapter for Balancer Pool Tokens.
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract BalancerTokenAdapter is TokenAdapter("Balancer pool token") {
+contract BalancerTokenAdapter is TokenAdapter("Balancer Pool Token") {
 
     using StringHelpers for bytes32;
     using StringHelpers for uint256;
@@ -83,7 +83,7 @@ contract BalancerTokenAdapter is TokenAdapter("Balancer pool token") {
             }
 
             underlyingComponents[i] = Component({
-                token: underlyingTokens[i],
+                tokenAddress: underlyingTokens[i],
                 tokenType: underlyingTokenType,
                 rate: BPool(token).getBalance(underlyingTokens[i]) * 1e18 / totalSupply
             });

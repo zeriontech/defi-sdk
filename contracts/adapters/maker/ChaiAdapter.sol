@@ -43,6 +43,6 @@ contract ChaiAdapter is ProtocolAdapter("Asset") {
         override
         returns (uint256, bytes32)
     {
-        return (ERC20(token).balanceOf(account), "Chai token");
+        return (ERC20(token).balanceOf(account), "Chai Token");
     }
 }

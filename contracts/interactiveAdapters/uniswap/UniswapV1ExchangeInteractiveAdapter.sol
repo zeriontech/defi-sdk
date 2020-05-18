@@ -21,13 +21,13 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../ERC20.sol";
 import { SafeERC20 } from "../../SafeERC20.sol";
 import { Action, AmountType } from "../../Structs.sol";
-import { UniswapV1ExchangeAdapter } from "../../adapters/uniswap/UniswapV1ExchangeAdapter.sol";
+import { UniswapExchangeAdapter } from "../../adapters/uniswap/UniswapExchangeAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
 
 /**
  * @dev Exchange contract interface.
- * Only the functions required for UniswapV1ExchangeAdapter contract are added.
+ * Only the functions required for UniswapV1ExchangeInteractiveAdapter contract are added.
  * The Exchange contract is available here
  * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_exchange.vy.
  */
@@ -83,7 +83,7 @@ interface Exchange {
 
 /**
  * @dev Factory contract interface.
- * Only the functions required for UniswapV1ExchangeAdapter contract are added.
+ * Only the functions required for UniswapV1ExchangeInteractiveAdapter contract are added.
  * The Factory contract is available here
  * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_factory.vy.
  */
@@ -97,7 +97,7 @@ interface Factory {
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1ExchangeAdapter {
+contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExchangeAdapter {
 
     using SafeERC20 for ERC20;
 
@@ -123,17 +123,19 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "UEIA: should be 1 tokens/amounts/types!");
+        require(tokens.length == 1, "UEIA: should be 1 token!");
+        require(tokens.length == amounts.length, "UEIA: inconsistent arrays![1]");
 
         uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
         address toToken = abi.decode(data, (address));
+
+        tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn[0] = toToken;
 
         if (tokens[0] == ETH) {
             address exchange = Factory(FACTORY).getExchange(toToken);
             require(exchange != address(0), "UEIA: no exchange![1]");
 
-            tokensToBeWithdrawn = new address[](1);
-            tokensToBeWithdrawn[0] = toToken;
             try Exchange(exchange).ethToTokenSwapInput{value: amount}(
                 uint256(1),
                 // solhint-disable-next-line not-rely-on-time
@@ -152,7 +154,6 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
             ERC20(tokens[0]).safeApprove(exchange, amount, "UEIA![1]");
 
             if (toToken == ETH) {
-                tokensToBeWithdrawn = new address[](0);
                 try Exchange(exchange).tokenToEthSwapInput(
                     amount,
                     uint256(1),
@@ -166,8 +167,6 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
                     revert("UEIA: deposit fail![4]");
                 }
             } else {
-                tokensToBeWithdrawn = new address[](1);
-                tokensToBeWithdrawn[0] = toToken;
                 try Exchange(exchange).tokenToTokenSwapInput(
                     amount,
                     uint256(1),
@@ -206,16 +205,18 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "UEIA: should be 1 tokens/amounts/types!");
+        require(tokens.length == 1, "UEIA: should be 1 token!");
+        require(tokens.length == amounts.length, "UEIA: inconsistent arrays![2]");
         require(amountTypes[0] == AmountType.Absolute, "UEIA: wrong type!");
         address fromToken = abi.decode(data, (address));
+
+        tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn[0] = tokens[0];
 
         if (fromToken == ETH) {
             address exchange = Factory(FACTORY).getExchange(tokens[0]);
             require(exchange != address(0), "UEIA: no exchange![1]");
 
-            tokensToBeWithdrawn = new address[](1);
-            tokensToBeWithdrawn[0] = tokens[0];
             try Exchange(exchange).ethToTokenSwapOutput{value: msg.value}(
                 amounts[0],
                 // solhint-disable-next-line not-rely-on-time
@@ -235,8 +236,6 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
             ERC20(fromToken).safeApprove(exchange, balance, "UEIA![2]");
 
             if (tokens[0] == ETH) {
-                tokensToBeWithdrawn = new address[](0);
-
                 try Exchange(exchange).tokenToEthSwapOutput(
                     amounts[0],
                     balance,
@@ -250,8 +249,6 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapV1Exc
                     revert("UEIA: withdraw fail![4]");
                 }
             } else {
-                tokensToBeWithdrawn = new address[](1);
-                tokensToBeWithdrawn[0] = tokens[0];
                 try Exchange(exchange).tokenToTokenSwapOutput(
                     amounts[0],
                     balance,

@@ -40,7 +40,7 @@ contract WethTokenAdapter is TokenAdapter("Weth") {
         Component[] memory underlyingComponents= new Component[](1);
 
         underlyingComponents[0] = Component({
-            token: ETH,
+            tokenAddress: ETH,
             tokenType: "ERC20",
             rate: 1e18
         });

@@ -55,7 +55,7 @@ contract CompoundTokenAdapter is TokenAdapter("CToken") {
         Component[] memory underlyingComponents= new Component[](1);
 
         underlyingComponents[0] = Component({
-            token: getUnderlying(token),
+            tokenAddress: getUnderlying(token),
             tokenType: "ERC20",
             rate: CToken(token).exchangeRateStored()
         });

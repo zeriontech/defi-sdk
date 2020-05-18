@@ -77,17 +77,17 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         if (amountType == AmountType.Relative) {
             require(amount <= RELATIVE_AMOUNT_BASE, "L: wrong relative value!");
 
-            uint256 totalAmount;
+            uint256 balance;
             if (token == ETH) {
-                totalAmount = address(this).balance;
+                balance = address(this).balance;
             } else {
-                totalAmount = ERC20(token).balanceOf(address(this));
+                balance = ERC20(token).balanceOf(address(this));
             }
 
             if (amount == RELATIVE_AMOUNT_BASE) {
-                return totalAmount;
+                return balance;
             } else {
-                return totalAmount * amount / RELATIVE_AMOUNT_BASE; // TODO overflow check
+                return mul(balance, amount) / RELATIVE_AMOUNT_BASE;
             }
         } else {
             return amount;
@@ -106,11 +106,11 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
     {
         if (amountType == AmountType.Relative) {
             require(amount <= RELATIVE_AMOUNT_BASE, "L: wrong relative value!");
+
             (uint256 balance, ) = getBalance(token, address(this));
             if (amount == RELATIVE_AMOUNT_BASE) {
                 return balance;
             } else {
-                // TODO overflow check
                 return mul(balance, amount) / RELATIVE_AMOUNT_BASE;
             }
         } else {
