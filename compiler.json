@@ -4,7 +4,7 @@
   "contracts": "*",
   "shouldSaveStandardInput": true,
   "compilerSettings": {
-    "optimizer": { "enabled": true, "runs": 2000 },
+    "optimizer": { "enabled": true, "runs": 200 },
     "outputSelection": {
       "*": {
         "*": ["abi", "evm.bytecode.object"]
