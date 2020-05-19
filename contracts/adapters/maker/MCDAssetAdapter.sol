@@ -89,7 +89,7 @@ contract MCDAssetAdapter is ProtocolAdapter, MKRAdapter {
             (, id) = manager.list(id);
             (ink, ) = vat.urns(ilk, urn);
 
-            if (token == WETH && ilk == "ETH-A" || token == BAT && ilk == "BAT-A") {
+            if ((token == WETH && ilk == "ETH-A") || (token == BAT && ilk == "BAT-A")) {
                 value = uint256(ink);
             } else {
                 value = 0;

@@ -18,6 +18,17 @@ pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
+/**
+ * @dev Pod contract interface.
+ * Only the functions required for PoolTogetherAdapter contract are added.
+ * The Pod contract is available here
+ * github.com/pooltogether/pods/blob/master/contracts/Pod.sol.
+ */
+interface Pod {
+    function balanceOfUnderlying(address) external view returns (uint256);
+    function pendingDeposit(address) external view returns (uint256);
+}
+
 
 /**
  * @dev BasePool contract interface.
@@ -41,12 +52,28 @@ contract PoolTogetherAdapter is ProtocolAdapter {
 
     string public constant override tokenType = "PoolTogether pool";
 
+    address internal constant DAI_POOL = 0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958;
+    address internal constant USDC_POOL = 0x0034Ea9808E620A0EF79261c51AF20614B742B24;
+    address internal constant DAI_POD = 0x9F4C5D8d9BE360DF36E67F52aE55C1B137B4d0C4;
+    address internal constant USDC_POD = 0x6F5587E191C8b222F634C78111F97c4851663ba4;
+
     /**
      * @return Amount of tokens locked in the pool by the given account.
      * @param token Address of the pool!
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        return BasePool(token).totalBalanceOf(account);
+        uint256 totalBalance = BasePool(token).totalBalanceOf(account);
+        if (token == DAI_POOL) {
+            totalBalance += getPodBalance(DAI_POD, account);
+        } else if (token == USDC_POOL) {
+            totalBalance += getPodBalance(USDC_POD, account);
+        }
+
+        return totalBalance;
+    }
+
+    function getPodBalance(address pod, address account) internal view returns (uint256) {
+        return Pod(pod).balanceOfUnderlying(account) + Pod(pod).pendingDeposit(account);
     }
 }

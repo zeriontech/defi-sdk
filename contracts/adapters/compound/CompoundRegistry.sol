@@ -25,7 +25,7 @@ pragma solidity 0.6.5;
  */
 contract CompoundRegistry {
 
-    mapping (address => address) internal cTokens;
+    mapping(address => address) internal cTokens;
 
     constructor() public {
         cTokens[0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359] = 0xF5DCe57282A584D2746FaF1593d3121Fcac444dC;
