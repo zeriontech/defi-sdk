@@ -20,6 +20,7 @@ const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
 const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
+const UniswapV2Adapter = artifacts.require('UniswapV2Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const AaveTokenAdapter = artifacts.require('AaveTokenAdapter');
@@ -35,6 +36,7 @@ const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
+const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 
 const aDaiAddress = '0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d';
@@ -478,6 +480,18 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(UniswapV2Adapter, { from: accounts[0] });
+  adapters.push([UniswapV2Adapter.address]);
+  tokens.push([[]]);
+  protocolNames.push('Uniswap V2');
+  metadata.push([
+    'Uniswap V2',
+    'Automated liquidity protocol',
+    'uniswap.org',
+    'protocol-icons.s3.amazonaws.com/Uniswap.png',
+    '0',
+  ]);
+
   await deployer.deploy(ZrxAdapter, { from: accounts[0] });
   adapters.push([ZrxAdapter.address]);
   tokens.push([zrxAdapterTokens]);
@@ -574,6 +588,12 @@ module.exports = async (deployer, network, accounts) => {
         UniswapV1TokenAdapter.address,
       );
     });
+  await deployer.deploy(UniswapV2TokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        UniswapV2TokenAdapter.address,
+      );
+    });
   await AdapterRegistry.at('0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672')
     .then(async (registry) => {
       await registry.contract.methods.addProtocols(
@@ -601,6 +621,7 @@ module.exports = async (deployer, network, accounts) => {
           'SetToken',
           'SmartToken',
           'Uniswap V1 pool token',
+          'Uniswap V2 pool token',
         ],
         tokenAdapters,
       )
