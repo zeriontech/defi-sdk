@@ -76,7 +76,7 @@ contract UniswapV2TokenAdapter is TokenAdapter("Uniswap V2 Pool Token") {
             }
 
             underlyingComponents[i] = Component({
-                tokenAddress: tokens[i],
+                token: tokens[i],
                 tokenType: underlyingTokenType,
                 rate: ERC20(tokens[i]).balanceOf(token) * 1e18 / totalSupply
             });
