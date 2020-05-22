@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./AaveDebtAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('AaveDebtAdapter', () => {
+contract.skip('AaveDebtAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const tusdAddress = '0x0000000000085d4780B73119b644AE5ecd22b376';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';

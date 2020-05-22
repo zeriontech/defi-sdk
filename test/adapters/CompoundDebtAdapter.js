@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./CompoundDebtAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('CompoundDebtAdapter', () => {
+contract.skip('CompoundDebtAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const batAddress = '0x0D8775F648430679A709E98d2b0Cb6250d2887EF';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';

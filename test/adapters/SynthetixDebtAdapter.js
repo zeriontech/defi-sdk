@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./SynthetixDebtAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('SynthetixDebtAdapter', () => {
+contract.skip('SynthetixDebtAdapter', () => {
   const susdAddress = '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 

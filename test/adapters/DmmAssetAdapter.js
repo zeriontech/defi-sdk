@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('./DmmAssetAdapter');
 const TokenAdapter = artifacts.require('./DmmTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('DmmAssetAdapter', () => {
+contract.skip('DmmAssetAdapter', () => {
   const mDAIAddress = '0x06301057D77D54B6e14c7FafFB11Ffc7Cab4eaa7';
   const mUSDCAddress = '0x3564ad35b9E95340E5Ace2D6251dbfC76098669B';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';

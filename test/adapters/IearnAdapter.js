@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('./IearnAdapter');
 const TokenAdapter = artifacts.require('./IearnTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('IearnAdapter', () => {
+contract.skip('IearnAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const yDAIAddress = '0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01';
   const yUSDCAddress = '0xd6aD7a6750A7593E092a9B218d66C0A814a3436e';

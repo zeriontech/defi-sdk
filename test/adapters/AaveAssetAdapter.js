@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('./AaveAssetAdapter');
 const TokenAdapter = artifacts.require('./AaveTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('AaveAssetAdapter', () => {
+contract.skip('AaveAssetAdapter', () => {
   const aDAIAddress = '0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d';
   const aKNCAddress = '0x9D91BE44C06d373a8a226E1f3b146956083803eB';
   const aBATAddress = '0xE1BA0FB44CCb0D11b80F92f4f8Ed94CA3fF51D00';

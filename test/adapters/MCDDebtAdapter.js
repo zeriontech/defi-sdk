@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./MCDDebtAdapter');
 const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('MCDDebtAdapter', () => {
+contract.skip('MCDDebtAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F'; // for debt
   // DSProxy of '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990'
   const testAddress = '0x29604c784102D453B476fB099b8DCfc83b508F55';

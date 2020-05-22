@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('./ChaiInteractiveAdapter');
 const TokenAdapter = artifacts.require('./ChaiTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('ChaiAdapter', () => {
+contract.skip('ChaiAdapter', () => {
   const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';

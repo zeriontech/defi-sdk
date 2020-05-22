@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('./MCDAssetAdapter');
 const DebtProtocolAdapter = artifacts.require('./MCDDebtAdapter');
 const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('MCDAssetAdapter', () => {
+contract.skip('MCDAssetAdapter', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const batAddress = '0x0D8775F648430679A709E98d2b0Cb6250d2887EF';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F'; // for debt

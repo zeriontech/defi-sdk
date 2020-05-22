@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('./TokenSetsAdapter');
 const TokenAdapter = artifacts.require('./TokenSetsTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('TokenSetsAdapter', () => {
+contract.skip('TokenSetsAdapter', () => {
   const ETH12DayEMACrossoverSet = '0x2c5a9980B41861D91D30d0E0271d1c093452DcA5';
   const BTCRangeBoundMinVolatilitySet = '0x81c55017F7Ce6E72451cEd49FF7bAB1e3DF64d0C';
 

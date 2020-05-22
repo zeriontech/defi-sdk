@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./ZrxAdapter');
 const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('ZrxAdapter', () => {
+contract.skip('ZrxAdapter', () => {
   const zrxAddress = '0xE41d2489571d322189246DaFA5ebDe1F4699F498';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
