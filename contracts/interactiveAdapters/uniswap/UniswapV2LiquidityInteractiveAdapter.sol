@@ -121,7 +121,7 @@ contract UniswapV2LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV2Li
             require(addedLiquidity > 0, "ULIA: deposit fail![1]");
         } catch Error(string memory reason) {
             revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("ULIA: deposit fail![2]");
         }
 
@@ -173,7 +173,7 @@ contract UniswapV2LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV2Li
         ) returns (uint, uint) { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("ULIA: deposit fail![2]");
         }
     }

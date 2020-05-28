@@ -1,31 +1,31 @@
 import displayToken from '../helpers/displayToken';
+import convertToShare from '../helpers/convertToShare';
 // import expectRevert from '../helpers/expectRevert';
 
-// const { BN } = web3.utils;
+const { BN } = web3.utils;
 
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;
-const RELATIVE_AMOUNT_BASE = '1000000000000000000';
 const EMPTY_BYTES = '0x';
 const ADAPTER_ASSET = 0;
 // const ADAPTER_DEBT = 1;
-// const ADAPTER_EXCHANGE = 2;
+const ADAPTER_EXCHANGE = 2;
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const UniswapV1Adapter = artifacts.require('./UniswapV2LiquidityInteractiveAdapter');
-const UniswapV1ExchangeAdapter = artifacts.require('./UniswapV2ExchangeInteractiveAdapter');
+const UniswapV2Adapter = artifacts.require('./UniswapV2LiquidityZapInteractiveAdapter');
+const UniswapV2ExchangeAdapter = artifacts.require('./UniswapV2ExchangeInteractiveAdapter');
 const WethAdapter = artifacts.require('./WethInteractiveAdapter');
-const UniswapV1TokenAdapter = artifacts.require('./UniswapV2TokenAdapter');
+const UniswapV2TokenAdapter = artifacts.require('./UniswapV2TokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const Logic = artifacts.require('./Logic');
 const TokenSpender = artifacts.require('./TokenSpender');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('UniswapV1LiquidityAdapter', () => {
+contract.only('UniswapV2LiquidityZapInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const wethDaiAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -45,11 +45,11 @@ contract('UniswapV1LiquidityAdapter', () => {
   let WETHDAI;
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await UniswapV1Adapter.new({ from: accounts[0] })
+    await UniswapV2Adapter.new({ from: accounts[0] })
       .then((result) => {
         protocolAdapterAddress = result.address;
       });
-    await UniswapV1ExchangeAdapter.new({ from: accounts[0] })
+    await UniswapV2ExchangeAdapter.new({ from: accounts[0] })
       .then((result) => {
         uniswapAdapterAddress = result.address;
       });
@@ -57,7 +57,7 @@ contract('UniswapV1LiquidityAdapter', () => {
       .then((result) => {
         wethAdapterAddress = result.address;
       });
-    await UniswapV1TokenAdapter.new({ from: accounts[0] })
+    await UniswapV2TokenAdapter.new({ from: accounts[0] })
       .then((result) => {
         tokenAdapterAddress = result.address;
       });
@@ -144,7 +144,7 @@ contract('UniswapV1LiquidityAdapter', () => {
       });
   });
 
-  it('should be correct addLiquidity call transfer with existing dai and weth', async () => {
+  it('should buy 1 UNI-V2 with existing dai', async () => {
     // exchange 1 ETH to WETH like we had WETH initially
     await tokenSpender.methods.startExecution(
       // actions
@@ -154,7 +154,7 @@ contract('UniswapV1LiquidityAdapter', () => {
           web3.utils.toHex('Weth'),
           ADAPTER_ASSET,
           [ethAddress],
-          ['1000000000000000000'],
+          [web3.utils.toWei('1', 'ether')],
           [AMOUNT_ABSOLUTE],
           EMPTY_BYTES,
         ],
@@ -167,7 +167,36 @@ contract('UniswapV1LiquidityAdapter', () => {
       .send({
         from: accounts[0],
         gas: 10000000,
-        value: '1000000000000000000',
+        value: web3.utils.toWei('1', 'ether'),
+      });
+    await WETH.methods.approve(tokenSpender.options.address, web3.utils.toWei('0.3', 'ether'))
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      });
+    await tokenSpender.methods.startExecution(
+      // actions
+      [
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('Uniswap V2'),
+          ADAPTER_EXCHANGE,
+          [],
+          [web3.utils.toWei('0.3', 'ether')],
+          [AMOUNT_ABSOLUTE],
+          web3.eth.abi.encodeParameter('address[]', [wethAddress, daiAddress]),
+        ],
+      ],
+      // inputs
+      [
+        [wethAddress, web3.utils.toWei('0.3', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+      ],
+      // outputs
+      [],
+    )
+      .send({
+        gas: 10000000,
+        from: accounts[0],
       });
     let daiAmount;
     await DAI.methods['balanceOf(address)'](accounts[0])
@@ -181,40 +210,53 @@ contract('UniswapV1LiquidityAdapter', () => {
         from: accounts[0],
         gas: 1000000,
       });
-    let wethAmount;
     await WETH.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
         console.log(`weth amount before is    ${web3.utils.fromWei(result, 'ether')}`);
-        wethAmount = result;
-      });
-    await WETH.methods.approve(tokenSpender.options.address, wethAmount.toString())
-      .send({
-        from: accounts[0],
-        gas: 1000000,
       });
     await WETHDAI.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
         console.log(`wethdai amount before is ${web3.utils.fromWei(result, 'ether')}`);
       });
+    const wethDaiAmount = web3.utils.toWei('1', 'ether');
+    // let wethAmount;
+    // await adapterRegistry.methods.getFullTokenBalances(
+    //   [web3.utils.toHex('Uniswap V2 Pool Token')],
+    //   [wethDaiAddress],
+    // )
+    //   .call()
+    //   .then((result) => {
+    //     let wethFirst = result[0].underlying[0].metadata.tokenAddress === wethAddress;
+    //     wethAmount = new BN(result[0].underlying[wethFirst ? 0 : 1].amount)
+    //       .mul(new BN(wethDaiAmount))
+    //       .div(new BN('10').pow(new BN('18')));
+    //     daiAmount = new BN(result[0].underlying[wethFirst ? 1 : 0].amount)
+    //       .mul(new BN(wethDaiAmount))
+    //       .div(new BN('10').pow(new BN('18')));
+    //   });
     await tokenSpender.methods.startExecution(
       [
         [
           ACTION_DEPOSIT,
           web3.utils.toHex('Uniswap V2'),
           ADAPTER_ASSET,
-          [wethAddress, daiAddress],
-          [RELATIVE_AMOUNT_BASE, RELATIVE_AMOUNT_BASE],
-          [AMOUNT_ABSOLUTE, AMOUNT_RELATIVE],
-          EMPTY_BYTES,
+          [daiAddress],
+          [convertToShare(1)],
+          [AMOUNT_RELATIVE],
+          web3.eth.abi.encodeParameters(
+            ['address'],
+            [wethDaiAddress],
+          ),
         ],
       ],
       [
-        [daiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0, ZERO],
-        [wethAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0, ZERO],
+        [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
       ],
-      [],
+      [
+        [wethDaiAddress, wethDaiAmount],
+      ],
     )
       .send({
         from: accounts[0],
@@ -255,7 +297,7 @@ contract('UniswapV1LiquidityAdapter', () => {
       });
   });
 
-  it('should be correct removeLiquidity call transfer with 100% DAIUNI', async () => {
+  it('should sell 100% DAIUNI', async () => {
     let wethDaiAmount;
     await DAI.methods['balanceOf(address)'](accounts[0])
       .call()
@@ -285,13 +327,13 @@ contract('UniswapV1LiquidityAdapter', () => {
           web3.utils.toHex('Uniswap V2'),
           ADAPTER_ASSET,
           [wethDaiAddress],
-          [RELATIVE_AMOUNT_BASE],
+          [convertToShare(1)],
           [AMOUNT_RELATIVE],
-          EMPTY_BYTES,
+          web3.eth.abi.encodeParameter('address', daiAddress),
         ],
       ],
       [
-        [wethDaiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0, ZERO],
+        [wethDaiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
       ],
       [],
     )
@@ -307,7 +349,7 @@ contract('UniswapV1LiquidityAdapter', () => {
       .then((result) => {
         console.log(`dai amount after is     ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await DAI.methods['balanceOf(address)'](accounts[0])
+    await WETH.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
         console.log(`weth amount after is    ${web3.utils.fromWei(result, 'ether')}`);

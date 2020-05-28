@@ -61,7 +61,6 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
 
     /**
      * @notice Exchange tokens using Uniswap pool.
-     * @param tokens Array with one element - token address to be exchanged from.
      * @param amounts Array with one element - token amount to be exchanged from.
      * @param amountTypes Array with one element - amount type.
      * @param data Uniswap exchange path starting from tokens[0] (ABI-encoded).
@@ -69,7 +68,7 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] memory tokens,
+        address[] memory,
         uint256[] memory amounts,
         AmountType[] memory amountTypes,
         bytes memory data
@@ -79,16 +78,15 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "UEIA: should be 1 tokens/amounts/types!");
+        require(amounts.length == 1, "UEIA: should be 1 amount/amountType!");
 
-        uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
         address[] memory path = abi.decode(data, (address[]));
-        require(path[0] == tokens[0], "UEIA: wrong path!");
+        uint256 amount = getAbsoluteAmountDeposit(path[0], amounts[0], amountTypes[0]);
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = path[path.length - 1];
 
-        ERC20(tokens[0]).safeApprove(ROUTER, amount, "UEIA![1]");
+        ERC20(path[0]).safeApprove(ROUTER, amount, "UEIA![1]");
 
         try UniswapV2Router01(ROUTER).swapExactTokensForTokens(
             amount,
@@ -101,14 +99,13 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             require(amountsOut[amountsOut.length - 1] > 0, "UEIA: deposit fail![1]");
         } catch Error(string memory reason) {
             revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("UEIA: deposit fail![2]");
         }
     }
 
     /**
      * @notice Exchange tokens using Uniswap pool.
-     * @param tokens Array with one element - token address to be exchanged to.
      * @param amounts Array with one element - token amount to be exchanged to.
      * @param amountTypes Array with one element - amount type (can be `AmountType.Absolute` only).
      * @param data Uniswap exchange path ending with tokens[0] (ABI-encoded).
@@ -116,7 +113,7 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] memory tokens,
+        address[] memory,
         uint256[] memory amounts,
         AmountType[] memory amountTypes,
         bytes memory data
@@ -126,15 +123,14 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "UEIA: should be 1 tokens/amounts/types!");
+        require(amounts.length == 1, "UEIA: should be 1 amount/amountType!");
         require(amountTypes[0] == AmountType.Absolute, "UEIA: wrong type!");
 
-        uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
         address[] memory path = abi.decode(data, (address[]));
-        require(path[path.length - 1] == tokens[0], "UEIA: wrong path!");
+        uint256 amount = getAbsoluteAmountDeposit(path[path.length - 1], amounts[0], amountTypes[0]);
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = tokens[0];
+        tokensToBeWithdrawn[0] = path[path.length - 1];
 
         ERC20(path[0]).safeApprove(ROUTER, ERC20(path[0]).balanceOf(address(this)), "UEIA![2]");
 
@@ -149,7 +145,7 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             require(amountsOut[amountsOut.length - 1] == amount, "UEIA: deposit fail![1]");
         } catch Error(string memory reason) {
             revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("UEIA: deposit fail![2]");
         }
 
