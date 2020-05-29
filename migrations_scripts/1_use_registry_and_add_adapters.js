@@ -120,9 +120,14 @@ const yBUSDv3 = '0x04bC0Ab673d88aE9dbC9DA2380cB6B79C4BCa9aE';
 const idleDAI = '0x10eC0D497824e342bCB0EDcE00959142aAa766dD';
 const idleUSDC = '0xeB66ACc3d011056B00ea521F8203580C2E5d3991';
 
-const ssCompoundTokenAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
-const ssYTokenAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
-const ssBusdTokenAddress = '0x3B3Ac5386837Dc563660FB6a0937DFAa5924333B';
+const cCrvAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
+const tCrvAddress = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
+const yCrvAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
+const bCrvAddress = '0x3B3Ac5386837Dc563660FB6a0937DFAa5924333B';
+const sCrvAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
+const pCrvAddress = '0xD905e2eaeBe188fc92179b6350807D8bd91Db0D8';
+const tbtcCrvAddress = '0x1f2a662FB513441f06b8dB91ebD9a1466462b275';
+const renCrvAddress = '0x49849C98ae39Fff122806C06791Fa73784FB3675';
 
 const sethUniAddress = '0xe9Cf7887b93150D4F2Da7dFc6D502B216438F244';
 const curveSnxAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
@@ -217,9 +222,14 @@ const compoundDebtAdapterTokens = [
   usdtAddress,
 ];
 const curveAdapterTokens = [
-  ssCompoundTokenAddress,
-  ssYTokenAddress,
-  ssBusdTokenAddress,
+  cCrvAddress,
+  tCrvAddress,
+  yCrvAddress,
+  bCrvAddress,
+  sCrvAddress,
+  pCrvAddress,
+  tbtcCrvAddress,
+  renCrvAddress,
 ];
 const dmmAssetAdapterTokens = [
   mDAIAddress,
