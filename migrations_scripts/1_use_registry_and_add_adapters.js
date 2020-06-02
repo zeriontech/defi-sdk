@@ -1,5 +1,7 @@
 const AaveAssetAdapter = artifacts.require('AaveAssetAdapter');
 const AaveDebtAdapter = artifacts.require('AaveDebtAdapter');
+const AaveUniswapAssetAdapter = artifacts.require('AaveUniswapAssetAdapter');
+const AaveUniswapDebtAdapter = artifacts.require('AaveUniswapDebtAdapter');
 const BalancerAdapter = artifacts.require('BalancerAdapter');
 const BancorAdapter = artifacts.require('BancorAdapter');
 const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
@@ -24,6 +26,7 @@ const UniswapV2Adapter = artifacts.require('UniswapV2Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const AaveTokenAdapter = artifacts.require('AaveTokenAdapter');
+const AaveUniswapTokenAdapter = artifacts.require('AaveUniswapTokenAdapter');
 const BalancerTokenAdapter = artifacts.require('BalancerTokenAdapter');
 const BancorTokenAdapter = artifacts.require('BancorTokenAdapter');
 const CompoundTokenAdapter = artifacts.require('CompoundTokenAdapter');
@@ -75,6 +78,17 @@ const zrxAddress = '0xE41d2489571d322189246DaFA5ebDe1F4699F498';
 const snxAddress = '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F';
 const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
 
+const uniUsdcEthAddress = '0x1D0e53A0e524E3CC92C1f0f33Ae268FfF8D7E7a5';
+const uniLinkEthAddress = '0x9548DB8b1cA9b6c757485e7861918b640390169c';
+const uniDaiEthAddress = '0xBbBb7F2aC04484F7F04A2C2C16f20479791BbB44';
+const uniLendEthAddress = '0xc88ebbf7c523f38ef3eb8a151273c0f0da421e63';
+const uniMkrEthAddress = '0x8c69f7A4C9B38F1b48005D216c398Efb2F1Ce3e4';
+const uniSethEthAddress = '0x84BBcaB430717ff832c3904fa6515f97fc63C76F';
+const auDaiAddress = '0x048930eec73c91B44b0844aEACdEBADC2F2b6efb';
+const auUsdcAddress = '0xe02b2Ad63eFF3Ac1D5827cBd7AB9DD3DaC4f4AD0';
+const auUsdtAddress = '0xb977ee318010A5252774171494a1bCB98E7fab65';
+const auEthAddress = '0x6179078872605396Ee62960917128F9477a5DdbB';
+
 const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
 const cBATAddress = '0x6C8c6b02E7b2BE14d4fA6022Dfd6d75921D90E4E';
 const cETHAddress = '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5';
@@ -106,9 +120,14 @@ const yBUSDv3 = '0x04bC0Ab673d88aE9dbC9DA2380cB6B79C4BCa9aE';
 const idleDAI = '0x10eC0D497824e342bCB0EDcE00959142aAa766dD';
 const idleUSDC = '0xeB66ACc3d011056B00ea521F8203580C2E5d3991';
 
-const ssCompoundTokenAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
-const ssYTokenAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
-const ssBusdTokenAddress = '0x3B3Ac5386837Dc563660FB6a0937DFAa5924333B';
+const cCrvAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
+const tCrvAddress = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
+const yCrvAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
+const bCrvAddress = '0x3B3Ac5386837Dc563660FB6a0937DFAa5924333B';
+const sCrvAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
+const pCrvAddress = '0xD905e2eaeBe188fc92179b6350807D8bd91Db0D8';
+const tbtcCrvAddress = '0x1f2a662FB513441f06b8dB91ebD9a1466462b275';
+const renCrvAddress = '0x49849C98ae39Fff122806C06791Fa73784FB3675';
 
 const sethUniAddress = '0xe9Cf7887b93150D4F2Da7dFc6D502B216438F244';
 const curveSnxAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
@@ -162,6 +181,24 @@ const aaveDebtAdapterTokens = [
   snxAddress,
   wbtcAddress,
 ];
+const aaveUniswapAssetAdapterTokens = [
+  uniUsdcEthAddress,
+  uniLinkEthAddress,
+  uniDaiEthAddress,
+  uniLendEthAddress,
+  uniMkrEthAddress,
+  uniSethEthAddress,
+  auEthAddress,
+  auUsdcAddress,
+  auUsdtAddress,
+  auDaiAddress,
+];
+const aaveUniswapDebtAdapterTokens = [
+  ethAddress,
+  usdcAddress,
+  usdtAddress,
+  daiAddress,
+];
 const compoundAssetAdapterTokens = [
   cDAIAddress,
   cBATAddress,
@@ -185,9 +222,14 @@ const compoundDebtAdapterTokens = [
   usdtAddress,
 ];
 const curveAdapterTokens = [
-  ssCompoundTokenAddress,
-  ssYTokenAddress,
-  ssBusdTokenAddress,
+  cCrvAddress,
+  tCrvAddress,
+  yCrvAddress,
+  bCrvAddress,
+  sCrvAddress,
+  pCrvAddress,
+  tbtcCrvAddress,
+  renCrvAddress,
 ];
 const dmmAssetAdapterTokens = [
   mDAIAddress,
@@ -266,6 +308,19 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('Aave');
   metadata.push([
     'Aave',
+    'Decentralized lending & borrowing protocol',
+    'aave.com',
+    'protocol-icons.s3.amazonaws.com/aave.png',
+    '0',
+  ]);
+
+  await deployer.deploy(AaveUniswapAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(AaveUniswapDebtAdapter, { from: accounts[0] });
+  adapters.push([AaveUniswapAssetAdapter.address, AaveUniswapDebtAdapter.address]);
+  tokens.push([aaveUniswapAssetAdapterTokens, aaveUniswapDebtAdapterTokens]);
+  protocolNames.push('Aave • Uniswap Market');
+  metadata.push([
+    'Aave • Uniswap Market',
     'Decentralized lending & borrowing protocol',
     'aave.com',
     'protocol-icons.s3.amazonaws.com/aave.png',
@@ -516,6 +571,12 @@ module.exports = async (deployer, network, accounts) => {
         AaveTokenAdapter.address,
       );
     });
+  await deployer.deploy(AaveUniswapTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        AaveUniswapTokenAdapter.address,
+      );
+    });
   await deployer.deploy(BalancerTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -610,6 +671,7 @@ module.exports = async (deployer, network, accounts) => {
         [
           'ERC20',
           'AToken',
+          'AToken Uniswap Market',
           'Balancer pool token',
           'CToken',
           'Curve pool token',

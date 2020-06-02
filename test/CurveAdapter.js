@@ -8,10 +8,14 @@ const YTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('CurveAdapter', () => {
-  const ssCompoundTokenAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
-  const ssUSDTTokenAddress = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
-  const ssYTokenAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
-  const ssBusdTokenAddress = '0x3B3Ac5386837Dc563660FB6a0937DFAa5924333B';
+  const cCrvAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
+  const tCrvAddress = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
+  const yCrvAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
+  const bCrvAddress = '0x3B3Ac5386837Dc563660FB6a0937DFAa5924333B';
+  const sCrvAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
+  const pCrvAddress = '0xD905e2eaeBe188fc92179b6350807D8bd91Db0D8';
+  const tbtcCrvAddress = '0x1f2a662FB513441f06b8dB91ebD9a1466462b275';
+  const renCrvAddress = '0x49849C98ae39Fff122806C06791Fa73784FB3675';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
@@ -110,9 +114,14 @@ contract('CurveAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        ssCompoundTokenAddress,
-        ssYTokenAddress,
-        ssBusdTokenAddress,
+        cCrvAddress,
+        tCrvAddress,
+        yCrvAddress,
+        bCrvAddress,
+        sCrvAddress,
+        pCrvAddress,
+        tbtcCrvAddress,
+        renCrvAddress,
       ]]],
     )
       .send({
@@ -138,28 +147,34 @@ contract('CurveAdapter', () => {
         displayToken(result[0].adapterBalances[0].balances[1].underlying[0]);
         displayToken(result[0].adapterBalances[0].balances[1].underlying[1]);
         displayToken(result[0].adapterBalances[0].balances[1].underlying[2]);
-        displayToken(result[0].adapterBalances[0].balances[1].underlying[3]);
         displayToken(result[0].adapterBalances[0].balances[2].underlying[0]);
         displayToken(result[0].adapterBalances[0].balances[2].underlying[1]);
         displayToken(result[0].adapterBalances[0].balances[2].underlying[2]);
         displayToken(result[0].adapterBalances[0].balances[2].underlying[3]);
+        displayToken(result[0].adapterBalances[0].balances[3].underlying[0]);
+        displayToken(result[0].adapterBalances[0].balances[3].underlying[1]);
+        displayToken(result[0].adapterBalances[0].balances[3].underlying[2]);
+        displayToken(result[0].adapterBalances[0].balances[3].underlying[3]);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, dai);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[1].metadata, usdc);
         assert.deepEqual(result[0].adapterBalances[0].balances[1].underlying[0].metadata, dai);
         assert.deepEqual(result[0].adapterBalances[0].balances[1].underlying[1].metadata, usdc);
         assert.deepEqual(result[0].adapterBalances[0].balances[1].underlying[2].metadata, usdt);
-        assert.deepEqual(result[0].adapterBalances[0].balances[1].underlying[3].metadata, tusd);
         assert.deepEqual(result[0].adapterBalances[0].balances[2].underlying[0].metadata, dai);
         assert.deepEqual(result[0].adapterBalances[0].balances[2].underlying[1].metadata, usdc);
         assert.deepEqual(result[0].adapterBalances[0].balances[2].underlying[2].metadata, usdt);
-        assert.deepEqual(result[0].adapterBalances[0].balances[2].underlying[3].metadata, busd);
+        assert.deepEqual(result[0].adapterBalances[0].balances[2].underlying[3].metadata, tusd);
+        assert.deepEqual(result[0].adapterBalances[0].balances[3].underlying[0].metadata, dai);
+        assert.deepEqual(result[0].adapterBalances[0].balances[3].underlying[1].metadata, usdc);
+        assert.deepEqual(result[0].adapterBalances[0].balances[3].underlying[2].metadata, usdt);
+        assert.deepEqual(result[0].adapterBalances[0].balances[3].underlying[3].metadata, busd);
       });
   });
 
   it('should return correct full unit', async () => {
     await adapterRegistry.methods['getFullTokenBalance(string,address)'](
       'Curve pool token',
-      ssCompoundTokenAddress,
+      cCrvAddress,
     )
       .call()
       .then((result) => {
@@ -171,24 +186,12 @@ contract('CurveAdapter', () => {
   it('should return correct final full unit', async () => {
     await adapterRegistry.methods['getFinalFullTokenBalance(string,address)'](
       'Curve pool token',
-      ssCompoundTokenAddress,
+      cCrvAddress,
     )
       .call()
       .then((result) => {
         assert.deepEqual(result.underlying[0].metadata, dai);
         assert.deepEqual(result.underlying[1].metadata, usdc);
-      });
-  });
-
-  it('should not return 0 if wrong pool token address', async () => {
-    await adapterRegistry.methods.getAdapterBalance(
-      testAddress,
-      protocolAdapterAddress,
-      [ssUSDTTokenAddress],
-    )
-      .call()
-      .then((result) => {
-        assert.deepEqual(result.balances[0].underlying, []);
       });
   });
 });
