@@ -3,7 +3,7 @@ import displayToken from './helpers/displayToken';
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('AaveUniswapAssetAdapter');
 const TokenAdapter = artifacts.require('AaveTokenAdapter');
-const AUniswapTokenAdapter = artifacts.require('AaveTokenAdapter');
+const AUniswapTokenAdapter = artifacts.require('AaveUniswapTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 

@@ -37,7 +37,7 @@ interface AToken {
  * @dev Implementation of TokenAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract AaveTokenAdapter is TokenAdapter {
+contract AaveUniswapTokenAdapter is TokenAdapter {
 
 
     address internal constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
