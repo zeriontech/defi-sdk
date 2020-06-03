@@ -5,8 +5,8 @@ const displayToken = async (registry, token) => {
   let amount = weiAmount.divRound(base).toNumber() / 100000;
   console.log(`${token.metadata.erc20.name} amount: ${amount.toString()}`);
   await registry.methods.getFinalFullTokenBalances(
-    [token.metadata.tokenType],
     [token.metadata.tokenAddress],
+    [token.metadata.tokenType],
   )
     .call()
     .then((result) => {
