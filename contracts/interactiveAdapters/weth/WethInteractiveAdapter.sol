@@ -77,7 +77,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         try WETH9(WETH).deposit{value: amount}() { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("WIA: deposit fail!");
         }
     }
@@ -112,7 +112,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         try WETH9(WETH).withdraw(amount) { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("WIA: withdraw fail!");
         }
     }

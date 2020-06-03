@@ -114,7 +114,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
             false
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("TSIA: tokenSet fail![1]");
         }
 
@@ -157,7 +157,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
             false
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("TSIA: tokenSet fail![2]");
         }
     }

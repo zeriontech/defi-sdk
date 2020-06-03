@@ -74,7 +74,7 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
         try Chai(CHAI).join(address(this), amount) { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("CIA: deposit fail!");
         }
 
@@ -106,7 +106,7 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
         try Chai(CHAI).exit(address(this), amount) { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("CIA: deposit fail!");
         }
 

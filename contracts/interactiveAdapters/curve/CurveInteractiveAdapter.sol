@@ -142,6 +142,4 @@ abstract contract CurveInteractiveAdapter is InteractiveAdapter {
             revert("CIA: bad token!");
         }
     }
-
-
 }

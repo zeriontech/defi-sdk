@@ -47,7 +47,7 @@ contract CurveRegistry is Ownable {
         poolInfo[0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23] = PoolInfo({
             swap: 0x52EA46506B9CC5Ef470C5bf89f17Dc28bB35D85C,
             totalCoins: 3,
-            name: "T Pool"
+            name: "USDT Pool"
         });
         poolInfo[0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8] = PoolInfo({
             swap: 0x45F783CCE6B7FF23B2ab2D70e416cdb7D6055f51,

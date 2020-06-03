@@ -96,7 +96,7 @@ contract SignatureVerifier {
         TransactionData memory data
     )
         internal
-        view
+        pure
         returns (bytes32)
     {
         return keccak256(
@@ -114,7 +114,7 @@ contract SignatureVerifier {
         Action[] memory actions
     )
         internal
-        view
+        pure
         returns (bytes32)
     {
         bytes memory actionsData = new bytes(0);
@@ -143,7 +143,7 @@ contract SignatureVerifier {
         Input[] memory inputs
     )
         internal
-        view
+        pure
         returns (bytes32)
     {
         bytes memory inputsData = new bytes(0);
@@ -170,7 +170,7 @@ contract SignatureVerifier {
         Output[] memory outputs
     )
         internal
-        view
+        pure
         returns (bytes32)
     {
         bytes memory outputsData = new bytes(0);

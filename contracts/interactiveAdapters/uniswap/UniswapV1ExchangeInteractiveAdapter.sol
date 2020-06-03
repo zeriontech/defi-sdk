@@ -144,7 +144,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                 require(boughtAmount > 0, "UEIA: deposit fail![1]");
             } catch Error(string memory reason) {
                 revert(reason);
-            } catch (bytes memory) {
+            } catch {
                 revert("UEIA: deposit fail![2]");
             }
         } else {
@@ -163,7 +163,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                     require(boughtAmount > 0, "UEIA: deposit fail![3]");
                 } catch Error(string memory reason) {
                     revert(reason);
-                } catch (bytes memory) {
+                } catch {
                     revert("UEIA: deposit fail![4]");
                 }
             } else {
@@ -178,7 +178,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                     require(boughtAmount > 0, "UEIA: deposit fail![5]");
                 } catch Error(string memory reason) {
                     revert(reason);
-                } catch (bytes memory) {
+                } catch {
                     revert("UEIA: deposit fail![6]");
                 }
             }
@@ -225,7 +225,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                 require(boughtAmount > 0, "UEIA: withdraw fail![1]");
             } catch Error(string memory reason) {
                 revert(reason);
-            } catch (bytes memory) {
+            } catch {
                 revert("UEIA: withdraw fail![2]");
             }
         } else {
@@ -245,7 +245,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                     require(boughtAmount > 0, "UEIA: withdraw fail![3]");
                 } catch Error(string memory reason) {
                     revert(reason);
-                } catch (bytes memory) {
+                } catch {
                     revert("UEIA: withdraw fail![4]");
                 }
             } else {
@@ -260,7 +260,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                     require(boughtAmount > 0, "UEIA: withdraw fail![5]");
                 } catch Error(string memory reason) {
                     revert(reason);
-                } catch (bytes memory) {
+                } catch {
                     revert("UEIA: withdraw fail![6]");
                 }
             }

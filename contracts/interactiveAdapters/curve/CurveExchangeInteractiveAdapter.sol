@@ -93,7 +93,7 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
                     }
                 } catch Error(string memory reason) {
                     revert(reason);
-                } catch (bytes memory) {
+                } catch {
                     revert("CEIA: get rate fail![1]");
                 }
             }
@@ -104,7 +104,7 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
         try Stableswap(pools[index]).exchange_underlying(i, j, amount, 0) {
         } catch Error(string memory reason) {
             revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("CEIA: deposit fail!");
         }
     }

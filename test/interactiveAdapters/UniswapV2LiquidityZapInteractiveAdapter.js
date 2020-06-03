@@ -25,7 +25,7 @@ const Logic = artifacts.require('./Logic');
 const TokenSpender = artifacts.require('./TokenSpender');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('UniswapV2LiquidityZapInteractiveAdapter', () => {
+contract('UniswapV2LiquidityZapInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const wethDaiAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';

@@ -44,13 +44,13 @@ import { TokenAdapter } from "./adapters/TokenAdapter.sol";
 contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
 
     /**
-     * @param tokenTypes Array of tokens' types.
      * @param tokenAddresses Array of tokens' addresses.
+     * @param tokenTypes Array of tokens' types.
      * @return Full token balances by token types and token addresses.
      */
     function getFullTokenBalances(
-        bytes32[] calldata tokenTypes,
-        address[] calldata tokenAddresses
+        address[] calldata tokenAddresses,
+        bytes32[] calldata tokenTypes
     )
         external
         view
@@ -70,13 +70,13 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
     }
 
     /**
-     * @param tokenTypes Array of tokens' types.
      * @param tokenAddresses Array of tokens' addresses.
+     * @param tokenTypes Array of tokens' types.
      * @return Final full token balances by token types and token addresses.
      */
     function getFinalFullTokenBalances(
-        bytes32[] calldata tokenTypes,
-        address[] calldata tokenAddresses
+        address[] calldata tokenAddresses,
+        bytes32[] calldata tokenTypes
     )
         external
         view

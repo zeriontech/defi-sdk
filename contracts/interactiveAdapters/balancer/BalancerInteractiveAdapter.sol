@@ -90,7 +90,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, BalancerAdapter {
             maxAmounts
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("BIA: pool fail![1]");
         }
 
@@ -134,7 +134,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, BalancerAdapter {
             minReturns
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("BIA: pool fail![2]");
         }
     }

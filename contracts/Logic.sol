@@ -106,6 +106,7 @@ contract Logic {
         address[] memory adapters = adapterRegistry.getProtocolAdapters(action.protocolName);
         require(action.adapterIndex <= adapters.length, "L: wrong index!");
         address adapter = adapters[action.adapterIndex];
+        require(adapter != address(0), "L: zero adapter!");
 
         bytes4 selector;
         if (action.actionType == ActionType.Deposit) {
