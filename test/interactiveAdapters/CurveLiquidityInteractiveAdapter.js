@@ -33,7 +33,6 @@ contract.only('CurveLiquidityAdapter', () => {
   const bPoolToken = '0x3B3Ac5386837Dc563660FB6a0937DFAa5924333B';
   const sPoolToken = '0xC25a3A3b969415c80451098fa907EC722572917F';
   const pPoolToken = '0xD905e2eaeBe188fc92179b6350807D8bd91Db0D8';
-  const tbtcPoolToken = '0x1f2a662FB513441f06b8dB91ebD9a1466462b275';
   const renPoolToken = '0x7771F704490F9C0C3B06aFe8960dBB6c58CBC812';
 
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
@@ -139,7 +138,6 @@ contract.only('CurveLiquidityAdapter', () => {
             bPoolToken,
             sPoolToken,
             pPoolToken,
-            tbtcPoolToken,
             renPoolToken,
           ],
         ],
@@ -327,11 +325,11 @@ contract.only('CurveLiquidityAdapter', () => {
         poolAmount = result;
         console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await adapterRegistry.methods['getBalances(address)'](accounts[0])
-      .call()
-      .then(async (result) => {
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
-      });
+    // await adapterRegistry.methods['getBalances(address)'](accounts[0])
+    //   .call()
+    //   .then(async (result) => {
+    //     await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
+    //   });
     await poolToken.methods.approve(tokenSpender.options.address, poolAmount.toString())
       .send({
         from: accounts[0],

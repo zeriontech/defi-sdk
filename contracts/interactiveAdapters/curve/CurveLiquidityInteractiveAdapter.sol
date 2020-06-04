@@ -27,7 +27,7 @@ import { CurveInteractiveAdapter } from "./CurveInteractiveAdapter.sol";
 
 /**
  * @dev Stableswap contract interface.
- * Only the functions required for CurveTokenAdapter contract are added.
+ * Only the functions required for CurveLiquidityInteractiveAdapter contract are added.
  * The Stableswap contract is available here
  * github.com/curvefi/curve-contract/blob/compounded/vyper/stableswap.vy.
  */
@@ -37,13 +37,15 @@ interface Stableswap {
 
 /**
  * @dev Deposit contract interface.
- * Only the functions required for CurveTokenAdapter contract are added.
+ * Only the functions required for CurveLiquidityInteractiveAdapter contract are added.
  * The Deposit contract is available here
  * github.com/curvefi/curve-contract/blob/compounded/vyper/deposit.vy.
  */
 /* solhint-disable func-name-mixedcase */
 interface Deposit {
-    function add_liquidity(uint256[] calldata, uint256) external;
+    function add_liquidity(uint256[2] calldata, uint256) external;
+    function add_liquidity(uint256[3] calldata, uint256) external;
+    function add_liquidity(uint256[4] calldata, uint256) external;
     function remove_liquidity_one_coin(uint256, int128, uint256, bool) external;
 }
 /* solhint-enable func-name-mixedcase */
@@ -92,6 +94,7 @@ contract CurveLiquidityInteractiveAdapter is CurveInteractiveAdapter, CurveLiqui
         uint256 totalCoins = getTotalCoins(crvToken);
 
         uint256 tokenIndex = uint256(getTokenIndex(tokens[0]));
+
         uint256[] memory inputAmounts = new uint256[](totalCoins);
 
         for (uint256 i = 0; i < totalCoins; i++) {
@@ -104,14 +107,30 @@ contract CurveLiquidityInteractiveAdapter is CurveInteractiveAdapter, CurveLiqui
             "CLIA![1]"
         );
 
-        try Deposit(callee).add_liquidity(
-            inputAmounts,
-            0
-        ) { // solhint-disable-line no-empty-blocks
-        } catch Error(string memory reason) {
-            revert(reason);
-        } catch (bytes memory) {
-            revert("CLIA: deposit fail!");
+        if (totalCoins == 2) {
+            try Deposit(callee).add_liquidity(
+                [inputAmounts[0], inputAmounts[1]],
+                0
+            ) { // solhint-disable-line no-empty-blocks
+            } catch {
+                revert("CLIA: deposit fail![1]");
+            }
+        } else if (totalCoins == 3) {
+            try Deposit(callee).add_liquidity(
+                [inputAmounts[0], inputAmounts[1], inputAmounts[2]],
+                0
+            ) { // solhint-disable-line no-empty-blocks
+            } catch {
+                revert("CLIA: deposit fail![2]");
+            }
+        } else if (totalCoins == 4) {
+            try Deposit(callee).add_liquidity(
+                [inputAmounts[0], inputAmounts[1], inputAmounts[2], inputAmounts[3]],
+                0
+            ) { // solhint-disable-line no-empty-blocks
+            } catch {
+                revert("CLIA: deposit fail![3]");
+            }
         }
     }
 
@@ -154,18 +173,16 @@ contract CurveLiquidityInteractiveAdapter is CurveInteractiveAdapter, CurveLiqui
         ERC20(tokens[0]).safeApprove(
             callee,
             amount,
-            "CLIA![1]"
+            "CLIA![2]"
         );
 
         try Deposit(callee).remove_liquidity_one_coin(
             amount,
-            getTokenIndex(toToken), // no need to check that toToken is returned
+            index,
             0,
             true
         ) { // solhint-disable-line no-empty-blocks
-        } catch Error(string memory reason) {
-            revert(reason);
-        } catch (bytes memory) {
+        } catch {
             revert("CLIA: withdraw fail!");
         }
     }
