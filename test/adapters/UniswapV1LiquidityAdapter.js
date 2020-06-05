@@ -244,16 +244,6 @@ contract.skip('UniswapV1LiquidityAdapter', () => {
       });
     await adapterRegistry.methods.getFinalFullTokenBalances(
       [
-        web3.utils.toHex('Uniswap V1 Pool Token'),
-        web3.utils.toHex('Uniswap V1 Pool Token'),
-        web3.utils.toHex('Uniswap V1 Pool Token'),
-        web3.utils.toHex('Uniswap V1 Pool Token'),
-        web3.utils.toHex('Uniswap V1 Pool Token'),
-        web3.utils.toHex('Uniswap V1 Pool Token'),
-        web3.utils.toHex('Uniswap V1 Pool Token'),
-        web3.utils.toHex('Uniswap V1 Pool Token'),
-      ],
-      [
         batUniAddress,
         mkrUniAddress,
         daiUniAddress,
@@ -262,6 +252,16 @@ contract.skip('UniswapV1LiquidityAdapter', () => {
         saiUniAddress,
         cDaiUniAddress,
         cSaiUniAddress,
+      ],
+      [
+        web3.utils.toHex('Uniswap V1 Pool Token'),
+        web3.utils.toHex('Uniswap V1 Pool Token'),
+        web3.utils.toHex('Uniswap V1 Pool Token'),
+        web3.utils.toHex('Uniswap V1 Pool Token'),
+        web3.utils.toHex('Uniswap V1 Pool Token'),
+        web3.utils.toHex('Uniswap V1 Pool Token'),
+        web3.utils.toHex('Uniswap V1 Pool Token'),
+        web3.utils.toHex('Uniswap V1 Pool Token'),
       ],
     )
       .call()

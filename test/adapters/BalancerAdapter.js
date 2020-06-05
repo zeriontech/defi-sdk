@@ -150,14 +150,14 @@ contract.skip('BalancerAdapter', () => {
       });
     await adapterRegistry.methods.getFinalFullTokenBalances(
       [
-        web3.utils.toHex('Balancer Pool Token'),
-        web3.utils.toHex('Balancer Pool Token'),
-        web3.utils.toHex('Balancer Pool Token'),
-      ],
-      [
         wethDai3070PoolAddress,
         wethMkr2575PoolAddress,
         cusdcCdai5050PoolAddress,
+      ],
+      [
+        web3.utils.toHex('Balancer Pool Token'),
+        web3.utils.toHex('Balancer Pool Token'),
+        web3.utils.toHex('Balancer Pool Token'),
       ],
     )
       .call()

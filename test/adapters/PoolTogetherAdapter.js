@@ -116,12 +116,12 @@ contract.skip('PoolTogetherAdapter', () => {
       });
     await adapterRegistry.methods.getFinalFullTokenBalances(
       [
-        web3.utils.toHex('PoolTogether Pool'),
-        web3.utils.toHex('PoolTogether Pool'),
-      ],
-      [
         daiPoolAddress,
         usdcPoolAddress,
+      ],
+      [
+        web3.utils.toHex('PoolTogether Pool'),
+        web3.utils.toHex('PoolTogether Pool'),
       ],
     )
       .call()

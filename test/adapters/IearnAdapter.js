@@ -100,10 +100,10 @@ contract.skip('IearnAdapter', () => {
       });
     await adapterRegistry.methods.getFinalFullTokenBalances(
       [
-        web3.utils.toHex('YToken'),
+        yDAIAddress,
       ],
       [
-        yDAIAddress,
+        web3.utils.toHex('YToken'),
       ],
     )
       .call()

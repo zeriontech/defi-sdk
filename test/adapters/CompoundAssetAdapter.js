@@ -96,10 +96,10 @@ contract.skip('CompoundAssetAdapter', () => {
       });
     await adapterRegistry.methods.getFinalFullTokenBalances(
       [
-        web3.utils.toHex('CToken'),
+        cDAIAddress,
       ],
       [
-        cDAIAddress,
+        web3.utils.toHex('CToken'),
       ],
     )
       .call()

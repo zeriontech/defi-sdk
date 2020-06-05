@@ -109,16 +109,18 @@ contract.skip('AaveAssetAdapter', () => {
         await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
         await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[1]);
       });
+    console.log(await adapterRegistry.methods.getBalances(testAddress)
+      .estimateGas());
     await adapterRegistry.methods.getFinalFullTokenBalances(
-      [
-        web3.utils.toHex('AToken'),
-        web3.utils.toHex('AToken'),
-        web3.utils.toHex('AToken'),
-      ],
       [
         aDAIAddress,
         aKNCAddress,
         aBATAddress,
+      ],
+      [
+        web3.utils.toHex('AToken'),
+        web3.utils.toHex('AToken'),
+        web3.utils.toHex('AToken'),
       ],
     )
       .call()

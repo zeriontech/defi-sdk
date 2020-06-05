@@ -114,12 +114,12 @@ contract.skip('AaveDebtAdapter', () => {
       });
     await adapterRegistry.methods.getFinalFullTokenBalances(
       [
-        web3.utils.toHex('ERC20'),
-        web3.utils.toHex('ERC20'),
-      ],
-      [
         daiAddress,
         mkrAddress,
+      ],
+      [
+        web3.utils.toHex('ERC20'),
+        web3.utils.toHex('ERC20'),
       ],
     )
       .call()

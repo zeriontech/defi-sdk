@@ -93,12 +93,12 @@ contract.skip('TokenSetsAdapter', () => {
       });
     await adapterRegistry.methods.getFinalFullTokenBalances(
       [
-        web3.utils.toHex('SetToken'),
-        web3.utils.toHex('SetToken'),
-      ],
-      [
         ETH12DayEMACrossoverSet,
         BTCRangeBoundMinVolatilitySet,
+      ],
+      [
+        web3.utils.toHex('SetToken'),
+        web3.utils.toHex('SetToken'),
       ],
     )
       .call()

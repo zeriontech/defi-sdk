@@ -83,10 +83,10 @@ contract.skip('IdleAdapter', () => {
       });
     await adapterRegistry.methods.getFinalFullTokenBalances(
       [
-        web3.utils.toHex('IdleToken'),
+        idleDAIAddress,
       ],
       [
-        idleDAIAddress,
+        web3.utils.toHex('IdleToken'),
       ],
     )
       .call()

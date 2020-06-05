@@ -150,20 +150,20 @@ contract.skip('CurveLiquidityAdapter', () => {
       });
     await adapterRegistry.methods.getFinalFullTokenBalances(
       [
-        web3.utils.toHex('Curve Pool Token'),
-        web3.utils.toHex('Curve Pool Token'),
-        web3.utils.toHex('Curve Pool Token'),
-        web3.utils.toHex('Curve Pool Token'),
-        web3.utils.toHex('Curve Pool Token'),
-        web3.utils.toHex('Curve Pool Token'),
-      ],
-      [
         cPoolToken,
         tPoolToken,
         yPoolToken,
         bPoolToken,
         sPoolToken,
         pPoolToken,
+      ],
+      [
+        web3.utils.toHex('Curve Pool Token'),
+        web3.utils.toHex('Curve Pool Token'),
+        web3.utils.toHex('Curve Pool Token'),
+        web3.utils.toHex('Curve Pool Token'),
+        web3.utils.toHex('Curve Pool Token'),
+        web3.utils.toHex('Curve Pool Token'),
       ],
     )
       .call()

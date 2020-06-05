@@ -94,12 +94,12 @@ contract.skip('DmmAssetAdapter', () => {
       });
     await adapterRegistry.methods.getFinalFullTokenBalances(
       [
-        web3.utils.toHex('MToken'),
-        web3.utils.toHex('MToken'),
-      ],
-      [
         mDAIAddress,
         mUSDCAddress,
+      ],
+      [
+        web3.utils.toHex('MToken'),
+        web3.utils.toHex('MToken'),
       ],
     )
       .call()

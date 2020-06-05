@@ -100,10 +100,10 @@ contract.skip('BancorAdapter', () => {
       });
     await adapterRegistry.methods.getFinalFullTokenBalances(
       [
-        web3.utils.toHex('SmartToken'),
+        bntBethPoolAddress,
       ],
       [
-        bntBethPoolAddress,
+        web3.utils.toHex('SmartToken'),
       ],
     )
       .call()

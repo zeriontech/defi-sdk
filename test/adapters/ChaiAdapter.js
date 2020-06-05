@@ -88,10 +88,10 @@ contract.skip('ChaiAdapter', () => {
       });
     await adapterRegistry.methods.getFinalFullTokenBalances(
       [
-        web3.utils.toHex('Chai Token'),
+        chaiAddress,
       ],
       [
-        chaiAddress,
+        web3.utils.toHex('Chai Token'),
       ],
     )
       .call()
