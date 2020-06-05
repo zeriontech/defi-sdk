@@ -49,14 +49,13 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
 
     /**
      * @notice Wraps Ether in Wrapped Ether.
-     * @param tokens Array with one element - 0xEeee...EEeE constant.
      * @param amounts Array with one element - ETH amount to be converted to WETH.
      * @param amountTypes Array with one element - amount type.
-     * @return tokensToBeWithdrawn Array with one element - WETH.
+     * @return tokensToBeWithdrawn Array with one element - WETH address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] memory tokens,
+        address[] memory,
         uint256[] memory amounts,
         AmountType[] memory amountTypes,
         bytes memory
@@ -66,10 +65,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "WIA: should be 1 token/amount/type!");
-        require(tokens[0] == ETH, "WIA: ETH only!");
-
-        uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
+        uint256 amount = getAbsoluteAmountDeposit(ETH, amounts[0], amountTypes[0]);
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = WETH;
@@ -84,14 +80,13 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
 
     /**
      * @notice Unwraps Ether from Wrapped Ether.
-     * @param tokens Array with one element - WETH address.
      * @param amounts Array with one element - WETH amount to be converted to ETH.
      * @param amountTypes Array with one element - amount type.
-     * @return tokensToBeWithdrawn Empty array (ETH is sent back).
+     * @return tokensToBeWithdrawn Array with one element - 0xEeee...EEeE constant.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] memory tokens,
+        address[] memory,
         uint256[] memory amounts,
         AmountType[] memory amountTypes,
         bytes memory
@@ -101,10 +96,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "WIA: should be 1 token/amount/type!");
-        require(tokens[0] == WETH, "WIA: WETH only!");
-
-        uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
+        uint256 amount = getAbsoluteAmountWithdraw(WETH, amounts[0], amountTypes[0]);
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = ETH;
