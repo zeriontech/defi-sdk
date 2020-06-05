@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.8;
+pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
 import { Action, Output, ActionType, AmountType } from "./Structs.sol";
@@ -60,11 +60,11 @@ contract Logic {
      * @param account address that will receive all the resulting funds.
      */
     function executeActions(
-        Action[] memory actions,
-        Output[] memory minReturns,
+        Action[] calldata actions,
+        Output[] calldata minReturns,
         address payable account
     )
-        public
+        external
         payable
     {
         require(account != address(0), "L: empty account!");
@@ -85,9 +85,9 @@ contract Logic {
      * This function is used to create cross-protocol adapters.
      */
     function executeActionExternal(
-        Action memory action
+        Action calldata action
     )
-        public
+        external
         returns (address[] memory)
     {
         require(msg.sender == address(this), "L: only address(this)!");
@@ -95,7 +95,7 @@ contract Logic {
     }
 
     function executeAction(
-        Action memory action
+        Action calldata action
     )
         internal
         returns (address[] memory)
@@ -139,7 +139,7 @@ contract Logic {
     }
 
     function returnTokens(
-        Output[] memory minReturns,
+        Output[] calldata minReturns,
         address[][] memory tokensToBeWithdrawn,
         address payable account
     )

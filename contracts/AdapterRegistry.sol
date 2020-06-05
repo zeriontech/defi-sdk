@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.8;
+pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
 import {
@@ -57,13 +57,16 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         returns (FullTokenBalance[] memory)
     {
         uint256 length = tokenTypes.length;
-        require(length == tokenAddresses.length, "AR: tokenTypes and tokens differ!");
+        require(length == tokenAddresses.length, "AR: inconsistent arrays!");
 
-        Component[] memory components;
         FullTokenBalance[] memory balances = new FullTokenBalance[](length);
         for (uint256 i = 0; i < length; i++) {
-            components = getComponents(tokenAddresses[i], tokenTypes[i], 1e18);
-            balances[i] = getFullTokenBalance(tokenAddresses[i], tokenTypes[i], 1e18, components);
+            balances[i] = getFullTokenBalance(
+                tokenAddresses[i],
+                tokenTypes[i],
+                1e18,
+                getComponents(tokenAddresses[i], tokenTypes[i], 1e18)
+            );
         }
 
         return balances;
@@ -83,13 +86,16 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         returns (FullTokenBalance[] memory)
     {
         uint256 length = tokenTypes.length;
-        require(length == tokenAddresses.length, "AR: tokenTypes and tokens differ!");
+        require(length == tokenAddresses.length, "AR: inconsistent arrays!");
 
-        Component[] memory components;
         FullTokenBalance[] memory balances = new FullTokenBalance[](length);
         for (uint256 i = 0; i < length; i++) {
-            components = getFinalComponents(tokenAddresses[i], tokenTypes[i], 1e18);
-            balances[i] = getFullTokenBalance(tokenAddresses[i], tokenTypes[i], 1e18, components);
+            balances[i] = getFullTokenBalance(
+                tokenAddresses[i],
+                tokenTypes[i],
+                1e18,
+                getFinalComponents(tokenAddresses[i], tokenTypes[i], 1e18)
+            );
         }
 
         return balances;
