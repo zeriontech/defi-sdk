@@ -31,9 +31,12 @@ import { CurveInteractiveAdapter } from "./CurveInteractiveAdapter.sol";
  * The Stableswap contract is available here
  * github.com/curvefi/curve-contract/blob/compounded/vyper/stableswap.vy.
  */
+/* solhint-disable func-name-mixedcase */
 interface Stableswap {
     function underlying_coins(int128) external view returns (address);
 }
+/* solhint-enable func-name-mixedcase */
+
 
 /**
  * @dev Deposit contract interface.

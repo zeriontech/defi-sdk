@@ -33,10 +33,10 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
  * github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2Pair.sol.
  */
 interface UniswapV2Pair {
-    function token0() external view returns (address);
-    function token1() external view returns (address);
     function mint(address) external returns (uint256);
     function burn(address) external returns (uint256, uint256);
+    function token0() external view returns (address);
+    function token1() external view returns (address);
 }
 
 

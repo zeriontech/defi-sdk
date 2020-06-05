@@ -91,6 +91,47 @@ contract SignatureVerifier {
         );
     }
 
+    function getAccountFromSignature(
+        TransactionData memory data,
+        bytes memory signature
+    )
+        public
+        returns (address payable)
+    {
+        require(signature.length == 65, "SV: wrong sig length!");
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+
+        // solium-disable-next-line no-inline-assembly
+        // solhint-disable-next-line no-inline-assembly
+        assembly {
+            r := mload(add(signature, 0x20))
+            s := mload(add(signature, 0x40))
+            v := byte(0, mload(add(signature, 0x60)))
+        }
+
+        address signer = ecrecover(
+            keccak256(
+                abi.encodePacked(
+                    bytes1(0x19),
+                    bytes1(0x01),
+                    domainSeparator,
+                    hash(data)
+                )
+            ),
+            v,
+            r,
+            s
+        );
+
+        require(nonces[signer] == data.nonce, "SV: wrong nonce!");
+
+        nonces[signer]++;
+
+        return payable(signer);
+    }
+
     /// @return Hash to be signed by tokens supplier.
     function hash(
         TransactionData memory data
@@ -188,46 +229,5 @@ contract SignatureVerifier {
         }
 
         return keccak256(outputsData);
-    }
-
-    function getAccountFromSignature(
-        TransactionData memory data,
-        bytes memory signature
-    )
-        public
-        returns (address payable)
-    {
-        require(signature.length == 65, "SV: wrong sig length!");
-        bytes32 r;
-        bytes32 s;
-        uint8 v;
-
-        // solium-disable-next-line no-inline-assembly
-        // solhint-disable-next-line no-inline-assembly
-        assembly {
-            r := mload(add(signature, 0x20))
-            s := mload(add(signature, 0x40))
-            v := byte(0, mload(add(signature, 0x60)))
-        }
-
-        address signer = ecrecover(
-            keccak256(
-                abi.encodePacked(
-                    bytes1(0x19),
-                    bytes1(0x01),
-                    domainSeparator,
-                    hash(data)
-                )
-            ),
-            v,
-            r,
-            s
-        );
-
-        require(nonces[signer] == data.nonce, "SV: wrong nonce!");
-
-        nonces[signer]++;
-
-        return payable(signer);
     }
 }

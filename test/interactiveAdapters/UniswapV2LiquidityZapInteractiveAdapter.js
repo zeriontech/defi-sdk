@@ -2,7 +2,7 @@ import displayToken from '../helpers/displayToken';
 import convertToShare from '../helpers/convertToShare';
 // import expectRevert from '../helpers/expectRevert';
 
-const { BN } = web3.utils;
+// const { BN } = web3.utils;
 
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;

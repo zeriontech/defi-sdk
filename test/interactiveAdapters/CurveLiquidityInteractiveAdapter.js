@@ -1,8 +1,8 @@
-import displayToken from '../helpers/displayToken';
+// import displayToken from '../helpers/displayToken';
 import convertToShare from '../helpers/convertToShare';
 // import expectRevert from '../helpers/expectRevert';
 
-const { BN } = web3.utils;
+// const { BN } = web3.utils;
 
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
@@ -26,7 +26,7 @@ const Logic = artifacts.require('./Logic');
 const TokenSpender = artifacts.require('./TokenSpender');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('CurveLiquidityAdapter', () => {
+contract('CurveLiquidityAdapter', () => {
   const cPoolToken = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
   const tPoolToken = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
   const yPoolToken = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
@@ -312,7 +312,7 @@ contract.only('CurveLiquidityAdapter', () => {
       });
   });
 
-  it.only('should sell 100% of pool tokens', async () => {
+  it.skip('should sell 100% of pool tokens', async () => {
     let poolAmount;
     await DAI.methods['balanceOf(address)'](accounts[0])
       .call()
