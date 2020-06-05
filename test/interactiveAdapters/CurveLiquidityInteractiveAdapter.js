@@ -312,7 +312,7 @@ contract.only('CurveLiquidityAdapter', () => {
       });
   });
 
-  it('should sell 100% of pool tokens', async () => {
+  it.only('should sell 100% of pool tokens', async () => {
     let poolAmount;
     await DAI.methods['balanceOf(address)'](accounts[0])
       .call()
