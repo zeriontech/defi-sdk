@@ -318,7 +318,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(AaveUniswapDebtAdapter, { from: accounts[0] });
   adapters.push([AaveUniswapAssetAdapter.address, AaveUniswapDebtAdapter.address]);
   tokens.push([aaveUniswapAssetAdapterTokens, aaveUniswapDebtAdapterTokens]);
-  protocolNames.push('Aave');
+  protocolNames.push('Aave • Uniswap Market');
   metadata.push([
     'Aave • Uniswap Market',
     'Decentralized lending & borrowing protocol',
