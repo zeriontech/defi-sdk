@@ -36,12 +36,12 @@ interface IOneSplit {
         uint256 parts,
         uint256 disableFlags
     )
-    external
-    view
-    returns(
-        uint256 returnAmount,
-        uint256[] memory distribution
-    );
+        external
+        view
+        returns(
+            uint256 returnAmount,
+            uint256[] memory distribution
+        );
 }
 
 
