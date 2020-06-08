@@ -22,7 +22,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 /**
  * @dev EpochTokenLocker contract interface.
  * Only the functions required for GnosisProtocolAdapter contract are added.
- * The Staking contract is available here
+ * The EpochTokenLocker contract is available here
  * github.com/gnosis/dex-contracts/blob/master/contracts/EpochTokenLocker.sol.
  */
 interface EpochTokenLocker {
