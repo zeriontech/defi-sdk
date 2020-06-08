@@ -82,7 +82,7 @@ contract OneInchChiTokenAdapter is TokenAdapter {
         Component[] memory underlyingTokens = new Component[](1);
 
         underlyingTokens[0] = Component({
-            token: token,
+            token: ETH_ADDRESS,
             tokenType: "ERC20",
             rate: rate
         });
