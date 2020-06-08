@@ -38,7 +38,7 @@ contract('ChiAdapter', () => {
                 adapterRegistry = result.contract;
             });
         await adapterRegistry.methods.addProtocols(
-            ['CHI'],
+            ['Chi'],
             [[
                 'Mock Protocol Name',
                 'Mock protocol description',
@@ -71,8 +71,8 @@ contract('ChiAdapter', () => {
         await adapterRegistry.methods['getBalances(address)'](testAddress)
             .call()
             .then((result) => {
-                displayToken(result[0].adapterBalances[0].balances[0][0]);
-                assert.deepEqual(result[0].adapterBalances[0].balances[0][0].metadata, chi);
+                displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
+                assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, chi);
             });
     });
 });

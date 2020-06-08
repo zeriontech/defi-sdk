@@ -29,7 +29,7 @@ contract OneInchChiAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "ERC20";
+    string public constant override tokenType = "Chi";
 
     /**
      * @return Amount of Chi Token held by the given account.
