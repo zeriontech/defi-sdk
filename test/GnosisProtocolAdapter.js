@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('GnosisProtocolAdapter');
 const TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('GnosisProtocolAdapter', () => {
-  const wethAddress = '0x6810e776880c02933d47db1b9fc05908e5386b96';
+  const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const testAddress = '0x9eabf70538331a6932e0d249d31a5257cee5dd22';
 
   let accounts;
