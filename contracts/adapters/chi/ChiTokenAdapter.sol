@@ -23,7 +23,7 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 
 /**
  * @dev OneSplit contract interface.
- * Only the functions required for OneSplit contract are added.
+ * Only the functions required for OneInchChiTokenAdapter contract are added.
  * The OneSplit contract is available here
  * github.com/CryptoManiacsZone/1inchProtocol/blob/master/contracts/OneSplit.sol.
  */
