@@ -20,6 +20,7 @@ import { ERC20 } from "../../ERC20.sol";
 import { TokenMetadata, Component } from "../../Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
+
 /**
  * @dev OneSplit contract interface.
  * Only the functions required for OneSplit contract are added.
