@@ -41,10 +41,10 @@ abstract contract TokenAdapterManager is Ownable {
      * @param adapters Addresses of token adapters to be added.
      */
     function addTokenAdapters(
-        bytes32[] memory tokenAdapterNames,
-        address[] memory adapters
+        bytes32[] calldata tokenAdapterNames,
+        address[] calldata adapters
     )
-        public
+        external
         onlyOwner
     {
         uint256 length = tokenAdapterNames.length;
@@ -62,9 +62,9 @@ abstract contract TokenAdapterManager is Ownable {
      * @param tokenAdapterNames Names of token adapters to be removed.
      */
     function removeTokenAdapters(
-        bytes32[] memory tokenAdapterNames
+        bytes32[] calldata tokenAdapterNames
     )
-        public
+        external
         onlyOwner
     {
         require(tokenAdapterNames.length != 0, "TAM: empty![2]");
@@ -84,7 +84,7 @@ abstract contract TokenAdapterManager is Ownable {
         bytes32 tokenAdapterName,
         address adapter
     )
-        public
+        external
         onlyOwner
     {
         require(isValidTokenAdapterName(tokenAdapterName), "TAM: bad name![1]");
@@ -97,7 +97,7 @@ abstract contract TokenAdapterManager is Ownable {
      * @return Array of token adapter names.
      */
     function getTokenAdapterNames()
-        public
+        external
         view
         returns (bytes32[] memory)
     {
@@ -111,7 +111,7 @@ abstract contract TokenAdapterManager is Ownable {
     function getTokenAdapterAddress(
         bytes32 tokenAdapterName
     )
-        public
+        external
         view
         returns (address)
     {

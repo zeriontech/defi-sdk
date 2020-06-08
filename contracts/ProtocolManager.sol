@@ -47,12 +47,12 @@ abstract contract ProtocolManager is Ownable {
      * @param tokens Nested arrays with adapters' supported tokens.
      */
     function addProtocols(
-        bytes32[] memory protocolNames,
-        ProtocolMetadata[] memory metadata,
-        address[][] memory adapters,
-        address[][][] memory tokens
+        bytes32[] calldata protocolNames,
+        ProtocolMetadata[] calldata metadata,
+        address[][] calldata adapters,
+        address[][][] calldata tokens
     )
-        public
+        external
         onlyOwner
     {
         uint256 length = protocolNames.length;
@@ -72,9 +72,9 @@ abstract contract ProtocolManager is Ownable {
      * @param protocolNames Names of the protocols to be removed.
      */
     function removeProtocols(
-        bytes32[] memory protocolNames
+        bytes32[] calldata protocolNames
     )
-        public
+        external
         onlyOwner
     {
         require(protocolNames.length != 0, "PM: empty!");
@@ -95,12 +95,12 @@ abstract contract ProtocolManager is Ownable {
      */
     function updateProtocolMetadata(
         bytes32 protocolName,
-        string memory name,
-        string memory description,
-        string memory websiteURL,
-        string memory iconURL
+        string calldata name,
+        string calldata description,
+        string calldata websiteURL,
+        string calldata iconURL
     )
-        public
+        external
         onlyOwner
     {
         require(isValidProtocol(protocolName), "PM: bad name!");
@@ -136,10 +136,10 @@ abstract contract ProtocolManager is Ownable {
      */
     function addProtocolAdapters(
         bytes32 protocolName,
-        address[] memory adapters,
-        address[][] memory tokens
+        address[] calldata adapters,
+        address[][] calldata tokens
     )
-        public
+        external
         onlyOwner
     {
         require(isValidProtocol(protocolName), "PM: bad name!");
@@ -161,9 +161,9 @@ abstract contract ProtocolManager is Ownable {
      */
     function removeProtocolAdapters(
         bytes32 protocolName,
-        uint256[] memory adapterIndices
+        uint256[] calldata adapterIndices
     )
-        public
+        external
         onlyOwner
     {
         require(isValidProtocol(protocolName), "PM: bad name!");
@@ -190,9 +190,9 @@ abstract contract ProtocolManager is Ownable {
         bytes32 protocolName,
         uint256 index,
         address newAdapterAddress,
-        address[] memory newSupportedTokens
+        address[] calldata newSupportedTokens
     )
-        public
+        external
         onlyOwner
     {
         require(isValidProtocol(protocolName), "PM: bad name!");
@@ -218,7 +218,7 @@ abstract contract ProtocolManager is Ownable {
      * @return Array of protocol names.
      */
     function getProtocolNames()
-        public
+        external
         view
         returns (bytes32[] memory)
     {
@@ -230,16 +230,16 @@ abstract contract ProtocolManager is Ownable {
      * @return Array of protocols metadata.
      */
     function getProtocolsMetadata(
-        bytes32[] memory protocolNames
+        bytes32[] calldata protocolNames
     )
-        public
+        external
         view
         returns (ProtocolMetadata[] memory)
     {
         ProtocolMetadata[] memory protocolsMetadata = new ProtocolMetadata[](protocolNames.length);
 
         for (uint256 i = 0; i < protocolNames.length; i++) {
-            protocolsMetadata[i] = getProtocolMetadata(protocolNames[i]);
+            protocolsMetadata[i] = protocolMetadata[protocolNames[i]];
         }
 
         return protocolsMetadata;
@@ -252,7 +252,7 @@ abstract contract ProtocolManager is Ownable {
     function getProtocolAdapters(
         bytes32 protocolName
     )
-        public
+        external
         view
         returns (address[] memory)
     {
@@ -266,7 +266,7 @@ abstract contract ProtocolManager is Ownable {
     function getSupportedTokens(
         address adapter
     )
-        public
+        external
         view
         returns (address[] memory)
     {
@@ -297,9 +297,9 @@ abstract contract ProtocolManager is Ownable {
      */
     function addProtocol(
         bytes32 protocolName,
-        ProtocolMetadata memory metadata,
-        address[] memory adapters,
-        address[][] memory tokens
+        ProtocolMetadata calldata metadata,
+        address[] calldata adapters,
+        address[][] calldata tokens
     )
         internal
     {
@@ -364,7 +364,7 @@ abstract contract ProtocolManager is Ownable {
     function addProtocolAdapter(
         bytes32 protocolName,
         address adapter,
-        address[] memory tokens
+        address[] calldata tokens
     )
         internal
     {
@@ -399,15 +399,5 @@ abstract contract ProtocolManager is Ownable {
         }
 
         protocolAdapters[protocolName].pop();
-    }
-
-    function getProtocolMetadata(
-        bytes32 protocolName
-    )
-        internal
-        view
-        returns (ProtocolMetadata memory)
-    {
-        return protocolMetadata[protocolName];
     }
 }
