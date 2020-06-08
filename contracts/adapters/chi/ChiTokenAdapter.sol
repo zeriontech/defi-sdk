@@ -48,11 +48,12 @@ interface IOneSplit {
 /**
  * @title Token adapter for Chi Gastoken by 1inch.
  * @dev Implementation of Chi Token interface.
+ * @author 1inch.exchange <info@1inch.exchange>
  */
 contract OneInchChiTokenAdapter is TokenAdapter {
 
-    ERC20 private constant ETH_ADDRESS = ERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
-    IOneSplit private constant oneSplit = IOneSplit(0xC586BeF4a0992C495Cf22e1aeEE4E446CECDee0E);
+    address private constant ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    IOneSplit private constant ONE_SPLIT = IOneSplit(0xC586BeF4a0992C495Cf22e1aeEE4E446CECDee0E);
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -72,7 +73,7 @@ contract OneInchChiTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        (uint256 rate, ) = oneSplit.getExpectedReturn(
+        (uint256 returnAmount, ) = ONE_SPLIT.getExpectedReturn(
             ERC20(token),
             ERC20(ETH_ADDRESS),
             1,
@@ -85,7 +86,7 @@ contract OneInchChiTokenAdapter is TokenAdapter {
         underlyingTokens[0] = Component({
             token: ETH_ADDRESS,
             tokenType: "ERC20",
-            rate: rate
+            rate: returnAmount
         });
 
         return underlyingTokens;
