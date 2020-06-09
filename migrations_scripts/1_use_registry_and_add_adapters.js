@@ -14,6 +14,7 @@ const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
 const ChaiAdapter = artifacts.require('ChaiAdapter');
 const DSRAdapter = artifacts.require('DSRAdapter');
+const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
@@ -263,6 +264,9 @@ const iearn3AdapterTokens = [
 const dsrAdapterTokens = [
   daiAddress,
 ];
+const governanceAdapterTokens = [
+  mkrAddress,
+];
 const chaiAdapterTokens = [
   chaiAddress,
 ];
@@ -458,6 +462,18 @@ module.exports = async (deployer, network, accounts) => {
     'Decentralized lending protocol',
     'makerdao.com',
     'protocol-icons.s3.amazonaws.com/dai.png',
+    '0',
+  ]);
+
+  await deployer.deploy(GovernanceAdapter, { from: accounts[0] });
+  adapters.push([GovernanceAdapter.address]);
+  tokens.push([governanceAdapterTokens]);
+  protocolNames.push('Maker Governance');
+  metadata.push([
+    'Maker Governance',
+    'MKR tokens locked on the MakerDAO governance contracts',
+    'vote.makerdao.com',
+    'protocol-icons.s3.amazonaws.com/maker.png',
     '0',
   ]);
 
