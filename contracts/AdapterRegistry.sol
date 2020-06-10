@@ -112,7 +112,7 @@ contract AdapterRegistry is Ownable, ProtocolManager, TokenAdapterManager {
         view
         returns (ProtocolBalance[] memory)
     {
-        bytes32[] memory protocolNames = getProtocolNames();
+        bytes32[] memory protocolNames = protocols;
 
         return getProtocolBalances(account, protocolNames);
     }

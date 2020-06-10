@@ -31,7 +31,7 @@ import { ERC20 } from "../ERC20.sol";
  */
 abstract contract InteractiveAdapter is ProtocolAdapter {
 
-    uint256 internal constant RELATIVE_AMOUNT_BASE = 1e18;
+    uint256 internal constant DELIMITER = 1e18;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
@@ -74,8 +74,9 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         virtual
         returns (uint256)
     {
+        require(amountType != AmountType.None, "IA: bad amountType!");
         if (amountType == AmountType.Relative) {
-            require(amount <= RELATIVE_AMOUNT_BASE, "L: wrong relative value!");
+            require(amount <= DELIMITER, "IA: bad amount!");
 
             uint256 balance;
             if (token == ETH) {
@@ -84,10 +85,10 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
                 balance = ERC20(token).balanceOf(address(this));
             }
 
-            if (amount == RELATIVE_AMOUNT_BASE) {
+            if (amount == DELIMITER) {
                 return balance;
             } else {
-                return mul(balance, amount) / RELATIVE_AMOUNT_BASE;
+                return mul(balance, amount) / DELIMITER;
             }
         } else {
             return amount;
@@ -104,14 +105,15 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         virtual
         returns (uint256)
     {
+        require(amountType != AmountType.None, "IA: bad amountType!");
         if (amountType == AmountType.Relative) {
-            require(amount <= RELATIVE_AMOUNT_BASE, "L: wrong relative value!");
+            require(amount <= DELIMITER, "IA: bad amount!");
 
             (uint256 balance, ) = getBalance(token, address(this));
-            if (amount == RELATIVE_AMOUNT_BASE) {
+            if (amount == DELIMITER) {
                 return balance;
             } else {
-                return mul(balance, amount) / RELATIVE_AMOUNT_BASE;
+                return mul(balance, amount) / DELIMITER;
             }
         } else {
             return amount;

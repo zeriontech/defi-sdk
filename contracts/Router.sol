@@ -37,12 +37,12 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     Core public immutable core;
     address internal constant GAS_TOKEN = 0x0000000000b3F879cb30FE243b4Dfee438691c04;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-    uint256 internal constant BASE = 1e18; // 100%
+    uint256 internal constant DELIMITER = 1e18; // 100%
     uint256 internal constant BENEFICIARY_FEE_LIMIT = 1e16; // 1%
-    uint256 internal constant BENEFICIARY_SHARE = 2e17; // 80%
+    uint256 internal constant BENEFICIARY_SHARE = 8e17; // 80%
 
     constructor(address payable _core) public {
-        require(_core != address(0), "TS: empty core!");
+        require(_core != address(0), "R: empty core!");
         core = Core(_core);
     }
 
@@ -53,7 +53,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         external
         onlyOwner
     {
-        token.safeTransfer(beneficiary, token.balanceOf(address(this)), "TS!");
+        token.safeTransfer(beneficiary, token.balanceOf(address(this)), "R!");
 
         uint256 ethBalance = address(this).balance;
         if (ethBalance > 0) {
@@ -69,11 +69,12 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         view
         returns (Output[] memory allowances)
     {
-        allowances = new Output[](inputs.length);
+        uint256 length = inputs.length;
+        allowances = new Output[](length);
         uint256 required;
         uint256 current;
 
-        for (uint256 i = 0; i < inputs.length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             required = getAbsoluteAmount(inputs[i], account);
             current = ERC20(inputs[i].token).allowance(account, address(this));
 
@@ -92,11 +93,12 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         view
         returns (Output[] memory balances)
     {
-        balances = new Output[](inputs.length);
+        uint256 length = inputs.length;
+        balances = new Output[](length);
         uint256 required;
         uint256 current;
 
-        for (uint256 i = 0; i < inputs.length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             required = getAbsoluteAmount(inputs[i], account);
             current = ERC20(inputs[i].token).balanceOf(account);
 
@@ -108,10 +110,10 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function startExecution(
-        TransactionData calldata data,
-        bytes calldata signature
+        TransactionData memory data,
+        bytes memory signature
     )
-        external
+        public
         payable
     {
         startExecution(
@@ -123,11 +125,11 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function startExecution(
-        Action[] calldata actions,
-        Input[] calldata inputs,
-        Output[] calldata outputs
+        Action[] memory actions,
+        Input[] memory inputs,
+        Output[] memory outputs
     )
-        external
+        public
         payable
     {
         startExecution(
@@ -139,9 +141,9 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function startExecution(
-        Action[] calldata actions,
-        Input[] calldata inputs,
-        Output[] calldata outputs,
+        Action[] memory actions,
+        Input[] memory inputs,
+        Output[] memory outputs,
         address payable account
     )
         internal
@@ -158,7 +160,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function transferTokens(
-        Input[] calldata inputs,
+        Input[] memory inputs,
         address account
     )
         internal
@@ -169,7 +171,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
         for (uint256 i = 0; i < inputs.length; i++) {
             absoluteAmount = getAbsoluteAmount(inputs[i], account);
-            require(absoluteAmount > 0, "TS: 0 amount!");
+            require(absoluteAmount > 0, "R: 0 amount!");
             tokensToBeWithdrawn[i] = inputs[i].token;
 
             // in case inputs includes fees:
@@ -179,28 +181,27 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
             //     - this contract fee is the rest of beneficiary fee (~20%)
             // otherwise no fees are charged!
             if (inputs[i].fee > 0) {
-                require(inputs[i].beneficiary != address(0), "TS: bad beneficiary!");
-                require(inputs[i].fee < BENEFICIARY_FEE_LIMIT, "TS: bad fee!");
+                require(inputs[i].beneficiary != address(0), "R: bad beneficiary!");
+                require(inputs[i].fee <= BENEFICIARY_FEE_LIMIT, "R: bad fee!");
 
-                uint256 coreAmount = mul(absoluteAmount, BASE - inputs[i].fee) / BASE;
-                uint256 beneficiaryAmount = mul(absoluteAmount - coreAmount, BENEFICIARY_SHARE) / BASE;
-                uint256 thisAmount = absoluteAmount - coreAmount - beneficiaryAmount;
-
-                if (coreAmount > 0) {
-                    ERC20(inputs[i].token).safeTransferFrom(
-                        account,
-                        address(core),
-                        coreAmount,
-                        "TS![1]"
-                    );
-                }
+                uint256 feeAmount = mul(absoluteAmount, inputs[i].fee) / DELIMITER;
+                uint256 beneficiaryAmount = mul(feeAmount, BENEFICIARY_SHARE) / DELIMITER;
+                uint256 thisAmount = feeAmount - beneficiaryAmount;
+                uint256 coreAmount = absoluteAmount - feeAmount;
+    
+                ERC20(inputs[i].token).safeTransferFrom(
+                    account,
+                    address(core),
+                    coreAmount,
+                    "R![1]"
+                );
 
                 if (beneficiaryAmount > 0) {
                     ERC20(inputs[i].token).safeTransferFrom(
                         account,
                         inputs[i].beneficiary,
                         beneficiaryAmount,
-                        "TS![2]"
+                        "R![2]"
                     );
                 }
 
@@ -209,7 +210,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
                         account,
                         address(this),
                         absoluteAmount - coreAmount - beneficiaryAmount,
-                        "TS![3]"
+                        "R![3]"
                     );
                 }
             } else {
@@ -217,12 +218,10 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
                     account,
                     address(core),
                     absoluteAmount,
-                    "TS!"
+                    "R!"
                 );
             }
         }
-
-        return tokensToBeWithdrawn;
     }
 
     function freeGasToken(
@@ -247,7 +246,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function getAbsoluteAmount(
-        Input calldata input,
+        Input memory input,
         address account
     )
         internal
@@ -258,14 +257,14 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         AmountType amountType = input.amountType;
         uint256 amount = input.amount;
 
-        require(amountType != AmountType.None, "TS: bad type!");
+        require(amountType != AmountType.None, "R: bad type!");
 
         if (amountType == AmountType.Relative) {
-            require(amount <= BASE, "TS: bad value!");
-            if (amount == BASE) {
+            require(amount <= DELIMITER, "R: bad value!");
+            if (amount == DELIMITER) {
                 return ERC20(token).balanceOf(account);
             } else {
-                return mul(ERC20(token).balanceOf(account), amount) / BASE;
+                return mul(ERC20(token).balanceOf(account), amount) / DELIMITER;
             }
         } else {
             return amount;
@@ -273,7 +272,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function modifyOutputs(
-        Output[] calldata outputs,
+        Output[] memory outputs,
         address[] memory additionalTokens
     )
         internal
@@ -311,7 +310,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         returns (uint256)
     {
         uint256 c = a * b;
-        require(c / a == b, "TS: mul overflow");
+        require(c / a == b, "R: mul overflow");
 
         return c;
     }
