@@ -15,7 +15,7 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const InteractiveAdapter = artifacts.require('./WethInteractiveAdapter');
-const Logic = artifacts.require('./Logic');
+const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
@@ -24,7 +24,7 @@ contract('Weth interactive adapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
   let accounts;
-  let logic;
+  let core;
   let tokenSpender;
   let adapterRegistry;
   let protocolAdapterAddress;
@@ -59,15 +59,15 @@ contract('Weth interactive adapter', () => {
           from: accounts[0],
           gas: '1000000',
         });
-      await Logic.new(
+      await Core.new(
         adapterRegistry.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
-          logic = result.contract;
+          core = result.contract;
         });
       await Router.new(
-        logic.options.address,
+        core.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
@@ -123,12 +123,12 @@ contract('Weth interactive adapter', () => {
         .then((result) => {
           console.log(`eth amount after is  ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await WETH.methods['balanceOf(address)'](logic.options.address)
+      await WETH.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await web3.eth.getBalance(logic.options.address)
+      await web3.eth.getBalance(core.options.address)
         .then((result) => {
           assert.equal(result, 0);
         });
@@ -185,12 +185,12 @@ contract('Weth interactive adapter', () => {
         .then((result) => {
           console.log(`eth amount after is  ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await WETH.methods['balanceOf(address)'](logic.options.address)
+      await WETH.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await web3.eth.getBalance(logic.options.address)
+      await web3.eth.getBalance(core.options.address)
         .then((result) => {
           assert.equal(result, 0);
         });

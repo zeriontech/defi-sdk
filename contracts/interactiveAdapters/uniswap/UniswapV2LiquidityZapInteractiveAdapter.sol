@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../ERC20.sol";
 import { SafeERC20 } from "../../SafeERC20.sol";
 import { Action, AmountType, ActionType } from "../../Structs.sol";
-import { Logic } from "../../Logic.sol";
+import { Core } from "../../Core.sol";
 import { UniswapV2LiquidityAdapter } from "../../adapters/uniswap/UniswapV2LiquidityAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -185,7 +185,7 @@ contract UniswapV2LiquidityZapInteractiveAdapter is InteractiveAdapter, UniswapV
             path[2] = toToken;
         }
 
-        try Logic(payable(address(this))).executeActionExternal(
+        try Core(payable(address(this))).executeActionExternal(
             Action({
                 actionType: ActionType.Deposit,
                 protocolName: "Uniswap V2",

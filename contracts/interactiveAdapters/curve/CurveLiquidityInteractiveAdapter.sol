@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../ERC20.sol";
 import { SafeERC20 } from "../../SafeERC20.sol";
 import { Action, AmountType, ActionType } from "../../Structs.sol";
-import { Logic } from "../../Logic.sol";
+import { Core } from "../../Core.sol";
 import { CurveLiquidityAdapter } from "../../adapters/curve/CurveLiquidityAdapter.sol";
 import { CurveInteractiveAdapter } from "./CurveInteractiveAdapter.sol";
 

@@ -20,7 +20,7 @@ const UniswapV1Adapter = artifacts.require('./UniswapV1LiquidityInteractiveAdapt
 const UniswapV1ExchangeAdapter = artifacts.require('./UniswapV1ExchangeInteractiveAdapter');
 const UniswapV1TokenAdapter = artifacts.require('./UniswapV1TokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
-const Logic = artifacts.require('./Logic');
+const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
@@ -30,7 +30,7 @@ contract('UniswapV1LiquidityAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
   let accounts;
-  let logic;
+  let core;
   let tokenSpender;
   let adapterRegistry;
   let erc20TokenAdapterAddress;
@@ -89,15 +89,15 @@ contract('UniswapV1LiquidityAdapter', () => {
         from: accounts[0],
         gas: '1000000',
       });
-    await Logic.new(
+    await Core.new(
       adapterRegistry.options.address,
       { from: accounts[0] },
     )
       .then((result) => {
-        logic = result.contract;
+        core = result.contract;
       });
     await Router.new(
-      logic.options.address,
+      core.options.address,
       { from: accounts[0] },
     )
       .then((result) => {
@@ -210,7 +210,7 @@ contract('UniswapV1LiquidityAdapter', () => {
         from: accounts[0],
         gas: 1000000,
       });
-    console.log('calling logic with action...');
+    console.log('calling core with action...');
     await tokenSpender.methods.startExecution(
       [
         [

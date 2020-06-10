@@ -34,7 +34,7 @@ import { SafeERC20 } from "./SafeERC20.sol";
  * TODO: reentrancy lock
  * TODO: safe math
  */
-contract Logic {
+contract Core {
     using SafeERC20 for ERC20;
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;

@@ -17,7 +17,7 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const InteractiveAdapter = artifacts.require('./CurveExchangeInteractiveAdapter');
 const UniswapV1ExchangeAdapter = artifacts.require('./UniswapV1ExchangeInteractiveAdapter');
-const Logic = artifacts.require('./Logic');
+const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
@@ -31,7 +31,7 @@ contract('Curve exchange interactive adapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
   let accounts;
-  let logic;
+  let core;
   let tokenSpender;
   let adapterRegistry;
   let protocolAdapterAddress;
@@ -93,15 +93,15 @@ contract('Curve exchange interactive adapter', () => {
           from: accounts[0],
           gas: '1000000',
         });
-      await Logic.new(
+      await Core.new(
         adapterRegistry.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
-          logic = result.contract;
+          core = result.contract;
         });
       await Router.new(
-        logic.options.address,
+        core.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
@@ -209,12 +209,12 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           console.log(`susd amount after is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
+      await DAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await SUSD.methods['balanceOf(address)'](logic.options.address)
+      await SUSD.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
@@ -273,12 +273,12 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           console.log(`usdc amount after is ${web3.utils.fromWei(result, 'mwei')}`);
         });
-      await SUSD.methods['balanceOf(address)'](logic.options.address)
+      await SUSD.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await USDC.methods['balanceOf(address)'](logic.options.address)
+      await USDC.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
@@ -337,12 +337,12 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           console.log(`usdt amount after is ${web3.utils.fromWei(result, 'mwei')}`);
         });
-      await USDT.methods['balanceOf(address)'](logic.options.address)
+      await USDT.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await USDC.methods['balanceOf(address)'](logic.options.address)
+      await USDC.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);

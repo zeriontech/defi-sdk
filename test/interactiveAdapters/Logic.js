@@ -22,11 +22,11 @@ const OneSplitAdapter = artifacts.require('./OneSplitInteractiveAdapter');
 const ChaiTokenAdapter = artifacts.require('./ChaiTokenAdapter');
 const CompoundTokenAdapter = artifacts.require('./CompoundTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
-const Logic = artifacts.require('./Logic');
+const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('Logic', () => {
+contract('Core', () => {
   const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
@@ -34,7 +34,7 @@ contract('Logic', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
   let accounts;
-  let logic;
+  let core;
   let tokenSpender;
   let adapterRegistry;
   let compoundAssetAdapterAddress;
@@ -125,15 +125,15 @@ contract('Logic', () => {
           from: accounts[0],
           gas: '300000',
         });
-      await Logic.new(
+      await Core.new(
         adapterRegistry.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
-          logic = result.contract;
+          core = result.contract;
         });
       await Router.new(
-        logic.options.address,
+        core.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
@@ -166,7 +166,7 @@ contract('Logic', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      // call logic with two actions
+      // call core with two actions
       await tokenSpender.methods.startExecution(
         [
           [
@@ -234,7 +234,7 @@ contract('Logic', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      // call logic with two actions
+      // call core with two actions
       await tokenSpender.methods.startExecution(
         [
           [
@@ -308,15 +308,15 @@ contract('Logic', () => {
           from: accounts[0],
           gas: '1000000',
         });
-      await Logic.new(
+      await Core.new(
         adapterRegistry.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
-          logic = result.contract;
+          core = result.contract;
         });
       await Router.new(
-        logic.options.address,
+        core.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
@@ -339,7 +339,7 @@ contract('Logic', () => {
         .then((result) => {
           console.log(`eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      console.log('calling logic with action...');
+      console.log('calling core with action...');
       await tokenSpender.methods.startExecution(
         [
           [
@@ -402,7 +402,7 @@ contract('Logic', () => {
         .then((result) => {
           console.log(`USDC amount before is ${web3.utils.fromWei(result, 'mwei')}`);
         });
-      console.log('calling logic with action...');
+      console.log('calling core with action...');
       await tokenSpender.methods.startExecution(
         [
           [
@@ -437,12 +437,12 @@ contract('Logic', () => {
         .then((result) => {
           console.log(`USDC amount after is ${web3.utils.fromWei(result, 'mwei')}`);
         });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
+      await DAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await USDC.methods['balanceOf(address)'](logic.options.address)
+      await USDC.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
@@ -464,7 +464,7 @@ contract('Logic', () => {
         .then((result) => {
           console.log(`eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      console.log('calling logic with action...');
+      console.log('calling core with action...');
       await tokenSpender.methods.startExecution(
         [
           [
@@ -521,7 +521,7 @@ contract('Logic', () => {
           gas: 10000000,
           from: accounts[0],
         });
-      console.log('calling logic with action...');
+      console.log('calling core with action...');
       await tokenSpender.methods.startExecution(
         [
           [
@@ -552,12 +552,12 @@ contract('Logic', () => {
         .then((result) => {
           console.log(`eth amount after is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
+      await DAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await web3.eth.getBalance(logic.options.address)
+      await web3.eth.getBalance(core.options.address)
         .then((result) => {
           assert.equal(result, 0);
         });

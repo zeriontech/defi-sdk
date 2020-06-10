@@ -16,7 +16,7 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const InteractiveAdapter = artifacts.require('./UniswapV2ExchangeInteractiveAdapter');
 const WethAdapter = artifacts.require('./WethInteractiveAdapter');
-const Logic = artifacts.require('./Logic');
+const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
@@ -26,7 +26,7 @@ contract('UniswapV2ExchangeAdapter', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
   let accounts;
-  let logic;
+  let core;
   let tokenSpender;
   let adapterRegistry;
   let protocolAdapterAddress;
@@ -81,15 +81,15 @@ contract('UniswapV2ExchangeAdapter', () => {
           from: accounts[0],
           gas: '1000000',
         });
-      await Logic.new(
+      await Core.new(
         adapterRegistry.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
-          logic = result.contract;
+          core = result.contract;
         });
       await Router.new(
-        logic.options.address,
+        core.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
@@ -186,12 +186,12 @@ contract('UniswapV2ExchangeAdapter', () => {
         .then((result) => {
           console.log(`weth amount after is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
+      await DAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await WETH.methods['balanceOf(address)'](logic.options.address)
+      await WETH.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
@@ -256,12 +256,12 @@ contract('UniswapV2ExchangeAdapter', () => {
         .then((result) => {
           console.log(`weth amount after is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
+      await DAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await WETH.methods['balanceOf(address)'](logic.options.address)
+      await WETH.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);

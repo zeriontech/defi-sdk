@@ -23,7 +23,7 @@ import { ERC20 } from "./ERC20.sol";
 import { SafeERC20 } from "./SafeERC20.sol";
 import { SignatureVerifier } from "./SignatureVerifier.sol";
 import { Ownable } from "./Ownable.sol";
-import { Logic } from "./Logic.sol";
+import { Core } from "./Core.sol";
 
 
 interface GST2 {
@@ -34,16 +34,16 @@ interface GST2 {
 contract Router is SignatureVerifier("Zerion Router"), Ownable {
     using SafeERC20 for ERC20;
 
-    Logic public immutable logic;
+    Core public immutable core;
     address internal constant GAS_TOKEN = 0x0000000000b3F879cb30FE243b4Dfee438691c04;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     uint256 internal constant BASE = 1e18; // 100%
     uint256 internal constant BENEFICIARY_FEE_LIMIT = 1e16; // 1%
     uint256 internal constant BENEFICIARY_SHARE = 2e17; // 80%
 
-    constructor(address payable _logic) public {
-        require(_logic != address(0), "TS: empty logic!");
-        logic = Logic(_logic);
+    constructor(address payable _core) public {
+        require(_core != address(0), "TS: empty core!");
+        core = Core(_core);
     }
 
     function returnLostTokens(
@@ -148,11 +148,11 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     {
         // save initial gas to burn gas token later
         uint256 gas = gasleft();
-        // transfer tokens to logic, handle fees (if any), and add these tokens to outputs
+        // transfer tokens to core, handle fees (if any), and add these tokens to outputs
         address[] memory inputTokens = transferTokens(inputs, account);
         Output[] memory modifiedOutputs = modifyOutputs(outputs, inputTokens);
-        // call Logic contract with all provided ETH, actions, expected outputs and account address
-        logic.executeActions{value: msg.value}(actions, modifiedOutputs, account);
+        // call Core contract with all provided ETH, actions, expected outputs and account address
+        core.executeActions{value: msg.value}(actions, modifiedOutputs, account);
         // burn gas token to save some gas
         freeGasToken(gas - gasleft());
     }
@@ -174,23 +174,23 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
             // in case inputs includes fees:
             //     - absolute amount is amount calculated based on inputs
-            //     - logic amount is absolute amount excluding fee set in inputs
-            //     - beneficiary amount is beneficiary share (80%) of non-logic amount
+            //     - core amount is absolute amount excluding fee set in inputs
+            //     - beneficiary amount is beneficiary share (80%) of non-core amount
             //     - this contract fee is the rest of beneficiary fee (~20%)
             // otherwise no fees are charged!
             if (inputs[i].fee > 0) {
                 require(inputs[i].beneficiary != address(0), "TS: bad beneficiary!");
                 require(inputs[i].fee < BENEFICIARY_FEE_LIMIT, "TS: bad fee!");
 
-                uint256 logicAmount = mul(absoluteAmount, BASE - inputs[i].fee) / BASE;
-                uint256 beneficiaryAmount = mul(absoluteAmount - logicAmount, BENEFICIARY_SHARE) / BASE;
-                uint256 thisAmount = absoluteAmount - logicAmount - beneficiaryAmount;
+                uint256 coreAmount = mul(absoluteAmount, BASE - inputs[i].fee) / BASE;
+                uint256 beneficiaryAmount = mul(absoluteAmount - coreAmount, BENEFICIARY_SHARE) / BASE;
+                uint256 thisAmount = absoluteAmount - coreAmount - beneficiaryAmount;
 
-                if (logicAmount > 0) {
+                if (coreAmount > 0) {
                     ERC20(inputs[i].token).safeTransferFrom(
                         account,
-                        address(logic),
-                        logicAmount,
+                        address(core),
+                        coreAmount,
                         "TS![1]"
                     );
                 }
@@ -208,14 +208,14 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
                     ERC20(inputs[i].token).safeTransferFrom(
                         account,
                         address(this),
-                        absoluteAmount - logicAmount - beneficiaryAmount,
+                        absoluteAmount - coreAmount - beneficiaryAmount,
                         "TS![3]"
                     );
                 }
             } else {
                 ERC20(inputs[i].token).safeTransferFrom(
                     account,
-                    address(logic),
+                    address(core),
                     absoluteAmount,
                     "TS!"
                 );

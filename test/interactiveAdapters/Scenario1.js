@@ -16,7 +16,7 @@ const UniswapV1LiquidityAdapter = artifacts.require('./UniswapV1LiquidityInterac
 const UniswapV1ExchangeAdapter = artifacts.require('./UniswapV1ExchangeInteractiveAdapter');
 const UniswapV1TokenAdapter = artifacts.require('./UniswapV1TokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
-const Logic = artifacts.require('./Logic');
+const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
@@ -27,7 +27,7 @@ contract('Scenario DAI -> MKR Pool', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
   let accounts;
-  let logic;
+  let core;
   let tokenSpender;
   let adapterRegistry;
   let uniswapLiquidityAdapterAddress;
@@ -89,15 +89,15 @@ contract('Scenario DAI -> MKR Pool', () => {
         from: accounts[0],
         gas: '1000000',
       });
-    await Logic.new(
+    await Core.new(
       adapterRegistry.options.address,
       { from: accounts[0] },
     )
       .then((result) => {
-        logic = result.contract;
+        core = result.contract;
       });
     await Router.new(
-      logic.options.address,
+      core.options.address,
       { from: accounts[0] },
     )
       .then((result) => {
@@ -228,17 +228,17 @@ contract('Scenario DAI -> MKR Pool', () => {
       .then((result) => {
         console.log(`mkruni amount after is ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await DAI.methods['balanceOf(address)'](logic.options.address)
+    await DAI.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await MKR.methods['balanceOf(address)'](logic.options.address)
+    await MKR.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await MKRUNI.methods['balanceOf(address)'](logic.options.address)
+    await MKRUNI.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
@@ -343,17 +343,17 @@ contract('Scenario DAI -> MKR Pool', () => {
       .then((result) => {
         console.log(`mkruni amount after is  ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await DAI.methods['balanceOf(address)'](logic.options.address)
+    await DAI.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await MKR.methods['balanceOf(address)'](logic.options.address)
+    await MKR.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await MKRUNI.methods['balanceOf(address)'](logic.options.address)
+    await MKRUNI.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);

@@ -21,7 +21,7 @@ const UniswapV2ExchangeAdapter = artifacts.require('./UniswapV2ExchangeInteracti
 const WethAdapter = artifacts.require('./WethInteractiveAdapter');
 const UniswapV2TokenAdapter = artifacts.require('./UniswapV2TokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
-const Logic = artifacts.require('./Logic');
+const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
@@ -32,7 +32,7 @@ contract('UniswapV2LiquidityZapInteractiveAdapter', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
   let accounts;
-  let logic;
+  let core;
   let tokenSpender;
   let adapterRegistry;
   let erc20TokenAdapterAddress;
@@ -116,15 +116,15 @@ contract('UniswapV2LiquidityZapInteractiveAdapter', () => {
         from: accounts[0],
         gas: '1000000',
       });
-    await Logic.new(
+    await Core.new(
       adapterRegistry.options.address,
       { from: accounts[0] },
     )
       .then((result) => {
-        logic = result.contract;
+        core = result.contract;
       });
     await Router.new(
-      logic.options.address,
+      core.options.address,
       { from: accounts[0] },
     )
       .then((result) => {
@@ -280,17 +280,17 @@ contract('UniswapV2LiquidityZapInteractiveAdapter', () => {
       .then((result) => {
         console.log(`wethdai amount after is ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await DAI.methods['balanceOf(address)'](logic.options.address)
+    await DAI.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await WETH.methods['balanceOf(address)'](logic.options.address)
+    await WETH.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await WETHDAI.methods['balanceOf(address)'](logic.options.address)
+    await WETHDAI.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
@@ -359,17 +359,17 @@ contract('UniswapV2LiquidityZapInteractiveAdapter', () => {
       .then((result) => {
         console.log(`wethdai amount after is ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await DAI.methods['balanceOf(address)'](logic.options.address)
+    await DAI.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await WETH.methods['balanceOf(address)'](logic.options.address)
+    await WETH.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await WETHDAI.methods['balanceOf(address)'](logic.options.address)
+    await WETHDAI.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);

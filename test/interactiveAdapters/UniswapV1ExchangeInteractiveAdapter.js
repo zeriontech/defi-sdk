@@ -15,7 +15,7 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const InteractiveAdapter = artifacts.require('./UniswapV1ExchangeInteractiveAdapter');
-const Logic = artifacts.require('./Logic');
+const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
@@ -25,7 +25,7 @@ contract('UniswapV1ExchangeAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
   let accounts;
-  let logic;
+  let core;
   let tokenSpender;
   let adapterRegistry;
   let protocolAdapterAddress;
@@ -61,15 +61,15 @@ contract('UniswapV1ExchangeAdapter', () => {
           from: accounts[0],
           gas: '1000000',
         });
-      await Logic.new(
+      await Core.new(
         adapterRegistry.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
-          logic = result.contract;
+          core = result.contract;
         });
       await Router.new(
-        logic.options.address,
+        core.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
@@ -128,12 +128,12 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`eth amount after is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
+      await DAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await web3.eth.getBalance(logic.options.address)
+      await web3.eth.getBalance(core.options.address)
         .then((result) => {
           assert.equal(result, 0);
         });
@@ -190,12 +190,12 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`eth amount after is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
+      await DAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await web3.eth.getBalance(logic.options.address)
+      await web3.eth.getBalance(core.options.address)
         .then((result) => {
           assert.equal(result, 0);
         });
@@ -245,12 +245,12 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`eth amount after is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
+      await DAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await web3.eth.getBalance(logic.options.address)
+      await web3.eth.getBalance(core.options.address)
         .then((result) => {
           assert.equal(result, 0);
         });
@@ -308,12 +308,12 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`eth amount after is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
+      await DAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await web3.eth.getBalance(logic.options.address)
+      await web3.eth.getBalance(core.options.address)
         .then((result) => {
           assert.equal(result, 0);
         });
@@ -349,15 +349,15 @@ contract('UniswapV1ExchangeAdapter', () => {
           from: accounts[0],
           gas: '1000000',
         });
-      await Logic.new(
+      await Core.new(
         adapterRegistry.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
-          logic = result.contract;
+          core = result.contract;
         });
       await Router.new(
-        logic.options.address,
+        core.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
@@ -425,12 +425,12 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`mkr amount after is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
+      await DAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await MKR.methods['balanceOf(address)'](logic.options.address)
+      await MKR.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
@@ -492,12 +492,12 @@ contract('UniswapV1ExchangeAdapter', () => {
           console.log(`mkr amount before is ${web3.utils.fromWei(result, 'ether')}`);
           mkrAmount = result;
         });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
+      await DAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await MKR.methods['balanceOf(address)'](logic.options.address)
+      await MKR.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
@@ -559,12 +559,12 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`mkr amount after is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
+      await DAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await MKR.methods['balanceOf(address)'](logic.options.address)
+      await MKR.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
@@ -625,12 +625,12 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`mkr amount after is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods['balanceOf(address)'](logic.options.address)
+      await DAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);
         });
-      await MKR.methods['balanceOf(address)'](logic.options.address)
+      await MKR.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);

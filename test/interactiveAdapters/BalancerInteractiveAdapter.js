@@ -16,7 +16,7 @@ const UniswapV1Adapter = artifacts.require('./UniswapV1ExchangeInteractiveAdapte
 const BalancerAdapter = artifacts.require('./BalancerInteractiveAdapter');
 const BalancerTokenAdapter = artifacts.require('./BalancerTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
-const Logic = artifacts.require('./Logic');
+const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
@@ -28,7 +28,7 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
   const poolAddress = '0x987D7Cc04652710b74Fff380403f5c02f82e290a';
 
   let accounts;
-  let logic;
+  let core;
   let tokenSpender;
   let adapterRegistry;
   let uniswapAdapterAddress;
@@ -105,15 +105,15 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         from: accounts[0],
         gas: '1000000',
       });
-    await Logic.new(
+    await Core.new(
       adapterRegistry.options.address,
       { from: accounts[0] },
     )
       .then((result) => {
-        logic = result.contract;
+        core = result.contract;
       });
     await Router.new(
-      logic.options.address,
+      core.options.address,
       { from: accounts[0] },
     )
       .then((result) => {
@@ -258,22 +258,22 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
       .then((result) => {
         console.log(`eth amount after is  ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await DAI.methods['balanceOf(address)'](logic.options.address)
+    await DAI.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await MKR.methods['balanceOf(address)'](logic.options.address)
+    await MKR.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await pool.methods['balanceOf(address)'](logic.options.address)
+    await pool.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await web3.eth.getBalance(logic.options.address)
+    await web3.eth.getBalance(core.options.address)
       .then((result) => {
         assert.equal(result, 0);
       });
@@ -362,22 +362,22 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
       .then((result) => {
         console.log(`pool amount after is ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await DAI.methods['balanceOf(address)'](logic.options.address)
+    await DAI.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await MKR.methods['balanceOf(address)'](logic.options.address)
+    await MKR.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await pool.methods['balanceOf(address)'](logic.options.address)
+    await pool.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await web3.eth.getBalance(logic.options.address)
+    await web3.eth.getBalance(core.options.address)
       .then((result) => {
         assert.equal(result, 0);
       });

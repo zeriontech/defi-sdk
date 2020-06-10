@@ -16,7 +16,7 @@ const TokenSetsAdapter = artifacts.require('./TokenSetsInteractiveAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const WethInteractiveAdapter = artifacts.require('./WethInteractiveAdapter');
 const UniswapV1ExchangeAdapter = artifacts.require('./UniswapV1ExchangeInteractiveAdapter');
-const Logic = artifacts.require('./Logic');
+const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
@@ -27,7 +27,7 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
   const setAddress = '0xA6c040045d962e4B8eFa00954c7d23CCd0a2b8AD';
 
   let accounts;
-  let logic;
+  let core;
   let adapterRegistry;
   let tokenSpender;
   let tokenSetsAdapterAddress;
@@ -119,15 +119,15 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
         from: accounts[0],
         gas: '1000000',
       });
-    await Logic.new(
+    await Core.new(
       adapterRegistry.options.address,
       { from: accounts[0] },
     )
       .then((result) => {
-        logic = result.contract;
+        core = result.contract;
       });
     await Router.new(
-      logic.options.address,
+      core.options.address,
       { from: accounts[0] },
     )
       .then((result) => {
@@ -268,22 +268,22 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
       .then((result) => {
         console.log(`set amount after is  ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await WETH.methods['balanceOf(address)'](logic.options.address)
+    await WETH.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await WBTC.methods['balanceOf(address)'](logic.options.address)
+    await WBTC.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await SET.methods['balanceOf(address)'](logic.options.address)
+    await SET.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await web3.eth.getBalance(logic.options.address)
+    await web3.eth.getBalance(core.options.address)
       .then((result) => {
         assert.equal(result, 0);
       });
@@ -392,22 +392,22 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
       .then((result) => {
         console.log(`set amount after is  ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await WETH.methods['balanceOf(address)'](logic.options.address)
+    await WETH.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await WBTC.methods['balanceOf(address)'](logic.options.address)
+    await WBTC.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await SET.methods['balanceOf(address)'](logic.options.address)
+    await SET.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
       });
-    await web3.eth.getBalance(logic.options.address)
+    await web3.eth.getBalance(core.options.address)
       .then((result) => {
         assert.equal(result, 0);
       });

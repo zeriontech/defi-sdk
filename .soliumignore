@@ -3,7 +3,7 @@ node_modules
 ./contracts/interactiveAdapters
 ./contracts/mock
 ./contracts/AdapterRegistry.sol
-./contracts/Logic.sol
+./contracts/Core.sol
 ./contracts/Migrations.sol
 ./contracts/Ownable.sol
 ./contracts/ProtocolManager.sol
