@@ -23,7 +23,7 @@ const ChaiTokenAdapter = artifacts.require('./ChaiTokenAdapter');
 const CompoundTokenAdapter = artifacts.require('./CompoundTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const Logic = artifacts.require('./Logic');
-const TokenSpender = artifacts.require('./TokenSpender');
+const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
 contract('Logic', () => {
@@ -132,7 +132,7 @@ contract('Logic', () => {
         .then((result) => {
           logic = result.contract;
         });
-      await TokenSpender.new(
+      await Router.new(
         logic.options.address,
         { from: accounts[0] },
       )
@@ -315,7 +315,7 @@ contract('Logic', () => {
         .then((result) => {
           logic = result.contract;
         });
-      await TokenSpender.new(
+      await Router.new(
         logic.options.address,
         { from: accounts[0] },
       )

@@ -23,7 +23,7 @@ const CurveTokenAdapter = artifacts.require('./CurveTokenAdapter');
 const CTokenAdapter = artifacts.require('./CompoundTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const Logic = artifacts.require('./Logic');
-const TokenSpender = artifacts.require('./TokenSpender');
+const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
 contract('CurveLiquidityAdapter', () => {
@@ -170,7 +170,7 @@ contract('CurveLiquidityAdapter', () => {
       .then((result) => {
         logic = result.contract;
       });
-    await TokenSpender.new(
+    await Router.new(
       logic.options.address,
       { from: accounts[0] },
     )

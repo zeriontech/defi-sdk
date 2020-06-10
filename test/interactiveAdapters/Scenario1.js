@@ -17,7 +17,7 @@ const UniswapV1ExchangeAdapter = artifacts.require('./UniswapV1ExchangeInteracti
 const UniswapV1TokenAdapter = artifacts.require('./UniswapV1TokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const Logic = artifacts.require('./Logic');
-const TokenSpender = artifacts.require('./TokenSpender');
+const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
 contract('Scenario DAI -> MKR Pool', () => {
@@ -96,7 +96,7 @@ contract('Scenario DAI -> MKR Pool', () => {
       .then((result) => {
         logic = result.contract;
       });
-    await TokenSpender.new(
+    await Router.new(
       logic.options.address,
       { from: accounts[0] },
     )

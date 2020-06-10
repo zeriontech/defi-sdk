@@ -25,12 +25,13 @@ import { SignatureVerifier } from "./SignatureVerifier.sol";
 import { Ownable } from "./Ownable.sol";
 import { Logic } from "./Logic.sol";
 
+
 interface GST2 {
     function freeUpTo(uint256) external;
 }
 
 
-contract TokenSpender is SignatureVerifier("Zerion Router"), Ownable {
+contract Router is SignatureVerifier("Zerion Router"), Ownable {
     using SafeERC20 for ERC20;
 
     Logic public immutable logic;
@@ -107,10 +108,10 @@ contract TokenSpender is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function startExecution(
-        TransactionData memory data,
-        bytes memory signature
+        TransactionData calldata data,
+        bytes calldata signature
     )
-        public
+        external
         payable
     {
         startExecution(
@@ -122,11 +123,11 @@ contract TokenSpender is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function startExecution(
-        Action[] memory actions,
-        Input[] memory inputs,
-        Output[] memory outputs
+        Action[] calldata actions,
+        Input[] calldata inputs,
+        Output[] calldata outputs
     )
-        public
+        external
         payable
     {
         startExecution(
@@ -138,9 +139,9 @@ contract TokenSpender is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function startExecution(
-        Action[] memory actions,
-        Input[] memory inputs,
-        Output[] memory outputs,
+        Action[] calldata actions,
+        Input[] calldata inputs,
+        Output[] calldata outputs,
         address payable account
     )
         internal
@@ -157,7 +158,7 @@ contract TokenSpender is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function transferTokens(
-        Input[] memory inputs,
+        Input[] calldata inputs,
         address account
     )
         internal
@@ -224,8 +225,29 @@ contract TokenSpender is SignatureVerifier("Zerion Router"), Ownable {
         return tokensToBeWithdrawn;
     }
 
+    function freeGasToken(
+        uint256 desiredAmount
+    )
+        internal
+    {
+        uint256 safeAmount = 0;
+        uint256 gas = gasleft();
+
+        if (gas >= 27710) {
+            safeAmount = (gas - 27710) / 7020; // 1148 + 5722 + 150
+        }
+
+        if (desiredAmount > safeAmount) {
+            desiredAmount = safeAmount;
+        }
+
+        if (desiredAmount > 0) {
+            GST2(GAS_TOKEN).freeUpTo(desiredAmount);
+        }
+    }
+
     function getAbsoluteAmount(
-        Input memory input,
+        Input calldata input,
         address account
     )
         internal
@@ -250,29 +272,8 @@ contract TokenSpender is SignatureVerifier("Zerion Router"), Ownable {
         }
     }
 
-    function freeGasToken(
-        uint256 desiredAmount
-    )
-        internal
-    {
-        uint256 safeAmount = 0;
-        uint256 gas = gasleft();
-
-        if (gas >= 27710) {
-            safeAmount = (gas - 27710) / 7020; // 1148 + 5722 + 150
-        }
-
-        if (desiredAmount > safeAmount) {
-            desiredAmount = safeAmount;
-        }
-
-        if (desiredAmount > 0) {
-            GST2(GAS_TOKEN).freeUpTo(desiredAmount);
-        }
-    }
-
     function modifyOutputs(
-        Output[] memory outputs,
+        Output[] calldata outputs,
         address[] memory additionalTokens
     )
         internal

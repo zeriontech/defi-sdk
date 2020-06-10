@@ -1,4 +1,4 @@
-const SignatureVerifier = artifacts.require('./TokenSpender');
+const SignatureVerifier = artifacts.require('./Router');
 
 async function signTypedData(account, data) {
   return new Promise((resolve, reject) => {

@@ -16,7 +16,7 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const InteractiveAdapter = artifacts.require('./WethInteractiveAdapter');
 const Logic = artifacts.require('./Logic');
-const TokenSpender = artifacts.require('./TokenSpender');
+const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
 contract('Weth interactive adapter', () => {
@@ -66,7 +66,7 @@ contract('Weth interactive adapter', () => {
         .then((result) => {
           logic = result.contract;
         });
-      await TokenSpender.new(
+      await Router.new(
         logic.options.address,
         { from: accounts[0] },
       )

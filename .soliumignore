@@ -11,4 +11,4 @@ node_modules
 ./contracts/SignatureVerifier.sol
 ./contracts/Structs.sol
 ./contracts/TokenAdapterManager.sol
-./contracts/TokenSpender.sol
+./contracts/Router.sol

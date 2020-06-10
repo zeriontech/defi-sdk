@@ -25,7 +25,7 @@ import { ERC20 } from "./ERC20.sol";
 import { SignatureVerifier } from "./SignatureVerifier.sol";
 import { Ownable } from "./Ownable.sol";
 import { AdapterRegistry } from "./AdapterRegistry.sol";
-import { TokenSpender } from "./TokenSpender.sol";
+import { Router } from "./Router.sol";
 import { SafeERC20 } from "./SafeERC20.sol";
 
 
