@@ -15,9 +15,9 @@
     "test": "TEST_FILES=./test/interactiveAdapters/*.js ./scripts/test.sh",
     "coverage": "node --max-old-space-size=4096 ./node_modules/.bin/truffle run coverage",
     "lint:solhint": "npx solhint \"./contracts/**/*.sol\"",
-    "lint:ethlint": "npx ethlint --dir contracts/",
+    "lint:ethlint": "npx solium --dir contracts/",
     "lint:eslint": "eslint .",
-    "lint": "npm run lint:solhint && npm run lint:ethlint && npm run lint:eslint"
+    "lint": "npm run lint:solhint && npm run lint:eslint"
   },
   "author": "",
   "license": "ISC",
@@ -39,7 +39,6 @@
     "eslint-config-airbnb-base": "14.1.0",
     "eslint-plugin-import": "2.20.2",
     "eth-gas-reporter": "0.2.17",
-    "ethlint": "1.2.5",
     "ganache-cli": "6.9.1",
     "solhint": "3.0.0",
     "solidity-coverage": "0.7.5"
