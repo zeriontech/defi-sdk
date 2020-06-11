@@ -309,7 +309,6 @@ contract.only('Core + Router', () => {
     });
 
     it('should return required balances', async () => {
-
       await WETH.methods.balanceOf(accounts[0])
         .call()
         .then((result) => {
@@ -387,6 +386,11 @@ contract.only('Core + Router', () => {
     });
 
     it('should handle fees correctly', async () => {
+      await WETH.methods.approve(router.options.address, web3.utils.toWei('1', 'ether'))
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
       await router.methods.startExecution(
         // actions
         [],
