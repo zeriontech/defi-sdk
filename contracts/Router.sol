@@ -164,9 +164,9 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         address account
     )
         internal
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
-        address[] memory tokensToBeWithdrawn = new address[](inputs.length);
+        tokensToBeWithdrawn = new address[](inputs.length);
         uint256 absoluteAmount;
 
         for (uint256 i = 0; i < inputs.length; i++) {
