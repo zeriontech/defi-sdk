@@ -340,6 +340,11 @@ contract.only('Core + Router', () => {
     });
 
     it('should not handle large fees correctly', async () => {
+      await WETH.methods.approve(router.options.address, web3.utils.toWei('1', 'ether'))
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
       await expectRevert(router.methods.startExecution(
         // actions
         [],
@@ -363,6 +368,11 @@ contract.only('Core + Router', () => {
     });
 
     it('should not handle fees to ZERO correctly', async () => {
+      await WETH.methods.approve(router.options.address, web3.utils.toWei('1', 'ether'))
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
       await expectRevert(router.methods.startExecution(
         // actions
         [],
@@ -414,12 +424,12 @@ contract.only('Core + Router', () => {
       await WETH.methods.balanceOf(accounts[1])
         .call()
         .then((result) => {
-          asset.equal(result, web3.utils.toWei('0.008', 'ether'));
+          assert.equal(result, web3.utils.toWei('0.008', 'ether'));
         });
       await WETH.methods.balanceOf(router.options.address)
         .call()
         .then((result) => {
-          asset.equal(result, web3.utils.toWei('0.002', 'ether'));
+          assert.equal(result, web3.utils.toWei('0.002', 'ether'));
         });
     });
   });
