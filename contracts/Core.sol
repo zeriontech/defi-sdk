@@ -47,6 +47,7 @@ contract Core {
     )
         public
     {
+        require(_adapterRegistry != address(0), "C: empty registry!");
         adapterRegistry = AdapterRegistry(_adapterRegistry);
     }
 
