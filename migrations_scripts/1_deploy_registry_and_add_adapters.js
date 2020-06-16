@@ -10,6 +10,7 @@ const CurveAdapter = artifacts.require('CurveAdapter');
 const DmmAssetAdapter = artifacts.require('DmmAssetAdapter');
 const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
+const GnosisProtocolAdapter = artifacts.require('GnosisProtocolAdapter');
 const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
 const ChaiAdapter = artifacts.require('ChaiAdapter');
@@ -17,6 +18,7 @@ const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
+const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
@@ -36,6 +38,7 @@ const DmmTokenAdapter = artifacts.require('DmmTokenAdapter');
 const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
+const ChiTokenAdapter = artifacts.require('ChiTokenAdapter');
 const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
@@ -118,8 +121,16 @@ const yUSDCv3 = '0x26EA744E5B887E5205727f55dFBE8685e3b21951';
 const yUSDTv3 = '0xE6354ed5bC4b393a5Aad09f21c46E101e692d447';
 const yBUSDv3 = '0x04bC0Ab673d88aE9dbC9DA2380cB6B79C4BCa9aE';
 
-const idleDAI = '0x10eC0D497824e342bCB0EDcE00959142aAa766dD';
-const idleUSDC = '0xeB66ACc3d011056B00ea521F8203580C2E5d3991';
+const idleBestYieldDAI = '0x78751B12Da02728F467A44eAc40F5cbc16Bd7934';
+const idleBestYieldUSDC = '0x12B98C621E8754Ae70d0fDbBC73D6208bC3e3cA6';
+const idleBestYieldUSDT = '0x63D27B3DA94A9E871222CB0A32232674B02D2f2D';
+const idleBestYieldSUSD = '0xb39ca0261a1b2986a6a9Fe38d344B56374963dE5';
+const idleBestYieldTUSD = '0x7DB7A4a50b26602E56536189Aa94678C80F8E5b6';
+const idleBestYieldWBTC = '0xD6f279B7ccBCD70F8be439d25B9Df93AEb60eC55';
+
+const idleRiskAdjustedDAI = '0x1846bdfDB6A0f5c473dEc610144513bd071999fB';
+const idleRiskAdjustedUSDC = '0xcDdB1Bceb7a1979C6caa0229820707429dd3Ec6C';
+const idleRiskAdjustedUSDT = '0x42740698959761BAF1B06baa51EfBD88CB1D862B';
 
 const cCrvAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
 const tCrvAddress = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
@@ -141,6 +152,8 @@ const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
 const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
 
 const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
+
+const chiAddress = '0x0000000000004946c0e9F43F4Dee607b0eF1fA1c';
 
 const BTCPPAddress = '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd';
 
@@ -243,9 +256,20 @@ const dydxAdapterTokens = [
   usdcAddress,
   daiAddress,
 ];
-const idleAdapterTokens = [
-  idleDAI,
-  idleUSDC,
+const gnosisProtocolAdapterTokens = [
+];
+const idleBestYieldAdapterTokens = [
+  idleBestYieldDAI,
+  idleBestYieldUSDC,
+  idleBestYieldUSDT,
+  idleBestYieldSUSD,
+  idleBestYieldTUSD,
+  idleBestYieldWBTC,
+];
+const idleRiskAdjustedAdapterTokens = [
+  idleRiskAdjustedDAI,
+  idleRiskAdjustedUSDC,
+  idleRiskAdjustedUSDT,
 ];
 const iearn2AdapterTokens = [
   yDAIv2,
@@ -276,6 +300,9 @@ const mcdAssetAdapterTokens = [
 ];
 const mcdDebtAdapterTokens = [
   daiAddress,
+];
+const chiAdapterTokens = [
+  chiAddress,
 ];
 const pieDAOPieAdapterTokens = [
   BTCPPAddress,
@@ -405,13 +432,37 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(GnosisProtocolAdapter, { from: accounts[0] });
+  adapters.push(GnosisProtocolAdapter.address);
+  tokens.push([gnosisProtocolAdapterTokens]);
+  protocolNames.push('Gnosis Protocol');
+  metadata.push([
+    'Gnosis Protocol',
+    'A DEX that enables ring trades to maximize liquidity',
+    'gnosis.io',
+    'protocol-icons.s3.amazonaws.com/gnosis.png',
+    '0',
+  ]);
+
   await deployer.deploy(IdleAdapter, { from: accounts[0] });
   adapters.push([IdleAdapter.address]);
   tokens.push([idleAdapterTokens]);
-  protocolNames.push('Idle');
+  protocolNames.push('Idle • Best-Yield');
   metadata.push([
-    'Idle',
-    'Yield aggregator for lending platforms',
+    'Idle • Best-Yield',
+    'Maximize your returns across DeFi lending protocols',
+    'idle.finance',
+    'protocol-icons.s3.amazonaws.com/idle.png',
+    '0',
+  ]);
+
+  await deployer.deploy(IdleAdapter, { from: accounts[0] });
+  adapters.push([IdleAdapter.address]);
+  tokens.push([idleAdapterTokens]);
+  protocolNames.push('Idle • Risk-Adjusted');
+  metadata.push([
+    'Idle • Risk-Adjusted',
+    'Optimize your risk exposure across DeFi lending protocols',
     'idle.finance',
     'protocol-icons.s3.amazonaws.com/idle.png',
     '0',
@@ -490,15 +541,15 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
-  await deployer.deploy(PoolTogetherAdapter, { from: accounts[0] });
-  adapters.push([PoolTogetherAdapter.address]);
-  tokens.push([poolTogetherAdapterTokens]);
-  protocolNames.push('PoolTogether');
+  await deployer.deploy(ChiAdapter, { from: accounts[0] });
+  adapters.push([ChiAdapter.address]);
+  tokens.push([chiAdapterTokens]);
+  protocolNames.push('Chi Gastoken by 1inch');
   metadata.push([
-    'PoolTogether',
-    'Decentralized no-loss lottery',
-    'pooltogether.com',
-    'protocol-icons.s3.amazonaws.com/pooltogether.png',
+    'Chi Gastoken by 1inch',
+    'Next-generation Gastoken',
+    '1inch.exchange',
+    'protocol-icons.s3.amazonaws.com/chi_token.png',
     '0',
   ]);
 
@@ -511,6 +562,18 @@ module.exports = async (deployer, network, accounts) => {
     'BTC on Ethereum diversified',
     'btc.piedao.org',
     'protocol-icons.s3.us-east-1.amazonaws.com/piedao.png',
+    '0',
+  ]);
+
+  await deployer.deploy(PoolTogetherAdapter, { from: accounts[0] });
+  adapters.push([PoolTogetherAdapter.address]);
+  tokens.push([poolTogetherAdapterTokens]);
+  protocolNames.push('PoolTogether');
+  metadata.push([
+    'PoolTogether',
+    'Decentralized no-loss lottery',
+    'pooltogether.com',
+    'protocol-icons.s3.amazonaws.com/pooltogether.png',
     '0',
   ]);
 
@@ -641,6 +704,12 @@ module.exports = async (deployer, network, accounts) => {
         ChaiTokenAdapter.address,
       );
     });
+  await deployer.deploy(ChiTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        ChiTokenAdapter.address,
+      );
+    });
   await deployer.deploy(PieDAOPieTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -695,6 +764,7 @@ module.exports = async (deployer, network, accounts) => {
           'IdleToken',
           'YToken',
           'Chai token',
+          'Chi token',
           'PoolTogether pool',
           'SetToken',
           'SmartToken',
