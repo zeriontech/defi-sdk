@@ -25,11 +25,11 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @dev Implementation of ProtocolAdapter interface.
  * @author 1inch.exchange <info@1inch.exchange>
  */
-contract OneInchChiAdapter is ProtocolAdapter {
+contract ChiAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "Chi";
+    string public constant override tokenType = "Chi Token";
 
     /**
      * @return Amount of Chi Token held by the given account.
