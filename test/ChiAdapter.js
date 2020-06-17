@@ -67,7 +67,7 @@ contract('ChiAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20', 'Chi Token'],
+      ['ERC20', 'Chi token'],
       [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({

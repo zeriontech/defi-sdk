@@ -29,7 +29,7 @@ contract ChiAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "Chi Token";
+    string public constant override tokenType = "Chi token";
 
     /**
      * @return Amount of Chi Token held by the given account.
