@@ -67,10 +67,10 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     )
         external
         view
-        returns (Output[] memory allowances)
+        returns (Output[] memory requiredAllowances)
     {
         uint256 length = inputs.length;
-        allowances = new Output[](length);
+        requiredAllowances = new Output[](length);
         uint256 required;
         uint256 current;
 
@@ -78,7 +78,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
             required = getAbsoluteAmount(inputs[i], account);
             current = ERC20(inputs[i].token).allowance(account, address(this));
 
-            allowances[i] = Output({
+            requiredAllowances[i] = Output({
                 token: inputs[i].token,
                 amount: required > current ? required - current : 0
             });
@@ -91,10 +91,10 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     )
         external
         view
-        returns (Output[] memory balances)
+        returns (Output[] memory requiredBalances)
     {
         uint256 length = inputs.length;
-        balances = new Output[](length);
+        requiredBalances = new Output[](length);
         uint256 required;
         uint256 current;
 
@@ -102,7 +102,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
             required = getAbsoluteAmount(inputs[i], account);
             current = ERC20(inputs[i].token).balanceOf(account);
 
-            balances[i] = Output({
+            requiredBalances[i] = Output({
                 token: inputs[i].token,
                 amount: required > current ? required - current : 0
             });
@@ -115,8 +115,9 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     )
         public
         payable
+        returns (Output[] memory actualOutputs)
     {
-        startExecution(
+        return startExecution(
             data.actions,
             data.inputs,
             data.outputs,
@@ -131,8 +132,9 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     )
         public
         payable
+        returns (Output[] memory actualOutputs)
     {
-        startExecution(
+        return startExecution(
             actions,
             inputs,
             outputs,
@@ -147,6 +149,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         address payable account
     )
         internal
+        returns (Output[] memory actualOutputs)
     {
         // save initial gas to burn gas token later
         uint256 gas = gasleft();
@@ -154,7 +157,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         address[] memory inputTokens = transferTokens(inputs, account);
         Output[] memory modifiedOutputs = modifyOutputs(outputs, inputTokens);
         // call Core contract with all provided ETH, actions, expected outputs and account address
-        core.executeActions{value: msg.value}(actions, modifiedOutputs, account);
+        actualOutputs = core.executeActions{value: msg.value}(actions, modifiedOutputs, account);
         // burn gas token to save some gas
         freeGasToken(gas - gasleft());
     }

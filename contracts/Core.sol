@@ -31,7 +31,6 @@ import { SafeERC20 } from "./SafeERC20.sol";
 
 /**
  * @title Main contract executing actions.
- * TODO: reentrancy lock
  * TODO: safe math
  */
 contract Core {
@@ -56,17 +55,19 @@ contract Core {
 
     /**
      * @notice Executes actions and returns tokens to account.
-     * @param actions Array with actions.
-     * @param minReturns Array with tokens approvals for the actions.
-     * @param account address that will receive all the resulting funds.
+     * @param actions Array with actions to be executed.
+     * @param requiredOutputs Array with required amounts for the returned tokens.
+     * @param account Address that will receive all the resulting funds.
+     * @return actualOutputs Array with actual amounts for the returned tokens.
      */
     function executeActions(
         Action[] calldata actions,
-        Output[] calldata minReturns,
+        Output[] calldata requiredOutputs,
         address payable account
     )
         external
         payable
+        returns (Output[] memory actualOutputs)
     {
         require(account != address(0), "L: empty account!");
         address[][] memory tokensToBeWithdrawn = new address[][](actions.length);
@@ -76,7 +77,7 @@ contract Core {
             emit ExecutedAction(i);
         }
 
-        returnTokens(minReturns, tokensToBeWithdrawn, account);
+        actualOutputs = returnTokens(requiredOutputs, tokensToBeWithdrawn, account);
     }
 
     /**
@@ -140,14 +141,27 @@ contract Core {
     }
 
     function returnTokens(
-        Output[] calldata minReturns,
+        Output[] calldata requiredOutputs,
         address[][] memory tokensToBeWithdrawn,
         address payable account
     )
         internal
+        returns (Output[] memory actualOutputs)
     {
-        for (uint256 i = 0; i < minReturns.length; i++) {
-            checkRequirementAndTransfer(account, minReturns[i].token, minReturns[i].amount);
+        uint256 length = requiredOutputs.length;
+        actualOutputs = new Output[](length);
+
+        address token;
+        for (uint256 i = 0; i < length; i++) {
+            token = requiredOutputs[i].token;
+            actualOutputs[i] = Output({
+                token: token,
+                amount: checkRequirementAndTransfer(
+                    account,
+                    token,
+                    requiredOutputs[i].amount
+                )
+            });
         }
 
         for (uint256 i = 0; i < tokensToBeWithdrawn.length; i++) {
@@ -160,38 +174,38 @@ contract Core {
     function checkRequirementAndTransfer(
         address account,
         address token,
-        uint256 requirement
+        uint256 requiredAmount
     )
         internal
+        returns (uint256 actualAmount)
     {
-        uint256 amount;
         if (token == ETH) {
-            amount = address(this).balance;
+            actualAmount = address(this).balance;
         } else {
-            amount = ERC20(token).balanceOf(address(this));
+            actualAmount = ERC20(token).balanceOf(address(this));
         }
 
         require(
-            amount >= requirement,
+            actualAmount >= requiredAmount,
             string(
                 abi.encodePacked(
                     "L: ",
-                    amount,
+                    actualAmount,
                     " is less then ",
-                    requirement,
+                    requiredAmount,
                     " for ",
                     token
                 )
             )
         );
 
-        if (amount > 0) {
+        if (actualAmount > 0) {
             if (token == ETH) {
                 // solhint-disable-next-line avoid-low-level-calls
-                (bool success, ) = account.call{gas: 4999, value: amount}(new bytes(0));
+                (bool success, ) = account.call{gas: 4999, value: actualAmount}(new bytes(0));
                 require(success, "L: ETH transfer to account failed!");
             } else {
-                ERC20(token).safeTransfer(account, amount, "L!");
+                ERC20(token).safeTransfer(account, actualAmount, "L!");
             }
         }
     }
