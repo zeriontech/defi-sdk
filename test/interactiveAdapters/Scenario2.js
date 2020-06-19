@@ -20,11 +20,11 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('Scenario ETH -> WETH/WBTC set', () => {
+contract.only('Scenario ETH -> WETH/LINK set', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-  const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
+  const linkAddress = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
-  const setAddress = '0xA6c040045d962e4B8eFa00954c7d23CCd0a2b8AD';
+  const setAddress = '0xc166f976ce9926a3205b145af104eb0e4b38b5c0';
 
   let accounts;
   let core;
@@ -35,7 +35,7 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
   let uniswapAdapterAddress;
   let erc20TokenAdapterAddress;
 
-  let WBTC;
+  let LINK;
   let WETH;
   let SET;
 
@@ -133,9 +133,9 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
       .then((result) => {
         tokenSpender = result.contract;
       });
-    await ERC20.at(wbtcAddress)
+    await ERC20.at(linkAddress)
       .then((result) => {
-        WBTC = result.contract;
+        LINK = result.contract;
       });
     await ERC20.at(wethAddress)
       .then((result) => {
@@ -157,10 +157,10 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
       .then((result) => {
         console.log(`weth amount before is ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await WBTC.methods['balanceOf(address)'](accounts[0])
+    await LINK.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
-        console.log(`wbtc amount before is ${web3.utils.fromWei(result, 'gwei') * 10}`);
+        console.log(`link amount before is ${web3.utils.fromWei(result, 'ether')}`);
       });
     await SET.methods['balanceOf(address)'](accounts[0])
       .call()
@@ -168,15 +168,15 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
         console.log(`set amount before is  ${web3.utils.fromWei(result, 'ether')}`);
       });
     const actions = [
-      // exchange ETH to WBTC
+      // exchange ETH to LINK
       [
         ACTION_DEPOSIT,
         web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Uniswap V1')),
         ADAPTER_EXCHANGE,
         [ethAddress],
-        [convertToShare(0.24)],
+        [convertToShare(0.5)],
         [AMOUNT_RELATIVE],
-        web3.eth.abi.encodeParameter('address', wbtcAddress),
+        web3.eth.abi.encodeParameter('address', linkAddress),
       ],
       // exchange ETH to WETH
       [
@@ -188,14 +188,13 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
         [AMOUNT_RELATIVE],
         EMPTY_BYTES,
       ],
-      // deposit to token set (0.01 full share of SetToken)
       [
         ACTION_DEPOSIT,
         web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('TokenSets')),
         ADAPTER_ASSET,
         [
           wethAddress,
-          wbtcAddress,
+          linkAddress,
         ],
         [
           convertToShare(1),
@@ -205,30 +204,10 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
           AMOUNT_RELATIVE,
           AMOUNT_RELATIVE,
         ],
-        web3.eth.abi.encodeParameters(
-          ['address', 'uint256'],
-          [setAddress, web3.utils.toWei('0.01', 'ether')],
+        web3.eth.abi.encodeParameter(
+          'address',
+          setAddress,
         ),
-      ],
-      // swap change (in WBTC) back to ETH
-      [
-        ACTION_DEPOSIT,
-        web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Uniswap V1')),
-        ADAPTER_EXCHANGE,
-        [wbtcAddress],
-        [convertToShare(1)],
-        [AMOUNT_RELATIVE],
-        web3.eth.abi.encodeParameter('address', ethAddress),
-      ],
-      // swap change (in WETH) back to ETH
-      [
-        ACTION_WITHDRAW,
-        web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Weth')),
-        ADAPTER_EXCHANGE,
-        [wethAddress],
-        [convertToShare(1)],
-        [AMOUNT_RELATIVE],
-        EMPTY_BYTES,
       ],
     ];
     // console.log(actions);
@@ -258,10 +237,10 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
       .then((result) => {
         console.log(`weth amount after is ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await WBTC.methods['balanceOf(address)'](accounts[0])
+    await LINK.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
-        console.log(`wbtc amount after is ${web3.utils.fromWei(result, 'gwei') * 10}`);
+        console.log(`link amount after is ${web3.utils.fromWei(result, 'ether')}`);
       });
     await SET.methods['balanceOf(address)'](accounts[0])
       .call()
@@ -273,7 +252,7 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
       .then((result) => {
         assert.equal(result, 0);
       });
-    await WBTC.methods['balanceOf(address)'](core.options.address)
+    await LINK.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);
@@ -300,10 +279,10 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
       .then((result) => {
         console.log(`weth amount before is ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await WBTC.methods['balanceOf(address)'](accounts[0])
+    await LINK.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
-        console.log(`wbtc amount before is ${web3.utils.fromWei(result, 'gwei') * 10}`);
+        console.log(`link amount before is ${web3.utils.fromWei(result, 'ether')}`);
       });
     await SET.methods['balanceOf(address)'](accounts[0])
       .call()
@@ -333,12 +312,12 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
         ],
         EMPTY_BYTES,
       ],
-      // swap change (in WBTC) back to ETH
+      // swap change (in LINK) back to ETH
       [
         ACTION_DEPOSIT,
         web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Uniswap V1')),
         ADAPTER_EXCHANGE,
-        [wbtcAddress],
+        [linkAddress],
         [convertToShare(1)],
         [AMOUNT_RELATIVE],
         web3.eth.abi.encodeParameter('address', ethAddress),
@@ -382,10 +361,10 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
       .then((result) => {
         console.log(`weth amount after is ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await WBTC.methods['balanceOf(address)'](accounts[0])
+    await LINK.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
-        console.log(`wbtc amount after is ${web3.utils.fromWei(result, 'gwei') * 10}`);
+        console.log(`link amount after is ${web3.utils.fromWei(result, 'ether')}`);
       });
     await SET.methods['balanceOf(address)'](accounts[0])
       .call()
@@ -397,7 +376,7 @@ contract('Scenario ETH -> WETH/WBTC set', () => {
       .then((result) => {
         assert.equal(result, 0);
       });
-    await WBTC.methods['balanceOf(address)'](core.options.address)
+    await LINK.methods['balanceOf(address)'](core.options.address)
       .call()
       .then((result) => {
         assert.equal(result, 0);

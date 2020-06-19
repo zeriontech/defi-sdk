@@ -101,7 +101,7 @@ contract TokenSetsTokenAdapter is TokenAdapter("SetToken") {
             underlyingComponents[i] = Component({
                 tokenAddress: components[i],
                 tokenType: "ERC20",
-                rate: tokenRate * unitShares[i] / naturalUnit
+                rate: tokenRate / naturalUnit * unitShares[i]
             });
         }
 

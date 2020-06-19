@@ -32,8 +32,8 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
  * github.com/balancer-labs/balancer-core/blob/master/contracts/BPool.sol.
  */
 interface BPool {
-    function joinPool(uint256, uint256[] calldata) external;
-    function exitPool(uint256, uint256[] calldata) external;
+    function joinswapExternAmountIn(address, uint256, uint256) external;
+    function exitswapPoolAmountIn(address, uint256, uint256) external;
     function getFinalTokens() external view returns (address[] memory);
 }
 
@@ -49,15 +49,13 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, BalancerAdapter {
 
     /**
      * @notice Deposits tokens to the Balancer pool.
-     * @param tokens Array with tokens addresses.
-     * @param amounts Array with tokens amounts to be deposited.
-     * @param amountTypes Array with amount types.
+     * @param tokens Array with one element - tokens address to be deposited.
+     * @param amounts Array with one element - tokens amount to be deposited.
+     * @param amountTypes Array with amount type.
      * @param data ABI-encoded additional parameters:
-     *     - poolAddress - pool address;
-     *     - poolAmount - pool amount.
+     *     - poolAddress - pool address.
      * @return tokensToBeWithdrawn Array with one element - pool address.
      * @dev Implementation of InteractiveAdapter function.
-     * TODO remove tokens, amount, approve exact amount
      */
     function deposit(
         address[] memory tokens,
@@ -70,72 +68,67 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, BalancerAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
+        require(tokens.length == 1, "BIA: should be 1 token![1]");
         require(tokens.length == amounts.length, "BIA: inconsistent arrays![1]");
 
-        (address poolAddress, uint256 poolAmount) = abi.decode(data, (address, uint256));
-        uint256 amount;
-        uint256[] memory maxAmounts = new uint256[](tokens.length);
-
-        for (uint256 i = 0; i < tokens.length; i++) {
-            amount = getAbsoluteAmountDeposit(tokens[i], amounts[i], amountTypes[i]);
-            ERC20(tokens[i]).safeApprove(poolAddress, amount, "BIA![1]");
-            maxAmounts[i] = type(uint256).max;
-        }
+        address poolAddress = abi.decode(data, (address));
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = poolAddress;
 
-        try BPool(poolAddress).joinPool(
-            poolAmount,
-            maxAmounts
+        uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
+        ERC20(tokens[0]).safeApprove(poolAddress, amount, "BIA!");
+
+        try BPool(poolAddress).joinswapExternAmountIn(
+            tokens[0],
+            amount,
+            0
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
         } catch {
-            revert("BIA: pool fail![1]");
-        }
-
-        for (uint256 i = 0; i < tokens.length; i++) {
-            ERC20(tokens[i]).safeApprove(poolAddress, 0, "BIA![2]");
+            revert("BIA: deposit fail!");
         }
     }
 
     /**
      * @notice Withdraws tokens from the Balancer pool.
      * @param tokens Array with one element - pool address.
-     * @param amounts Array with one element - pool amount to be burned.
+     * @param amounts Array with one element - pool amount.
      * @param amountTypes Array with one element - amount type.
-     * @return tokensToBeWithdrawn Array with pool's underlying tokens.
+     * @param data ABI-encoded additional parameters:
+     *     - toTokenAddress - destination token address.
+     * @return tokensToBeWithdrawn Array with one element - destination token address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
         address[] memory tokens,
         uint256[] memory amounts,
         AmountType[] memory amountTypes,
-        bytes memory
+        bytes memory data
     )
         public
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "BIA: should be 1 token!");
+        require(tokens.length == 1, "BIA: should be 1 token![2]");
         require(tokens.length == amounts.length, "BIA: inconsistent arrays![2]");
+
+        address toTokenAddress = abi.decode(data, (address));
+
+        tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn[0] = toTokenAddress;
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
 
-        tokensToBeWithdrawn = BPool(tokens[0]).getFinalTokens();
-        uint256[] memory minReturns = new uint256[](tokensToBeWithdrawn.length);
-        for (uint256 i = 0; i < minReturns.length; i++) {
-            minReturns[i] = 0;
-        }
-
-        try BPool(tokens[0]).exitPool(
+        try BPool(tokens[0]).exitswapPoolAmountIn(
+            toTokenAddress,
             amount,
-            minReturns
+            0
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
         } catch {
-            revert("BIA: pool fail![2]");
+            revert("BIA: withdraw fail!");
         }
     }
 }

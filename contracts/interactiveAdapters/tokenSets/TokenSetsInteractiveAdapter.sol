@@ -33,20 +33,7 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
  */
 interface RebalancingSetIssuanceModule {
     function issueRebalancingSet(address, uint256, bool) external;
-    function issueRebalancingSetWrappingEther(address, uint256, bool) external payable;
     function redeemRebalancingSet(address, uint256, bool) external;
-    function redeemRebalancingSetUnwrappingEther(address, uint256, bool) external;
-}
-
-
-/**
- * @dev SetToken contract interface.
- * Only the functions required for TokenSetsInteractiveAdapter contract are added.
- * The SetToken contract is available here
- * github.com/SetProtocol/set-protocol-contracts/blob/master/contracts/core/tokens/SetToken.sol.
- */
-interface SetToken {
-    function getComponents() external view returns(address[] memory);
 }
 
 
@@ -58,6 +45,21 @@ interface SetToken {
  */
 interface RebalancingSetToken {
     function currentSet() external view returns (SetToken);
+    function getUnits() external view returns(uint256[] memory);
+    function naturalUnit() external view returns(uint256);
+}
+
+
+/**
+ * @dev SetToken contract interface.
+ * Only the functions required for TokenSetsInteractiveAdapter contract are added.
+ * The SetToken contract is available here
+ * github.com/SetProtocol/set-protocol-contracts/blob/master/contracts/core/tokens/SetToken.sol.
+ */
+interface SetToken {
+    function getComponents() external view returns(address[] memory);
+    function getUnits() external view returns(uint256[] memory);
+    function naturalUnit() external view returns(uint256);
 }
 
 
@@ -75,15 +77,13 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
 
     /**
      * @notice Deposits tokens to the TokenSet.
-     * @param tokens Payment tokens addresses.
-     * @param amounts Payment tokens amounts to be deposited.
-     * @param amountTypes Amount types.
+     * @param tokens Array with token addresses to be deposited.
+     * @param amounts Array with token amounts to be deposited.
+     * @param amountTypes Array with amounts types.
      * @param data ABI-encoded additional parameters:
-     *     - rebalancingSetAddress - rebalancing set address;
-     *     - rebalancingSetQuantity - rebalancing set amount to be minted.
+     *     - setAddress - rebalancing set address.
      * @return tokensToBeWithdrawn Array with one element - rebalancing set address.
      * @dev Implementation of InteractiveAdapter function.
-     * TODO remove tokens, amount, approve exact amount
      */
     function deposit(
         address[] memory tokens,
@@ -96,21 +96,24 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == amounts.length, "TSIA: inconsistent arrays![1]");
-        uint256 absoluteAmount;
-        for (uint256 i = 0; i < tokens.length; i++) {
-            absoluteAmount = getAbsoluteAmountDeposit(tokens[i], amounts[i], amountTypes[i]);
-            ERC20(tokens[i]).safeApprove(TRANSFER_PROXY, absoluteAmount, "TSIA![1]");
+        uint256 length = tokens.length;
+        require(length == amounts.length, "TSIA: inconsistent arrays![1]");
+        uint256[] memory absoluteAmounts = new uint256[](length);
+        for (uint256 i = 0; i < length; i++) {
+            absoluteAmounts[i] = getAbsoluteAmountDeposit(tokens[i], amounts[i], amountTypes[i]);
+            ERC20(tokens[i]).safeApprove(TRANSFER_PROXY, absoluteAmounts[i], "TSIA![1]");
         }
 
-        (address setAddress, uint256 setQuantity) = abi.decode(data, (address, uint256));
+        address setAddress = abi.decode(data, (address));
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = setAddress;
 
+        uint256 setAmount = getSetAmount(setAddress, tokens, absoluteAmounts);
+
         try RebalancingSetIssuanceModule(ISSUANCE_MODULE).issueRebalancingSet(
             setAddress,
-            setQuantity,
+            setAmount,
             false
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
@@ -118,7 +121,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
             revert("TSIA: tokenSet fail![1]");
         }
 
-        for (uint256 i = 0; i < tokens.length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             ERC20(tokens[i]).safeApprove(TRANSFER_PROXY, 0, "TSIA![2]");
         }
     }
@@ -126,7 +129,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
     /**
      * @notice Withdraws tokens from the TokenSet.
      * @param tokens Array with one element - rebalancing set address.
-     * @param amounts Array with one element - rebalancing set amount to be burned.
+     * @param amounts Array with one element - rebalancing set amount.
      * @param amountTypes Array with one element - amount type.
      * @return tokensToBeWithdrawn Array with set token components.
      * @dev Implementation of InteractiveAdapter function.
@@ -159,6 +162,45 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
             revert(reason);
         } catch {
             revert("TSIA: tokenSet fail![2]");
+        }
+    }
+
+    function getSetAmount(
+        address setAddress,
+        address[] memory tokens,
+        uint256[] memory absoluteAmounts
+    )
+        internal
+        view
+        returns (uint256 setAmount)
+    {
+        RebalancingSetToken rebalancingSetToken = RebalancingSetToken(setAddress);
+        uint256 rUnit = rebalancingSetToken.getUnits()[0];
+        uint256 rNaturalUnit = rebalancingSetToken.naturalUnit();
+
+        SetToken baseSetToken = rebalancingSetToken.currentSet();
+        uint256[] memory bUnits = baseSetToken.getUnits();
+        uint256 bNaturalUnit = baseSetToken.naturalUnit();
+        address[] memory components = baseSetToken.getComponents();
+        require(components.length == tokens.length, "TSIA: bad tokens!");
+
+        setAmount = type(uint256).max;
+        uint256 amount;
+        uint256 tempAmount;
+        for (uint256 i = 0; i < tokens.length; i++) {
+            for(uint256 j = 0; j < components.length; j++) {
+                if (tokens[i] == components[j]) {
+                    tempAmount = absoluteAmounts[i] * bNaturalUnit;
+                    require(tempAmount / bNaturalUnit == absoluteAmounts[i], "TSIA: overflow![1]");
+                    amount = tempAmount / bUnits[j] / rUnit;
+                    tempAmount = amount * rNaturalUnit;
+                    require(tempAmount / rNaturalUnit == amount, "TSIA: overflow![2]");
+                    amount = tempAmount;
+                    if (amount < setAmount) {
+                        setAmount = amount;
+                    }
+                }
+            }
         }
     }
 }

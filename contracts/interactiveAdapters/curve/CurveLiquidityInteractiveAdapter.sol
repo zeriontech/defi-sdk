@@ -140,11 +140,11 @@ contract CurveLiquidityInteractiveAdapter is CurveInteractiveAdapter, CurveLiqui
     /**
      * @notice Withdraws tokens from the Curve pool.
      * @param tokens Array with one element - Curve token address.
-     * @param amounts Array with one element - Curve token amount to be withdrawn.
+     * @param amounts Array with one element - Curve token amount.
      * @param amountTypes Array with one element - amount type.
      * @param data ABI-encoded additional parameters:
-     *     - toToken - return token address (one of those used in pool).
-     * @return tokensToBeWithdrawn Array with on element - underlying tokens.
+     *     - toToken - destination token address (one of those used in pool).
+     * @return tokensToBeWithdrawn Array with one element - destination token address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
