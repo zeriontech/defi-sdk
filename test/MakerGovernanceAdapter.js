@@ -1,10 +1,10 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('GovernanceAdapter');
+const ProtocolAdapter = artifacts.require('MakerGovernanceAdapter');
 const TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('DSRAdapter', () => {
+contract('MakerGovernanceAdapter', () => {
   const mkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2';
   // Random address with deposits > 0
   const testAddress = '0xCE612d91a21203671901142034A76DEd9D8591EE';
