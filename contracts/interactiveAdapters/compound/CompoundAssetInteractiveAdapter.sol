@@ -48,6 +48,7 @@ interface CToken {
     function underlying() external view returns (address);
 }
 
+
 /**
  * @dev CompoundRegistry contract interface.
  * Only the functions required for CompoundAssetInteractiveAdapter contract are added.
@@ -67,6 +68,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
     using SafeERC20 for ERC20;
 
     address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;
+    address internal constant COMP = 0xc00e94Cb662C3520282E6f5717214004A7f26888;
     address internal constant REGISTRY = 0xE6881a7d699d3A350Ce5bba0dbD59a9C36778Cb7;
 
     /**
@@ -74,7 +76,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
      * @param tokens Array with one element - underlying token address.
      * @param amounts Array with one element - underlying token amount to be deposited.
      * @param amountTypes Array with one element - amount type.
-     * @return tokensToBeWithdrawn Array with one element - cToken address.
+     * @return tokensToBeWithdrawn Array with two elements - cToken and COMP addresses.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -89,23 +91,23 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokens.length == 1, "CAIA: should be 1 token![1]");
-        require(tokens.length == amounts.length, "CAIA: inconsistent arrays![2]");
+        require(tokens.length == amounts.length, "CAIA: inconsistent arrays![1]");
 
         uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
-        tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn = new address[](2);
+        tokensToBeWithdrawn[0] = COMP;
 
-        if (tokens[0] == CETH) {
+        if (tokens[0] == ETH) {
+            tokensToBeWithdrawn[1] = CETH;
+
             CEther(CETH).mint{value: amount}();
-
-            tokensToBeWithdrawn[0] = CETH;
         } else {
             address cToken = CompoundRegistry(REGISTRY).getCToken(tokens[0]);
+            tokensToBeWithdrawn[1] = cToken;
 
             ERC20(tokens[0]).safeApprove(cToken, amount, "CAIA!");
             require(CToken(cToken).mint(amount) == 0, "CAIA: deposit failed!");
-
-            tokensToBeWithdrawn[0] = cToken;
         }
     }
 
@@ -114,7 +116,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
      * @param tokens Array with one element - cToken address.
      * @param amounts Array with one element - cToken amount to be withdrawn.
      * @param amountTypes Array with one element - amount type.
-     * @return tokensToBeWithdrawn Array with one element - underlying token (empty in ETH case).
+     * @return tokensToBeWithdrawn Array with two elements - underlying token and COMP addresses.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
@@ -128,21 +130,21 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "CAIA: should be 1 token![1]");
+        require(tokens.length == 1, "CAIA: should be 1 token![2]");
         require(tokens.length == amounts.length, "CAIA: inconsistent arrays![2]");
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
 
-        CToken cToken = CToken(tokens[0]);
-
-        require(cToken.redeem(amount) == 0, "CAIA: withdraw failed!");
+        tokensToBeWithdrawn = new address[](2);
+        tokensToBeWithdrawn[0] = COMP;
 
         if (tokens[0] == CETH) {
-            tokensToBeWithdrawn = new address[](1);
-            tokensToBeWithdrawn[0] = ETH;
+            tokensToBeWithdrawn[1] = ETH;
         } else {
-            tokensToBeWithdrawn = new address[](1);
-            tokensToBeWithdrawn[0] = cToken.underlying();
+            tokensToBeWithdrawn[1] = cToken.underlying();
         }
+
+        CToken cToken = CToken(tokens[0]);
+        require(cToken.redeem(amount) == 0, "CAIA: withdraw failed!");
     }
 }
