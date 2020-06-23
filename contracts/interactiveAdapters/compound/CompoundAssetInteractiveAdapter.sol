@@ -141,10 +141,9 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         if (tokens[0] == CETH) {
             tokensToBeWithdrawn[1] = ETH;
         } else {
-            tokensToBeWithdrawn[1] = cToken.underlying();
+            tokensToBeWithdrawn[1] = CToken(tokens[0]).underlying();
         }
 
-        CToken cToken = CToken(tokens[0]);
-        require(cToken.redeem(amount) == 0, "CAIA: withdraw failed!");
+        require(CToken(tokens[0]).redeem(amount) == 0, "CAIA: withdraw failed!");
     }
 }

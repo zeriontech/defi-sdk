@@ -174,7 +174,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
         for (uint256 i = 0; i < inputs.length; i++) {
             absoluteAmount = getAbsoluteAmount(inputs[i], account);
-            require(absoluteAmount > 0, "R: 0 amount!");
+            require(absoluteAmount > 0, "R: zero amount!");
             tokensToBeWithdrawn[i] = inputs[i].token;
 
             // in case inputs includes fees:
@@ -312,6 +312,10 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         pure
         returns (uint256)
     {
+        if (a == 0) {
+            return 0;
+        }
+
         uint256 c = a * b;
         require(c / a == b, "R: mul overflow");
 
