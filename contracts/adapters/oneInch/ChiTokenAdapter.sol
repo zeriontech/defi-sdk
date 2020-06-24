@@ -28,7 +28,6 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  * github.com/CryptoManiacsZone/1inchProtocol/blob/master/contracts/OneSplit.sol.
  */
 interface IOneSplit {
-
     function getExpectedReturn(
         ERC20 fromToken,
         ERC20 toToken,
@@ -47,10 +46,10 @@ interface IOneSplit {
 
 /**
  * @title Token adapter for Chi Gastoken by 1inch.
- * @dev Implementation of Chi Token interface.
+ * @dev Implementation of TokenAdapter interface.
  * @author 1inch.exchange <info@1inch.exchange>
  */
-contract OneInchChiTokenAdapter is TokenAdapter {
+contract ChiTokenAdapter is TokenAdapter {
 
     address private constant ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     IOneSplit private constant ONE_SPLIT = IOneSplit(0xC586BeF4a0992C495Cf22e1aeEE4E446CECDee0E);
@@ -86,7 +85,7 @@ contract OneInchChiTokenAdapter is TokenAdapter {
         underlyingTokens[0] = Component({
             token: ETH_ADDRESS,
             tokenType: "ERC20",
-            rate: returnAmount
+            rate: returnAmount * 1e18
         });
 
         return underlyingTokens;

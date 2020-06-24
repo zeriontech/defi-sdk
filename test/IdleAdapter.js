@@ -7,8 +7,8 @@ const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('IdleAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-  const idleDAIAddress = '0x10eC0D497824e342bCB0EDcE00959142aAa766dD';
-  const idleUSDCAddress = '0xeB66ACc3d011056B00ea521F8203580C2E5d3991';
+  const idleDAIAddress = '0x78751B12Da02728F467A44eAc40F5cbc16Bd7934';
+  const idleUSDCAddress = '0x12B98C621E8754Ae70d0fDbBC73D6208bC3e3cA6';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
