@@ -15,7 +15,7 @@
     "lint:solhint": "npx solhint \"./contracts/**/*.sol\"",
     "lint:ethlint": "npx ethlint --dir contracts/",
     "lint:eslint": "eslint .",
-    "lint": "npm run lint:solhint && npm run lint:ethlint && npm run lint:eslint"
+    "lint": "npm run lint:solhint && npm run lint:eslint"
   },
   "author": "",
   "license": "ISC",
@@ -27,7 +27,7 @@
     "core-js": "3.6.5",
     "dotenv": "8.2.0",
     "regenerator-runtime": "0.13.5",
-    "truffle": "5.1.25",
+    "truffle": "5.1.31",
     "truffle-plugin-verify": "0.3.10"
   },
   "devDependencies": {
