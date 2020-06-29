@@ -1,5 +1,5 @@
 // import displayToken from './helpers/displayToken';
-// import expectRevert from './helpers/expectRevert';
+import expectRevert from '../helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
 
 const ACTION_DEPOSIT = 1;
@@ -139,7 +139,7 @@ contract('Curve exchange interactive adapter', () => {
   });
 
   describe('All possible (1-side) stablecoins swaps', () => {
-    it('should not swap DAI -> SUSD with 2 input tokens', async () => {
+    it('should prepare fot tests (sell 1 ETH for DAI)', async () => {
       // exchange 1 ETH to DAI like we had DAI initially
       await tokenSpender.methods.startExecution(
         // actions
@@ -164,6 +164,9 @@ contract('Curve exchange interactive adapter', () => {
           gas: 10000000,
           value: web3.utils.toWei('1', 'ether'),
         });
+    });
+
+    it('should not swap DAI -> SUSD with 2 input tokens', async () => {
       let daiAmount;
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -199,30 +202,6 @@ contract('Curve exchange interactive adapter', () => {
     });
 
     it('should not swap TUSD -> SUSD', async () => {
-      // exchange 1 ETH to DAI like we had DAI initially
-      await tokenSpender.methods.startExecution(
-        // actions
-        [
-          [
-            ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
-            [ethAddress],
-            ['1000000000000000000'],
-            [AMOUNT_ABSOLUTE],
-            web3.eth.abi.encodeParameter('address', tusdAddress),
-          ],
-        ],
-        // inputs
-        [],
-        // outputs
-        [],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-          value: web3.utils.toWei('1', 'ether'),
-        });
       let tusdAmount;
       await TUSD.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -258,30 +237,6 @@ contract('Curve exchange interactive adapter', () => {
     });
 
     it('should not swap DAI -> SUSD with inconsistent arrays', async () => {
-      // exchange 1 ETH to DAI like we had DAI initially
-      await tokenSpender.methods.startExecution(
-        // actions
-        [
-          [
-            ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
-            [ethAddress],
-            ['1000000000000000000'],
-            [AMOUNT_ABSOLUTE],
-            web3.eth.abi.encodeParameter('address', daiAddress),
-          ],
-        ],
-        // inputs
-        [],
-        // outputs
-        [],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-          value: web3.utils.toWei('1', 'ether'),
-        });
       let daiAmount;
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -317,30 +272,6 @@ contract('Curve exchange interactive adapter', () => {
     });
 
     it('should not swap DAI -> SUSD with inconsistent arrays', async () => {
-      // exchange 1 ETH to DAI like we had DAI initially
-      await tokenSpender.methods.startExecution(
-        // actions
-        [
-          [
-            ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
-            [ethAddress],
-            ['1000000000000000000'],
-            [AMOUNT_ABSOLUTE],
-            web3.eth.abi.encodeParameter('address', daiAddress),
-          ],
-        ],
-        // inputs
-        [],
-        // outputs
-        [],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-          value: web3.utils.toWei('1', 'ether'),
-        });
       let daiAmount;
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -376,30 +307,6 @@ contract('Curve exchange interactive adapter', () => {
     });
 
     it('should swap DAI -> SUSD (deposit/relative)', async () => {
-      // exchange 1 ETH to DAI like we had DAI initially
-      await tokenSpender.methods.startExecution(
-        // actions
-        [
-          [
-            ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
-            [ethAddress],
-            ['1000000000000000000'],
-            [AMOUNT_ABSOLUTE],
-            web3.eth.abi.encodeParameter('address', daiAddress),
-          ],
-        ],
-        // inputs
-        [],
-        // outputs
-        [],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-          value: web3.utils.toWei('1', 'ether'),
-        });
       let daiAmount;
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()

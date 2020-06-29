@@ -87,22 +87,25 @@ contract CurveLiquidityInteractiveAdapter is CurveInteractiveAdapter, CurveLiqui
         require(tokens.length == 1, "CLIA: should be 1 tokens!");
         require(tokens.length == amounts.length, "CLIA: inconsistent arrays!");
 
-        address crvToken = abi.decode(data, (address));
         uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
+        address crvToken = abi.decode(data, (address));
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = crvToken;
 
-        address callee = crvToken == S_CRV ? getSwap(crvToken) : getDeposit(crvToken);
+        int128 tokenIndex = getTokenIndex(tokens[0]);
+        require(
+            Stableswap(getSwap(crvToken)).underlying_coins(tokenIndex) == tokens[0],
+            "CLIA: bad crvToken/tokens[0]!"
+        );
+
         uint256 totalCoins = getTotalCoins(crvToken);
-
-        uint256 tokenIndex = uint256(getTokenIndex(tokens[0]));
-
         uint256[] memory inputAmounts = new uint256[](totalCoins);
-
         for (uint256 i = 0; i < totalCoins; i++) {
-            inputAmounts[i] = i == tokenIndex ? amount : 0;
+            inputAmounts[i] = i == uint256(tokenIndex) ? amount : 0;
         }
+
+        address callee = crvToken == S_CRV ? getSwap(crvToken) : getDeposit(crvToken);
 
         ERC20(tokens[0]).safeApprove(
             callee,
@@ -163,15 +166,16 @@ contract CurveLiquidityInteractiveAdapter is CurveInteractiveAdapter, CurveLiqui
 
         uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
         address toToken = abi.decode(data, (address));
-        int128 index = getTokenIndex(toToken);
-        address callee = getDeposit(tokens[0]);
-        require(
-            Stableswap(getSwap(tokens[0])).underlying_coins(index) == toToken,
-            "CLIA: bad toToken!"
-        );
-
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = toToken;
+
+        int128 tokenIndex = getTokenIndex(toToken);
+        require(
+            Stableswap(getSwap(tokens[0])).underlying_coins(tokenIndex) == toToken,
+            "CLIA: bad toToken/tokens[0]!"
+        );
+
+        address callee = getDeposit(tokens[0]);
 
         ERC20(tokens[0]).safeApprove(
             callee,
@@ -181,7 +185,7 @@ contract CurveLiquidityInteractiveAdapter is CurveInteractiveAdapter, CurveLiqui
 
         try Deposit(callee).remove_liquidity_one_coin(
             amount,
-            index,
+            tokenIndex,
             0,
             true
         ) { // solhint-disable-line no-empty-blocks

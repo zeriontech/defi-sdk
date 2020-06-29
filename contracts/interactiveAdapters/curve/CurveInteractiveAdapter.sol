@@ -34,7 +34,8 @@ abstract contract CurveInteractiveAdapter is InteractiveAdapter {
     address internal constant B_SWAP = 0x79a8C46DeA5aDa233ABaFFD40F3A0A2B1e5A4F27;
     address internal constant S_SWAP = 0xA5407eAE9Ba41422680e2e00537571bcC53efBfD;
     address internal constant P_SWAP = 0x06364f10B501e868329afBc005b3492902d6C763;
-    address internal constant REN_SWAP = 0x06364f10B501e868329afBc005b3492902d6C763;
+    address internal constant REN_SWAP = 0x93054188d876f558f4a66B2EF1d97d16eDf0895B;
+    address internal constant SBTC_SWAP = 0x7fC77b5c7614E1533320Ea6DDc2Eb61fa00A9714;
 
     address internal constant C_DEPOSIT = 0xeB21209ae4C2c9FF2a86ACA31E123764A3B6Bc06;
     address internal constant T_DEPOSIT = 0xac795D2c97e60DF6a99ff1c814727302fD747a80;
@@ -50,6 +51,7 @@ abstract contract CurveInteractiveAdapter is InteractiveAdapter {
     address internal constant S_CRV = 0xC25a3A3b969415c80451098fa907EC722572917F;
     address internal constant P_CRV = 0xD905e2eaeBe188fc92179b6350807D8bd91Db0D8;
     address internal constant REN_CRV = 0x7771F704490F9C0C3B06aFe8960dBB6c58CBC812;
+    address internal constant SBTC_CRV = 0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3;
 
     uint256 internal constant C_COINS = 2;
     uint256 internal constant T_COINS = 3;
@@ -58,6 +60,7 @@ abstract contract CurveInteractiveAdapter is InteractiveAdapter {
     uint256 internal constant S_COINS = 4;
     uint256 internal constant P_COINS = 4;
     uint256 internal constant REN_COINS = 2;
+    uint256 internal constant SBTC_COINS = 3;
 
     address internal constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     address internal constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
@@ -68,13 +71,14 @@ abstract contract CurveInteractiveAdapter is InteractiveAdapter {
     address internal constant PAX = 0x8E870D67F660D95d5be530380D0eC0bd388289E1;
     address internal constant RENBTC = 0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D;
     address internal constant WBTC = 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599;
+    address internal constant SBTC = 0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6;
 
     function getTokenIndex(address token) internal pure returns (int128) {
         if (token == DAI || token == RENBTC) {
             return 0;
         } else if (token == USDC || token == WBTC) {
             return 1;
-        } else if (token == USDT) {
+        } else if (token == USDT || token == SBTC) {
             return 2;
         } else if (token == TUSD || token == BUSD || token == SUSD || token == PAX) {
             return 3;
@@ -98,6 +102,8 @@ abstract contract CurveInteractiveAdapter is InteractiveAdapter {
             return P_SWAP;
         } else if (token == REN_CRV) {
             return REN_SWAP;
+        } else if (token == SBTC_CRV) {
+            return SBTC_SWAP;
         } else {
             revert("CIA: bad token!");
         }
@@ -118,6 +124,8 @@ abstract contract CurveInteractiveAdapter is InteractiveAdapter {
             return P_DEPOSIT;
         } else if (token == REN_CRV) {
             return REN_SWAP;
+        } else if (token == SBTC_CRV) {
+            return SBTC_SWAP;
         } else {
             revert("CIA: bad token!");
         }
@@ -138,6 +146,8 @@ abstract contract CurveInteractiveAdapter is InteractiveAdapter {
             return P_COINS;
         } else if (token == REN_CRV) {
             return REN_COINS;
+        } else if (token == SBTC_CRV) {
+            return SBTC_COINS;
         } else {
             revert("CIA: bad token!");
         }
