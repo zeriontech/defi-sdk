@@ -37,11 +37,11 @@ contract('Core + Router', () => {
   describe('Core and Router tests using Weth', () => {
     beforeEach(async () => {
       accounts = await web3.eth.getAccounts();
-      await InteractiveAdapter.new({from: accounts[0]})
+      await InteractiveAdapter.new({ from: accounts[0] })
         .then((result) => {
           protocolAdapterAddress = result.address;
         });
-      await AdapterRegistry.new({from: accounts[0]})
+      await AdapterRegistry.new({ from: accounts[0] })
         .then((result) => {
           adapterRegistry = result.contract;
         });
@@ -57,7 +57,7 @@ contract('Core + Router', () => {
         [[
           protocolAdapterAddress, ZERO,
         ]],
-        [[[],[]]],
+        [[[], []]],
       )
         .send({
           from: accounts[0],
@@ -65,14 +65,14 @@ contract('Core + Router', () => {
         });
       await Core.new(
         adapterRegistry.options.address,
-        {from: accounts[0]},
+        { from: accounts[0] },
       )
         .then((result) => {
           core = result.contract;
         });
       await Router.new(
         core.options.address,
-        {from: accounts[0]},
+        { from: accounts[0] },
       )
         .then((result) => {
           router = result.contract;
@@ -86,15 +86,15 @@ contract('Core + Router', () => {
     it('should not deploy router with no core', async () => {
       await expectRevert(Router.new(
         ZERO,
-        {from: accounts[0]},
-      ))
+        { from: accounts[0] },
+      ));
     });
 
     it('should not deploy core with no registry', async () => {
       await expectRevert(Core.new(
         ZERO,
-        {from: accounts[0]},
-      ))
+        { from: accounts[0] },
+      ));
     });
 
     it('should not get 1 WETH from 1 ETH with broken amount type', async () => {
@@ -193,11 +193,11 @@ contract('Core + Router', () => {
         ],
         // inputs
         [
-          [wethAddress, convertToShare(0.5), AMOUNT_RELATIVE, 0, ZERO]
+          [wethAddress, convertToShare(0.5), AMOUNT_RELATIVE, 0, ZERO],
         ],
         // outputs
         [
-          [ethAddress, 1000]
+          [ethAddress, 1000],
         ],
       )
         .send({
@@ -408,7 +408,7 @@ contract('Core + Router', () => {
         .then((result) => {
           assert.equal(
             result[0].amount,
-            new BN(web3.utils.toWei('100', 'ether')).sub(new BN(wethAmount))
+            new BN(web3.utils.toWei('100', 'ether')).sub(new BN(wethAmount)),
           );
         });
       await router.methods.getRequiredBalances(
