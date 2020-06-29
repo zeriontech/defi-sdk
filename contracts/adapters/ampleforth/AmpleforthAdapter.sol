@@ -21,46 +21,42 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @dev CToken contract interface.
- * Only the functions required for CompoundDebtAdapter contract are added.
- * The CToken contract is available here
- * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
+ * @dev TokenGeyser contract interface.
+ * Only the functions required for AmpleforthAdapter contract are added.
+ * The TokenGeyser contract is available here
+ * github.com/ampleforth/token-geyser/blob/master/contracts/TokenGeyser.sol.
  */
-interface CToken {
-    function borrowBalanceStored(address) external view returns (uint256);
+interface TokenGeyser {
+    function totalStakedFor(address) external view returns (uint256);
 }
 
 
 /**
- * @dev CompoundRegistry contract interface.
- * Only the functions required for CompoundDebtAdapter contract are added.
- * The CompoundRegistry contract is available in this repository.
- */
-interface CompoundRegistry {
-    function getCToken(address) external view returns (address);
-}
-
-
-/**
- * @title Debt adapter for Compound protocol.
+ * @title Asset adapter for Ampleforth.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CompoundDebtAdapter is ProtocolAdapter {
+contract AmpleforthAdapter is ProtocolAdapter {
 
-    address internal constant REGISTRY = 0xD0ff11EA62C867F6dF8E9cc37bb5339107FAb141;
-
-    string public constant override adapterType = "Debt";
+    string public constant override adapterType = "Asset";
 
     string public constant override tokenType = "ERC20";
 
+    address internal constant GEYSER = 0xD36132E0c1141B26E62733e018f12Eb38A7b7678;
+    address internal constant AMPL = 0xD46bA6D942050d489DBd938a2C909A5d5039A161;
+    address internal constant UNI_AMPL_WETH = 0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c;
+
     /**
-     * @return Amount of debt of the given account for the protocol.
+     * @return AMPL balance or amount of UNI-tokens locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        address cToken = CompoundRegistry(REGISTRY).getCToken(token);
-
-        return CToken(cToken).borrowBalanceStored(account);
+        if (token == AMPL) {
+            return ERC20(AMPL).balanceOf(account);
+        } else if (token == UNI_AMPL_WETH) {
+            return TokenGeyser(GEYSER).totalStakedFor(account);
+        } else {
+            return 0;
+        }
     }
 }

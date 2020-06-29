@@ -21,7 +21,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 /**
  * @dev DSChief contract interface.
- * Only the functions required for GovernanceAdapter contract are added.
+ * Only the functions required for MakerGovernanceAdapter contract are added.
  * The DSChief contract is available here
  * github.com/dapphub/ds-chief/blob/master/src/chief.sol.
  */
@@ -35,7 +35,7 @@ interface DSChief {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract GovernanceAdapter is ProtocolAdapter {
+contract MakerGovernanceAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 

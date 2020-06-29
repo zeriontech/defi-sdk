@@ -446,7 +446,7 @@ module.exports = async (deployer, network, accounts) => {
 
   await deployer.deploy(IdleAdapter, { from: accounts[0] });
   adapters.push([IdleAdapter.address]);
-  tokens.push([idleAdapterTokens]);
+  tokens.push([idleBestYieldAdapterTokens]);
   protocolNames.push('Idle • Best-Yield');
   metadata.push([
     'Idle • Best-Yield',
@@ -458,7 +458,7 @@ module.exports = async (deployer, network, accounts) => {
 
   await deployer.deploy(IdleAdapter, { from: accounts[0] });
   adapters.push([IdleAdapter.address]);
-  tokens.push([idleAdapterTokens]);
+  tokens.push([idleRiskAdjustedAdapterTokens]);
   protocolNames.push('Idle • Risk-Adjusted');
   metadata.push([
     'Idle • Risk-Adjusted',

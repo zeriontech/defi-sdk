@@ -1,37 +1,28 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('BancorAdapter');
-const TokenAdapter = artifacts.require('BancorTokenAdapter');
+const ProtocolAdapter = artifacts.require('AmpleforthAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('BancorAdapter', () => {
-  const bntBethPoolAddress = '0xb1CD6e4153B2a390Cf00A6556b0fC1458C4A5533';
-  const bntAddress = '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C';
-  const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+contract('AmpleforthAdapter', () => {
+  const amplAddress = '0xD46bA6D942050d489DBd938a2C909A5d5039A161';
+  const amplUniAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
   let adapterRegistry;
   let protocolAdapterAddress;
-  let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
-  const bntBethPool = [
-    bntBethPoolAddress,
-    'BNT Smart Token Relay',
-    'ETHBNT',
-    '18',
+  const ampl = [
+    amplAddress,
+    'Ampleforth',
+    'AMPL',
+    '9',
   ];
-  const bnt = [
-    bntAddress,
-    'Bancor Network Token',
-    'BNT',
-    '18',
-  ];
-  const beth = [
-    ethAddress,
-    'Ether',
-    'ETH',
+  const amplUni = [
+    amplUniAddress,
+    'Uniswap V2',
+    'UNI-V2',
     '18',
   ];
 
@@ -40,10 +31,6 @@ contract('BancorAdapter', () => {
     await ProtocolAdapter.new({ from: accounts[0] })
       .then((result) => {
         protocolAdapterAddress = result.address;
-      });
-    await TokenAdapter.new({ from: accounts[0] })
-      .then((result) => {
-        tokenAdapterAddress = result.address;
       });
     await ERC20TokenAdapter.new({ from: accounts[0] })
       .then((result) => {
@@ -54,7 +41,7 @@ contract('BancorAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Bancor'],
+      ['Synthetix'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -66,7 +53,8 @@ contract('BancorAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        bntBethPoolAddress,
+        amplAddress,
+        amplUniAddress,
       ]]],
     )
       .send({
@@ -74,8 +62,8 @@ contract('BancorAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20', 'SmartToken'],
-      [erc20TokenAdapterAddress, tokenAdapterAddress],
+      ['ERC20'],
+      [erc20TokenAdapterAddress],
     )
       .send({
         from: accounts[0],
@@ -88,11 +76,11 @@ contract('BancorAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
-        displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
-        displayToken(result[0].adapterBalances[0].balances[0].underlying[1]);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, bntBethPool);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, bnt);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[1].metadata, beth);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, ampl);
+        assert.equal(result[0].adapterBalances[0].balances[0].underlying.length, 0);
+        displayToken(result[0].adapterBalances[0].balances[1].base);
+        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, amplUni);
+        assert.equal(result[0].adapterBalances[0].balances[1].underlying.length, 0);
       });
   });
 });
