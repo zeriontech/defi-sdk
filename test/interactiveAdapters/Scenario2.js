@@ -20,7 +20,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('Scenario ETH -> WETH/LINK set', () => {
+contract('Scenario ETH -> WETH/LINK set', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const linkAddress = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';

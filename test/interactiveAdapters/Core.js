@@ -1,6 +1,7 @@
 // import displayToken from './helpers/displayToken';\
 // import convertToShare from '../helpers/convertToShare';
 import expectRevert from '../helpers/expectRevert';
+import convertToShare from '../helpers/convertToShare';
 
 const { BN } = web3.utils;
 
@@ -21,8 +22,9 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('Core + Router', () => {
+contract.only('Core + Router', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+  const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
   let accounts;
   let core;
@@ -95,7 +97,59 @@ contract('Core + Router', () => {
       ))
     });
 
-    it('should get some WETH from ETH', async () => {
+    it('should not get 1 WETH from 1 ETH with broken amount type', async () => {
+      await expectRevert(router.methods.startExecution(
+        // actions
+        [
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Weth'),
+            ADAPTER_ASSET,
+            [],
+            [web3.utils.toWei('1', 'ether')],
+            [0],
+            EMPTY_BYTES,
+          ],
+        ],
+        // inputs
+        [],
+        // outputs
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+          value: web3.utils.toWei('1', 'ether'),
+        }));
+    });
+
+    it('should not get 1 WETH from 1 ETH with too large relative amount', async () => {
+      await expectRevert(router.methods.startExecution(
+        // actions
+        [
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Weth'),
+            ADAPTER_ASSET,
+            [],
+            [web3.utils.toWei('1.1', 'ether')],
+            [AMOUNT_RELATIVE],
+            EMPTY_BYTES,
+          ],
+        ],
+        // inputs
+        [],
+        // outputs
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+          value: web3.utils.toWei('1', 'ether'),
+        }));
+    });
+
+    it('should get 1 WETH from 1 ETH and get half back', async () => {
       await router.methods.startExecution(
         // actions
         [
@@ -118,6 +172,37 @@ contract('Core + Router', () => {
           from: accounts[0],
           gas: 10000000,
           value: web3.utils.toWei('1', 'ether'),
+        });
+      await WETH.methods.approve(router.options.address, web3.utils.toWei('1', 'ether'))
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await router.methods.startExecution(
+        // actions
+        [
+          [
+            ACTION_WITHDRAW,
+            web3.utils.toHex('Weth'),
+            ADAPTER_ASSET,
+            [],
+            [web3.utils.toWei('1', 'ether')],
+            [AMOUNT_RELATIVE],
+            EMPTY_BYTES,
+          ],
+        ],
+        // inputs
+        [
+          [wethAddress, convertToShare(0.5), AMOUNT_RELATIVE, 0, ZERO]
+        ],
+        // outputs
+        [
+          [ethAddress, 1000]
+        ],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
         });
     });
 
@@ -407,9 +492,9 @@ contract('Core + Router', () => {
         [
           [
             wethAddress,
-            web3.utils.toWei('1', 'ether'),
+            web3.utils.toWei('0.1', 'ether'),
             AMOUNT_ABSOLUTE,
-            web3.utils.toWei('1', 'wei'),
+            web3.utils.toWei('0.01', 'ether'),
             accounts[1],
           ],
         ],
@@ -423,12 +508,12 @@ contract('Core + Router', () => {
       await WETH.methods.balanceOf(accounts[1])
         .call()
         .then((result) => {
-          assert.equal(result, web3.utils.toWei('0.008', 'ether'));
+          assert.equal(result, web3.utils.toWei('0.0008', 'ether'));
         });
       await WETH.methods.balanceOf(router.options.address)
         .call()
         .then((result) => {
-          assert.equal(result, web3.utils.toWei('0.002', 'ether'));
+          assert.equal(result, web3.utils.toWei('0.0002', 'ether'));
         });
     });
   });
