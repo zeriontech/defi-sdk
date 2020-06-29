@@ -1,5 +1,6 @@
 // import displayToken from '../helpers/displayToken';
 import convertToShare from '../helpers/convertToShare';
+import expectRevert from '../helpers/expectRevert';
 // import expectRevert from '../helpers/expectRevert';
 
 // const { BN } = web3.utils;
@@ -26,7 +27,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('CurveLiquidityAdapter', () => {
+contract.only('CurveLiquidityAdapter', () => {
   const cPoolToken = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
   const tPoolToken = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
   const yPoolToken = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
@@ -35,6 +36,7 @@ contract('CurveLiquidityAdapter', () => {
   const pPoolToken = '0xD905e2eaeBe188fc92179b6350807D8bd91Db0D8';
   const renPoolToken = '0x7771F704490F9C0C3B06aFe8960dBB6c58CBC812';
 
+  const renBTCAddress = '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
@@ -185,14 +187,206 @@ contract('CurveLiquidityAdapter', () => {
       .then((result) => {
         WETH = result.contract;
       });
+  });
+
+  it('should not buy curve pool for 100 dai with 2 tokens', async () => {
     poolTokenAddress = cPoolToken;
     await ERC20.at(poolTokenAddress)
       .then((result) => {
         poolToken = result.contract;
       });
+    // exchange 1 ETH to WETH like we had WETH initially
+    await tokenSpender.methods.startExecution(
+      // actions
+      [
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('Weth'),
+          ADAPTER_ASSET,
+          [ethAddress],
+          [web3.utils.toWei('1', 'ether')],
+          [AMOUNT_ABSOLUTE],
+          EMPTY_BYTES,
+        ],
+      ],
+      // inputs
+      [],
+      // outputs
+      [],
+    )
+      .send({
+        from: accounts[0],
+        gas: 10000000,
+        value: web3.utils.toWei('1', 'ether'),
+      });
+    await WETH.methods.approve(tokenSpender.options.address, web3.utils.toWei('1', 'ether'))
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      });
+    await tokenSpender.methods.startExecution(
+      // actions
+      [
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('Uniswap V2'),
+          ADAPTER_EXCHANGE,
+          [],
+          [web3.utils.toWei('1', 'ether')],
+          [AMOUNT_ABSOLUTE],
+          web3.eth.abi.encodeParameter('address[]', [wethAddress, daiAddress]),
+        ],
+      ],
+      // inputs
+      [
+        [wethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+      ],
+      // outputs
+      [],
+    )
+      .send({
+        gas: 10000000,
+        from: accounts[0],
+      });
+    let daiAmount;
+    await DAI.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        daiAmount = result;
+      });
+    await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      });
+    await expectRevert(tokenSpender.methods.startExecution(
+      [
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('Curve'),
+          ADAPTER_ASSET,
+          [daiAddress, daiAddress],
+          [web3.utils.toWei('100', 'ether'), web3.utils.toWei('100', 'ether')],
+          [AMOUNT_ABSOLUTE, AMOUNT_ABSOLUTE],
+          web3.eth.abi.encodeParameter(
+            'address',
+            poolTokenAddress,
+          ),
+        ],
+      ],
+      [
+        [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+      ],
+      [],
+    )
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      }));
+  });
+
+  it('should not buy curve pool for 100 dai with inconsistent arrays', async () => {
+    poolTokenAddress = cPoolToken;
+    await ERC20.at(poolTokenAddress)
+      .then((result) => {
+        poolToken = result.contract;
+      });
+    // exchange 1 ETH to WETH like we had WETH initially
+    await tokenSpender.methods.startExecution(
+      // actions
+      [
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('Weth'),
+          ADAPTER_ASSET,
+          [ethAddress],
+          [web3.utils.toWei('1', 'ether')],
+          [AMOUNT_ABSOLUTE],
+          EMPTY_BYTES,
+        ],
+      ],
+      // inputs
+      [],
+      // outputs
+      [],
+    )
+      .send({
+        from: accounts[0],
+        gas: 10000000,
+        value: web3.utils.toWei('1', 'ether'),
+      });
+    await WETH.methods.approve(tokenSpender.options.address, web3.utils.toWei('1', 'ether'))
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      });
+    await tokenSpender.methods.startExecution(
+      // actions
+      [
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('Uniswap V2'),
+          ADAPTER_EXCHANGE,
+          [],
+          [web3.utils.toWei('1', 'ether')],
+          [AMOUNT_ABSOLUTE],
+          web3.eth.abi.encodeParameter('address[]', [wethAddress, daiAddress]),
+        ],
+      ],
+      // inputs
+      [
+        [wethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+      ],
+      // outputs
+      [],
+    )
+      .send({
+        gas: 10000000,
+        from: accounts[0],
+      });
+    let daiAmount;
+    await DAI.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        daiAmount = result;
+      });
+    await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      });
+    await expectRevert(tokenSpender.methods.startExecution(
+      [
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('Curve'),
+          ADAPTER_ASSET,
+          [daiAddress],
+          [web3.utils.toWei('100', 'ether'), web3.utils.toWei('100', 'ether')],
+          [AMOUNT_ABSOLUTE, AMOUNT_ABSOLUTE],
+          web3.eth.abi.encodeParameter(
+            'address',
+            poolTokenAddress,
+          ),
+        ],
+      ],
+      [
+        [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+      ],
+      [],
+    )
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      }));
   });
 
   it('should buy curve pool for 100 dai', async () => {
+    poolTokenAddress = cPoolToken;
+    await ERC20.at(poolTokenAddress)
+      .then((result) => {
+        poolToken = result.contract;
+      });
     // exchange 1 ETH to WETH like we had WETH initially
     await tokenSpender.methods.startExecution(
       // actions
@@ -312,7 +506,295 @@ contract('CurveLiquidityAdapter', () => {
       });
   });
 
-  it.skip('should sell 100% of pool tokens', async () => {
+  it('should buy curve pool for 100 dai', async () => {
+    poolTokenAddress = tPoolToken;
+    await ERC20.at(poolTokenAddress)
+      .then((result) => {
+        poolToken = result.contract;
+      });
+    // exchange 1 ETH to WETH like we had WETH initially
+    await tokenSpender.methods.startExecution(
+      // actions
+      [
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('Weth'),
+          ADAPTER_ASSET,
+          [ethAddress],
+          [web3.utils.toWei('1', 'ether')],
+          [AMOUNT_ABSOLUTE],
+          EMPTY_BYTES,
+        ],
+      ],
+      // inputs
+      [],
+      // outputs
+      [],
+    )
+      .send({
+        from: accounts[0],
+        gas: 10000000,
+        value: web3.utils.toWei('1', 'ether'),
+      });
+    await WETH.methods.approve(tokenSpender.options.address, web3.utils.toWei('1', 'ether'))
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      });
+    await tokenSpender.methods.startExecution(
+      // actions
+      [
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('Uniswap V2'),
+          ADAPTER_EXCHANGE,
+          [],
+          [web3.utils.toWei('1', 'ether')],
+          [AMOUNT_ABSOLUTE],
+          web3.eth.abi.encodeParameter('address[]', [wethAddress, daiAddress]),
+        ],
+      ],
+      // inputs
+      [
+        [wethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+      ],
+      // outputs
+      [],
+    )
+      .send({
+        gas: 10000000,
+        from: accounts[0],
+      });
+    let daiAmount;
+    await DAI.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`       dai amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        daiAmount = result;
+      });
+    await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      });
+    await poolToken.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
+      });
+    await tokenSpender.methods.startExecution(
+      [
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('Curve'),
+          ADAPTER_ASSET,
+          [daiAddress],
+          [web3.utils.toWei('100', 'ether')],
+          [AMOUNT_ABSOLUTE],
+          web3.eth.abi.encodeParameter(
+            'address',
+            poolTokenAddress,
+          ),
+        ],
+      ],
+      [
+        [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+      ],
+      [],
+    )
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      })
+      .then((receipt) => {
+        console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+      });
+    await DAI.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`       dai amount after is ${web3.utils.fromWei(result, 'ether')}`);
+      });
+    await poolToken.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`pool token amount after is ${web3.utils.fromWei(result, 'ether')}`);
+      });
+    await DAI.methods['balanceOf(address)'](core.options.address)
+      .call()
+      .then((result) => {
+        assert.equal(result, 0);
+      });
+    await poolToken.methods['balanceOf(address)'](core.options.address)
+      .call()
+      .then((result) => {
+        assert.equal(result, 0);
+      });
+  });
+
+  it('should buy curve pool for 100 dai', async () => {
+    poolTokenAddress = sPoolToken;
+    await ERC20.at(poolTokenAddress)
+      .then((result) => {
+        poolToken = result.contract;
+      });
+    // exchange 1 ETH to WETH like we had WETH initially
+    await tokenSpender.methods.startExecution(
+      // actions
+      [
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('Weth'),
+          ADAPTER_ASSET,
+          [ethAddress],
+          [web3.utils.toWei('1', 'ether')],
+          [AMOUNT_ABSOLUTE],
+          EMPTY_BYTES,
+        ],
+      ],
+      // inputs
+      [],
+      // outputs
+      [],
+    )
+      .send({
+        from: accounts[0],
+        gas: 10000000,
+        value: web3.utils.toWei('1', 'ether'),
+      });
+    await WETH.methods.approve(tokenSpender.options.address, web3.utils.toWei('1', 'ether'))
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      });
+    await tokenSpender.methods.startExecution(
+      // actions
+      [
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('Uniswap V2'),
+          ADAPTER_EXCHANGE,
+          [],
+          [web3.utils.toWei('1', 'ether')],
+          [AMOUNT_ABSOLUTE],
+          web3.eth.abi.encodeParameter('address[]', [wethAddress, daiAddress]),
+        ],
+      ],
+      // inputs
+      [
+        [wethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+      ],
+      // outputs
+      [],
+    )
+      .send({
+        gas: 10000000,
+        from: accounts[0],
+      });
+    let daiAmount;
+    await DAI.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`       dai amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        daiAmount = result;
+      });
+    await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      });
+    await poolToken.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
+      });
+    await tokenSpender.methods.startExecution(
+      [
+        [
+          ACTION_DEPOSIT,
+          web3.utils.toHex('Curve'),
+          ADAPTER_ASSET,
+          [daiAddress],
+          [web3.utils.toWei('100', 'ether')],
+          [AMOUNT_ABSOLUTE],
+          web3.eth.abi.encodeParameter(
+            'address',
+            poolTokenAddress,
+          ),
+        ],
+      ],
+      [
+        [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+      ],
+      [],
+    )
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      })
+      .then((receipt) => {
+        console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+      });
+    await DAI.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`       dai amount after is ${web3.utils.fromWei(result, 'ether')}`);
+      });
+    await poolToken.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`pool token amount after is ${web3.utils.fromWei(result, 'ether')}`);
+      });
+    await DAI.methods['balanceOf(address)'](core.options.address)
+      .call()
+      .then((result) => {
+        assert.equal(result, 0);
+      });
+    await poolToken.methods['balanceOf(address)'](core.options.address)
+      .call()
+      .then((result) => {
+        assert.equal(result, 0);
+      });
+  });
+
+  it('should not sell 100% of pool tokens if wrong token', async () => {
+    let poolAmount;
+    await poolToken.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        poolAmount = result;
+      });
+    await poolToken.methods.approve(tokenSpender.options.address, poolAmount.toString())
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      });
+    await expectRevert(tokenSpender.methods.startExecution(
+      [
+        [
+          ACTION_WITHDRAW,
+          web3.utils.toHex('Curve'),
+          ADAPTER_ASSET,
+          [poolTokenAddress],
+          [convertToShare(1)],
+          [AMOUNT_RELATIVE],
+          web3.eth.abi.encodeParameter(
+            'address',
+            renBTCAddress,
+          ),
+        ],
+      ],
+      [
+        [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+      ],
+      [],
+    )
+      .send({
+        from: accounts[0],
+        gas: 1000000,
+      }));
+  });
+
+  it('should sell 100% of pool tokens', async () => {
     let poolAmount;
     await DAI.methods['balanceOf(address)'](accounts[0])
       .call()
@@ -325,11 +807,6 @@ contract('CurveLiquidityAdapter', () => {
         poolAmount = result;
         console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
       });
-    // await adapterRegistry.methods['getBalances(address)'](accounts[0])
-    //   .call()
-    //   .then(async (result) => {
-    //     await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
-    //   });
     await poolToken.methods.approve(tokenSpender.options.address, poolAmount.toString())
       .send({
         from: accounts[0],
