@@ -1,8 +1,8 @@
 import displayToken from '../helpers/displayToken';
 import convertToShare from '../helpers/convertToShare';
-// import expectRevert from '../helpers/expectRevert';
+import expectRevert from '../helpers/expectRevert';
 
-const { BN } = web3.utils;
+// const { BN } = web3.utils;
 
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
@@ -25,7 +25,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('UniswapV2LiquidityAdapter', () => {
+contract('UniswapV2LiquidityInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const wethDaiAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -43,6 +43,7 @@ contract('UniswapV2LiquidityAdapter', () => {
   let DAI;
   let WETH;
   let WETHDAI;
+
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
     await UniswapV2Adapter.new({ from: accounts[0] })
@@ -142,9 +143,6 @@ contract('UniswapV2LiquidityAdapter', () => {
       .then((result) => {
         WETHDAI = result.contract;
       });
-  });
-
-  it('should buy 1 UNI-V2 with existing dai and weth', async () => {
     // exchange 1 ETH to WETH like we had WETH initially
     await tokenSpender.methods.startExecution(
       // actions
@@ -169,217 +167,473 @@ contract('UniswapV2LiquidityAdapter', () => {
         gas: 10000000,
         value: web3.utils.toWei('1', 'ether'),
       });
-    await WETH.methods.approve(tokenSpender.options.address, web3.utils.toWei('0.3', 'ether'))
-      .send({
-        from: accounts[0],
-        gas: 1000000,
-      });
-    await tokenSpender.methods.startExecution(
-      // actions
-      [
-        [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('Uniswap V2'),
-          ADAPTER_EXCHANGE,
-          [],
-          [web3.utils.toWei('0.3', 'ether')],
-          [AMOUNT_ABSOLUTE],
-          web3.eth.abi.encodeParameter('address[]', [wethAddress, daiAddress]),
-        ],
-      ],
-      // inputs
-      [
-        [wethAddress, web3.utils.toWei('0.3', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
-      ],
-      // outputs
-      [],
-    )
-      .send({
-        gas: 10000000,
-        from: accounts[0],
-      });
-    let daiAmount;
-    await DAI.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`dai amount before is     ${web3.utils.fromWei(result, 'ether')}`);
-        daiAmount = result;
-      });
-    await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
-      .send({
-        from: accounts[0],
-        gas: 1000000,
-      });
-    let wethAmount;
-    await WETH.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`weth amount before is    ${web3.utils.fromWei(result, 'ether')}`);
-        wethAmount = result;
-      });
-    await WETH.methods.approve(tokenSpender.options.address, wethAmount.toString())
-      .send({
-        from: accounts[0],
-        gas: 1000000,
-      });
-    await WETHDAI.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`wethdai amount before is ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    const wethDaiAmount = web3.utils.toWei('1', 'ether');
-    await adapterRegistry.methods.getFullTokenBalances(
-      [web3.utils.toHex('Uniswap V2 Pool Token')],
-      [wethDaiAddress],
-    )
-      .call()
-      .then((result) => {
-        let wethFirst = result[0].underlying[0].metadata.tokenAddress === wethAddress;
-        wethAmount = new BN(result[0].underlying[wethFirst ? 0 : 1].amount)
-          .mul(new BN(wethDaiAmount))
-          .div(new BN('10').pow(new BN('18')));
-        daiAmount = new BN(result[0].underlying[wethFirst ? 1 : 0].amount)
-          .mul(new BN(wethDaiAmount))
-          .div(new BN('10').pow(new BN('18')));
-      });
-    await tokenSpender.methods.startExecution(
-      [
-        [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('Uniswap V2'),
-          ADAPTER_ASSET,
-          [],
-          [],
-          [],
-          web3.eth.abi.encodeParameters(
-            ['address', 'uint256'],
-            [wethDaiAddress, wethDaiAmount],
-          ),
-        ],
-      ],
-      [
-        [daiAddress, daiAmount.mul(new BN('101')).div(new BN('100')).toString(), AMOUNT_ABSOLUTE, 0, ZERO],
-        [wethAddress, wethAmount.mul(new BN('101')).div(new BN('100')).toString(), AMOUNT_ABSOLUTE, 0, ZERO],
-      ],
-      [
-        [wethDaiAddress, wethDaiAmount],
-      ],
-    )
-      .send({
-        from: accounts[0],
-        gas: 1000000,
-      })
-      .then((receipt) => {
-        console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
-      });
-    await DAI.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`dai amount after is     ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await WETH.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`weth amount after is    ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await WETHDAI.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`wethdai amount after is ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await DAI.methods['balanceOf(address)'](core.options.address)
-      .call()
-      .then((result) => {
-        assert.equal(result, 0);
-      });
-    await WETH.methods['balanceOf(address)'](core.options.address)
-      .call()
-      .then((result) => {
-        assert.equal(result, 0);
-      });
-    await WETHDAI.methods['balanceOf(address)'](core.options.address)
-      .call()
-      .then((result) => {
-        assert.equal(result, 0);
-      });
   });
 
-  it('should sell 100% DAIUNI', async () => {
-    let wethDaiAmount;
-    await DAI.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`dai amount before is ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await WETH.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`weth amount before is ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await adapterRegistry.methods['getBalances(address)'](accounts[0])
-      .call()
-      .then(async (result) => {
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
-        wethDaiAmount = result[0].adapterBalances[0].balances[0].amount;
-      });
-    await WETHDAI.methods.approve(tokenSpender.options.address, wethDaiAmount.toString())
-      .send({
-        from: accounts[0],
-        gas: 1000000,
-      });
-    await tokenSpender.methods.startExecution(
-      [
+  describe('Uniswap V2 liquidity tests', () => {
+    it('should prepare for tests buyng dai for WETH', async () => {
+      await WETH.methods.approve(tokenSpender.options.address, web3.utils.toWei('0.3', 'ether'))
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await tokenSpender.methods.startExecution(
+        // actions
         [
-          ACTION_WITHDRAW,
-          web3.utils.toHex('Uniswap V2'),
-          ADAPTER_ASSET,
-          [wethDaiAddress],
-          [convertToShare(1)],
-          [AMOUNT_RELATIVE],
-          EMPTY_BYTES,
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V2'),
+            ADAPTER_EXCHANGE,
+            [],
+            [web3.utils.toWei('0.3', 'ether')],
+            [AMOUNT_ABSOLUTE],
+            web3.eth.abi.encodeParameter('address[]', [wethAddress, daiAddress]),
+          ],
         ],
-      ],
-      [
-        [wethDaiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-      ],
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: 1000000,
-      })
-      .then((receipt) => {
-        console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
-      });
-    await DAI.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`dai amount after is     ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await WETH.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`weth amount after is    ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await WETHDAI.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`wethdai amount after is ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await DAI.methods['balanceOf(address)'](core.options.address)
-      .call()
-      .then((result) => {
-        assert.equal(result, 0);
-      });
-    await WETH.methods['balanceOf(address)'](core.options.address)
-      .call()
-      .then((result) => {
-        assert.equal(result, 0);
-      });
-    await WETHDAI.methods['balanceOf(address)'](core.options.address)
-      .call()
-      .then((result) => {
-        assert.equal(result, 0);
-      });
+        // inputs
+        [
+          [wethAddress, web3.utils.toWei('0.3', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+        ],
+        // outputs
+        [],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        });
+    });
+
+    it('should not buy 1 UNI-V2 with existing DAI and WETH with wrong tokens', async () => {
+      let daiAmount;
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+        });
+      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      let wethAmount;
+      await WETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          wethAmount = result;
+        });
+      await WETH.methods.approve(tokenSpender.options.address, wethAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(tokenSpender.methods.startExecution(
+        [
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V2'),
+            ADAPTER_ASSET,
+            [daiAddress],
+            [convertToShare(1), convertToShare(1)],
+            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameters(
+              ['address'],
+              [wethDaiAddress],
+            ),
+          ],
+        ],
+        [
+          [daiAddress, convertToShare(50), AMOUNT_ABSOLUTE, 0, ZERO],
+          [wethAddress, convertToShare(0.3), AMOUNT_ABSOLUTE, 0, ZERO],
+        ],
+        [
+          [wethDaiAddress, 0],
+        ],
+      )
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        }));
+    });
+
+    it('should not buy 1 UNI-V2 with existing DAI and WETH with wrong amounts', async () => {
+      let daiAmount;
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+        });
+      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      let wethAmount;
+      await WETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          wethAmount = result;
+        });
+      await WETH.methods.approve(tokenSpender.options.address, wethAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(tokenSpender.methods.startExecution(
+        [
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V2'),
+            ADAPTER_ASSET,
+            [daiAddress, wethAddress],
+            [convertToShare(1)],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameters(
+              ['address'],
+              [wethDaiAddress],
+            ),
+          ],
+        ],
+        [
+          [daiAddress, convertToShare(50), AMOUNT_ABSOLUTE, 0, ZERO],
+          [wethAddress, convertToShare(0.3), AMOUNT_ABSOLUTE, 0, ZERO],
+        ],
+        [
+          [wethDaiAddress, 0],
+        ],
+      )
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        }));
+    });
+
+    it('should buy 1 UNI-V2 with existing DAI and WETH', async () => {
+      await WETH.methods.approve(tokenSpender.options.address, web3.utils.toWei('0.3', 'ether'))
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await tokenSpender.methods.startExecution(
+        // actions
+        [
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V2'),
+            ADAPTER_EXCHANGE,
+            [],
+            [web3.utils.toWei('0.3', 'ether')],
+            [AMOUNT_ABSOLUTE],
+            web3.eth.abi.encodeParameter('address[]', [wethAddress, daiAddress]),
+          ],
+        ],
+        // inputs
+        [
+          [wethAddress, web3.utils.toWei('0.3', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+        ],
+        // outputs
+        [],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        });
+      let daiAmount;
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`dai amount before is     ${web3.utils.fromWei(result, 'ether')}`);
+          daiAmount = result;
+        });
+      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      let wethAmount;
+      await WETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`weth amount before is    ${web3.utils.fromWei(result, 'ether')}`);
+          wethAmount = result;
+        });
+      await WETH.methods.approve(tokenSpender.options.address, wethAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await WETHDAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`wethdai amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await tokenSpender.methods.startExecution(
+        [
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V2'),
+            ADAPTER_ASSET,
+            [daiAddress, wethAddress],
+            [convertToShare(1), convertToShare(1)],
+            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameters(
+              ['address'],
+              [wethDaiAddress],
+            ),
+          ],
+        ],
+        [
+          [daiAddress, convertToShare(30), AMOUNT_ABSOLUTE, 0, ZERO],
+          [wethAddress, convertToShare(0.1), AMOUNT_ABSOLUTE, 0, ZERO],
+        ],
+        [
+          [wethDaiAddress, 0],
+        ],
+      )
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        })
+        .then((receipt) => {
+          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await tokenSpender.methods.startExecution(
+        [
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V2'),
+            ADAPTER_ASSET,
+            [daiAddress, wethAddress],
+            [convertToShare(1), convertToShare(1)],
+            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameters(
+              ['address'],
+              [wethDaiAddress],
+            ),
+          ],
+        ],
+        [
+          [daiAddress, convertToShare(10), AMOUNT_ABSOLUTE, 0, ZERO],
+          [wethAddress, convertToShare(0.1), AMOUNT_ABSOLUTE, 0, ZERO],
+        ],
+        [
+          [wethDaiAddress, 0],
+        ],
+      )
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        })
+        .then((receipt) => {
+          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await tokenSpender.methods.startExecution(
+        [
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V2'),
+            ADAPTER_ASSET,
+            [wethAddress, daiAddress],
+            [convertToShare(1), convertToShare(1)],
+            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameters(
+              ['address'],
+              [wethDaiAddress],
+            ),
+          ],
+        ],
+        [
+          [daiAddress, convertToShare(10), AMOUNT_ABSOLUTE, 0, ZERO],
+          [wethAddress, convertToShare(0.1), AMOUNT_ABSOLUTE, 0, ZERO],
+        ],
+        [
+          [wethDaiAddress, 0],
+        ],
+      )
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        })
+        .then((receipt) => {
+          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`dai amount after is     ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await WETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`weth amount after is    ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await WETHDAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`wethdai amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await DAI.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await WETH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await WETHDAI.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
+    it('should not sell 100% DAIUNI with wrong tokens', async () => {
+      let wethDaiAmount;
+      await adapterRegistry.methods['getBalances(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          wethDaiAmount = result[0].adapterBalances[0].balances[0].amount;
+        });
+      await WETHDAI.methods.approve(tokenSpender.options.address, wethDaiAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(tokenSpender.methods.startExecution(
+        [
+          [
+            ACTION_WITHDRAW,
+            web3.utils.toHex('Uniswap V2'),
+            ADAPTER_ASSET,
+            [wethDaiAddress, wethDaiAddress],
+            [convertToShare(1)],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', daiAddress),
+          ],
+        ],
+        [
+          [wethDaiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+        ],
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        }));
+    });
+
+    it('should not sell 100% DAIUNI with wrong amounts', async () => {
+      let wethDaiAmount;
+      await adapterRegistry.methods['getBalances(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          wethDaiAmount = result[0].adapterBalances[0].balances[0].amount;
+        });
+      await WETHDAI.methods.approve(tokenSpender.options.address, wethDaiAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(tokenSpender.methods.startExecution(
+        [
+          [
+            ACTION_WITHDRAW,
+            web3.utils.toHex('Uniswap V2'),
+            ADAPTER_ASSET,
+            [wethDaiAddress],
+            [convertToShare(1), convertToShare(1)],
+            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', daiAddress),
+          ],
+        ],
+        [
+          [wethDaiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+        ],
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        }));
+    });
+
+    it('should sell 100% DAIUNI', async () => {
+      let wethDaiAmount;
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`dai amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await WETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`weth amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await adapterRegistry.methods['getBalances(address)'](accounts[0])
+        .call()
+        .then(async (result) => {
+          await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
+          wethDaiAmount = result[0].adapterBalances[0].balances[0].amount;
+        });
+      await WETHDAI.methods.approve(tokenSpender.options.address, wethDaiAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await tokenSpender.methods.startExecution(
+        [
+          [
+            ACTION_WITHDRAW,
+            web3.utils.toHex('Uniswap V2'),
+            ADAPTER_ASSET,
+            [wethDaiAddress],
+            [convertToShare(1)],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', daiAddress),
+          ],
+        ],
+        [
+          [wethDaiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+        ],
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        })
+        .then((receipt) => {
+          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`dai amount after is     ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await WETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`weth amount after is    ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await WETHDAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`wethdai amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await DAI.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await WETH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await WETHDAI.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
   });
 });

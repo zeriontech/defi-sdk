@@ -1,6 +1,6 @@
 // import displayToken from './helpers/displayToken';
-// import expectRevert from './helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
+import expectRevert from '../helpers/expectRevert';
 
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
@@ -34,78 +34,78 @@ contract('UniswapV2ExchangeAdapter', () => {
   let DAI;
   let WETH;
 
-  describe('ETH <-> DAI exchange', () => {
-    beforeEach(async () => {
-      accounts = await web3.eth.getAccounts();
-      await InteractiveAdapter.new({ from: accounts[0] })
-        .then((result) => {
-          protocolAdapterAddress = result.address;
-        });
-      await WethAdapter.new({ from: accounts[0] })
-        .then((result) => {
-          wethAdapterAddress = result.address;
-        });
-      await AdapterRegistry.new({ from: accounts[0] })
-        .then((result) => {
-          adapterRegistry = result.contract;
-        });
-      await adapterRegistry.methods.addProtocols(
-        [web3.utils.toHex('Uniswap V2'), web3.utils.toHex('Weth')],
+  beforeEach(async () => {
+    accounts = await web3.eth.getAccounts();
+    await InteractiveAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        protocolAdapterAddress = result.address;
+      });
+    await WethAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        wethAdapterAddress = result.address;
+      });
+    await AdapterRegistry.new({ from: accounts[0] })
+      .then((result) => {
+        adapterRegistry = result.contract;
+      });
+    await adapterRegistry.methods.addProtocols(
+      [web3.utils.toHex('Uniswap V2'), web3.utils.toHex('Weth')],
+      [
         [
-          [
-            'Mock Protocol Name',
-            'Mock protocol description',
-            'Mock website',
-            'Mock icon',
-            '0',
-          ],
-          [
-            'Mock Protocol Name',
-            'Mock protocol description',
-            'Mock website',
-            'Mock icon',
-            '0',
-          ],
+          'Mock Protocol Name',
+          'Mock protocol description',
+          'Mock website',
+          'Mock icon',
+          '0',
         ],
         [
-          [
-            ZERO, ZERO, protocolAdapterAddress,
-          ],
-          [
-            wethAdapterAddress,
-          ],
+          'Mock Protocol Name',
+          'Mock protocol description',
+          'Mock website',
+          'Mock icon',
+          '0',
         ],
-        [[[], [], []], [[]]],
-      )
-        .send({
-          from: accounts[0],
-          gas: '1000000',
-        });
-      await Core.new(
-        adapterRegistry.options.address,
-        { from: accounts[0] },
-      )
-        .then((result) => {
-          core = result.contract;
-        });
-      await Router.new(
-        core.options.address,
-        { from: accounts[0] },
-      )
-        .then((result) => {
-          tokenSpender = result.contract;
-        });
-      await ERC20.at(daiAddress)
-        .then((result) => {
-          DAI = result.contract;
-        });
-      await ERC20.at(wethAddress)
-        .then((result) => {
-          WETH = result.contract;
-        });
-    });
+      ],
+      [
+        [
+          ZERO, ZERO, protocolAdapterAddress,
+        ],
+        [
+          wethAdapterAddress,
+        ],
+      ],
+      [[[], [], []], [[]]],
+    )
+      .send({
+        from: accounts[0],
+        gas: '1000000',
+      });
+    await Core.new(
+      adapterRegistry.options.address,
+      { from: accounts[0] },
+    )
+      .then((result) => {
+        core = result.contract;
+      });
+    await Router.new(
+      core.options.address,
+      { from: accounts[0] },
+    )
+      .then((result) => {
+        tokenSpender = result.contract;
+      });
+    await ERC20.at(daiAddress)
+      .then((result) => {
+        DAI = result.contract;
+      });
+    await ERC20.at(wethAddress)
+      .then((result) => {
+        WETH = result.contract;
+      });
+  });
 
-    it('should be correct one-side exchange deposit-like', async () => {
+  describe('ETH <-> DAI exchange', () => {
+    it('should prepare for exchanges (generate 1 WETH)', async () => {
       // exchange 1 ETH to WETH like we had WETH initially
       await tokenSpender.methods.startExecution(
         // actions
@@ -114,9 +114,9 @@ contract('UniswapV2ExchangeAdapter', () => {
             ACTION_DEPOSIT,
             web3.utils.toHex('Weth'),
             ADAPTER_ASSET,
-            [ethAddress],
+            [],
             [web3.utils.toWei('1', 'ether')],
-            [AMOUNT_ABSOLUTE],
+            [AMOUNT_RELATIVE],
             EMPTY_BYTES,
           ],
         ],
@@ -130,6 +130,49 @@ contract('UniswapV2ExchangeAdapter', () => {
           gas: 10000000,
           value: web3.utils.toWei('1', 'ether'),
         });
+    });
+
+    it('should not be correct one-side exchange deposit-like if bad amounts', async () => {
+      let wethAmount;
+      await WETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          wethAmount = result;
+        });
+      await WETH.methods.approve(tokenSpender.options.address, wethAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(tokenSpender.methods.startExecution(
+        // actions
+        [
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V2'),
+            ADAPTER_EXCHANGE,
+            [],
+            [web3.utils.toWei('0.5', 'ether'), web3.utils.toWei('0.5', 'ether')],
+            [AMOUNT_ABSOLUTE, AMOUNT_ABSOLUTE],
+            web3.eth.abi.encodeParameter('address[]', [wethAddress, daiAddress]),
+          ],
+        ],
+        // inputs
+        [
+          [wethAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+        ],
+        // outputs
+        [
+          [daiAddress, web3.utils.toWei('90', 'ether')],
+        ],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        }));
+    });
+
+    it('should be correct one-side exchange deposit-like', async () => {
       let wethAmount;
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -196,6 +239,80 @@ contract('UniswapV2ExchangeAdapter', () => {
         .then((result) => {
           assert.equal(result, 0);
         });
+    });
+
+    it('should not be correct reverse exchange withdraw-like if bad amounts', async () => {
+      let daiAmount;
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+        });
+      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(tokenSpender.methods.startExecution(
+        [
+          [
+            ACTION_WITHDRAW,
+            web3.utils.toHex('Uniswap V2'),
+            ADAPTER_EXCHANGE,
+            [],
+            [web3.utils.toWei('0.3', 'ether'), web3.utils.toWei('0.3', 'ether')],
+            [AMOUNT_ABSOLUTE, AMOUNT_ABSOLUTE],
+            web3.eth.abi.encodeParameter('address[]', [daiAddress, wethAddress]),
+          ],
+        ],
+        [
+          [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+        ],
+        [
+          [wethAddress, web3.utils.toWei('0.3', 'ether')],
+        ],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        }));
+    });
+
+    it('should not be correct reverse exchange withdraw-like if amount is relative', async () => {
+      let daiAmount;
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+        });
+      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(tokenSpender.methods.startExecution(
+        [
+          [
+            ACTION_WITHDRAW,
+            web3.utils.toHex('Uniswap V2'),
+            ADAPTER_EXCHANGE,
+            [],
+            [web3.utils.toWei('0.3', 'ether')],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address[]', [daiAddress, wethAddress]),
+          ],
+        ],
+        [
+          [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+        ],
+        [
+          [wethAddress, web3.utils.toWei('0.3', 'ether')],
+        ],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        }));
     });
 
     it('should be correct reverse exchange withdraw-like', async () => {
