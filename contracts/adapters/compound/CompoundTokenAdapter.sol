@@ -20,7 +20,6 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
 import { ERC20Metadata, Component } from "../../Structs.sol";
-import { CompoundRegistry } from "./CompoundRegistry.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
 
