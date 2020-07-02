@@ -105,17 +105,17 @@ contract BancorTokenAdapter is TokenAdapter {
         address formula = ContractRegistry(REGISTRY).addressOf("BancorFormula");
         uint256 totalSupply = SmartToken(token).totalSupply();
         address converter = SmartToken(token).owner();
-        uint256 length = BancorConverter(converter).connectorTokenCount();
+        uint256 connectorTokenCount = BancorConverter(converter).connectorTokenCount();
 
-        Component[] memory underlyingTokens = new Component[](length);
+        Component[] memory underlyingTokens = new Component[](connectorTokenCount);
 
         address underlyingToken;
         uint256 balance;
-        for (uint256 i = 0; i < length; i++) {
+        for (uint256 i = 0; i < connectorTokenCount; i++) {
             underlyingToken = BancorConverter(converter).connectorTokens(i);
 
             if (underlyingToken == ETH) {
-                balance =converter.balance;
+                balance = converter.balance;
             } else {
                 balance = ERC20(underlyingToken).balanceOf(converter);
             }
