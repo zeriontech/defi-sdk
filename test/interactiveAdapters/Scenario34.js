@@ -44,7 +44,7 @@ contract('Core', () => {
   let erc20TokenAdapterAddress;
   let protocolAdapterAddress;
 
-  describe('Chai <-> DSR transfer', () => {
+  describe.skip('Chai <-> DSR transfer', () => {
     beforeEach(async () => {
       accounts = await web3.eth.getAccounts();
       await ChaiAdapter.new({ from: accounts[0] })
