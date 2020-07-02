@@ -135,481 +135,479 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
       });
   });
 
-  it('should not DAI -> MKR+WETH Pool with 2 tokens', async () => {
-    let daiAmount;
-    await DAI.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        daiAmount = result;
-      });
-    await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
-      .send({
-        from: accounts[0],
-        gas: 1000000,
-      });
-    await expectRevert(tokenSpender.methods.startExecution(
-      // actions
-      [
-        // exchange DAI to MKR to make swap
+  describe('DAI <-> MKR+WETH Pool', () => {
+    it('should not buy pool with 2 tokens', async () => {
+      let daiAmount;
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+        });
+      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(tokenSpender.methods.startExecution(
+        // actions
         [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('Uniswap V1'),
-          ADAPTER_EXCHANGE,
-          [daiAddress],
-          [convertToShare(1)],
-          [AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter('address', mkrAddress),
+          // exchange DAI to MKR to make swap
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V1'),
+            ADAPTER_EXCHANGE,
+            [daiAddress],
+            [convertToShare(1)],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', mkrAddress),
+          ],
+          // deposit to pool using mkr
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Balancer'),
+            ADAPTER_ASSET,
+            [mkrAddress, wethAddress],
+            [convertToShare(1), convertToShare(1)], // all MKR
+            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter(
+              'address',
+              poolAddress,
+            ),
+          ],
         ],
-        // deposit to pool using mkr
+        // inputs
         [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('Balancer'),
-          ADAPTER_ASSET,
-          [mkrAddress, wethAddress],
-          [convertToShare(1), convertToShare(1)], // all MKR
-          [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter(
-            'address',
-            poolAddress,
-          ),
+          [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
         ],
-      ],
-      // inputs
-      [
-        [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-      ],
-      // outputs
-      [
-        [poolAddress, '1000000000000000000'],
-      ],
-    )
-      .send({
-        from: accounts[0],
-        gas: 10000000,
-      }));
-  });
+        // outputs
+        [
+          [poolAddress, '1000000000000000000'],
+        ],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        }));
+    });
 
-  it('should not DAI -> MKR+WETH Pool with inconsistent arrays', async () => {
-    let daiAmount;
-    await DAI.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        daiAmount = result;
-      });
-    await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
-      .send({
-        from: accounts[0],
-        gas: 1000000,
-      });
-    await web3.eth.getBalance(accounts[0])
-      .then((result) => {
-        console.log(`eth amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await expectRevert(tokenSpender.methods.startExecution(
-      // actions
-      [
-        // exchange DAI to MKR to make swap
+    it('should not buy pool with inconsistent arrays', async () => {
+      let daiAmount;
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+        });
+      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(tokenSpender.methods.startExecution(
+        // actions
         [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('Uniswap V1'),
-          ADAPTER_EXCHANGE,
-          [daiAddress],
-          [convertToShare(1)],
-          [AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter('address', mkrAddress),
+          // exchange DAI to MKR to make swap
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V1'),
+            ADAPTER_EXCHANGE,
+            [daiAddress],
+            [convertToShare(1)],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', mkrAddress),
+          ],
+          // deposit to pool using mkr
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Balancer'),
+            ADAPTER_ASSET,
+            [mkrAddress],
+            [convertToShare(1), convertToShare(1)], // all MKR
+            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter(
+              'address',
+              poolAddress,
+            ),
+          ],
         ],
-        // deposit to pool using mkr
+        // inputs
         [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('Balancer'),
-          ADAPTER_ASSET,
-          [mkrAddress],
-          [convertToShare(1), convertToShare(1)], // all MKR
-          [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter(
-            'address',
-            poolAddress,
-          ),
+          [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
         ],
-      ],
-      // inputs
-      [
-        [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-      ],
-      // outputs
-      [
-        [poolAddress, '1000000000000000000'],
-      ],
-    )
-      .send({
-        from: accounts[0],
-        gas: 10000000,
-      }));
-  });
+        // outputs
+        [
+          [poolAddress, '1000000000000000000'],
+        ],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        }));
+    });
 
-  it('should DAI -> MKR+WETH Pool', async () => {
-    let daiAmount;
-    await tokenSpender.methods.startExecution(
-      // actions
-      [
-        // exchange 1 ETH to DAI like we had dai initially
+    it('should buy pool', async () => {
+      let daiAmount;
+      await tokenSpender.methods.startExecution(
+        // actions
         [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('Uniswap V1'),
-          ADAPTER_EXCHANGE,
-          [ethAddress],
-          ['1000000000000000000'],
-          [AMOUNT_ABSOLUTE],
-          web3.eth.abi.encodeParameter('address', daiAddress),
+          // exchange 1 ETH to DAI like we had dai initially
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V1'),
+            ADAPTER_EXCHANGE,
+            [ethAddress],
+            ['1000000000000000000'],
+            [AMOUNT_ABSOLUTE],
+            web3.eth.abi.encodeParameter('address', daiAddress),
+          ],
         ],
-      ],
-      // inputs
-      [],
-      // outputs
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: 10000000,
-        value: web3.utils.toWei('1', 'ether'),
-      });
-    await DAI.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-        daiAmount = result;
-      });
-    await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
-      .send({
-        from: accounts[0],
-        gas: 1000000,
-      });
-    await MKR.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`mkr amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await pool.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`pool amount before is ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await web3.eth.getBalance(accounts[0])
-      .then((result) => {
-        console.log(`eth amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await tokenSpender.methods.startExecution(
-      // actions
-      [
-        // exchange DAI to MKR to make swap
+        // inputs
+        [],
+        // outputs
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+          value: web3.utils.toWei('1', 'ether'),
+        });
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
+          daiAmount = result;
+        });
+      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await MKR.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`mkr amount before is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await pool.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`pool amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`eth amount before is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await tokenSpender.methods.startExecution(
+        // actions
         [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('Uniswap V1'),
-          ADAPTER_EXCHANGE,
-          [daiAddress],
-          [convertToShare(1)],
-          [AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter('address', mkrAddress),
+          // exchange DAI to MKR to make swap
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V1'),
+            ADAPTER_EXCHANGE,
+            [daiAddress],
+            [convertToShare(1)],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', mkrAddress),
+          ],
+          // deposit to pool using mkr
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Balancer'),
+            ADAPTER_ASSET,
+            [mkrAddress],
+            [convertToShare(1)], // all MKR
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter(
+              'address',
+              poolAddress,
+            ),
+          ],
         ],
-        // deposit to pool using mkr
+        // inputs
         [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('Balancer'),
-          ADAPTER_ASSET,
-          [mkrAddress],
-          [convertToShare(1)], // all MKR
-          [AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter(
-            'address',
-            poolAddress,
-          ),
+          [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
         ],
-      ],
-      // inputs
-      [
-        [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-      ],
-      // outputs
-      [
-        [poolAddress, '1000000000000000000'],
-      ],
-    )
-      .send({
-        from: accounts[0],
-        gas: 10000000,
-      })
-      .then((receipt) => {
-        console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
-      });
-    await DAI.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`dai amount after is  ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await MKR.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`mkr amount after is  ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await pool.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`pool amount after is ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await web3.eth.getBalance(accounts[0])
-      .then((result) => {
-        console.log(`eth amount after is  ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await DAI.methods['balanceOf(address)'](core.options.address)
-      .call()
-      .then((result) => {
-        assert.equal(result, 0);
-      });
-    await MKR.methods['balanceOf(address)'](core.options.address)
-      .call()
-      .then((result) => {
-        assert.equal(result, 0);
-      });
-    await pool.methods['balanceOf(address)'](core.options.address)
-      .call()
-      .then((result) => {
-        assert.equal(result, 0);
-      });
-    await web3.eth.getBalance(core.options.address)
-      .then((result) => {
-        assert.equal(result, 0);
-      });
-  });
+        // outputs
+        [
+          [poolAddress, '1000000000000000000'],
+        ],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        })
+        .then((receipt) => {
+          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`dai amount after is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await MKR.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`mkr amount after is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await pool.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`pool amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`eth amount after is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await DAI.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await MKR.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await pool.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await web3.eth.getBalance(core.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
 
-  it('should not MKR+WETH Pool -> DAI more than exists', async () => {
-    let poolAmount;
-    await pool.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        poolAmount = result;
-      });
-    await pool.methods.approve(tokenSpender.options.address, poolAmount)
-      .send({
-        from: accounts[0],
-        gas: 1000000,
-      });
-    await expectRevert(tokenSpender.methods.startExecution(
-      [
-        // withdraw pool tokens
+    it('should not sell pool more than exists', async () => {
+      let poolAmount;
+      await pool.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          poolAmount = result;
+        });
+      await pool.methods.approve(tokenSpender.options.address, poolAmount)
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(tokenSpender.methods.startExecution(
         [
-          ACTION_WITHDRAW,
-          web3.utils.toHex('Balancer'),
-          ADAPTER_ASSET,
-          [poolAddress],
-          [convertToShare(1)],
-          [AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter('address', mkrAddress),
+          // withdraw pool tokens
+          [
+            ACTION_WITHDRAW,
+            web3.utils.toHex('Balancer'),
+            ADAPTER_ASSET,
+            [poolAddress],
+            [convertToShare(1)],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', mkrAddress),
+          ],
+          // exchange MKR to DAI
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V1'),
+            ADAPTER_EXCHANGE,
+            [mkrAddress],
+            [web3.utils.toWei('100', 'ether')], // all MKR
+            [AMOUNT_ABSOLUTE],
+            web3.eth.abi.encodeParameter('address', daiAddress),
+          ],
         ],
-        // exchange MKR to DAI
         [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('Uniswap V1'),
-          ADAPTER_EXCHANGE,
-          [mkrAddress],
-          [web3.utils.toWei('100', 'ether')], // all MKR
-          [AMOUNT_ABSOLUTE],
-          web3.eth.abi.encodeParameter('address', daiAddress),
+          [poolAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
         ],
-      ],
-      [
-        [poolAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-      ],
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: 10000000,
-      }));
-  });
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        }));
+    });
 
-  it('should not MKR+WETH Pool -> DAI with 2 tokens', async () => {
-    let poolAmount;
-    await pool.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        poolAmount = result;
-      });
-    await pool.methods.approve(tokenSpender.options.address, poolAmount)
-      .send({
-        from: accounts[0],
-        gas: 1000000,
-      });
-    await expectRevert(tokenSpender.methods.startExecution(
-      [
-        // withdraw pool tokens
+    it('should not sell pool with 2 tokens', async () => {
+      let poolAmount;
+      await pool.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          poolAmount = result;
+        });
+      await pool.methods.approve(tokenSpender.options.address, poolAmount)
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(tokenSpender.methods.startExecution(
         [
-          ACTION_WITHDRAW,
-          web3.utils.toHex('Balancer'),
-          ADAPTER_ASSET,
-          [poolAddress, poolAddress],
-          [convertToShare(1), convertToShare(1)],
-          [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter('address', mkrAddress),
+          // withdraw pool tokens
+          [
+            ACTION_WITHDRAW,
+            web3.utils.toHex('Balancer'),
+            ADAPTER_ASSET,
+            [poolAddress, poolAddress],
+            [convertToShare(1), convertToShare(1)],
+            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', mkrAddress),
+          ],
+          // exchange MKR to DAI
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V1'),
+            ADAPTER_EXCHANGE,
+            [mkrAddress],
+            [convertToShare(1)], // all MKR
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', daiAddress),
+          ],
         ],
-        // exchange MKR to DAI
         [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('Uniswap V1'),
-          ADAPTER_EXCHANGE,
-          [mkrAddress],
-          [convertToShare(1)], // all MKR
-          [AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter('address', daiAddress),
+          [poolAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
         ],
-      ],
-      [
-        [poolAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-      ],
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: 10000000,
-      }));
-  });
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        }));
+    });
 
-  it('should not MKR+WETH Pool -> DAI with inconsistent arrays', async () => {
-    let poolAmount;
-    await pool.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        poolAmount = result;
-      });
-    await pool.methods.approve(tokenSpender.options.address, poolAmount)
-      .send({
-        from: accounts[0],
-        gas: 1000000,
-      });
-    await expectRevert(tokenSpender.methods.startExecution(
-      [
-        // withdraw pool tokens
+    it('should not sell pool with inconsistent arrays', async () => {
+      let poolAmount;
+      await pool.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          poolAmount = result;
+        });
+      await pool.methods.approve(tokenSpender.options.address, poolAmount)
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(tokenSpender.methods.startExecution(
         [
-          ACTION_WITHDRAW,
-          web3.utils.toHex('Balancer'),
-          ADAPTER_ASSET,
-          [poolAddress],
-          [convertToShare(1), convertToShare(1)],
-          [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter('address', mkrAddress),
+          // withdraw pool tokens
+          [
+            ACTION_WITHDRAW,
+            web3.utils.toHex('Balancer'),
+            ADAPTER_ASSET,
+            [poolAddress],
+            [convertToShare(1), convertToShare(1)],
+            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', mkrAddress),
+          ],
+          // exchange MKR to DAI
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V1'),
+            ADAPTER_EXCHANGE,
+            [mkrAddress],
+            [convertToShare(1)], // all MKR
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', daiAddress),
+          ],
         ],
-        // exchange MKR to DAI
         [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('Uniswap V1'),
-          ADAPTER_EXCHANGE,
-          [mkrAddress],
-          [convertToShare(1)], // all MKR
-          [AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter('address', daiAddress),
+          [poolAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
         ],
-      ],
-      [
-        [poolAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-      ],
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: 10000000,
-      }));
-  });
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        }));
+    });
 
-  it('should MKR+WETH Pool -> DAI', async () => {
-    let poolAmount;
-    await DAI.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await MKR.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`mkr amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await pool.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`pool amount before is ${web3.utils.fromWei(result, 'ether')}`);
-        poolAmount = result;
-      });
-    await pool.methods.approve(tokenSpender.options.address, poolAmount)
-      .send({
-        from: accounts[0],
-        gas: 1000000,
-      });
-    await tokenSpender.methods.startExecution(
-      [
-        // withdraw pool tokens
+    it('should sell pool', async () => {
+      let poolAmount;
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await MKR.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`mkr amount before is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await pool.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`pool amount before is ${web3.utils.fromWei(result, 'ether')}`);
+          poolAmount = result;
+        });
+      await pool.methods.approve(tokenSpender.options.address, poolAmount)
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await tokenSpender.methods.startExecution(
         [
-          ACTION_WITHDRAW,
-          web3.utils.toHex('Balancer'),
-          ADAPTER_ASSET,
-          [poolAddress],
-          [convertToShare(1)],
-          [AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter('address', mkrAddress),
+          // withdraw pool tokens
+          [
+            ACTION_WITHDRAW,
+            web3.utils.toHex('Balancer'),
+            ADAPTER_ASSET,
+            [poolAddress],
+            [convertToShare(1)],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', mkrAddress),
+          ],
+          // exchange MKR to DAI
+          [
+            ACTION_DEPOSIT,
+            web3.utils.toHex('Uniswap V1'),
+            ADAPTER_EXCHANGE,
+            [mkrAddress],
+            [convertToShare(1)], // all MKR
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter('address', daiAddress),
+          ],
         ],
-        // exchange MKR to DAI
         [
-          ACTION_DEPOSIT,
-          web3.utils.toHex('Uniswap V1'),
-          ADAPTER_EXCHANGE,
-          [mkrAddress],
-          [convertToShare(1)], // all MKR
-          [AMOUNT_RELATIVE],
-          web3.eth.abi.encodeParameter('address', daiAddress),
+          [poolAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
         ],
-      ],
-      [
-        [poolAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-      ],
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: 10000000,
-      })
-      .then((receipt) => {
-        console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
-      });
-    await DAI.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`dai amount after is  ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await MKR.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`mkr amount after is  ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await pool.methods['balanceOf(address)'](accounts[0])
-      .call()
-      .then((result) => {
-        console.log(`pool amount after is ${web3.utils.fromWei(result, 'ether')}`);
-      });
-    await DAI.methods['balanceOf(address)'](core.options.address)
-      .call()
-      .then((result) => {
-        assert.equal(result, 0);
-      });
-    await MKR.methods['balanceOf(address)'](core.options.address)
-      .call()
-      .then((result) => {
-        assert.equal(result, 0);
-      });
-    await pool.methods['balanceOf(address)'](core.options.address)
-      .call()
-      .then((result) => {
-        assert.equal(result, 0);
-      });
-    await web3.eth.getBalance(core.options.address)
-      .then((result) => {
-        assert.equal(result, 0);
-      });
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        })
+        .then((receipt) => {
+          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`dai amount after is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await MKR.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`mkr amount after is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await pool.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`pool amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await DAI.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await MKR.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await pool.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await web3.eth.getBalance(core.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
   });
 });
