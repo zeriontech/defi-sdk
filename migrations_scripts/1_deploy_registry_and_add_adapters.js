@@ -7,6 +7,10 @@ const BancorAdapter = artifacts.require('BancorAdapter');
 const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
 const CompoundDebtAdapter = artifacts.require('CompoundDebtAdapter');
 const CurveAdapter = artifacts.require('CurveAdapter');
+const DdexLendingAssetAdapter = artifacts.require('DdexLendingAssetAdapter');
+const DdexMarginAssetAdapter = artifacts.require('DdexMarginAssetAdapter');
+const DdexMarginDebtAdapter = artifacts.require('DdexMarginDebtAdapter');
+const DdexSpotAssetAdapter = artifacts.require('DdexSpotAssetAdapter');
 const DmmAssetAdapter = artifacts.require('DmmAssetAdapter');
 const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
@@ -245,6 +249,14 @@ const curveAdapterTokens = [
   tbtcCrvAddress,
   renCrvAddress,
 ];
+const ddexAdapterTokens = [
+  busdAddress,
+  daiAddress,
+  ethAddress,
+  usdcAddress,
+  usdtAddress,
+  wbtcAddress,
+];
 const dmmAssetAdapterTokens = [
   mDAIAddress,
   mETHAddress,
@@ -407,9 +419,46 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(DdexLendingAssetAdapter, { from: accounts[0] });
+  adapters.push([DdexLendingAssetAdapter.address]);
+  tokens.push([ddexAdapterTokens]);
+  protocolNames.push('DDEX • Lending');
+  metadata.push([
+    'DDEX • Lending',
+    'Decentralized margin trading',
+    'ddex.io',
+    'protocol-icons.s3.amazonaws.com/ddex.png',
+    '0',
+  ]);
+
+  await deployer.deploy(DdexMarginAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(DdexMarginDebtAdapter, { from: accounts[0] });
+  adapters.push([DdexMarginAssetAdapter.address, DdexMarginDebtAdapter.address]);
+  tokens.push([ddexAdapterTokens, ddexAdapterTokens]);
+  protocolNames.push('DDEX • Margin');
+  metadata.push([
+    'DDEX • Margin',
+    'Decentralized margin trading',
+    'ddex.io',
+    'protocol-icons.s3.amazonaws.com/ddex.png',
+    '0',
+  ]);
+
+  await deployer.deploy(DdexSpotAssetAdapter, { from: accounts[0] });
+  adapters.push([DdexSpotAssetAdapter.address]);
+  tokens.push([ddexAdapterTokens]);
+  protocolNames.push('DDEX • Spot');
+  metadata.push([
+    'DDEX • Spot',
+    'Decentralized margin trading',
+    'ddex.io',
+    'protocol-icons.s3.amazonaws.com/ddex.png',
+    '0',
+  ]);
+
   await deployer.deploy(DmmAssetAdapter, { from: accounts[0] });
-  adapters.push(DmmAssetAdapter.address);
-  tokens.push(dmmAssetAdapterTokens);
+  adapters.push([DmmAssetAdapter.address]);
+  tokens.push([dmmAssetAdapterTokens]);
   protocolNames.push('DeFi Money Market');
   metadata.push([
     'DeFi Money Market',
@@ -433,7 +482,7 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(GnosisProtocolAdapter, { from: accounts[0] });
-  adapters.push(GnosisProtocolAdapter.address);
+  adapters.push([GnosisProtocolAdapter.address]);
   tokens.push([gnosisProtocolAdapterTokens]);
   protocolNames.push('Gnosis Protocol');
   metadata.push([
