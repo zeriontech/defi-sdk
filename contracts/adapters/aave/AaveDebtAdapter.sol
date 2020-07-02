@@ -28,7 +28,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * github.com/aave/aave-protocol/blob/master/contracts/configuration/LendingPoolAddressesProvider.sol.
  */
 interface LendingPoolAddressesProvider {
-    function getLendingPool() external view returns (LendingPool);
+    function getLendingPool() external view returns (address);
 }
 
 
@@ -65,9 +65,9 @@ contract AaveDebtAdapter is ProtocolAdapter("Debt") {
         override
         returns (uint256, bytes32)
     {
-        LendingPool pool = LendingPoolAddressesProvider(PROVIDER).getLendingPool();
+        address pool = LendingPoolAddressesProvider(PROVIDER).getLendingPool();
 
-        (, uint256 debtAmount) = pool.getUserReserveData(token, account);
+        (, uint256 debtAmount) = LendingPool(pool).getUserReserveData(token, account);
 
         return (debtAmount, "ERC20");
     }
