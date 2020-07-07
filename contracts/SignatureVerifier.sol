@@ -22,9 +22,10 @@ import { TransactionData, Action, Input, Output } from "./Structs.sol";
 
 
 contract SignatureVerifier {
-    mapping (address => uint256) public nonces;
 
-    bytes32 internal immutable domainSeparator;
+    mapping (address => uint256) internal _nonce;
+
+    bytes32 internal immutable _domainSeparator;
 
     bytes32 internal constant DOMAIN_SEPARATOR_TYPEHASH = keccak256(
         abi.encodePacked(
@@ -48,47 +49,58 @@ contract SignatureVerifier {
 
     bytes internal constant TX_DATA_ENCODED_TYPE = abi.encodePacked(
         "TransactionData(",
-        "Action[] actions,",
-        "Input[] inputs,",
-        "Output[] outputs,",
-        "uint256 nonce",
+            "Action[] actions,",
+            "Input[] inputs,",
+            "Output[] requiredOutputs,",
+            "uint256 nonce",
         ")"
     );
     bytes internal constant ACTION_ENCODED_TYPE = abi.encodePacked(
         "Action(",
-        "uint8 actionType,",
-        "bytes32 protocolName,",
-        "uint256 adapterIndex,",
-        "address[] tokens,",
-        "uint256[] amounts,",
-        "uint8[] amountTypes,",
-        "bytes data",
+            "bytes32 adapterName,",
+            "uint8 actionType,",
+            "address[] tokens,",
+            "uint256[] amounts,",
+            "uint8[] amountTypes,",
+            "bytes data",
         ")"
     );
     bytes internal constant INPUT_ENCODED_TYPE = abi.encodePacked(
         "Input(",
-        "address token,",
-        "uint256 amount,",
-        "uint8 amountType,",
-        "uint256 fee,",
-        "address beneficiary",
+            "address token,",
+            "uint256 amount,",
+            "uint8 amountType,",
+            "uint256 fee,",
+            "address beneficiary",
         ")"
     );
     bytes internal constant OUTPUT_ENCODED_TYPE = abi.encodePacked(
         "Output(",
-        "address token,",
-        "uint256 amount",
+            "address token,",
+            "uint256 amount",
         ")"
     );
 
     constructor(string memory name) public {
-        domainSeparator = keccak256(
+        _domainSeparator = keccak256(
             abi.encode(
                 DOMAIN_SEPARATOR_TYPEHASH,
                 keccak256(abi.encodePacked(name)),
                 address(this)
             )
         );
+    }
+
+    /**
+     * @return Address of the Core contract used.
+     */
+    function getNonce(
+        address account
+    )
+        external
+        returns (uint256)
+    {
+        return _nonce[account];
     }
 
     function getAccountFromSignature(
@@ -98,7 +110,7 @@ contract SignatureVerifier {
         public
         returns (address payable)
     {
-        require(signature.length == 65, "SV: wrong sig length!");
+        require(signature.length == 65, "SV: bad sig length!");
         bytes32 r;
         bytes32 s;
         uint8 v;
@@ -116,7 +128,7 @@ contract SignatureVerifier {
                 abi.encodePacked(
                     bytes1(0x19),
                     bytes1(0x01),
-                    domainSeparator,
+                    _domainSeparator,
                     hash(data)
                 )
             ),
@@ -125,9 +137,9 @@ contract SignatureVerifier {
             s
         );
 
-        require(nonces[signer] == data.nonce, "SV: wrong nonce!");
+        require(_nonce[signer] == data.nonce, "SV: bad nonce!");
 
-        nonces[signer]++;
+        _nonce[signer]++;
 
         return payable(signer);
     }
@@ -145,7 +157,7 @@ contract SignatureVerifier {
                 TX_DATA_TYPEHASH,
                 hash(data.actions),
                 hash(data.inputs),
-                hash(data.outputs),
+                hash(data.requiredOutputs),
                 data.nonce
             )
         );
@@ -165,9 +177,8 @@ contract SignatureVerifier {
                 keccak256(
                     abi.encode(
                         ACTION_TYPEHASH,
+                        actions[i].adapterName,
                         actions[i].actionType,
-                        actions[i].protocolName,
-                        actions[i].adapterIndex,
                         keccak256(abi.encodePacked(actions[i].tokens)),
                         keccak256(abi.encodePacked(actions[i].amounts)),
                         keccak256(abi.encodePacked(actions[i].amountTypes)),

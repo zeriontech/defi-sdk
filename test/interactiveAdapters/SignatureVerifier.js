@@ -43,13 +43,12 @@ contract('SignatureVerifier', () => {
           TransactionData: [
             { name: 'actions', type: 'Action[]' },
             { name: 'inputs', type: 'Input[]' },
-            { name: 'outputs', type: 'Output[]' },
+            { name: 'requiredOutputs', type: 'Output[]' },
             { name: 'nonce', type: 'uint256' },
           ],
           Action: [
+            { name: 'adapterName', type: 'bytes32' },
             { name: 'actionType', type: 'uint8' },
-            { name: 'protocolName', type: 'bytes32' },
-            { name: 'adapterIndex', type: 'uint256' },
             { name: 'tokens', type: 'address[]' },
             { name: 'amounts', type: 'uint256[]' },
             { name: 'amountTypes', type: 'uint8[]' },

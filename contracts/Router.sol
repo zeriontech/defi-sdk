@@ -34,16 +34,17 @@ interface GST2 {
 contract Router is SignatureVerifier("Zerion Router"), Ownable {
     using SafeERC20 for ERC20;
 
-    Core public immutable core;
+    Core internal immutable _core;
+
     address internal constant GAS_TOKEN = 0x0000000000b3F879cb30FE243b4Dfee438691c04;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     uint256 internal constant DELIMITER = 1e18; // 100%
     uint256 internal constant BENEFICIARY_FEE_LIMIT = 1e16; // 1%
     uint256 internal constant BENEFICIARY_SHARE = 8e17; // 80%
 
-    constructor(address payable _core) public {
-        require(_core != address(0), "R: empty core!");
-        core = Core(_core);
+    constructor(address payable core) public {
+        require(core != address(0), "R: empty core!");
+        _core = Core(core);
     }
 
     function returnLostTokens(
@@ -109,6 +110,16 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         }
     }
 
+    /**
+     * @return Address of the Core contract used.
+     */
+    function getCore()
+        external
+        returns (address)
+    {
+        return address(_core);
+    }
+
     function startExecution(
         TransactionData memory data,
         bytes memory signature
@@ -120,7 +131,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         return startExecution(
             data.actions,
             data.inputs,
-            data.outputs,
+            data.requiredOutputs,
             getAccountFromSignature(data, signature)
         );
     }
@@ -128,7 +139,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     function startExecution(
         Action[] memory actions,
         Input[] memory inputs,
-        Output[] memory outputs
+        Output[] memory requiredOutputs
     )
         public
         payable
@@ -137,7 +148,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         return startExecution(
             actions,
             inputs,
-            outputs,
+            requiredOutputs,
             msg.sender
         );
     }
@@ -145,7 +156,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     function startExecution(
         Action[] memory actions,
         Input[] memory inputs,
-        Output[] memory outputs,
+        Output[] memory requiredOutputs,
         address payable account
     )
         internal
@@ -153,11 +164,11 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     {
         // save initial gas to burn gas token later
         uint256 gas = gasleft();
-        // transfer tokens to core, handle fees (if any), and add these tokens to outputs
-        address[] memory inputTokens = transferTokens(inputs, account);
-        Output[] memory modifiedOutputs = modifyOutputs(outputs, inputTokens);
+        // transfer tokens to _core, handle fees (if any), and add these tokens to outputs
+        transferTokens(inputs, account);
+        Output[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
         // call Core contract with all provided ETH, actions, expected outputs and account address
-        actualOutputs = core.executeActions{value: msg.value}(actions, modifiedOutputs, account);
+        actualOutputs = _core.executeActions{value: msg.value}(actions, modifiedOutputs, account);
         // burn gas token to save some gas
         freeGasToken(gas - gasleft());
     }
@@ -167,20 +178,17 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         address account
     )
         internal
-        returns (address[] memory tokensToBeWithdrawn)
     {
-        tokensToBeWithdrawn = new address[](inputs.length);
         uint256 absoluteAmount;
 
         for (uint256 i = 0; i < inputs.length; i++) {
             absoluteAmount = getAbsoluteAmount(inputs[i], account);
             require(absoluteAmount > 0, "R: zero amount!");
-            tokensToBeWithdrawn[i] = inputs[i].token;
 
             // in case inputs includes fees:
             //     - absolute amount is amount calculated based on inputs
-            //     - core amount is absolute amount excluding fee set in inputs
-            //     - beneficiary amount is beneficiary share (80%) of non-core amount
+            //     - _core amount is absolute amount excluding fee set in inputs
+            //     - beneficiary amount is beneficiary share (80%) of non-_core amount
             //     - this contract fee is the rest of beneficiary fee (~20%)
             // otherwise no fees are charged!
             if (inputs[i].fee > 0) {
@@ -191,10 +199,10 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
                 uint256 beneficiaryAmount = mul(feeAmount, BENEFICIARY_SHARE) / DELIMITER;
                 uint256 thisAmount = feeAmount - beneficiaryAmount;
                 uint256 coreAmount = absoluteAmount - feeAmount;
-    
+
                 ERC20(inputs[i].token).safeTransferFrom(
                     account,
-                    address(core),
+                    address(_core),
                     coreAmount,
                     "R![1]"
                 );
@@ -212,14 +220,14 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
                     ERC20(inputs[i].token).safeTransferFrom(
                         account,
                         address(this),
-                        absoluteAmount - coreAmount - beneficiaryAmount,
+                        thisAmount,
                         "R![3]"
                     );
                 }
             } else {
                 ERC20(inputs[i].token).safeTransferFrom(
                     account,
-                    address(core),
+                    address(_core),
                     absoluteAmount,
                     "R!"
                 );
@@ -275,29 +283,29 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function modifyOutputs(
-        Output[] memory outputs,
-        address[] memory additionalTokens
+        Output[] memory requiredOutputs,
+        Input[] memory inputs
     )
         internal
         view
         returns (Output[] memory modifiedOutputs)
     {
         uint256 ethInput = msg.value > 0 ? 1 : 0;
-        modifiedOutputs = new Output[](outputs.length + additionalTokens.length + ethInput);
+        modifiedOutputs = new Output[](requiredOutputs.length + inputs.length + ethInput);
 
-        for (uint256 i = 0; i < outputs.length; i++) {
-            modifiedOutputs[i] = outputs[i];
+        for (uint256 i = 0; i < requiredOutputs.length; i++) {
+            modifiedOutputs[i] = requiredOutputs[i];
         }
 
-        for (uint256 i = 0; i < additionalTokens.length; i++) {
-            modifiedOutputs[outputs.length + i] = Output({
-                token: additionalTokens[i],
+        for (uint256 i = 0; i < inputs.length; i++) {
+            modifiedOutputs[requiredOutputs.length + i] = Output({
+                token: inputs[i].token,
                 amount: 0
             });
         }
 
         if (ethInput > 0) {
-            modifiedOutputs[outputs.length + additionalTokens.length] = Output({
+            modifiedOutputs[requiredOutputs.length + inputs.length] = Output({
                 token: ETH,
                 amount: 0
             });

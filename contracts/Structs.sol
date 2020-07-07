@@ -19,18 +19,11 @@ pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
 
-struct ProtocolBalance {
-    bytes32 protocolName;
-    AdapterBalance[] adapterBalances;
-}
-
-
-struct ProtocolMetadata {
-    string name;
-    string description;
-    string websiteURL;
-    string iconURL;
-    uint256 version;
+// The struct consists of (base) token and
+// its underlying tokens (if exist) balances.
+struct FullTokenBalance {
+    TokenBalance base;
+    TokenBalance[] underlying;
 }
 
 
@@ -40,19 +33,11 @@ struct AdapterBalance {
 }
 
 
-// The struct consists of adapter address and
+// The struct consists of adapter name and
 // adapter type, which may be "Asset", "Debt", or "Exchange".
 struct AdapterMetadata {
-    address adapterAddress;
+    bytes32 adapterName;
     bytes32 adapterType;
-}
-
-
-// The struct consists of (base) token and
-// its underlying tokens (if exist) balances.
-struct FullTokenBalance {
-    TokenBalance base;
-    TokenBalance[] underlying;
 }
 
 
@@ -94,15 +79,14 @@ struct Component {
 struct TransactionData {
     Action[] actions;
     Input[] inputs;
-    Output[] outputs;
+    Output[] requiredOutputs;
     uint256 nonce;
 }
 
 
 struct Action {
+    bytes32 adapterName;
     ActionType actionType;
-    bytes32 protocolName;
-    uint256 adapterIndex;
     address[] tokens;
     uint256[] amounts;
     AmountType[] amountTypes;

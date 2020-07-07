@@ -31,23 +31,23 @@ import { SafeERC20 } from "./SafeERC20.sol";
 
 /**
  * @title Main contract executing actions.
- * TODO: safe math
  */
 contract Core {
     using SafeERC20 for ERC20;
 
-    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-    AdapterRegistry public adapterRegistry;
+    AdapterRegistry internal immutable _adapterRegistry;
 
-    event ExecutedAction(uint256 index);
+    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+
+    event ExecutedAction(Action action);
 
     constructor(
-        address _adapterRegistry
+        address adapterRegistry
     )
         public
     {
-        require(_adapterRegistry != address(0), "C: empty registry!");
-        adapterRegistry = AdapterRegistry(_adapterRegistry);
+        require(adapterRegistry != address(0), "C: empty adapterRegistry!");
+        _adapterRegistry = AdapterRegistry(adapterRegistry);
     }
 
     // solhint-disable-next-line no-empty-blocks
@@ -69,12 +69,12 @@ contract Core {
         payable
         returns (Output[] memory actualOutputs)
     {
-        require(account != address(0), "L: empty account!");
+        require(account != address(0), "C: empty account!");
         address[][] memory tokensToBeWithdrawn = new address[][](actions.length);
 
         for (uint256 i = 0; i < actions.length; i++) {
             tokensToBeWithdrawn[i] = executeAction(actions[i]);
-            emit ExecutedAction(i);
+            emit ExecutedAction(actions[i]);
         }
 
         actualOutputs = returnTokens(requiredOutputs, tokensToBeWithdrawn, account);
@@ -92,8 +92,18 @@ contract Core {
         external
         returns (address[] memory)
     {
-        require(msg.sender == address(this), "L: only address(this)!");
+        require(msg.sender == address(this), "C: only address(this)!");
         return executeAction(action);
+    }
+
+    /**
+     * @return Address of the AdapterRegistry contract used.
+     */
+    function getAdapterRegistry()
+        external
+        returns (address)
+    {
+        return address(_adapterRegistry);
     }
 
     function executeAction(
@@ -102,14 +112,10 @@ contract Core {
         internal
         returns (address[] memory)
     {
-        require(action.actionType != ActionType.None, "L: wrong action type!");
-        require(action.amounts.length == action.amountTypes.length, "L: inconsistent arrays!");
-        require(adapterRegistry.isValidProtocol(action.protocolName), "L: wrong name!");
-        address[] memory adapters = adapterRegistry.getProtocolAdapters(action.protocolName);
-        require(action.adapterIndex <= adapters.length, "L: wrong index!");
-        address adapter = adapters[action.adapterIndex];
-        require(adapter != address(0), "L: zero adapter!");
-
+        address adapter = _adapterRegistry.getProtocolAdapterAddress(action.adapterName);
+        require(adapter != address(0), "C: bad name!");
+        require(action.actionType != ActionType.None, "C: bad action type!");
+        require(action.amounts.length == action.amountTypes.length, "C: inconsistent arrays!");
         bytes4 selector;
         if (action.actionType == ActionType.Deposit) {
             selector = InteractiveAdapter(adapter).deposit.selector;
@@ -135,9 +141,7 @@ contract Core {
             if eq(success, 0) { revert(add(returnData, 32), returndatasize()) }
         }
 
-        address[] memory tokensToBeWithdrawn = abi.decode(returnData, (address[]));
-
-        return tokensToBeWithdrawn;
+        return abi.decode(returnData, (address[]));
     }
 
     function returnTokens(
@@ -157,24 +161,24 @@ contract Core {
             actualOutputs[i] = Output({
                 token: token,
                 amount: checkRequirementAndTransfer(
-                    account,
                     token,
-                    requiredOutputs[i].amount
+                    requiredOutputs[i].amount,
+                    account
                 )
             });
         }
 
         for (uint256 i = 0; i < tokensToBeWithdrawn.length; i++) {
             for (uint256 j = 0; j < tokensToBeWithdrawn[i].length; j++) {
-                checkRequirementAndTransfer(account, tokensToBeWithdrawn[i][j], 0);
+                checkRequirementAndTransfer(tokensToBeWithdrawn[i][j], 0, account);
             }
         }
     }
 
     function checkRequirementAndTransfer(
-        address account,
         address token,
-        uint256 requiredAmount
+        uint256 requiredAmount,
+        address account
     )
         internal
         returns (uint256 actualAmount)
@@ -189,7 +193,7 @@ contract Core {
             actualAmount >= requiredAmount,
             string(
                 abi.encodePacked(
-                    "L: ",
+                    "C: ",
                     actualAmount,
                     " is less then ",
                     requiredAmount,
@@ -202,10 +206,10 @@ contract Core {
         if (actualAmount > 0) {
             if (token == ETH) {
                 // solhint-disable-next-line avoid-low-level-calls
-                (bool success, ) = account.call{gas: 4999, value: actualAmount}(new bytes(0));
-                require(success, "L: ETH transfer to account failed!");
+                (bool success, ) = account.call{value: actualAmount}(new bytes(0));
+                require(success, "ETH transfer to account failed!");
             } else {
-                ERC20(token).safeTransfer(account, actualAmount, "L!");
+                ERC20(token).safeTransfer(account, actualAmount, "C!");
             }
         }
     }
