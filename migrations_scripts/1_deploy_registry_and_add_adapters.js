@@ -17,11 +17,13 @@ const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
 const GnosisProtocolAdapter = artifacts.require('GnosisProtocolAdapter');
 const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
+const KyberAdapter = artifacts.require('KyberAdapter');
 const ChaiAdapter = artifacts.require('ChaiAdapter');
 const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
+const MstableAssetAdapter = artifacts.require('MstableAssetAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
@@ -42,6 +44,7 @@ const DmmTokenAdapter = artifacts.require('DmmTokenAdapter');
 const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
+const MstableTokenAdapter = artifacts.require('MstableTokenAdapter');
 const ChiTokenAdapter = artifacts.require('ChiTokenAdapter');
 const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
@@ -156,6 +159,8 @@ const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
 const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
 
 const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
+
+const mUsdAddress = '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5';
 
 const chiAddress = '0x0000000000004946c0e9F43F4Dee607b0eF1fA1c';
 
@@ -297,6 +302,10 @@ const iearn3AdapterTokens = [
   yUSDTv3,
   yBUSDv3,
 ];
+const kyberAdapterTokens = [
+  kncAddress,
+  ethAddress,
+];
 const dsrAdapterTokens = [
   daiAddress,
 ];
@@ -312,6 +321,9 @@ const mcdAssetAdapterTokens = [
 ];
 const mcdDebtAdapterTokens = [
   daiAddress,
+];
+const mstableAssetAdapterTokens = [
+  mUsdAddress,
 ];
 const chiAdapterTokens = [
   chiAddress,
@@ -541,6 +553,18 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(KyberAdapter, { from: accounts[0] });
+  adapters.push([KyberAdapter.address]);
+  tokens.push([kyberAdapterTokens]);
+  protocolNames.push('KyberDAO');
+  metadata.push([
+    'KyberDAO',
+    'Platform that allows KNC token holders to participate in governance',
+    'kyber.network',
+    'protocol-icons.s3.amazonaws.com/kyber.png',
+    '0',
+  ]);
+
   await deployer.deploy(ChaiAdapter, { from: accounts[0] });
   adapters.push([ChaiAdapter.address]);
   tokens.push([chaiAdapterTokens]);
@@ -587,6 +611,18 @@ module.exports = async (deployer, network, accounts) => {
     'Collateralized loans on Maker',
     'makerdao.com',
     'protocol-icons.s3.amazonaws.com/maker.png',
+    '0',
+  ]);
+
+  await deployer.deploy(MstableAssetAdapter, { from: accounts[0] });
+  adapters.push([MstableAssetAdapter.address]);
+  tokens.push([mstableAssetAdapterTokens]);
+  protocolNames.push('mStable');
+  metadata.push([
+    'mStable',
+    'mStable unifies stablecoins, lending and swapping into one standard',
+    'mstable.org',
+    'protocol-icons.s3.amazonaws.com/mstable.png',
     '0',
   ]);
 
@@ -753,6 +789,12 @@ module.exports = async (deployer, network, accounts) => {
         ChaiTokenAdapter.address,
       );
     });
+  await deployer.deploy(MstableTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        MstableTokenAdapter.address,
+      );
+    });
   await deployer.deploy(ChiTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -813,6 +855,7 @@ module.exports = async (deployer, network, accounts) => {
           'IdleToken',
           'YToken',
           'Chai token',
+          'Masset',
           'Chi token',
           'PoolTogether pool',
           'SetToken',

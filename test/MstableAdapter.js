@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('MstableAssetAdapter');
 const TokenAdapter = artifacts.require('MstableTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('MstableAssetAdapter', () => {
+contract('MstableAssetAdapter', () => {
   const mUsdAddress = '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
