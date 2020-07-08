@@ -45,7 +45,6 @@ interface Stableswap {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchangeAdapter {
-
     using SafeERC20 for ERC20;
 
     uint256 internal constant POOLS_NUMBER = 7;

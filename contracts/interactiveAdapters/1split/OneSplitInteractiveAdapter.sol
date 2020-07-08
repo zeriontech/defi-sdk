@@ -61,7 +61,6 @@ interface OneSplit {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
-
     using SafeERC20 for ERC20;
 
     address internal constant ONE_SPLIT = 0xC586BeF4a0992C495Cf22e1aeEE4E446CECDee0E;

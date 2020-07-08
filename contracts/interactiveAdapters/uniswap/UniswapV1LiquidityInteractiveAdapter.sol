@@ -69,7 +69,6 @@ interface Factory {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1LiquidityAdapter {
-
     using SafeERC20 for ERC20;
 
     address internal constant FACTORY = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;

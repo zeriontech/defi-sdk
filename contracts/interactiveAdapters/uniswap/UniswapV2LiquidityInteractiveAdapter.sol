@@ -47,7 +47,6 @@ interface UniswapV2Pair {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract UniswapV2LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV2LiquidityAdapter {
-
     using SafeERC20 for ERC20;
 
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;

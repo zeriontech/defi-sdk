@@ -54,7 +54,6 @@ interface UniswapV2Router01 {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExchangeAdapter {
-
     using SafeERC20 for ERC20;
 
     address internal constant ROUTER = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
@@ -124,7 +123,7 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         returns (address[] memory tokensToBeWithdrawn)
     {
         require(amounts.length == 1, "UEIA: should be 1 amount/amountType!");
-        require(amountTypes[0] == AmountType.Absolute, "UEIA: wrong type!");
+        require(amountTypes[0] == AmountType.Absolute, "UEIA: bad type!");
 
         address[] memory path = abi.decode(data, (address[]));
         uint256 amount = getAbsoluteAmountDeposit(path[path.length - 1], amounts[0], amountTypes[0]);

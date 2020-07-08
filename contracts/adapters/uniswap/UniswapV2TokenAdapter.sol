@@ -53,7 +53,6 @@ interface UniswapV2Pair {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract UniswapV2TokenAdapter is TokenAdapter("Uniswap V2 Pool Token") {
-
     using StringHelpers for bytes32;
 
     /**

@@ -54,7 +54,6 @@ interface BPool {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract BalancerTokenAdapter is TokenAdapter("Balancer Pool Token") {
-
     using StringHelpers for bytes32;
     using StringHelpers for uint256;
 

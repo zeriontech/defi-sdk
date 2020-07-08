@@ -30,7 +30,6 @@ import { StringHelpers } from "../StringHelpers.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ERC20TokenAdapter is TokenAdapter("ERC20") {
-
     using StringHelpers for bytes32;
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;

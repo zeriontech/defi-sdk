@@ -82,7 +82,7 @@ library SafeERC20 {
     {
         require(
             (value == 0) || (token.allowance(address(this), spender) == 0),
-            "SafeERC20: wrong approve call"
+            "SafeERC20: bad approve call"
         );
         callOptionalReturn(
             token,

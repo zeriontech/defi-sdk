@@ -42,7 +42,6 @@ interface Chai {
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
 contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
-
     using SafeERC20 for ERC20;
 
     address internal constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;

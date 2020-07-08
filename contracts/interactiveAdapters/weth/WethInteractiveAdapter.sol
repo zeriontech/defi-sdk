@@ -42,7 +42,6 @@ interface WETH9 {
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
 contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
-
     using SafeERC20 for ERC20;
 
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;

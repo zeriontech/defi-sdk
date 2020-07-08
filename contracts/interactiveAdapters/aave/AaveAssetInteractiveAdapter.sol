@@ -76,7 +76,6 @@ interface AToken {
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
 contract AaveAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAdapter {
-
     using SafeERC20 for ERC20;
 
     address internal constant AETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;

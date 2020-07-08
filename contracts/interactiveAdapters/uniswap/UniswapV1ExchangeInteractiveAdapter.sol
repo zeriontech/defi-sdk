@@ -98,7 +98,6 @@ interface Factory {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExchangeAdapter {
-
     using SafeERC20 for ERC20;
 
     address internal constant FACTORY = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
@@ -207,7 +206,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
     {
         require(tokens.length == 1, "UEIA: should be 1 token!");
         require(tokens.length == amounts.length, "UEIA: inconsistent arrays![2]");
-        require(amountTypes[0] == AmountType.Absolute, "UEIA: wrong type!");
+        require(amountTypes[0] == AmountType.Absolute, "UEIA: bad type!");
         address fromToken = abi.decode(data, (address));
 
         tokensToBeWithdrawn = new address[](1);

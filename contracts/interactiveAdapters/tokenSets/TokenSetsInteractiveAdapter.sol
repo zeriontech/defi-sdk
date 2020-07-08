@@ -69,7 +69,6 @@ interface SetToken {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
-
     using SafeERC20 for ERC20;
 
     address internal constant TRANSFER_PROXY = 0x882d80D3a191859d64477eb78Cca46599307ec1C;

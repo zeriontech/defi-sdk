@@ -44,7 +44,6 @@ interface BPool {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract BalancerInteractiveAdapter is InteractiveAdapter, BalancerAdapter {
-
     using SafeERC20 for ERC20;
 
     /**

@@ -60,7 +60,6 @@ interface Deposit {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CurveLiquidityInteractiveAdapter is CurveInteractiveAdapter, CurveLiquidityAdapter {
-
     using SafeERC20 for ERC20;
 
     /**
