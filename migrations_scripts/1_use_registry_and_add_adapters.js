@@ -22,6 +22,7 @@ const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
+const MelonTokenAdapter = artifacts.require('MelonTokenAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
@@ -82,6 +83,8 @@ const kncAddress = '0xdd974D5C2e2928deA5F71b9825b8b646686BD200';
 const repAddress = '0x1985365e9f78359a9B6AD760e32412f4a445E862';
 const mkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2';
 const manaAddress = '0x0F5D2fB29fb7d3CFeE444a200298f468908cC942';
+const melonAddress = '0xec67005c4e498ec7f55e092bd1d35cbc47c91892';
+const mlnfAddress = '0xd485c308df50f13cb1ec06d5fd3a44a0ae49c7fc';
 const zrxAddress = '0xE41d2489571d322189246DaFA5ebDe1F4699F498';
 const snxAddress = '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F';
 const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
@@ -312,6 +315,10 @@ const mcdAssetAdapterTokens = [
 ];
 const mcdDebtAdapterTokens = [
   daiAddress,
+];
+const melonAdapterTokens = [
+  melonAddress,
+  mlnfAddress,
 ];
 const chiAdapterTokens = [
   chiAddress,
@@ -745,6 +752,12 @@ module.exports = async (deployer, network, accounts) => {
     .then(() => {
       tokenAdapters.push(
         IearnTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(MelonTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        MelonTokenAdapter.address,
       );
     });
   await deployer.deploy(ChaiTokenAdapter, { from: accounts[0] })

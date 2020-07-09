@@ -22,6 +22,8 @@ const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
+const MelonAdapter = artifacs.require('MelonAdapter');
+
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
@@ -150,6 +152,9 @@ const curveSnxAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
 const iETHAddress = '0xA9859874e1743A32409f75bB11549892138BBA1E';
 
 const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+
+const melonAddress = '0xec67005c4e498ec7f55e092bd1d35cbc47c91892';
+const mlnfAddress = '0xd485c308df50f13cb1ec06d5fd3a44a0ae49c7fc';
 
 const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
 const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
@@ -312,6 +317,10 @@ const mcdAssetAdapterTokens = [
 ];
 const mcdDebtAdapterTokens = [
   daiAddress,
+];
+const melonAdapterTokens = [
+  melonAddress,
+  mlnfAddress,
 ];
 const chiAdapterTokens = [
   chiAddress,
@@ -590,6 +599,18 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(MelonAdapter { from: accounts[0] });
+  adapters.push([MelonAdapter.address]);
+  tokens.push([melonAdapterTokens]);
+  protocolNames.push('Melon Token Fund');
+  metadata.push([
+    'Melon Fund Token',
+    'Melon Protocol: A Blockchain protocol for digital asset management drafts',
+    'melonport.com/',
+    'etherscan.io/token/images/melon_28_2.png',
+    '0',
+  ]);
+
   await deployer.deploy(ChiAdapter, { from: accounts[0] });
   adapters.push([ChiAdapter.address]);
   tokens.push([chiAdapterTokens]);
@@ -686,6 +707,8 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/0x-staking.png',
     '0',
   ]);
+
+  
 
   await deployer.deploy(ERC20TokenAdapter, { from: accounts[0] })
     .then(() => {
