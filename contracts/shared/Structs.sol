@@ -19,44 +19,25 @@ pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
 
-// The struct consists of (base) token and
-// its underlying tokens (if exist) balances.
+// The struct consists of TokenBalance structs for
+// (base) token and its underlying tokens (if exist).
 struct FullTokenBalance {
     TokenBalance base;
     TokenBalance[] underlying;
 }
 
 
-struct AdapterBalance {
-    AdapterMetadata metadata;
-    TokenBalance[] balances;
-}
-
-
-// The struct consists of adapter name and
-// adapter type, which may be "Asset", "Debt", or "Exchange".
-struct AdapterMetadata {
-    bytes32 adapterName;
-    bytes32 adapterType;
-}
-
-
-struct TokenBalance {
-    TokenMetadata metadata;
-    uint256 amount;
-}
-
-
 // The struct consists of token address,
-// token type, and ERC20-style token metadata.
+// amount, and ERC20-style token metadata.
 // NOTE: 0xEeee...EEeE address is used for ETH.
-struct TokenMetadata {
-    address tokenAddress;
-    bytes32 tokenType;
-    ERC20Metadata erc20;
+struct TokenBalance {
+    address token;
+    uint256 amount;
+    ERC20Metadata erc20metadata;
 }
 
 
+// The struct consists of ERC20-style token metadata.
 struct ERC20Metadata {
     string name;
     string symbol;
@@ -64,16 +45,32 @@ struct ERC20Metadata {
 }
 
 
+// The struct consists of protocol adapter's name
+// and array of TokenBalanceWithAdapter structs.
+struct AdapterBalance {
+    bytes32 protocolAdapterName;
+    TokenBalanceWithAdapter[] balances;
+}
+
+
+// The struct consists of TokenBalance struct
+// and token adapter's name, which should be used
+// to retrieve underlying tokens and rates.
+struct TokenBalanceWithAdapter {
+    bytes32 tokenAdapterName;
+    TokenBalance tokenBalance;
+}
+
+
 // The struct consists of token address,
-// token type, and price per full share (1e18).
+// and price per full share (1e18).
 struct Component {
-    address tokenAddress;
-    bytes32 tokenType;
+    address token;
     uint256 rate;
 }
 
 
-//================================InteractiveAdapters structs=====================================
+//=============================== Interactive Adapters Structs ====================================
 
 
 struct TransactionData {
@@ -85,7 +82,7 @@ struct TransactionData {
 
 
 struct Action {
-    bytes32 adapterName;
+    bytes32 protocolAdapterName;
     ActionType actionType;
     address[] tokens;
     uint256[] amounts;

@@ -167,7 +167,6 @@ abstract contract ProtocolAdapterManager is Ownable {
     {
         require(newProtocolAdapterName != bytes32(0), "PAM: zero![1]");
         require(newAddress != address(0), "PAM: zero![2]");
-        require(newSupportedTokens.length != 0, "PAM: empty![4]");
         require(_protocolAdapterAddress[newProtocolAdapterName] == address(0), "PAM: exists!");
 
         _protocolAdapterNames.push(newProtocolAdapterName);
@@ -219,7 +218,6 @@ abstract contract ProtocolAdapterManager is Ownable {
         address oldProtocolAdapterAddress = _protocolAdapterAddress[protocolAdapterName];
         require(oldProtocolAdapterAddress != address(0), "PAM: does not exist![2]");
         require(newProtocolAdapterAddress != address(0), "PAM: zero![3]");
-        require(newSupportedTokens.length != 0, "PAM: empty![5]");
 
         if (oldProtocolAdapterAddress == newProtocolAdapterAddress) {
             _protocolAdapterSupportedTokens[protocolAdapterName] = newSupportedTokens;

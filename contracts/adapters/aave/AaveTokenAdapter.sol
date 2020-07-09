@@ -18,8 +18,8 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
-import { Component } from "../../Structs.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
+import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
 
@@ -46,16 +46,13 @@ contract AaveTokenAdapter is TokenAdapter("AToken") {
      * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        address underlying = AToken(token).underlyingAssetAddress();
+        Component[] memory components = new Component[](1);
 
-        Component[] memory underlyingComponents= new Component[](1);
-
-        underlyingComponents[0] = Component({
-            tokenAddress: underlying,
-            tokenType: "ERC20",
+        components[0] = Component({
+            token: AToken(token).underlyingAssetAddress(),
             rate: uint256(1e18)
         });
 
-        return underlyingComponents;
+        return components;
     }
 }

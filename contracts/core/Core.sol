@@ -18,15 +18,12 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { Action, Output, ActionType, AmountType } from "./Structs.sol";
-import { InteractiveAdapter } from "./interactiveAdapters/InteractiveAdapter.sol";
-import { ProtocolAdapter } from "./adapters/ProtocolAdapter.sol";
-import { ERC20 } from "./ERC20.sol";
-import { SignatureVerifier } from "./SignatureVerifier.sol";
-import { Ownable } from "./Ownable.sol";
+import { Action, Output, ActionType, AmountType } from "../shared/Structs.sol";
+import { InteractiveAdapter } from "../interactiveAdapters/InteractiveAdapter.sol";
+import { ERC20 } from "../shared/ERC20.sol";
 import { AdapterRegistry } from "./AdapterRegistry.sol";
-import { Router } from "./Router.sol";
-import { SafeERC20 } from "./SafeERC20.sol";
+import { SafeERC20 } from "../shared/SafeERC20.sol";
+import { Helpers } from "../shared/Helpers.sol";
 
 
 /**
@@ -67,7 +64,7 @@ contract Core {
     )
         external
         payable
-        returns (Output[] memory actualOutputs)
+        returns (Output[] memory)
     {
         require(account != address(0), "C: empty account!");
         address[][] memory tokensToBeWithdrawn = new address[][](actions.length);
@@ -77,7 +74,7 @@ contract Core {
             emit ExecutedAction(actions[i]);
         }
 
-        actualOutputs = returnTokens(requiredOutputs, tokensToBeWithdrawn, account);
+        return returnTokens(requiredOutputs, tokensToBeWithdrawn, account);
     }
 
     /**
@@ -101,6 +98,7 @@ contract Core {
      */
     function getAdapterRegistry()
         external
+        view
         returns (address)
     {
         return address(_adapterRegistry);
@@ -112,7 +110,7 @@ contract Core {
         internal
         returns (address[] memory)
     {
-        address adapter = _adapterRegistry.getProtocolAdapterAddress(action.adapterName);
+        address adapter = _adapterRegistry.getProtocolAdapterAddress(action.protocolAdapterName);
         require(adapter != address(0), "C: bad name!");
         require(action.actionType != ActionType.None, "C: bad action type!");
         require(action.amounts.length == action.amountTypes.length, "C: inconsistent arrays!");
@@ -150,10 +148,10 @@ contract Core {
         address payable account
     )
         internal
-        returns (Output[] memory actualOutputs)
+        returns (Output[] memory)
     {
         uint256 length = requiredOutputs.length;
-        actualOutputs = new Output[](length);
+        Output[] memory actualOutputs = new Output[](length);
 
         address token;
         for (uint256 i = 0; i < length; i++) {
@@ -173,6 +171,8 @@ contract Core {
                 checkRequirementAndTransfer(tokensToBeWithdrawn[i][j], 0, account);
             }
         }
+
+        return actualOutputs;
     }
 
     function checkRequirementAndTransfer(
@@ -181,8 +181,9 @@ contract Core {
         address account
     )
         internal
-        returns (uint256 actualAmount)
+        returns (uint256)
     {
+        uint256 actualAmount;
         if (token == ETH) {
             actualAmount = address(this).balance;
         } else {
@@ -212,5 +213,7 @@ contract Core {
                 ERC20(token).safeTransfer(account, actualAmount, "C!");
             }
         }
+
+        return actualAmount;
     }
 }

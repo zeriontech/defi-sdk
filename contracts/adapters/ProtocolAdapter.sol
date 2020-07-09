@@ -26,12 +26,6 @@ pragma experimental ABIEncoderV2;
  */
 abstract contract ProtocolAdapter {
 
-    bytes32 public immutable adapterType;
-
-    constructor(bytes32 _adapterType) internal {
-        adapterType = _adapterType;
-    }
-
     /**
      * @dev MUST return amount and type of the given token
      * locked on the protocol by the given account.

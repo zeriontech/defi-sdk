@@ -17,7 +17,7 @@
 
 pragma solidity 0.6.9;
 
-import { Ownable } from "../../Ownable.sol";
+import { Ownable } from "../../core/Ownable.sol";
 
 
 struct PoolInfo {

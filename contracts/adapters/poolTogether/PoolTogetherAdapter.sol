@@ -49,7 +49,7 @@ interface Pod {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract PoolTogetherAdapter is ProtocolAdapter("Asset") {
+contract PoolTogetherAdapter is ProtocolAdapter {
 
     address internal constant DAI_POOL = 0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958;
     address internal constant USDC_POOL = 0x0034Ea9808E620A0EF79261c51AF20614B742B24;

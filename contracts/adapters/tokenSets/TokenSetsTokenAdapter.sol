@@ -18,8 +18,8 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
-import { Component } from "../../Structs.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
+import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
 
@@ -75,36 +75,24 @@ contract TokenSetsTokenAdapter is TokenAdapter("SetToken") {
      */
     function getComponents(address token) external view override returns (Component[] memory) {
         RebalancingSetToken rebalancingSetToken = RebalancingSetToken(token);
-        uint256 tokenUnitShare = rebalancingSetToken.unitShares();
-        uint256 tokenNaturalUnit = rebalancingSetToken.naturalUnit();
-        uint256 tokenRate = 1e18 * tokenUnitShare / tokenNaturalUnit;
+        uint256 rebalancingUnitShare = rebalancingSetToken.unitShares();
+        uint256 rebalancingNaturalUnit = rebalancingSetToken.naturalUnit();
+        uint256 rebalancingRate = 1e18 / rebalancingNaturalUnit * rebalancingUnitShare;
 
-        SetToken setToken = rebalancingSetToken.currentSet();
-        uint256[] memory unitShares = setToken.getUnits();
-        uint256 naturalUnit = setToken.naturalUnit();
-        address[] memory components = setToken.getComponents();
+        SetToken baseSetToken = rebalancingSetToken.currentSet();
+        uint256[] memory baseUnitShares = baseSetToken.getUnits();
+        uint256 baseNaturalUnit = baseSetToken.naturalUnit();
+        address[] memory baseComponents = baseSetToken.getComponents();
 
-        Component[] memory underlyingComponents= new Component[](components.length);
+        Component[] memory components = new Component[](baseComponents.length);
 
-        bytes32 underlyingTokenType;
-        for (uint256 i = 0; i < underlyingComponents.length; i++) {
-            if (components[i] == WETH) {
-                underlyingTokenType = "Weth";
-            } else {
-                try CToken(components[i]).isCToken{gas: 2000}() returns (bool) {
-                    underlyingTokenType = "CToken";
-                } catch {
-                    underlyingTokenType = "ERC20";
-                }
-            }
-
-            underlyingComponents[i] = Component({
-                tokenAddress: components[i],
-                tokenType: "ERC20",
-                rate: tokenRate / naturalUnit * unitShares[i]
+        for (uint256 i = 0; i < baseComponents.length; i++) {
+            components[i] = Component({
+                token: baseComponents[i],
+                rate: rebalancingRate / baseNaturalUnit * baseUnitShares[i]
             });
         }
 
-        return underlyingComponents;
+        return components;
     }
 }

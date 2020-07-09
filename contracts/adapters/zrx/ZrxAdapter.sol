@@ -18,7 +18,7 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
@@ -38,7 +38,7 @@ interface Staking {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract ZrxAdapter is ProtocolAdapter("Asset") {
+contract ZrxAdapter is ProtocolAdapter {
 
     address internal constant STAKING = 0xa26e80e7Dea86279c6d778D702Cc413E6CFfA777;
 

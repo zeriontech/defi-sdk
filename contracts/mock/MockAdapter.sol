@@ -25,7 +25,7 @@ import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
  * @notice Mock protocol adapter for tests.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract MockAdapter is ProtocolAdapter("Asset") {
+contract MockAdapter is ProtocolAdapter {
 
     mapping (address => uint256) internal balanceOf;
 

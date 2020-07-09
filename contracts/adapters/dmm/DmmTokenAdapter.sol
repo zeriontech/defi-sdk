@@ -18,8 +18,8 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
-import { Component } from "../../Structs.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
+import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
 
@@ -58,12 +58,13 @@ contract DmmTokenAdapter is TokenAdapter("MToken") {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        Component[] memory underlyingComponents= new Component[](1);
-        underlyingComponents[0] = Component({
-            tokenAddress: IDmmToken(token).controller().getUnderlyingTokenForDmm(token),
-            tokenType: "ERC20",
+        Component[] memory components = new Component[](1);
+
+        components[0] = Component({
+            token: IDmmToken(token).controller().getUnderlyingTokenForDmm(token),
             rate: IDmmToken(token).controller().getExchangeRate(token)
         });
-        return underlyingComponents;
+
+        return components;
     }
 }

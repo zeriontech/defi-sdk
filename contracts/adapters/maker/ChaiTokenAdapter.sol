@@ -18,8 +18,8 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
-import { Component } from "../../Structs.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
+import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { MKRAdapter } from "./MKRAdapter.sol";
 
@@ -51,15 +51,14 @@ contract ChaiTokenAdapter is TokenAdapter("Chai Token"), MKRAdapter {
      */
     function getComponents(address) external view override returns (Component[] memory) {
         Pot pot = Pot(POT);
-        Component[] memory underlyingComponents= new Component[](1);
+        Component[] memory components = new Component[](1);
 
-        underlyingComponents[0] = Component({
-            tokenAddress: DAI,
-            tokenType: "ERC20",
+        components[0] = Component({
+            token: DAI,
             // solhint-disable-next-line not-rely-on-time
             rate: mkrRmul(mkrRmul(mkrRpow(pot.dsr(), now - pot.rho(), ONE), pot.chi()), 1e18)
         });
 
-        return underlyingComponents;
+        return components;
     }
 }

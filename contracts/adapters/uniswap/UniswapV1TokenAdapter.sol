@@ -18,10 +18,10 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
-import { Component } from "../../Structs.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
+import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-import { StringHelpers } from "../../StringHelpers.sol";
+import { Helpers } from "../../shared/Helpers.sol";
 
 
 /**
@@ -65,7 +65,7 @@ interface Factory {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract UniswapV1TokenAdapter is TokenAdapter("Uniswap V1 Pool Token") {
-    using StringHelpers for bytes32;
+    using Helpers for bytes32;
 
     address internal constant FACTORY = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -79,28 +79,20 @@ contract UniswapV1TokenAdapter is TokenAdapter("Uniswap V1 Pool Token") {
     function getComponents(address token) external view override returns (Component[] memory) {
         address underlyingToken = Factory(FACTORY).getToken(token);
         uint256 totalSupply = ERC20(token).totalSupply();
-        bytes32 underlyingTokenType;
-        Component[] memory underlyingComponents= new Component[](2);
 
-        underlyingComponents[0] = Component({
-            tokenAddress: ETH,
-            tokenType: "ERC20",
+        Component[] memory components = new Component[](2);
+
+        components[0] = Component({
+            token: ETH,
             rate: token.balance * 1e18 / totalSupply
         });
 
-        try CToken(underlyingToken).isCToken{gas: 2000}() returns (bool) {
-            underlyingTokenType = "CToken";
-        } catch {
-            underlyingTokenType = "ERC20";
-        }
-
-        underlyingComponents[1] = Component({
-            tokenAddress: underlyingToken,
-            tokenType: underlyingTokenType,
+        components[1] = Component({
+            token: underlyingToken,
             rate: ERC20(underlyingToken).balanceOf(token) * 1e18 / totalSupply
         });
 
-        return underlyingComponents;
+        return components;
     }
 
     /**

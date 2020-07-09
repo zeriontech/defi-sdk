@@ -18,7 +18,7 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
@@ -27,7 +27,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract BancorAdapter is ProtocolAdapter("Asset") {
+contract BancorAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of SmartTokens held by the given account.

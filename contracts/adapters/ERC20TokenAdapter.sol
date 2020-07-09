@@ -18,10 +18,10 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../ERC20.sol";
-import { ERC20Metadata, Component } from "../Structs.sol";
+import { ERC20 } from "../shared/ERC20.sol";
+import { ERC20Metadata, Component } from "../shared/Structs.sol";
 import { TokenAdapter } from "./TokenAdapter.sol";
-import { StringHelpers } from "../StringHelpers.sol";
+import { Helpers } from "../shared/Helpers.sol";
 
 
 /**
@@ -30,7 +30,7 @@ import { StringHelpers } from "../StringHelpers.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ERC20TokenAdapter is TokenAdapter("ERC20") {
-    using StringHelpers for bytes32;
+    using Helpers for bytes32;
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant SAI = 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359;

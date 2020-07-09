@@ -18,7 +18,7 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
@@ -27,7 +27,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @dev Implementation of ProtocolAdapter interface.
  * @author Corey Caplan <corey@dolomite.io>
  */
-contract DmmAssetAdapter is ProtocolAdapter("Asset") {
+contract DmmAssetAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of MTokens held by the given account.

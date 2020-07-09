@@ -48,7 +48,7 @@ interface Synthetix {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract SynthetixDebtAdapter is ProtocolAdapter("Debt") {
+contract SynthetixDebtAdapter is ProtocolAdapter {
 
     address internal constant SNX = 0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F;
 

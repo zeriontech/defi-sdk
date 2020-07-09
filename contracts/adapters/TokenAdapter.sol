@@ -18,8 +18,8 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../ERC20.sol";
-import { ERC20Metadata, Component } from "../Structs.sol";
+import { ERC20 } from "../shared/ERC20.sol";
+import { ERC20Metadata, Component } from "../shared/Structs.sol";
 
 
 /**
@@ -31,14 +31,21 @@ import { ERC20Metadata, Component } from "../Structs.sol";
  */
 abstract contract TokenAdapter {
 
-    bytes32 public immutable tokenType;
+    bytes32 internal immutable _tokenAdapterName;
 
     /**
      * @dev Initializes tokenType state variable.
      * Should be passed as a parameter when overriding.
      */
-    constructor(bytes32 _tokenType) internal {
-        tokenType = _tokenType;
+    constructor(bytes32 tokenAdapterName) internal {
+        _tokenAdapterName = tokenAdapterName;
+    }
+
+    /**
+     * @return Token adapter's name.
+     */
+    function getTokenAdapterName() external view returns (bytes32) {
+        return _tokenAdapterName;
     }
 
     /**

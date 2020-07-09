@@ -18,9 +18,9 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { TransactionData, Action, Input, Output, AmountType } from "./Structs.sol";
-import { ERC20 } from "./ERC20.sol";
-import { SafeERC20 } from "./SafeERC20.sol";
+import { TransactionData, Action, Input, Output, AmountType } from "../shared/Structs.sol";
+import { ERC20 } from "../shared/ERC20.sol";
+import { SafeERC20 } from "../shared/SafeERC20.sol";
 import { SignatureVerifier } from "./SignatureVerifier.sol";
 import { Ownable } from "./Ownable.sol";
 import { Core } from "./Core.sol";
@@ -68,10 +68,10 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     )
         external
         view
-        returns (Output[] memory requiredAllowances)
+        returns (Output[] memory)
     {
         uint256 length = inputs.length;
-        requiredAllowances = new Output[](length);
+        Output[] memory requiredAllowances = new Output[](length);
         uint256 required;
         uint256 current;
 
@@ -84,6 +84,8 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
                 amount: required > current ? required - current : 0
             });
         }
+
+        return requiredAllowances;
     }
 
     function getRequiredBalances(
@@ -92,10 +94,10 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     )
         external
         view
-        returns (Output[] memory requiredBalances)
+        returns (Output[] memory)
     {
         uint256 length = inputs.length;
-        requiredBalances = new Output[](length);
+        Output[] memory requiredBalances = new Output[](length);
         uint256 required;
         uint256 current;
 
@@ -108,6 +110,8 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
                 amount: required > current ? required - current : 0
             });
         }
+
+        return requiredBalances;
     }
 
     /**
@@ -115,6 +119,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
      */
     function getCore()
         external
+        view
         returns (address)
     {
         return address(_core);
@@ -126,7 +131,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     )
         public
         payable
-        returns (Output[] memory actualOutputs)
+        returns (Output[] memory)
     {
         return startExecution(
             data.actions,
@@ -143,7 +148,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     )
         public
         payable
-        returns (Output[] memory actualOutputs)
+        returns (Output[] memory)
     {
         return startExecution(
             actions,
@@ -160,7 +165,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         address payable account
     )
         internal
-        returns (Output[] memory actualOutputs)
+        returns (Output[] memory)
     {
         // save initial gas to burn gas token later
         uint256 gas = gasleft();
@@ -168,9 +173,15 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         transferTokens(inputs, account);
         Output[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
         // call Core contract with all provided ETH, actions, expected outputs and account address
-        actualOutputs = _core.executeActions{value: msg.value}(actions, modifiedOutputs, account);
+        Output[] memory actualOutputs = _core.executeActions{value: msg.value}(
+            actions,
+            modifiedOutputs,
+            account
+        );
         // burn gas token to save some gas
         freeGasToken(gas - gasleft());
+
+        return actualOutputs;
     }
 
     function transferTokens(
@@ -288,10 +299,12 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     )
         internal
         view
-        returns (Output[] memory modifiedOutputs)
+        returns (Output[] memory)
     {
         uint256 ethInput = msg.value > 0 ? 1 : 0;
-        modifiedOutputs = new Output[](requiredOutputs.length + inputs.length + ethInput);
+        Output[] memory modifiedOutputs = new Output[](
+            requiredOutputs.length + inputs.length + ethInput
+        );
 
         for (uint256 i = 0; i < requiredOutputs.length; i++) {
             modifiedOutputs[i] = requiredOutputs[i];
@@ -310,6 +323,8 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
                 amount: 0
             });
         }
+
+        return modifiedOutputs;
     }
 
     function mul(

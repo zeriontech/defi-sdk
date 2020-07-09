@@ -23,7 +23,7 @@ pragma experimental ABIEncoderV2;
  * @notice Library helps to convert different types to strings.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-library StringHelpers {
+library Helpers {
 
     /**
      * @dev Internal function to convert bytes32 to string and trim zeroes.

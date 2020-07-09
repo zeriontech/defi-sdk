@@ -18,7 +18,7 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { TransactionData, Action, Input, Output } from "./Structs.sol";
+import { TransactionData, Action, Input, Output } from "../shared/Structs.sol";
 
 
 contract SignatureVerifier {
@@ -57,7 +57,7 @@ contract SignatureVerifier {
     );
     bytes internal constant ACTION_ENCODED_TYPE = abi.encodePacked(
         "Action(",
-            "bytes32 adapterName,",
+            "bytes32 protocolAdapterName,",
             "uint8 actionType,",
             "address[] tokens,",
             "uint256[] amounts,",
@@ -98,6 +98,7 @@ contract SignatureVerifier {
         address account
     )
         external
+        view
         returns (uint256)
     {
         return _nonce[account];
@@ -177,7 +178,7 @@ contract SignatureVerifier {
                 keccak256(
                     abi.encode(
                         ACTION_TYPEHASH,
-                        actions[i].adapterName,
+                        actions[i].protocolAdapterName,
                         actions[i].actionType,
                         keccak256(abi.encodePacked(actions[i].tokens)),
                         keccak256(abi.encodePacked(actions[i].amounts)),

@@ -65,7 +65,7 @@ interface DssCdpManager {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract MCDDebtAdapter is ProtocolAdapter("Debt"), MKRAdapter {
+contract MCDDebtAdapter is ProtocolAdapter, MKRAdapter {
 
     /**
      * @return Amount of debt of the given account for the protocol.

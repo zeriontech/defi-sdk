@@ -18,8 +18,8 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
-import { Component } from "../../Structs.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
+import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
 
@@ -48,15 +48,14 @@ contract PoolTogetherTokenAdapter is TokenAdapter("PoolTogether Pool") {
      * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        Component[] memory underlyingComponents= new Component[](1);
+        Component[] memory components = new Component[](1);
 
-        underlyingComponents[0] = Component({
-            tokenAddress: BasePool(token).token(),
-            tokenType: "ERC20",
+        components[0] = Component({
+            token: BasePool(token).token(),
             rate: 1e18
         });
 
-        return underlyingComponents;
+        return components;
     }
 
     /**

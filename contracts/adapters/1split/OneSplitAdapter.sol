@@ -27,7 +27,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * Base contract for OneSplit interactive adapter.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract OneSplitAdapter is ProtocolAdapter("Exchange") {
+contract OneSplitAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of Uniswap Pool Tokens held by the given account.

@@ -41,7 +41,7 @@ interface Pot {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract DSRAdapter is ProtocolAdapter("Asset"), MKRAdapter {
+contract DSRAdapter is ProtocolAdapter, MKRAdapter {
 
     /**
      * @return Amount of DAI locked on the protocol by the given account.

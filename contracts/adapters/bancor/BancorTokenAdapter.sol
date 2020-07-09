@@ -18,8 +18,8 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
-import { Component } from "../../Structs.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
+import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
 
@@ -96,15 +96,14 @@ contract BancorTokenAdapter is TokenAdapter("SmartToken") {
         address converter = SmartToken(token).owner();
         uint256 length = BancorConverter(converter).connectorTokenCount();
 
-        Component[] memory underlyingComponents= new Component[](length);
+        Component[] memory components = new Component[](length);
 
         address underlyingToken;
         for (uint256 i = 0; i < length; i++) {
             underlyingToken = BancorConverter(converter).connectorTokens(i);
 
-            underlyingComponents[i] = Component({
-                tokenAddress: underlyingToken,
-                tokenType: "ERC20",
+            components[i] = Component({
+                token: underlyingToken,
                 rate: BancorFormula(formula).calculateLiquidateReturn(
                     totalSupply,
                     ERC20(underlyingToken).balanceOf(converter),
@@ -114,6 +113,6 @@ contract BancorTokenAdapter is TokenAdapter("SmartToken") {
             });
         }
 
-        return underlyingComponents;
+        return components;
     }
 }

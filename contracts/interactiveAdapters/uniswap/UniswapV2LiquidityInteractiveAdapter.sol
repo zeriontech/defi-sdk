@@ -18,10 +18,9 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
-import { SafeERC20 } from "../../SafeERC20.sol";
-import { Action, AmountType, ActionType } from "../../Structs.sol";
-import { Core } from "../../Core.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
+import { SafeERC20 } from "../../shared/SafeERC20.sol";
+import { Action, AmountType } from "../../shared/Structs.sol";
 import { UniswapV2LiquidityAdapter } from "../../adapters/uniswap/UniswapV2LiquidityAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 

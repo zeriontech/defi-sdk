@@ -18,10 +18,10 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
-import { Component } from "../../Structs.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
+import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-import { StringHelpers } from "../../StringHelpers.sol";
+import { Helpers } from "../../shared/Helpers.sol";
 
 
 /**
@@ -53,7 +53,7 @@ interface UniswapV2Pair {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract UniswapV2TokenAdapter is TokenAdapter("Uniswap V2 Pool Token") {
-    using StringHelpers for bytes32;
+    using Helpers for bytes32;
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
@@ -64,24 +64,17 @@ contract UniswapV2TokenAdapter is TokenAdapter("Uniswap V2 Pool Token") {
         tokens[0] = UniswapV2Pair(token).token0();
         tokens[1] = UniswapV2Pair(token).token1();
         uint256 totalSupply = ERC20(token).totalSupply();
-        Component[] memory underlyingComponents = new Component[](2);
 
-        bytes32 underlyingTokenType;
+        Component[] memory components = new Component[](2);
+
         for (uint256 i = 0; i < 2; i++) {
-            try CToken(tokens[i]).isCToken{gas: 2000}() returns (bool) {
-                underlyingTokenType = "CToken";
-            } catch {
-                underlyingTokenType = "ERC20";
-            }
-
-            underlyingComponents[i] = Component({
-                tokenAddress: tokens[i],
-                tokenType: underlyingTokenType,
+            components[i] = Component({
+                token: tokens[i],
                 rate: ERC20(tokens[i]).balanceOf(token) * 1e18 / totalSupply
             });
         }
 
-        return underlyingComponents;
+        return components;
     }
 
     /**

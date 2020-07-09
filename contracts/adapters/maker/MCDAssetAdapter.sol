@@ -65,7 +65,7 @@ interface DssCdpManager {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract MCDAssetAdapter is ProtocolAdapter("Asset"), MKRAdapter {
+contract MCDAssetAdapter is ProtocolAdapter, MKRAdapter {
 
     /**
      * @return Amount of collateral locked on the protocol by the given account.

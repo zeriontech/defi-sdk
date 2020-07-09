@@ -18,7 +18,7 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
@@ -27,7 +27,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @dev Implementation of ProtocolAdapter interface.
  * @author William Bergamo <william@idle.finance>
  */
-contract IdleAdapter is ProtocolAdapter("Asset") {
+contract IdleAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of IdleTokens held by the given account.

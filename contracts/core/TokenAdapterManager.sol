@@ -19,7 +19,7 @@ pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
 import { Ownable } from "./Ownable.sol";
-import { TokenAdapter } from "./adapters/TokenAdapter.sol";
+import { TokenAdapter } from "../adapters/TokenAdapter.sol";
 
 
 /**
@@ -137,7 +137,7 @@ abstract contract TokenAdapterManager is Ownable {
         require(newTokenAdapterAddress != address(0), "TAM: zero![2]");
         require(_tokenAdapterAddress[newTokenAdapterName] == address(0), "TAM: exists!");
         require(
-            TokenAdapter(newTokenAdapterAddress).tokenType() == newTokenAdapterName,
+            TokenAdapter(newTokenAdapterAddress).getTokenAdapterName() == newTokenAdapterName,
             "TAM: bad name/type!"
         );
 

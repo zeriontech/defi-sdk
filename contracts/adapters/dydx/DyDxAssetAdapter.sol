@@ -60,7 +60,7 @@ interface SoloMargin {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract DyDxAssetAdapter is ProtocolAdapter("Asset"), DyDxAdapter {
+contract DyDxAssetAdapter is ProtocolAdapter, DyDxAdapter {
 
     /**
      * @return Amount of tokens held by the given account.

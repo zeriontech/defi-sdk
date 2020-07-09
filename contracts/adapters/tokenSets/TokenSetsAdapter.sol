@@ -18,7 +18,7 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
@@ -28,7 +28,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * Base contract for TokenSets interactive adapter.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract TokenSetsAdapter is ProtocolAdapter("Asset") {
+contract TokenSetsAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of SetTokens held by the given account.

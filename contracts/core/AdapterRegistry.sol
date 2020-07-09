@@ -19,19 +19,18 @@ pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
 import {
-    AdapterBalance,
-    AdapterMetadata,
     FullTokenBalance,
     TokenBalance,
-    TokenMetadata,
+    AdapterBalance,
+    TokenBalanceWithAdapter,
     ERC20Metadata,
     Component
-} from "./Structs.sol";
+} from "../shared/Structs.sol";
 import { Ownable } from "./Ownable.sol";
 import { ProtocolAdapterManager } from "./ProtocolAdapterManager.sol";
 import { TokenAdapterManager } from "./TokenAdapterManager.sol";
-import { ProtocolAdapter } from "./adapters/ProtocolAdapter.sol";
-import { TokenAdapter } from "./adapters/TokenAdapter.sol";
+import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
+import { TokenAdapter } from "../adapters/TokenAdapter.sol";
 
 
 /**
@@ -42,27 +41,28 @@ import { TokenAdapter } from "./adapters/TokenAdapter.sol";
 contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager {
 
     /**
-     * @param tokenAddresses Array of tokens' addresses.
+     * @dev Fullfills FullTokenBalance struct for an array of tokens.
      * @param tokenAdapterNames Array of tokens' types.
+     * @param tokens Array of tokens' addresses.
      * @return Full token balances by token types and token addresses.
      */
     function getFullTokenBalances(
-        address[] calldata tokenAddresses,
-        bytes32[] calldata tokenAdapterNames
+        bytes32[] calldata tokenAdapterNames,
+        address[] calldata tokens
     )
         external
         view
         returns (FullTokenBalance[] memory)
     {
-        uint256 length = tokenAddresses.length;
+        uint256 length = tokens.length;
         require(length == tokenAdapterNames.length, "AR: inconsistent arrays!");
 
         FullTokenBalance[] memory fullTokenBalances = new FullTokenBalance[](length);
 
         for (uint256 i = 0; i < length; i++) {
             fullTokenBalances[i] = getFullTokenBalance(
-                tokenAddresses[i],
                 tokenAdapterNames[i],
+                tokens[i],
                 1e18
             );
         }
@@ -73,6 +73,7 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
     /**
      * @param account Address of the account.
      * @return AdapterBalance array by the given account.
+     * @notice Zero values are filtered out!
      */
     function getBalances(
         address account
@@ -81,44 +82,44 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
         view
         returns (AdapterBalance[] memory)
     {
-        return getAdapterBalances(account, _protocolAdapterNames);
-    }
+        AdapterBalance[] memory adapterBalances = getAdapterBalances(
+            _protocolAdapterNames,
+            account
+        );
+        uint256 adaptersCounter = 0;
+        uint256[] memory tokensCounters = new uint256[](adapterBalances.length);
 
-    /**
-     * @param account Address of the account.
-     * @param protocolAdapterNames Array of the protocol adapters' addresses.
-     * @return AdapterBalance array by the given parameters. Zero values are filtered out!
-     */
-    function getAdapterBalances(
-        address account,
-        bytes32[] memory protocolAdapterNames
-    )
-        public
-        view
-        returns (AdapterBalance[] memory)
-    {
-        uint256 length = protocolAdapterNames.length;
-        AdapterBalance[] memory adapterBalances = new AdapterBalance[](length);
-        uint256 counter = 0;
 
-        for (uint256 i = 0; i < length; i++) {
-            adapterBalances[i] = getAdapterBalance(
-                account,
-                protocolAdapterNames[i],
-                _protocolAdapterSupportedTokens[protocolAdapterNames[i]]
-            );
-            if (adapterBalances[i].balances.length > 0) {
-                counter++;
+        for (uint256 i = 0; i < adapterBalances.length; i++) {
+            tokensCounters[i] = 0;
+            for (uint256 j = 0; j < adapterBalances[i].balances.length; j++) {
+                if (adapterBalances[i].balances[j].tokenBalance.amount > 0) {
+                    tokensCounters[i]++;
+                }
+            }
+            if (tokensCounters[i] > 0) {
+                adaptersCounter++;
             }
         }
 
-        AdapterBalance[] memory nonZeroAdapterBalances = new AdapterBalance[](counter);
-        counter = 0;
-
-        for (uint256 i = 0; i < length; i++) {
-            if (adapterBalances[i].balances.length > 0) {
-                nonZeroAdapterBalances[counter] = adapterBalances[i];
-                counter++;
+        AdapterBalance[] memory nonZeroAdapterBalances = new AdapterBalance[](adaptersCounter);
+        AdapterBalance memory currentAdapterBalance;
+        TokenBalanceWithAdapter memory currentTokenBalances;
+        adaptersCounter = 0;
+        for (uint256 i = 0; i < adapterBalances.length; i++) {
+            currentAdapterBalance = nonZeroAdapterBalances[adaptersCounter];
+            currentAdapterBalance.protocolAdapterName = adapterBalances[i].protocolAdapterName;
+            currentAdapterBalance.balances = new TokenBalanceWithAdapter[](tokensCounters[i]);
+            tokensCounters[i] = 0;
+            for (uint256 j = 0; j < adapterBalances[i].balances.length; j++) {
+                if (adapterBalances[i].balances[j].tokenBalance.amount > 0) {
+                    currentTokenBalances = currentAdapterBalance.balances[tokensCounters[i]];
+                    currentTokenBalances = adapterBalances[i].balances[j];
+                    tokensCounters[i]++;
+                }
+            }
+            if (tokensCounters[i] > 0) {
+                adaptersCounter++;
             }
         }
 
@@ -126,15 +127,42 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
     }
 
     /**
+     * @param protocolAdapterNames Array of the protocol adapters' names.
      * @param account Address of the account.
-     * @param protocolAdapterName Address of the protocol adapter.
+     * @return AdapterBalance array by the given parameters.
+     */
+    function getAdapterBalances(
+        bytes32[] memory protocolAdapterNames,
+        address account
+    )
+        public
+        view
+        returns (AdapterBalance[] memory)
+    {
+        uint256 length = protocolAdapterNames.length;
+        AdapterBalance[] memory adapterBalances = new AdapterBalance[](length);
+
+        for (uint256 i = 0; i < length; i++) {
+            adapterBalances[i] = getAdapterBalance(
+                protocolAdapterNames[i],
+                _protocolAdapterSupportedTokens[protocolAdapterNames[i]],
+                account
+            );
+        }
+
+        return adapterBalances;
+    }
+
+    /**
+     * @param protocolAdapterName Protocol adapter's Name.
      * @param tokens Array of tokens' addresses.
-     * @return AdapterBalance array by the given parameters. Zero values are filtered out!
+     * @param account Address of the account.
+     * @return AdapterBalance array by the given parameters.
      */
     function getAdapterBalance(
-        address account,
         bytes32 protocolAdapterName,
-        address[] memory tokens
+        address[] memory tokens,
+        address account
     )
         public
         view
@@ -142,90 +170,75 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
     {
         address adapter = _protocolAdapterAddress[protocolAdapterName];
         require(adapter != address(0), "AR: bad protocolAdapterName!");
-        uint256[] memory amounts = new uint256[](tokens.length);
-        bytes32[] memory tokenAdapterNames = new bytes32[](tokens.length);
-        uint256 counter;
+
+        TokenBalanceWithAdapter[] memory balances = new TokenBalanceWithAdapter[](tokens.length);
 
         for (uint256 i = 0; i < tokens.length; i++) {
             try ProtocolAdapter(adapter).getBalance(
                 tokens[i],
                 account
             ) returns (uint256 amount, bytes32 tokenAdapterName) {
-                amounts[i] = amount;
-                tokenAdapterNames[i] = tokenAdapterName;
+                balances[i] = TokenBalanceWithAdapter({
+                    tokenAdapterName: tokenAdapterName,
+                    tokenBalance: getTokenBalance(tokenAdapterName, tokens[i], amount)
+                });
             } catch {
-                amounts[i] = 0;
-                tokenAdapterNames[i] = "ERC20";
-            }
-            if (amounts[i] > 0) {
-                counter++;
-            }
-        }
-
-        TokenBalance[] memory nonZeroTokenBalances = new TokenBalance[](counter);
-        counter = 0;
-
-        for (uint256 i = 0; i < amounts.length; i++) {
-            if (amounts[i] > 0) {
-                nonZeroTokenBalances[counter] = getTokenBalance(
-                    tokens[i],
-                    tokenAdapterNames[i],
-                    amounts[i]
-                );
-                counter++;
+                balances[i] = TokenBalanceWithAdapter({
+                    tokenAdapterName: "ERC20",
+                    tokenBalance: getTokenBalance("ERC20", tokens[i], 0)
+                });
             }
         }
 
         return AdapterBalance({
-            metadata: AdapterMetadata({
-                adapterName: protocolAdapterName,
-                adapterType: ProtocolAdapter(adapter).adapterType()
-            }),
-            balances: nonZeroTokenBalances
+            protocolAdapterName: protocolAdapterName,
+            balances: balances
         });
     }
 
     /**
-     * @param tokenAddress Address of the base token.
+     * @dev Fullfills FullTokenBalance struct for a single token.
      * @param tokenAdapterName Type of the base token.
+     * @param token Address of the base token.
      * @param amount Amount of the base token.
      * @return FullTokenBalance struct by the given components.
      */
     function getFullTokenBalance(
-        address tokenAddress,
         bytes32 tokenAdapterName,
+        address token,
         uint256 amount
     )
         internal
         view
         returns (FullTokenBalance memory)
     {
-        Component[] memory components = getComponents(tokenAddress, tokenAdapterName, amount);
+        Component[] memory components = getComponents(tokenAdapterName, token, amount);
         TokenBalance[] memory componentTokenBalances = new TokenBalance[](components.length);
 
         for (uint256 i = 0; i < components.length; i++) {
             componentTokenBalances[i] = getTokenBalance(
-                components[i].tokenAddress,
-                components[i].tokenType,
+                tokenAdapterName,
+                components[i].token,
                 components[i].rate
             );
         }
 
         return FullTokenBalance({
-            base: getTokenBalance(tokenAddress, tokenAdapterName, amount),
+            base: getTokenBalance(tokenAdapterName, token, amount),
             underlying: componentTokenBalances
         });
     }
 
     /**
-     * @param tokenAddress Address of the token.
+     * @dev Fetches internal data about underlying components.
      * @param tokenAdapterName Type of the token.
+     * @param token Address of the token.
      * @param amount Amount of the token.
      * @return Components by token type and token address.
      */
     function getComponents(
-        address tokenAddress,
         bytes32 tokenAdapterName,
+        address token,
         uint256 amount
     )
         internal
@@ -236,7 +249,7 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
         Component[] memory components;
 
         if (address(tokenAdapter) != address(0)) {
-            try tokenAdapter.getComponents(tokenAddress) returns (Component[] memory result) {
+            try tokenAdapter.getComponents(token) returns (Component[] memory result) {
                 components = result;
             } catch {
                 components = new Component[](0);
@@ -254,14 +267,14 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
 
     /**
      * @notice Fulfills TokenBalance struct using type, address, and balance of the token.
-     * @param tokenAddress Address of the token.
      * @param tokenAdapterName Type of the token.
+     * @param token Address of the token.
      * @param amount Amount of tokens.
      * @return TokenBalance struct with token info and balance.
      */
     function getTokenBalance(
-        address tokenAddress,
         bytes32 tokenAdapterName,
+        address token,
         uint256 amount
     )
         internal
@@ -269,43 +282,34 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
         returns (TokenBalance memory)
     {
         TokenAdapter tokenAdapter = TokenAdapter(_tokenAdapterAddress[tokenAdapterName]);
-        TokenBalance memory tokenBalance;
-        tokenBalance.amount = amount;
+        ERC20Metadata memory erc20metadata;
 
-        if (address(tokenAdapter) != address(0)) {
+        if (address(tokenAdapter) == address(0)) {
+            erc20metadata = ERC20Metadata({
+                name: "Not available",
+                symbol: "N/A",
+                decimals: 0
+            });
+        } else {
             try tokenAdapter.getMetadata(
-                tokenAddress
+                token
             )
                 returns (ERC20Metadata memory erc20)
             {
-                tokenBalance.metadata = TokenMetadata({
-                    tokenAddress: tokenAddress,
-                    tokenType: tokenAdapterName,
-                    erc20: erc20
-                });
+                erc20metadata = erc20;
             } catch {
-                tokenBalance.metadata = TokenMetadata({
-                    tokenAddress: tokenAddress,
-                    tokenType: tokenAdapterName,
-                    erc20: ERC20Metadata({
-                        name: "Not available",
-                        symbol: "N/A",
-                        decimals: 0
-                    })
-                });
-            }
-        } else {
-            tokenBalance.metadata = TokenMetadata({
-                tokenAddress: tokenAddress,
-                tokenType: tokenAdapterName,
-                erc20: ERC20Metadata({
+                erc20metadata = ERC20Metadata({
                     name: "Not available",
                     symbol: "N/A",
                     decimals: 0
-                })
-            });
+                });
+            }
         }
 
-        return tokenBalance;
+        return TokenBalance({
+            token: token,
+            amount: amount,
+            erc20metadata: erc20metadata
+        });
     }
 }

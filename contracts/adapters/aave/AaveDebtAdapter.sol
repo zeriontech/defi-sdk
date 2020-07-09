@@ -48,7 +48,7 @@ interface LendingPool {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract AaveDebtAdapter is ProtocolAdapter("Debt") {
+contract AaveDebtAdapter is ProtocolAdapter {
 
     address internal constant PROVIDER = 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8;
 

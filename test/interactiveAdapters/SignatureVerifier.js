@@ -47,7 +47,7 @@ contract('SignatureVerifier', () => {
             { name: 'nonce', type: 'uint256' },
           ],
           Action: [
-            { name: 'adapterName', type: 'bytes32' },
+            { name: 'protocolAdapterName', type: 'bytes32' },
             { name: 'actionType', type: 'uint8' },
             { name: 'tokens', type: 'address[]' },
             { name: 'amounts', type: 'uint256[]' },

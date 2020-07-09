@@ -18,8 +18,8 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
-import { Component } from "../../Structs.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
+import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
 
@@ -70,19 +70,16 @@ contract CurveTokenAdapter is TokenAdapter("Curve Pool Token") {
      */
     function getComponents(address token) external view override returns (Component[] memory) {
         (address swap, uint256 totalCoins) = CurveRegistry(REGISTRY).getSwapAndTotalCoins(token);
-        Component[] memory underlyingComponents= new Component[](totalCoins);
+        Component[] memory components = new Component[](totalCoins);
 
-        address underlyingToken;
         for (uint256 i = 0; i < totalCoins; i++) {
-            underlyingToken = stableswap(swap).coins(int128(i));
-            underlyingComponents[i] = Component({
-                tokenAddress: underlyingToken,
-                tokenType: getTokenType(underlyingToken),
+            components[i] = Component({
+                token: stableswap(swap).coins(int128(i)),
                 rate: stableswap(swap).balances(int128(i)) * 1e18 / ERC20(token).totalSupply()
             });
         }
 
-        return underlyingComponents;
+        return components;
     }
 
     /**
@@ -90,28 +87,5 @@ contract CurveTokenAdapter is TokenAdapter("Curve Pool Token") {
      */
     function getName(address token) internal view override returns (string memory) {
         return CurveRegistry(REGISTRY).getName(token);
-    }
-
-    function getTokenType(address token) internal pure returns (bytes32) {
-        if (token == CDAI || token == CUSDC) {
-            return "CToken";
-        } else if (
-            token == YDAIV2 ||
-            token == YUSDCV2 ||
-            token == YUSDTV2 ||
-            token == YTUSDV2 ||
-            token == YDAIV3 ||
-            token == YUSDCV3 ||
-            token == YUSDTV3 ||
-            token == YBUSDV3 ||
-            token == YCDAI ||
-            token == YCUSDC ||
-            token == YCUSDT
-        ) {
-            return "YToken";
-        } else {
-            return "ERC20";
-        }
-
     }
 }
