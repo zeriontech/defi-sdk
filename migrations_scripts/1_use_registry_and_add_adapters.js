@@ -610,8 +610,8 @@ module.exports = async (deployer, network, accounts) => {
   protocolNames.push('PieDAO');
   metadata.push([
     'PieDAO',
-    'BTC on Ethereum diversified',
-    'btc.piedao.org',
+    'The Asset Allocation DAO',
+    'piedao.org',
     'protocol-icons.s3.us-east-1.amazonaws.com/piedao.png',
     '0',
   ]);
