@@ -113,7 +113,7 @@ on the [api.zerion.eth](https://etherscan.io/address/0x06fe76b2f432fdfecaef1a7d4
 
 Sometimes, a DeFi token contains several other tokens, and to calculate their price, you need to know their underlying assets. For example, a `Uniswap V1 cDAI pool` consists of `ETH` and `cDAI`. `cDAI`, in turn, has `DAI` as an underlying token. With DeFi SDK you can call
 
-```solidity 
+```solidity
 // Uniswap V1 cDAI pool
 getFinalFullTokenBalance("Uniswap V1 pool token", 0x34E89740adF97C3A9D3f63Cc2cE4a914382c230b)
 ```
@@ -129,9 +129,9 @@ getFinalFullTokenBalance("Uniswap V1 pool token", 0x34E89740adF97C3A9D3f63Cc2cE4
 
 In case you want to get account balances across all supported DeFi protocols, you can call
 
-```solidity 
-// bankless.zerion.eth portfolio 
-getBalances(0x0ef51b7dac3933b8109482e7d910c21848e45da0f) 
+```solidity
+// bankless.zerion.eth portfolio
+getBalances(0x0ef51b7dac3933b8109482e7d910c21848e45da0f)
 ```
 
 and obtain all balances for a given account. The response from the smart-contract will contain information about each of the protocols
@@ -154,8 +154,8 @@ getBalances(
     0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990, // account address
     0x581Ae5AF7afa6f8171Bbf40d1981779F168A9523, // balancer adapter address
     [0x53b89CE35928dda346c574D9105A5479CB87231c,
-        0x987D7Cc04652710b74Fff380403f5c02f82e290a] // balancer pools addresses 
-) 
+        0x987D7Cc04652710b74Fff380403f5c02f82e290a] // balancer pools addresses
+)
 ```
 
 you will obtain Balancer balances for given pools. The response from the smart-contract will contain information about each of the pools
@@ -209,6 +209,7 @@ All the deployed contracts' addresses are available [here](../../wiki/Addresses)
 | [Maker Governance](./contracts/adapters/maker) | MKR tokens locked on the MakerDAO governance contracts. | [Asset adapter](./contracts/adapters/maker/MakerGovernanceAdapter.sol) | — |
 | [Multi-Collateral Dai](./contracts/adapters/maker) | Collateralized loans on Maker. | [Asset adapter](./contracts/adapters/maker/MCDAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/maker/MCDDebtAdapter.sol) | — |
 | [PoolTogether](./contracts/adapters/poolTogether) | Decentralized no-loss lottery. Supports SAI, DAI, and USDC pools. | [Asset adapter](./contracts/adapters/poolTogether/PoolTogetherAdapter.sol) | ["PoolTogether pool"](./contracts/adapters/poolTogether/PoolTogetherTokenAdapter.sol) |
+| [rDai](./contracts/adapters/rDai) | Splitting principal and interest. | [Asset adapter](./contracts/adapters/rDai/RDaiAdapter.sol) | ["rDai"](./contracts/adapters/rDai/rDaiTokenAdapter.sol) |
 | [Synthetix](./contracts/adapters/synthetix) | Synthetic assets protocol. Asset adapter returns amount of SNX locked as collateral. | [Asset adapter](./contracts/adapters/synthetix/SynthetixAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/synthetix/SynthetixDebtAdapter.sol) | — |
 | [TokenSets](./contracts/adapters/tokenSets) | Automated asset management strategies. | [Asset adapter](./contracts/adapters/tokenSets/TokenSetsAdapter.sol) | ["SetToken"](./contracts/adapters/tokenSets/TokenSetsTokenAdapter.sol) |
 | [Uniswap V1](./contracts/adapters/uniswap) | Automated liquidity protocol. | [Asset adapter](./contracts/adapters/uniswap/UniswapV1Adapter.sol) supports all Uniswap V1 pools | ["Uniswap V1 pool token"](./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol) |
