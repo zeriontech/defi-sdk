@@ -56,7 +56,7 @@ interface SetToken {
 interface RebalancingSetToken {
     function unitShares() external view returns (uint256);
     function naturalUnit() external view returns (uint256);
-    function currentSet() external view returns (SetToken);
+    function currentSet() external view returns (address);
 }
 
 
@@ -79,7 +79,7 @@ contract TokenSetsTokenAdapter is TokenAdapter("SetToken") {
         uint256 rebalancingNaturalUnit = rebalancingSetToken.naturalUnit();
         uint256 rebalancingRate = 1e18 / rebalancingNaturalUnit * rebalancingUnitShare;
 
-        SetToken baseSetToken = rebalancingSetToken.currentSet();
+        SetToken baseSetToken = SetToken(rebalancingSetToken.currentSet());
         uint256[] memory baseUnitShares = baseSetToken.getUnits();
         uint256 baseNaturalUnit = baseSetToken.naturalUnit();
         address[] memory baseComponents = baseSetToken.getComponents();
