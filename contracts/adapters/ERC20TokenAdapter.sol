@@ -81,8 +81,14 @@ contract ERC20TokenAdapter is TokenAdapter("ERC20") {
             abi.encodeWithSelector(ERC20(token).name.selector)
         );
 
-        if (returnData.length == 32) {
-            return abi.decode(returnData, (bytes32)).toString();
+        if (returnData.length == 32 || returnData.length == 4096) {
+            bytes32 name;
+            assembly {
+                let free := mload(0x40)
+                returndatacopy(free, 0, 32)
+                name := mload(free)
+            }
+            return name.toString();
         } else {
             return abi.decode(returnData, (string));
         }
@@ -97,8 +103,14 @@ contract ERC20TokenAdapter is TokenAdapter("ERC20") {
             abi.encodeWithSelector(ERC20(token).symbol.selector)
         );
 
-        if (returnData.length == 32) {
-            return abi.decode(returnData, (bytes32)).toString();
+        if (returnData.length == 32 || returnData.length == 4096) {
+            bytes32 symbol;
+            assembly {
+                let free := mload(0x40)
+                returndatacopy(free, 0, 32)
+                symbol := mload(free)
+            }
+            return symbol.toString();
         } else {
             return abi.decode(returnData, (string));
         }
