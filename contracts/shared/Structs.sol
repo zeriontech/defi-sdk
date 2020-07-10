@@ -22,15 +22,15 @@ pragma experimental ABIEncoderV2;
 // The struct consists of TokenBalance structs for
 // (base) token and its underlying tokens (if exist).
 struct FullTokenBalance {
-    TokenBalance base;
-    TokenBalance[] underlying;
+    TokenBalanceMeta base;
+    TokenBalanceMeta[] underlying;
 }
 
 
-// The struct consists of token address,
-// amount, and ERC20-style token metadata.
+// The struct consists of token's address,
+// amount, and ERC20-style metadata.
 // NOTE: 0xEeee...EEeE address is used for ETH.
-struct TokenBalance {
+struct TokenBalanceMeta {
     address token;
     uint256 amount;
     ERC20Metadata erc20metadata;
@@ -49,16 +49,17 @@ struct ERC20Metadata {
 // and array of TokenBalanceWithAdapter structs.
 struct AdapterBalance {
     bytes32 protocolAdapterName;
-    TokenBalanceWithAdapter[] balances;
+    TokenBalance[] tokenBalances;
 }
 
 
 // The struct consists of TokenBalance struct
 // and token adapter's name, which should be used
 // to retrieve underlying tokens and rates.
-struct TokenBalanceWithAdapter {
+struct TokenBalance {
     bytes32 tokenAdapterName;
-    TokenBalance tokenBalance;
+    address token;
+    uint256 amount;
 }
 
 
