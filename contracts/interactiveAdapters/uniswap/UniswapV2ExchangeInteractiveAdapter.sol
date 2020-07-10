@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { Action, AmountType } from "../../shared/Structs.sol";
+import { AmountType } from "../../shared/Structs.sol";
 import { UniswapExchangeAdapter } from "../../adapters/uniswap/UniswapExchangeAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -33,19 +33,19 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
  */
 interface UniswapV2Router01 {
     function swapExactTokensForTokens(
-        uint amountIn,
-        uint amountOutMin,
-        address[] calldata path,
-        address to,
-        uint deadline
-    ) external returns (uint[] memory amounts);
+        uint,
+        uint,
+        address[] calldata,
+        address,
+        uint
+    ) external returns (uint[] memory);
     function swapTokensForExactTokens(
-        uint amountOut,
-        uint amountInMax,
-        address[] calldata path,
-        address to,
-        uint deadline
-    ) external returns (uint[] memory amounts);
+        uint,
+        uint,
+        address[] calldata,
+        address,
+        uint
+    ) external returns (uint[] memory);
 }
 
 /**
@@ -94,12 +94,11 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             address(this),
             // solhint-disable-next-line not-rely-on-time
             now
-        ) returns (uint256[] memory amountsOut) {
-            require(amountsOut[amountsOut.length - 1] > 0, "UEIA: deposit fail![1]");
+        ) returns (uint256[] memory) { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("UEIA: deposit fail![2]");
+            revert("UEIA: deposit fail!");
         }
     }
 
@@ -140,12 +139,11 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             address(this),
             // solhint-disable-next-line not-rely-on-time
             now
-        ) returns (uint256[] memory amountsOut) {
-            require(amountsOut[amountsOut.length - 1] == amount, "UEIA: deposit fail![1]");
+        ) returns (uint256[] memory) { //solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("UEIA: deposit fail![2]");
+            revert("UEIA: withdraw fail!");
         }
 
         ERC20(path[0]).safeApprove(ROUTER, 0, "UEIA![3]");

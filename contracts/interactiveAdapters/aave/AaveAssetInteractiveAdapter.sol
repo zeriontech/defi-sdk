@@ -20,8 +20,8 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { Action, AmountType } from "../../shared/Structs.sol";
-import { CompoundAssetAdapter } from "../../adapters/compound/CompoundAssetAdapter.sol";
+import { AmountType } from "../../shared/Structs.sol";
+import { AaveAssetAdapter } from "../../adapters/aave/AaveAssetAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
 
@@ -72,21 +72,21 @@ interface AToken {
 
 
 /**
- * @title Interactive adapter for Compound protocol.
+ * @title Interactive adapter for Aave protocol.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
-contract AaveAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAdapter {
+contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant AETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;
     address internal constant PROVIDER = 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8;
 
     /**
-     * @notice Deposits tokens to the Compound protocol.
+     * @notice Deposits tokens to the Aave protocol.
      * @param tokens Array with one element - underlying token address.
      * @param amounts Array with one element - underlying token amount to be deposited.
      * @param amountTypes Array with one element - amount type.
-     * @return tokensToBeWithdrawn Array with two elements - cToken and COMP addresses.
+     * @return tokensToBeWithdrawn Array with ane element - aToken.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -130,11 +130,11 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAdapter
     }
 
     /**
-     * @notice Withdraws tokens from the Compound protocol.
-     * @param tokens Array with one element - cToken address.
-     * @param amounts Array with one element - cToken amount to be withdrawn.
+     * @notice Withdraws tokens from the Aave protocol.
+     * @param tokens Array with one element - aToken address.
+     * @param amounts Array with one element - aToken amount to be withdrawn.
      * @param amountTypes Array with one element - amount type.
-     * @return tokensToBeWithdrawn Array with two elements - underlying token and COMP addresses.
+     * @return tokensToBeWithdrawn Array with one element - underlying token.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(

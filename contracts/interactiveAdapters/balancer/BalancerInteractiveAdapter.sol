@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { Action, AmountType } from "../../shared/Structs.sol";
+import { AmountType } from "../../shared/Structs.sol";
 import { BalancerAdapter } from "../../adapters/balancer/BalancerAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 

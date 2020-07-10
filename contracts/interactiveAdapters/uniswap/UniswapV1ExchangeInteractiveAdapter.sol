@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { Action, AmountType } from "../../shared/Structs.sol";
+import { AmountType } from "../../shared/Structs.sol";
 import { UniswapExchangeAdapter } from "../../adapters/uniswap/UniswapExchangeAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -139,8 +139,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                 uint256(1),
                 // solhint-disable-next-line not-rely-on-time
                 now
-            ) returns (uint256 boughtAmount) {
-                require(boughtAmount > 0, "UEIA: deposit fail![1]");
+            ) returns (uint256) {
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {
@@ -158,12 +157,11 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                     uint256(1),
                     // solhint-disable-next-line not-rely-on-time
                     now
-                ) returns (uint256 boughtAmount) {
-                    require(boughtAmount > 0, "UEIA: deposit fail![3]");
+                ) returns (uint256) { // solhint-disable-line no-empty-blocks
                 } catch Error(string memory reason) {
                     revert(reason);
                 } catch {
-                    revert("UEIA: deposit fail![4]");
+                    revert("UEIA: deposit fail![3]");
                 }
             } else {
                 try Exchange(exchange).tokenToTokenSwapInput(
@@ -173,12 +171,11 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                     // solhint-disable-next-line not-rely-on-time
                     now,
                     toToken
-                ) returns (uint256 boughtAmount) {
-                    require(boughtAmount > 0, "UEIA: deposit fail![5]");
+                ) returns (uint256) { // solhint-disable-line no-empty-blocks
                 } catch Error(string memory reason) {
                     revert(reason);
                 } catch {
-                    revert("UEIA: deposit fail![6]");
+                    revert("UEIA: deposit fail![4]");
                 }
             }
         }
@@ -220,12 +217,11 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                 amounts[0],
                 // solhint-disable-next-line not-rely-on-time
                 now
-            ) returns (uint256 boughtAmount) {
-                require(boughtAmount > 0, "UEIA: withdraw fail![1]");
+            ) returns (uint256) { // solhint-disable-line no-empty-blocks
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {
-                revert("UEIA: withdraw fail![2]");
+                revert("UEIA: withdraw fail![1]");
             }
         } else {
             address exchange = Factory(FACTORY).getExchange(fromToken);
@@ -240,12 +236,11 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                     balance,
                     // solhint-disable-next-line not-rely-on-time
                     now
-                ) returns (uint256 boughtAmount) {
-                    require(boughtAmount > 0, "UEIA: withdraw fail![3]");
+                ) returns (uint256) { // solhint-disable-line no-empty-blocks
                 } catch Error(string memory reason) {
                     revert(reason);
                 } catch {
-                    revert("UEIA: withdraw fail![4]");
+                    revert("UEIA: withdraw fail![2]");
                 }
             } else {
                 try Exchange(exchange).tokenToTokenSwapOutput(
@@ -255,12 +250,11 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                     // solhint-disable-next-line not-rely-on-time
                     now,
                     tokens[0]
-                ) returns (uint256 boughtAmount) {
-                    require(boughtAmount > 0, "UEIA: withdraw fail![5]");
+                ) returns (uint256) { // solhint-disable-line no-empty-blocks
                 } catch Error(string memory reason) {
                     revert(reason);
                 } catch {
-                    revert("UEIA: withdraw fail![6]");
+                    revert("UEIA: withdraw fail![3]");
                 }
             }
             ERC20(fromToken).safeApprove(exchange, 0, "UEIA![3]");
