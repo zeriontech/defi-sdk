@@ -32,6 +32,27 @@ interface Shares {
 }
 
 /**
+ * @dev Accounting contract interface.
+ * Only the functions required for MelonAdapter contract are added.
+ * The Accounting contract is available here
+ * github.com/melonproject/protocol/blob/master/src/fund/accounting/Accounting.sol
+ */
+
+interface Accounting{
+    function getFundHoldings() external returns (uint[] memory, address[] memory);
+    function performCalculations()
+        public
+        returns (
+            uint gav,
+            uint feesInDenominationAsset,  // unclaimed amount
+            uint feesInShares,             // unclaimed amount
+            uint nav,
+            uint sharePrice,
+            uint gavPerShareNetManagementFee
+        );
+}
+
+/**
  * @title adapter for Melon protocol.
  * @author Connor Martin <cnr.mrtn@gmail.com>
  */
