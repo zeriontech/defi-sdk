@@ -62,7 +62,7 @@ contract MelonAdapter is ProtocolAdapter {
 
     string public constant override tokenType = "MelonToken";
 
-    address internal constant MLN = 0xBEB9eF514a379B997e0798FDcC901Ee474B6D9A1;
+    address internal constant MLNF = 0xec67005c4E498Ec7f55E092bd1d35cbC47C91892;
 
     /**
      * @return Amount of MLNF held by the given account.
