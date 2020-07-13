@@ -49,29 +49,29 @@ contract SignatureVerifier {
 
     bytes internal constant TX_DATA_ENCODED_TYPE = abi.encodePacked(
         "TransactionData(",
-            "Action[] actions,",
-            "Input[] inputs,",
-            "Output[] requiredOutputs,",
-            "uint256 nonce",
+        "Action[] actions,",
+        "Input[] inputs,",
+        "Output[] requiredOutputs,",
+        "uint256 nonce",
         ")"
     );
     bytes internal constant ACTION_ENCODED_TYPE = abi.encodePacked(
         "Action(",
-            "bytes32 protocolAdapterName,",
-            "uint8 actionType,",
-            "address[] tokens,",
-            "uint256[] amounts,",
-            "uint8[] amountTypes,",
-            "bytes data",
+        "bytes32 protocolAdapterName,",
+        "uint8 actionType,",
+        "address[] tokens,",
+        "uint256[] amounts,",
+        "uint8[] amountTypes,",
+        "bytes data",
         ")"
     );
     bytes internal constant INPUT_ENCODED_TYPE = abi.encodePacked(
         "Input(",
-            "address token,",
-            "uint256 amount,",
-            "uint8 amountType,",
-            "uint256 fee,",
-            "address beneficiary",
+        "address token,",
+        "uint256 amount,",
+        "uint8 amountType,",
+        "uint256 fee,",
+        "address beneficiary",
         ")"
     );
     bytes internal constant OUTPUT_ENCODED_TYPE = abi.encodePacked(

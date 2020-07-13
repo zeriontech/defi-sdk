@@ -139,7 +139,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                 uint256(1),
                 // solhint-disable-next-line not-rely-on-time
                 now
-            ) returns (uint256) {
+            ) returns (uint256) { // solhint-disable-line no-empty-blocks
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {

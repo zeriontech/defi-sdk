@@ -83,6 +83,7 @@ contract ERC20TokenAdapter is TokenAdapter {
 
         if (returnData.length == 32 || returnData.length == 4096) {
             bytes32 name;
+            // solhint-disable-next-line no-inline-assembly
             assembly {
                 let free := mload(0x40)
                 returndatacopy(free, 0, 32)
@@ -105,6 +106,7 @@ contract ERC20TokenAdapter is TokenAdapter {
 
         if (returnData.length == 32 || returnData.length == 4096) {
             bytes32 symbol;
+            // solhint-disable-next-line no-inline-assembly
             assembly {
                 let free := mload(0x40)
                 returndatacopy(free, 0, 32)

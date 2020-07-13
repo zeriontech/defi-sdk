@@ -112,6 +112,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
         tokensToBeWithdrawn[0] = LendingPoolCore(core).getReserveATokenAddress(tokens[0]);
 
         if (tokens[0] == ETH) {
+            // solhint-disable-next-line no-empty-blocks
             try LendingPool(pool).deposit{value: amount}(ETH, amount, 0) {
             } catch Error(string memory reason) {
                 revert(reason);
@@ -120,6 +121,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
             }
         } else {
             ERC20(tokens[0]).safeApprove(core, amount, "AAIA!");
+            // solhint-disable-next-line no-empty-blocks
             try LendingPool(pool).deposit(tokens[0], amount, 0) {
             } catch Error(string memory reason) {
                 revert(reason);
@@ -156,6 +158,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = AToken(tokens[0]).underlyingAssetAddress();
 
+        // solhint-disable-next-line no-empty-blocks
         try AToken(tokens[0]).redeem(amount) {
         } catch Error(string memory reason) {
             revert(reason);
