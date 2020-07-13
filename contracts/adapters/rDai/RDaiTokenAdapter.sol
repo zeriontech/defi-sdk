@@ -32,6 +32,9 @@ interface RToken {
     function allowance() external view returns (uint256);
 }
 
+interface CompoundAllocationStrategy {
+  function exchangeRateStored() external view returns (uint256);
+}
 
 
 /**
@@ -42,8 +45,8 @@ contract RDaiTokenAdapter is TokenAdapter {
   /**
    *@dev rDai contract address is proxy contract.
    */
-   address internal constant RDAI = 0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0;
-
+    address internal constant RDAI = 0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0;
+    address internal constant CDAI = 0x5d3a536e4d6dbd6114cc1ead35777bab948e3643;
     /**
      * @return TokenMetadata struct with ERC20-style token info.
      * @dev Implementation of TokenAdapter interface function.
@@ -60,6 +63,7 @@ contract RDaiTokenAdapter is TokenAdapter {
     /**
      * @return Empty Component array.
      * @dev Implementation of TokenAdapter interface function.
+     # @rDAI is DAI invested in Compound as cDAI, you can query the cDAI exchangeRateStored in the CompoundAllocationStrategy.sol contrac
      */
      function getComponents(address token) external view override returns (Component[] memory) {
          Component[] memory underlyingTokens = new Component[](1);
@@ -67,7 +71,7 @@ contract RDaiTokenAdapter is TokenAdapter {
          underlyingTokens[0] = Component({
              token: RToken(token).token(),
              tokenType: "ERC20",
-             rate: RToken(token).tokenPrice()//find out how to get rate properly
+             rate: RToken(token).exchangeRateStored()//find out how to get rate properly
          });
 
          return underlyingTokens;
