@@ -9,7 +9,7 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 const ONE = '0x1111111111111111111111111111111111111111';
 const TWO = '0x2222222222222222222222222222222222222222';
 
-contract.skip('AdapterRegistry', () => {
+contract.only('AdapterRegistry', () => {
   let accounts;
   let adapterRegistry;
   let protocolAdapterAddress;
@@ -35,21 +35,14 @@ contract.skip('AdapterRegistry', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
+    await adapterRegistry.methods.addProtocolAdapters(
       [web3.utils.toHex('Mock')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
+      [
+        protocolAdapterAddress,
+      ],
       [[
         protocolAdapterAddress,
       ]],
-      [[[
-        protocolAdapterAddress,
-      ]]],
     )
       .send({
         from: accounts[0],
@@ -63,15 +56,6 @@ contract.skip('AdapterRegistry', () => {
         from: accounts[0],
         gas: '1000000',
       });
-    mockAsset = [
-      protocolAdapterAddress,
-      web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
-      [
-        'Not available',
-        'N/A',
-        '0',
-      ],
-    ];
   });
 
   it('should be correct owner', async () => {
@@ -83,7 +67,7 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should be correct protocols names', async () => {
-    await adapterRegistry.methods.getProtocolNames()
+    await adapterRegistry.methods.getProtocolAdapterNames()
       .call()
       .then((result) => {
         assert.equal(result.length, 1);
@@ -92,32 +76,19 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should be correct protocol adapters', async () => {
-    await adapterRegistry.methods.getProtocolAdapters(web3.utils.toHex('Mock'))
+    await adapterRegistry.methods.getProtocolAdapterAddress(web3.utils.toHex('Mock'))
       .call()
       .then((result) => {
-        assert.equal(result.length, 1);
-        assert.equal(result[0], protocolAdapterAddress);
+        assert.equal(result, protocolAdapterAddress);
       });
   });
 
   it('should be correct supported tokens', async () => {
-    await adapterRegistry.methods.getSupportedTokens(protocolAdapterAddress)
+    await adapterRegistry.methods.getSupportedTokens(web3.utils.toHex('Mock'))
       .call()
       .then((result) => {
         assert.equal(result.length, 1);
         assert.equal(result[0], protocolAdapterAddress);
-      });
-  });
-
-  it('should be correct protocol metadata', async () => {
-    await adapterRegistry.methods.getProtocolsMetadata([web3.utils.toHex('Mock')])
-      .call()
-      .then((result) => {
-        assert.equal(result[0].name, 'Mock Protocol Name');
-        assert.equal(result[0].description, 'Mock protocol description');
-        assert.equal(result[0].websiteURL, 'Mock website');
-        assert.equal(result[0].iconURL, 'Mock icon');
-        assert.equal(result[0].version, '1');
       });
   });
 
@@ -139,21 +110,16 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should not add protocol not by the owner', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('Mock2')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
+    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
+      [
+        web3.utils.toHex('Mock2'),
+      ],
+      [
+        protocolAdapterAddress,
+      ],
       [[
         protocolAdapterAddress,
       ]],
-      [[[
-        protocolAdapterAddress,
-      ]]],
     )
       .send({
         from: accounts[1],
@@ -161,79 +127,17 @@ contract.skip('AdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol with bad input', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('Mock2'), web3.utils.toHex('Mock3')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
-        protocolAdapterAddress,
-      ]],
-      [[[
-        protocolAdapterAddress,
-      ]]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add protocol with bad input', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('Mock2')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
+  it('should not add protocol with bad input (2 names)', async () => {
+    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       [
-        [
-          protocolAdapterAddress,
-        ],
-        [
-          protocolAdapterAddress,
-        ],
+        web3.utils.toHex('Mock2'),
+        web3.utils.toHex('Mock3'),
       ],
-      [[[
-        protocolAdapterAddress,
-      ]]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add protocol with bad input', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('Mock2')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
       [
-        [
-          protocolAdapterAddress,
-        ],
+        protocolAdapterAddress,
       ],
       [[
-        [
-          protocolAdapterAddress,
-        ],
-        [
-          protocolAdapterAddress,
-        ],
+        protocolAdapterAddress,
       ]],
     )
       .send({
@@ -242,26 +146,40 @@ contract.skip('AdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol with bad input', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('Mock2')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
+  it('should not add protocol with bad input (2 addresses)', async () => {
+    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
+      [
+        web3.utils.toHex('Mock2'),
+      ],
+      [
+        protocolAdapterAddress,
+        protocolAdapterAddress,
+      ],
       [[
         protocolAdapterAddress,
       ]],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      }));
+  });
+
+  it('should not add protocol with bad input (2 sets of supported tokens)', async () => {
+    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       [
-        [[
+        web3.utils.toHex('Mock2'),
+      ],
+      [
+        protocolAdapterAddress,
+      ],
+      [
+        [
           protocolAdapterAddress,
-        ]],
-        [[
+        ],
+        [
           protocolAdapterAddress,
-        ]],
+        ],
       ],
     )
       .send({
@@ -271,57 +189,10 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should not add protocol with empty input', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocols(
+    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       [],
       [],
       [],
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add protocol with init name', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('Initial protocol name')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
-        protocolAdapterAddress,
-      ]],
-      [[[
-        protocolAdapterAddress,
-      ]]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add protocol with existing name', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('Mock')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
-        protocolAdapterAddress,
-      ]],
-      [[[
-        protocolAdapterAddress,
-      ]]],
     )
       .send({
         from: accounts[0],
@@ -330,21 +201,30 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should not add protocol with empty name', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocols(
+    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       ['0x'],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
+      [
+        protocolAdapterAddress,
+      ],
       [[
         protocolAdapterAddress,
       ]],
-      [[[
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      }));
+  });
+
+  it('should not add protocol with existing name', async () => {
+    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
+      [web3.utils.toHex('Mock')],
+      [
         protocolAdapterAddress,
-      ]]],
+      ],
+      [[
+        protocolAdapterAddress,
+      ]],
     )
       .send({
         from: accounts[0],
@@ -353,19 +233,14 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should not add protocol with zero adapter', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocols(
+    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       [web3.utils.toHex('Mock2')],
+      [
+        ZERO,
+      ],
       [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[ZERO]],
-      [[[
         protocolAdapterAddress,
-      ]]],
+      ]],
     )
       .send({
         from: accounts[0],
@@ -373,50 +248,21 @@ contract.skip('AdapterRegistry', () => {
       }));
   });
 
-  // it('should not add protocol with no assets', async () => {
-  //   await expectRevert(adapterRegistry.methods.addProtocols(
-  //     [web3.utils.toHex('Mock2')],
-  //     [[
-  //       'Mock Protocol Name',
-  //       'Mock protocol description',
-  //       'Mock website',
-  //       'Mock icon',
-  //       '0',
-  //     ]],
-  //
-  //     [[
-  //       protocolAdapterAddress,
-  //     ]],
-  //     [[[]]],
-  //   )
-  //     .send({
-  //       from: accounts[0],
-  //       gas: '300000',
-  //     }));
-  // });
-
   it('should add protocol by the owner', async () => {
-    await adapterRegistry.methods.addProtocols(
+    await adapterRegistry.methods.addProtocolAdapters(
       [web3.utils.toHex('Mock2')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
+      [
         ONE,
-      ]],
-      [[[
+      ],
+      [[
         protocolAdapterAddress,
-      ]]],
+      ]],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods['getProtocolNames()']()
+    await adapterRegistry.methods.getProtocolAdapterNames()
       .call()
       .then((result) => {
         assert.equal(result.length, 2);
@@ -425,7 +271,7 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should not remove protocol not by the owner', async () => {
-    await expectRevert(adapterRegistry.methods.removeProtocols(
+    await expectRevert(adapterRegistry.methods.removeProtocolAdapters(
       [web3.utils.toHex('Mock')],
     )
       .send({
@@ -435,7 +281,7 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should not remove protocol with wrong name', async () => {
-    await expectRevert(adapterRegistry.methods.removeProtocols(
+    await expectRevert(adapterRegistry.methods.removeProtocolAdapters(
       [web3.utils.toHex('Mock1')],
     )
       .send({
@@ -445,7 +291,7 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should not remove protocol with empty input', async () => {
-    await expectRevert(adapterRegistry.methods.removeProtocols(
+    await expectRevert(adapterRegistry.methods.removeProtocolAdapters(
       [],
     )
       .send({
@@ -455,113 +301,92 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should remove protocol by the owner', async () => {
-    await adapterRegistry.methods.removeProtocols(
+    await adapterRegistry.methods.removeProtocolAdapters(
       [web3.utils.toHex('Mock')],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods['getProtocolNames()']()
+    await adapterRegistry.methods.getProtocolAdapterNames()
       .call()
       .then((result) => {
         assert.equal(result.length, 0);
       });
-    await adapterRegistry.methods.addProtocols(
+    await adapterRegistry.methods.addProtocolAdapters(
       [web3.utils.toHex('Mock2')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
+      [
+        protocolAdapterAddress,
+      ],
       [[
         protocolAdapterAddress,
       ]],
-      [[[
-        protocolAdapterAddress,
-      ]]],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.addProtocols(
+    await adapterRegistry.methods.addProtocolAdapters(
       [web3.utils.toHex('Mock1')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
-        ONE,
-      ]],
-      [[[
+      [
         protocolAdapterAddress,
-      ]]],
+      ],
+      [[
+        protocolAdapterAddress,
+      ]],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods['getProtocolNames()']()
+    await adapterRegistry.methods.getProtocolAdapterNames()
       .call()
       .then((result) => {
         assert.equal(result.length, 2);
         assert.equal(web3.utils.hexToUtf8(result[0]), 'Mock2');
         assert.equal(web3.utils.hexToUtf8(result[1]), 'Mock1');
       });
-    await adapterRegistry.methods.removeProtocols(
+    await adapterRegistry.methods.removeProtocolAdapters(
       [web3.utils.toHex('Mock2')],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods['getProtocolNames()']()
+    await adapterRegistry.methods.getProtocolAdapterNames()
       .call()
       .then((result) => {
         assert.equal(result.length, 1);
         assert.equal(web3.utils.hexToUtf8(result[0]), 'Mock1');
       });
-    await adapterRegistry.methods.addProtocols(
+    await adapterRegistry.methods.addProtocolAdapters(
       [web3.utils.toHex('Mock2')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
-        TWO,
-      ]],
-      [[[
+      [
         protocolAdapterAddress,
-      ]]],
+      ],
+      [[
+        protocolAdapterAddress,
+      ]],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods['getProtocolNames()']()
+    await adapterRegistry.methods.getProtocolAdapterNames()
       .call()
       .then((result) => {
         assert.equal(result.length, 2);
         assert.equal(web3.utils.hexToUtf8(result[0]), 'Mock1');
         assert.equal(web3.utils.hexToUtf8(result[1]), 'Mock2');
       });
-    await adapterRegistry.methods.removeProtocols(
+    await adapterRegistry.methods.removeProtocolAdapters(
       [web3.utils.toHex('Mock2')],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods['getProtocolNames()']()
+    await adapterRegistry.methods.getProtocolAdapterNames()
       .call()
       .then((result) => {
         assert.equal(result.length, 1);
@@ -569,313 +394,11 @@ contract.skip('AdapterRegistry', () => {
       });
   });
 
-  it('should not update protocol info not by the owner', async () => {
-    await expectRevert(adapterRegistry.methods.updateProtocolMetadata(
-      web3.utils.toHex('Mock'),
-      'New Mock Protocol Name',
-      'New mock description',
-      'New mock website',
-      '',
-    )
-      .send({
-        from: accounts[1],
-        gas: '300000',
-      }));
-  });
-
-  it('should not update protocol info with wrong name', async () => {
-    await expectRevert(adapterRegistry.methods.updateProtocolMetadata(
-      web3.utils.toHex('Mock1'),
-      'New Mock Protocol Name',
-      'New mock description',
-      'New mock website',
-      '',
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not update protocol info with empty input', async () => {
-    await expectRevert(adapterRegistry.methods.updateProtocolMetadata(
-      web3.utils.toHex('Mock'),
-      '',
-      '',
-      '',
-      '',
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should update protocol info by the owner', async () => {
-    await adapterRegistry.methods.getProtocolsMetadata([web3.utils.toHex('Mock')])
-      .call()
-      .then((result) => {
-        assert.equal(result[0].name, 'Mock Protocol Name');
-        assert.equal(result[0].description, 'Mock protocol description');
-        assert.equal(result[0].websiteURL, 'Mock website');
-        assert.equal(result[0].iconURL, 'Mock icon');
-        assert.equal(result[0].version, '1');
-      });
-    await adapterRegistry.methods.updateProtocolMetadata(
-      web3.utils.toHex('Mock'),
-      'New Mock Protocol Name',
-      'New mock description',
-      'New mock website',
-      '', // empty new icon parameter
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await adapterRegistry.methods.getProtocolsMetadata([web3.utils.toHex('Mock')])
-      .call()
-      .then((result) => {
-        assert.equal(result[0].name, 'New Mock Protocol Name');
-        assert.equal(result[0].description, 'New mock description');
-        assert.equal(result[0].websiteURL, 'New mock website');
-        assert.equal(result[0].iconURL, 'Mock icon');
-        assert.equal(result[0].version, '2');
-      });
-    await adapterRegistry.methods.updateProtocolMetadata(
-      web3.utils.toHex('Mock'),
-      '',
-      '',
-      '',
-      'New mock icon',
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await adapterRegistry.methods.getProtocolsMetadata([web3.utils.toHex('Mock')])
-      .call()
-      .then((result) => {
-        assert.equal(result[0].name, 'New Mock Protocol Name');
-        assert.equal(result[0].description, 'New mock description');
-        assert.equal(result[0].websiteURL, 'New mock website');
-        assert.equal(result[0].iconURL, 'New mock icon');
-        assert.equal(result[0].version, '3');
-      });
-  });
-
-  it('should not add protocol adapter not by the owner', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
-      web3.utils.toHex('Mock'),
-      [
-        protocolAdapterAddress,
-      ],
-      [[
-        protocolAdapterAddress,
-      ]],
-    )
-      .send({
-        from: accounts[1],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add protocol adapter with wrong protocol name', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
-      web3.utils.toHex('Mock1'),
-      [protocolAdapterAddress],
-      [[protocolAdapterAddress]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add protocol adapter that is already in use', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
-      web3.utils.toHex('Mock'),
-      [protocolAdapterAddress],
-      [[protocolAdapterAddress]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add protocol adapter with no adapters', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
-      web3.utils.toHex('Mock'),
-      [],
-      [[]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add protocol adapter with zero address and non-empty token list', async () => {
-    await expectRevert(adapterRegistry.methods.addProtocolAdapters(
-      web3.utils.toHex('Mock'),
-      [ZERO],
-      [[protocolAdapterAddress]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should add protocol adapter by the owner', async () => {
-    await adapterRegistry.methods.addProtocolAdapters(
-      web3.utils.toHex('Mock'),
-      [ONE, ZERO],
-      [[protocolAdapterAddress], []],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await adapterRegistry.methods.getProtocolAdapters(web3.utils.toHex('Mock'))
-      .call()
-      .then((result) => {
-        assert.deepEqual(result, [protocolAdapterAddress, ONE, ZERO]);
-      });
-  });
-
-  it('should not remove protocol adapter not by the owner', async () => {
-    await expectRevert(adapterRegistry.methods.removeProtocolAdapters(
-      web3.utils.toHex('Mock'),
-      [
-        0,
-      ],
-    )
-      .send({
-        from: accounts[1],
-        gas: '300000',
-      }));
-  });
-
-  it('should not remove protocol adapter with wrong protocol name', async () => {
-    await expectRevert(adapterRegistry.methods.removeProtocolAdapters(
-      web3.utils.toHex('Mock1'),
-      [
-        0,
-      ],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not remove protocol adapter with large index', async () => {
-    await expectRevert(adapterRegistry.methods.removeProtocolAdapters(
-      web3.utils.toHex('Mock'),
-      [
-        5,
-      ],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not remove protocol adapter with empty input', async () => {
-    await expectRevert(adapterRegistry.methods.removeProtocolAdapters(
-      web3.utils.toHex('Mock'),
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should remove protocol adapter by the owner', async () => {
-    await adapterRegistry.methods.removeProtocolAdapters(
-      web3.utils.toHex('Mock'),
-      [
-        0,
-      ],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await adapterRegistry.methods.getProtocolAdapters(web3.utils.toHex('Mock'))
-      .call()
-      .then((result) => {
-        assert.equal(result.length, 0);
-      });
-    await adapterRegistry.methods.addProtocolAdapters(
-      web3.utils.toHex('Mock'),
-      [ONE, TWO],
-      [[ONE], [TWO]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await adapterRegistry.methods.getProtocolAdapters(web3.utils.toHex('Mock'))
-      .call()
-      .then((result) => {
-        assert.deepEqual(result, [ONE, TWO]);
-      });
-    await adapterRegistry.methods.removeProtocolAdapters(
-      web3.utils.toHex('Mock'),
-      [
-        0,
-      ],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await adapterRegistry.methods.getProtocolAdapters(web3.utils.toHex('Mock'))
-      .call()
-      .then((result) => {
-        assert.deepEqual(result, [TWO]);
-      });
-    await adapterRegistry.methods.addProtocolAdapters(
-      web3.utils.toHex('Mock'),
-      [ONE],
-      [[ONE]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await adapterRegistry.methods.getProtocolAdapters(web3.utils.toHex('Mock'))
-      .call()
-      .then((result) => {
-        assert.deepEqual(result, [TWO, ONE]);
-      });
-    await adapterRegistry.methods.removeProtocolAdapters(
-      web3.utils.toHex('Mock'),
-      [
-        1,
-      ],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await adapterRegistry.methods.getProtocolAdapters(web3.utils.toHex('Mock'))
-      .call()
-      .then((result) => {
-        assert.deepEqual(result, [TWO]);
-      });
-  });
-
   it('should not update protocol adapter not by the owner', async () => {
-    await expectRevert(adapterRegistry.methods.updateProtocolAdapter(
-      web3.utils.toHex('Mock'),
-      0,
-      ONE,
-      [],
+    await expectRevert(adapterRegistry.methods.updateProtocolAdapters(
+      [web3.utils.toHex('Mock')],
+      [ONE],
+      [[]],
     )
       .send({
         from: accounts[1],
@@ -884,24 +407,10 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should not update protocol adapter with wrong protocol name', async () => {
-    await expectRevert(adapterRegistry.methods.updateProtocolAdapter(
-      web3.utils.toHex('Mock1'),
-      0,
-      ONE,
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not update protocol adapter with large index', async () => {
-    await expectRevert(adapterRegistry.methods.updateProtocolAdapter(
-      web3.utils.toHex('Mock'),
-      5,
-      ONE,
-      [],
+    await expectRevert(adapterRegistry.methods.updateProtocolAdapters(
+      [web3.utils.toHex('Mock1')],
+      [ONE],
+      [[]],
     )
       .send({
         from: accounts[0],
@@ -910,11 +419,10 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should not update protocol adapter with zero address', async () => {
-    await expectRevert(adapterRegistry.methods.updateProtocolAdapter(
-      web3.utils.toHex('Mock'),
-      0,
-      ZERO,
-      [ONE],
+    await expectRevert(adapterRegistry.methods.updateProtocolAdapters(
+      [web3.utils.toHex('Mock')],
+      [ZERO],
+      [[ONE]],
     )
       .send({
         from: accounts[0],
@@ -922,25 +430,11 @@ contract.skip('AdapterRegistry', () => {
       }));
   });
 
-  // it('should not update protocol adapter with same address', async () => {
-  //   await expectRevert(adapterRegistry.methods.updateProtocolAdapter(
-  //     web3.utils.toHex('Mock'),
-  //     0,
-  //     protocolAdapterAddress,
-  //     [ONE],
-  //   )
-  //     .send({
-  //       from: accounts[0],
-  //       gas: '300000',
-  //     }));
-  // });
-
   it('should update protocol adapter by the owner', async () => {
-    await adapterRegistry.methods.updateProtocolAdapter(
-      web3.utils.toHex('Mock'),
-      0,
-      ONE,
-      [],
+    await adapterRegistry.methods.updateProtocolAdapters(
+      [web3.utils.toHex('Mock')],
+      [ONE],
+      [[]],
     )
       .send({
         from: accounts[0],
@@ -951,26 +445,24 @@ contract.skip('AdapterRegistry', () => {
       .then((result) => {
         assert.deepEqual(result, [ONE]);
       });
-    await adapterRegistry.methods.updateProtocolAdapter(
-      web3.utils.toHex('Mock'),
-      0,
-      ONE,
-      [ONE, ONE],
+    await adapterRegistry.methods.updateProtocolAdapters(
+      [web3.utils.toHex('Mock')],
+      [ONE],
+      [[ONE, ONE]],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.getSupportedTokens(ONE)
+    await adapterRegistry.methods.getSupportedTokens(web3.utils.toHex('Mock'))
       .call()
       .then((result) => {
         assert.deepEqual(result, [ONE, ONE]);
       });
-    await adapterRegistry.methods.updateProtocolAdapter(
-      web3.utils.toHex('Mock'),
-      0,
-      TWO,
-      [TWO, TWO],
+    await adapterRegistry.methods.updateProtocolAdapters(
+      [web3.utils.toHex('Mock')],
+      [TWO],
+      [[TWO, TWO]],
     )
       .send({
         from: accounts[0],
@@ -981,27 +473,21 @@ contract.skip('AdapterRegistry', () => {
       .then((result) => {
         assert.deepEqual(result, [TWO]);
       });
-    await adapterRegistry.methods.getSupportedTokens(ONE)
-      .call()
-      .then((result) => {
-        assert.deepEqual(result, []);
-      });
-    await adapterRegistry.methods.getSupportedTokens(TWO)
+    await adapterRegistry.methods.getSupportedTokens(web3.utils.toHex('Mock'))
       .call()
       .then((result) => {
         assert.deepEqual(result, [TWO, TWO]);
       });
-    await adapterRegistry.methods.updateProtocolAdapter(
-      web3.utils.toHex('Mock'),
-      0,
-      TWO,
-      [],
+    await adapterRegistry.methods.updateProtocolAdapters(
+      [web3.utils.toHex('Mock')],
+      [TWO],
+      [[]],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.getSupportedTokens(TWO)
+    await adapterRegistry.methods.getSupportedTokens(web3.utils.toHex('Mock'))
       .call()
       .then((result) => {
         assert.deepEqual(result, []);
@@ -1034,17 +520,6 @@ contract.skip('AdapterRegistry', () => {
     await expectRevert(adapterRegistry.methods.addTokenAdapters(
       [web3.utils.toHex('ONE')],
       [ZERO],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add token adapter with init name', async () => {
-    await expectRevert(adapterRegistry.methods.addTokenAdapters(
-      [web3.utils.toHex('Initial token name')],
-      [ONE],
     )
       .send({
         from: accounts[0],
@@ -1101,7 +576,7 @@ contract.skip('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods['getTokenAdapterNames()']()
+    await adapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.equal(result.length, 1);
@@ -1139,16 +614,6 @@ contract.skip('AdapterRegistry', () => {
       }));
   });
 
-  it('should not remove token adapter with no names', async () => {
-    await expectRevert(adapterRegistry.methods.removeTokenAdapters(
-      [web3.utils.toHex('ERC20')],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
   it('should remove token adapter by the owner', async () => {
     await adapterRegistry.methods.removeTokenAdapters(
       [web3.utils.toHex('ERC20')],
@@ -1157,7 +622,7 @@ contract.skip('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods['getTokenAdapterNames()']()
+    await adapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.equal(result.length, 0);
@@ -1178,7 +643,7 @@ contract.skip('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods['getTokenAdapterNames()']()
+    await adapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.deepEqual(result.map(web3.utils.hexToUtf8), ['ERC20', 'CToken']);
@@ -1190,7 +655,7 @@ contract.skip('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods['getTokenAdapterNames()']()
+    await adapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.deepEqual(result.map(web3.utils.hexToUtf8), ['CToken']);
@@ -1203,7 +668,7 @@ contract.skip('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods['getTokenAdapterNames()']()
+    await adapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.deepEqual(result.map(web3.utils.hexToUtf8), ['CToken', 'ERC20']);
@@ -1215,7 +680,7 @@ contract.skip('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods['getTokenAdapterNames()']()
+    await adapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.deepEqual(result.map(web3.utils.hexToUtf8), ['CToken']);
@@ -1223,9 +688,9 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should not update token adapter not by the owner', async () => {
-    await expectRevert(adapterRegistry.methods.updateTokenAdapterAddress(
-      web3.utils.toHex('ERC20'),
-      ONE,
+    await expectRevert(adapterRegistry.methods.updateTokenAdapters(
+      [web3.utils.toHex('ERC20')],
+      [ONE],
     )
       .send({
         from: accounts[1],
@@ -1234,9 +699,9 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should not update token adapter with zero address', async () => {
-    await expectRevert(adapterRegistry.methods.updateTokenAdapterAddress(
-      web3.utils.toHex('ERC20'),
-      ZERO,
+    await expectRevert(adapterRegistry.methods.updateTokenAdapters(
+      [web3.utils.toHex('ERC20')],
+      [ZERO],
     )
       .send({
         from: accounts[0],
@@ -1245,9 +710,9 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should not update token adapter with bad name', async () => {
-    await expectRevert(adapterRegistry.methods.updateTokenAdapterAddress(
-      web3.utils.toHex('ERC220'),
-      ONE,
+    await expectRevert(adapterRegistry.methods.updateTokenAdapters(
+      [web3.utils.toHex('ERC220')],
+      [ONE],
     )
       .send({
         from: accounts[0],
@@ -1261,9 +726,9 @@ contract.skip('AdapterRegistry', () => {
       .then((result) => {
         newTokenAdapterAddress = result.address;
       });
-    await adapterRegistry.methods.updateTokenAdapterAddress(
-      web3.utils.toHex('ERC20'),
-      newTokenAdapterAddress,
+    await adapterRegistry.methods.updateTokenAdapters(
+      [web3.utils.toHex('ERC20')],
+      [newTokenAdapterAddress],
     )
       .send({
         from: accounts[0],
@@ -1278,14 +743,14 @@ contract.skip('AdapterRegistry', () => {
 
   it('should not transfer ownership not by the owner', async () => {
     await expectRevert(
-      adapterRegistry.methods['transferOwnership(address)'](accounts[1])
+      adapterRegistry.methods.transferOwnership(accounts[1])
         .send({ from: accounts[1] }),
     );
   });
 
   it('should not transfer ownership to the zero address', async () => {
     await expectRevert(
-      adapterRegistry.methods['transferOwnership(address)'](ZERO)
+      adapterRegistry.methods.transferOwnership(ZERO)
         .send({
           from: accounts[0],
           gas: '300000',
@@ -1294,12 +759,12 @@ contract.skip('AdapterRegistry', () => {
   });
 
   it('should transfer ownership by the owner', async () => {
-    await adapterRegistry.methods['transferOwnership(address)'](accounts[1])
+    await adapterRegistry.methods.transferOwnership(accounts[1])
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods['owner()']()
+    await adapterRegistry.methods.owner()
       .call()
       .then((result) => {
         assert.equal(result, accounts[1]);
@@ -1310,13 +775,38 @@ contract.skip('AdapterRegistry', () => {
     await adapterRegistry.methods.getBalances(accounts[0])
       .call()
       .then((result) => {
-        assert.equal(web3.utils.hexToUtf8(result[0].protocolName), 'Mock');
-        assert.equal(
-          web3.utils.hexToUtf8(result[0].adapterBalances[0].metadata.adapterType),
-          'Asset',
+        assert.equal(web3.utils.hexToUtf8(result[0].protocolAdapterName), 'Mock');
+        assert.deepEqual(
+          result[0].tokenBalances[0],
+          [
+            "ERC20",
+            protocolAdapterAddress,
+            1000,
+          ],
         );
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].metadata, mockAsset);
-        assert.equal(result[0].adapterBalances[0].balances[0].amount, 1000);
+      });
+    await adapterRegistry.methods.getFullTokenBalances(
+      [[
+        "ERC20",
+        protocolAdapterAddress,
+        1000,
+      ]],
+    )
+      .call()
+      .then((result) => {
+        assert.equal(web3.utils.hexToUtf8(result[0].protocolAdapterName), 'Mock');
+        assert.deepEqual(
+          result.base,
+          [
+            protocolAdapterAddress,
+            1000,
+            [
+              "Not available",
+              "N/A",
+              0,
+            ],
+          ],
+        );
       });
   });
 

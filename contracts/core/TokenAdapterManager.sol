@@ -100,7 +100,7 @@ abstract contract TokenAdapterManager is Ownable {
     /**
      * @return Array of token adapter names.
      */
-    function get_tokenAdapterNames()
+    function getTokenAdapterNames()
         external
         view
         returns (bytes32[] memory)
@@ -112,7 +112,7 @@ abstract contract TokenAdapterManager is Ownable {
      * @param name Name of token adapter.
      * @return Address of token adapter.
      */
-    function get_tokenAdapterAddress(
+    function getTokenAdapterAddress(
         bytes32 name
     )
         external
