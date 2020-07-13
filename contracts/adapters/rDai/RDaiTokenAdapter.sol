@@ -50,10 +50,10 @@ contract RDaiTokenAdapter is TokenAdapter {
      */
     function getMetadata(address token) external view override returns (TokenMetadata memory) {
         return TokenMetadata({
-            token: RDAI,
-            name: "Redeemable DAI",
-            symbol: "rDAI",
-            decimals: uint8(8)
+            token: token,
+            name: ERC20(token).name(),
+            symbol: ERC20(token).symbol(),
+            decimals: ERC20(token).decimals()
         });
     }
 
@@ -65,9 +65,9 @@ contract RDaiTokenAdapter is TokenAdapter {
          Component[] memory underlyingTokens = new Component[](1);
 
          underlyingTokens[0] = Component({
-             token: RToken(token),
+             token: RToken(token).token(),
              tokenType: "ERC20",
-             rate: 1e18
+             rate: RToken(token).tokenPrice()//find out how to get rate properly
          });
 
          return underlyingTokens;
