@@ -476,10 +476,10 @@ contract.only('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.getProtocolAdapterNames(web3.utils.toHex('Mock'))
+    await adapterRegistry.methods.getProtocolAdapterAddress(web3.utils.toHex('Mock'))
       .call()
       .then((result) => {
-        assert.deepEqual(result, [ONE]);
+        assert.equal(result, ONE);
       });
     await adapterRegistry.methods.updateProtocolAdapters(
       [web3.utils.toHex('Mock')],
@@ -504,10 +504,10 @@ contract.only('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.getProtocolAdapterNames(web3.utils.toHex('Mock'))
+    await adapterRegistry.methods.getProtocolAdapterAddress(web3.utils.toHex('Mock'))
       .call()
       .then((result) => {
-        assert.deepEqual(result, [TWO]);
+        assert.deepEqual(result, TWO);
       });
     await adapterRegistry.methods.getSupportedTokens(web3.utils.toHex('Mock'))
       .call()
@@ -844,11 +844,14 @@ contract.only('AdapterRegistry', () => {
     await adapterRegistry.methods.getBalances(accounts[0])
       .call()
       .then((result) => {
-        assert.equal(web3.utils.hexToUtf8(result[0].protocolAdapterName), 'Mock');
+        assert.equal(
+          result[0].protocolAdapterName,
+          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Mock')),
+        );
         assert.deepEqual(
           result[0].tokenBalances[0],
           [
-            web3.utils.encodeParameter('bytes32', 'ERC20'),
+            web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
             protocolAdapterAddress,
             '1000',
           ],
@@ -856,23 +859,22 @@ contract.only('AdapterRegistry', () => {
       });
     await adapterRegistry.methods.getFullTokenBalances(
       [[
-        web3.utils.encodeParameter('bytes32', 'ERC20'),
+        web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
         protocolAdapterAddress,
         '1000',
       ]],
     )
       .call()
       .then((result) => {
-        assert.equal(web3.utils.hexToUtf8(result[0].protocolAdapterName), 'Mock');
         assert.deepEqual(
-          result.base,
+          result[0].base,
           [
             protocolAdapterAddress,
             '1000',
             [
               'Not available',
               'N/A',
-              0,
+              '0',
             ],
           ],
         );

@@ -130,19 +130,21 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
         AdapterBalance[] memory nonZeroAdapterBalances = new AdapterBalance[](adaptersCounter);
         adaptersCounter = 0;
         for (uint256 i = 0; i < adapterBalances.length; i++) {
-            nonZeroAdapterBalances[adaptersCounter].protocolAdapterName =
-                adapterBalances[i].protocolAdapterName;
-            nonZeroAdapterBalances[adaptersCounter].tokenBalances =
-                new TokenBalance[](tokensCounters[i]);
-            tokensCounters[i] = 0;
-            for (uint256 j = 0; j < adapterBalances[i].tokenBalances.length; j++) {
-                if (adapterBalances[i].tokenBalances[j].amount > 0) {
-                    nonZeroAdapterBalances[adaptersCounter].tokenBalances[tokensCounters[i]] =
+            if (tokensCounters[i] > 0) {
+                nonZeroAdapterBalances[adaptersCounter] = AdapterBalance({
+                    protocolAdapterName: adapterBalances[i].protocolAdapterName,
+                    tokenBalances: new TokenBalance[](tokensCounters[i])
+                    });
+                tokensCounters[i] = 0;
+                for (uint256 j = 0; j < adapterBalances[i].tokenBalances.length; j++) {
+                    if (adapterBalances[i].tokenBalances[j].amount > 0) {
+                        nonZeroAdapterBalances[adaptersCounter].tokenBalances[tokensCounters[i]] =
                         adapterBalances[i].tokenBalances[j];
-                    tokensCounters[i]++;
+                        tokensCounters[i]++;
+                    }
                 }
+                adaptersCounter++;
             }
-            adaptersCounter++;
         }
 
         return nonZeroAdapterBalances;
