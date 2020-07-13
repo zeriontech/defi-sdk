@@ -42,6 +42,11 @@ contract MelonTokenAdapter is TokenaAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address) external view override returns (Component[] memory) {
-        return new Component[](0);
-    }
+      Component[] memory underlyingTokens = new Component[](1);
+
+      underlyingTokens[0] = Component({
+          token: getUnderlying(token),
+          tokenType: "ERC20",
+          rate: Melon(token).exchangeRateStored()
+      });
 }
