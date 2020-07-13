@@ -10,9 +10,6 @@ const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;
 const EMPTY_BYTES = '0x';
-const ADAPTER_ASSET = 0;
-const ADAPTER_DEBT = 1;
-const ADAPTER_EXCHANGE = 2;
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
@@ -45,19 +42,12 @@ contract('Core + Router', () => {
         .then((result) => {
           adapterRegistry = result.contract;
         });
-      await adapterRegistry.methods.addProtocols(
+      await adapterRegistry.methods.addProtocolAdapters(
         [web3.utils.toHex('Weth')],
-        [[
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ]],
-        [[
-          protocolAdapterAddress, ZERO,
-        ]],
-        [[[], []]],
+        [
+          protocolAdapterAddress,
+        ],
+        [[]],
       )
         .send({
           from: accounts[0],
@@ -102,9 +92,8 @@ contract('Core + Router', () => {
         // actions
         [
           [
-            ACTION_DEPOSIT,
             web3.utils.toHex('Weth'),
-            ADAPTER_ASSET,
+            ACTION_DEPOSIT,
             [],
             [web3.utils.toWei('1', 'ether')],
             [0],
@@ -128,9 +117,8 @@ contract('Core + Router', () => {
         // actions
         [
           [
-            ACTION_DEPOSIT,
             web3.utils.toHex('Weth'),
-            ADAPTER_ASSET,
+            ACTION_DEPOSIT,
             [],
             [web3.utils.toWei('1.1', 'ether')],
             [AMOUNT_RELATIVE],
@@ -154,9 +142,8 @@ contract('Core + Router', () => {
         // actions
         [
           [
-            ACTION_DEPOSIT,
             web3.utils.toHex('Weth'),
-            ADAPTER_ASSET,
+            ACTION_DEPOSIT,
             [],
             [web3.utils.toWei('1', 'ether')],
             [AMOUNT_ABSOLUTE],
@@ -182,9 +169,8 @@ contract('Core + Router', () => {
         // actions
         [
           [
-            ACTION_WITHDRAW,
             web3.utils.toHex('Weth'),
-            ADAPTER_ASSET,
+            ACTION_WITHDRAW,
             [],
             [web3.utils.toWei('1', 'ether')],
             [AMOUNT_RELATIVE],
@@ -206,14 +192,13 @@ contract('Core + Router', () => {
         });
     });
 
-    it('should not execute action with wrong type', async () => {
+    it('should not execute action with wrong name', async () => {
       await expectRevert(router.methods.startExecution(
         // actions
         [
           [
-            0,
-            web3.utils.toHex('Weth'),
-            ADAPTER_ASSET,
+            web3.utils.toHex('Weth1'),
+            ACTION_DEPOSIT,
             [],
             [web3.utils.toWei('1', 'ether')],
             [AMOUNT_ABSOLUTE],
@@ -237,90 +222,11 @@ contract('Core + Router', () => {
         // actions
         [
           [
-            ACTION_DEPOSIT,
             web3.utils.toHex('Weth'),
-            ADAPTER_ASSET,
+            ACTION_DEPOSIT,
             [],
             [web3.utils.toWei('1', 'ether')],
             [AMOUNT_ABSOLUTE, AMOUNT_ABSOLUTE],
-            EMPTY_BYTES,
-          ],
-        ],
-        // inputs
-        [],
-        // outputs
-        [],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-          value: web3.utils.toWei('1', 'ether'),
-        }));
-    });
-
-    it('should not execute action with wrong protocol', async () => {
-      await expectRevert(router.methods.startExecution(
-        // actions
-        [
-          [
-            ACTION_DEPOSIT,
-            web3.utils.toHex('WethHHHH'),
-            ADAPTER_ASSET,
-            [],
-            [web3.utils.toWei('1', 'ether')],
-            [AMOUNT_ABSOLUTE],
-            EMPTY_BYTES,
-          ],
-        ],
-        // inputs
-        [],
-        // outputs
-        [],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-          value: web3.utils.toWei('1', 'ether'),
-        }));
-    });
-
-    it('should not execute action with wrong index', async () => {
-      await expectRevert(router.methods.startExecution(
-        // actions
-        [
-          [
-            ACTION_DEPOSIT,
-            web3.utils.toHex('Weth'),
-            ADAPTER_EXCHANGE,
-            [],
-            [web3.utils.toWei('1', 'ether')],
-            [AMOUNT_ABSOLUTE],
-            EMPTY_BYTES,
-          ],
-        ],
-        // inputs
-        [],
-        // outputs
-        [],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-          value: web3.utils.toWei('1', 'ether'),
-        }));
-    });
-
-    it('should not execute action with wrong zero adapter', async () => {
-      await expectRevert(router.methods.startExecution(
-        // actions
-        [
-          [
-            ACTION_DEPOSIT,
-            web3.utils.toHex('Weth'),
-            ADAPTER_DEBT,
-            [],
-            [web3.utils.toWei('1', 'ether')],
-            [AMOUNT_ABSOLUTE],
             EMPTY_BYTES,
           ],
         ],

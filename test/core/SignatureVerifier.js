@@ -81,9 +81,8 @@ contract('SignatureVerifier', () => {
       {
         actions: [
           {
-            actionType: 1,
             protocolName: web3.utils.toHex('Uniswap V2'),
-            adapterIndex: 2,
+            actionType: 1,
             tokens: [
               daiAddress,
             ],
@@ -126,9 +125,8 @@ contract('SignatureVerifier', () => {
       [
         [
           [
-            1,
             web3.utils.toHex('Uniswap V2'),
-            2,
+            1,
             [daiAddress],
             [web3.utils.toWei('1', 'ether')],
             [2],

@@ -70,7 +70,7 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
+    await adapterRegistry.methods.addProtocolAdapters(
       [web3.utils.toHex('Uniswap V2'), web3.utils.toHex('Weth')],
       [
         [
@@ -492,7 +492,7 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
       await adapterRegistry.methods['getBalances(address)'](accounts[0])
         .call()
         .then((result) => {
-          wethDaiAmount = result[0].adapterBalances[0].balances[0].amount;
+          wethDaiAmount = result[0].tokenBalances[0].amount;
         });
       await WETHDAI.methods.approve(tokenSpender.options.address, wethDaiAmount.toString())
         .send({
@@ -527,7 +527,7 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
       await adapterRegistry.methods['getBalances(address)'](accounts[0])
         .call()
         .then((result) => {
-          wethDaiAmount = result[0].adapterBalances[0].balances[0].amount;
+          wethDaiAmount = result[0].tokenBalances[0].amount;
         });
       await WETHDAI.methods.approve(tokenSpender.options.address, wethDaiAmount.toString())
         .send({
@@ -572,8 +572,8 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
       await adapterRegistry.methods['getBalances(address)'](accounts[0])
         .call()
         .then(async (result) => {
-          await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
-          wethDaiAmount = result[0].adapterBalances[0].balances[0].amount;
+          await displayToken(adapterRegistry, result[0].tokenBalances[0]);
+          wethDaiAmount = result[0].tokenBalances[0].amount;
         });
       await WETHDAI.methods.approve(tokenSpender.options.address, wethDaiAmount.toString())
         .send({

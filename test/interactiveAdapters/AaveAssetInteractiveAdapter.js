@@ -44,19 +44,12 @@ contract('AaveAssetInteractiveAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
+    await adapterRegistry.methods.addProtocolAdapters(
       [web3.utils.toHex('Aave')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
+      [
         protocolAdapterAddress,
-      ]],
-      [[[]]],
+      ],
+      [[]],
     )
       .send({
         from: accounts[0],

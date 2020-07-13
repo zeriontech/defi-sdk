@@ -1,14 +1,15 @@
 import displayToken from '../helpers/displayToken';
 
+const ASSET_ADAPTER = '01';
+
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./IdleAdapter');
 const TokenAdapter = artifacts.require('./IdleTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract.skip('IdleAdapter', () => {
-  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-  const idleDAIAddress = '0x10eC0D497824e342bCB0EDcE00959142aAa766dD';
-  const idleUSDCAddress = '0xeB66ACc3d011056B00ea521F8203580C2E5d3991';
+contract('IdleAdapter', () => {
+  const idleDAIAddress = '0x78751B12Da02728F467A44eAc40F5cbc16Bd7934';
+  const idleUSDCAddress = '0x12B98C621E8754Ae70d0fDbBC73D6208bC3e3cA6';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
@@ -17,13 +18,9 @@ contract.skip('IdleAdapter', () => {
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
   const dai = [
-    daiAddress,
-    web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
-    [
-      'Dai Stablecoin',
-      'DAI',
-      '18',
-    ],
+    'Dai Stablecoin',
+    'DAI',
+    '18',
   ];
 
   beforeEach(async () => {
@@ -44,22 +41,21 @@ contract.skip('IdleAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('Idle')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
+    await adapterRegistry.methods.addProtocolAdapters(
+      [
+        `${web3.eth.abi.encodeParameter(
+          'bytes32',
+          web3.utils.toHex('Idle'),
+        )
+          .slice(0, -2)}${ASSET_ADAPTER}`,
+      ],
+      [
         protocolAdapterAddress,
-      ]],
-      [[[
+      ],
+      [[
         idleDAIAddress,
         idleUSDCAddress,
-      ]]],
+      ]],
     )
       .send({
         from: accounts[0],
@@ -79,19 +75,19 @@ contract.skip('IdleAdapter', () => {
     await adapterRegistry.methods.getBalances(testAddress)
       .call()
       .then(async (result) => {
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[0]);
       });
-    await adapterRegistry.methods.getFinalFullTokenBalances(
-      [
-        idleDAIAddress,
-      ],
+    await adapterRegistry.methods.getFullTokenBalances(
       [
         web3.utils.toHex('IdleToken'),
+      ],
+      [
+        idleDAIAddress,
       ],
     )
       .call()
       .then((result) => {
-        assert.deepEqual(result[0].underlying[0].metadata, dai);
+        assert.deepEqual(result[0].underlying[0].erc20metadata, dai);
       });
   });
 });

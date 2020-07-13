@@ -54,4 +54,11 @@ abstract contract Ownable {
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
     }
+
+    /**
+     * @return Owner of the contract.
+     */
+    function owner() external view returns (address) {
+        return _owner;
+    }
 }

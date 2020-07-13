@@ -41,19 +41,12 @@ contract('Weth interactive adapter', () => {
         .then((result) => {
           adapterRegistry = result.contract;
         });
-      await adapterRegistry.methods.addProtocols(
+      await adapterRegistry.methods.addProtocolAdapters(
         [web3.utils.toHex('Weth')],
-        [[
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ]],
-        [[
+        [
           protocolAdapterAddress,
-        ]],
-        [[[]]],
+        ],
+        [[]],
       )
         .send({
           from: accounts[0],

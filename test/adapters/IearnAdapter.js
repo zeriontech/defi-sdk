@@ -1,12 +1,13 @@
 import displayToken from '../helpers/displayToken';
 
+const ASSET_ADAPTER = '01';
+
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./IearnAdapter');
 const TokenAdapter = artifacts.require('./IearnTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract.skip('IearnAdapter', () => {
-  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+contract('IearnAdapter', () => {
   const yDAIAddress = '0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01';
   const yUSDCAddress = '0xd6aD7a6750A7593E092a9B218d66C0A814a3436e';
   const yUSDTAddress = '0x83f798e925BcD4017Eb265844FDDAbb448f1707D';
@@ -21,22 +22,9 @@ contract.skip('IearnAdapter', () => {
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
   const dai = [
-    daiAddress,
-    web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
-    [
-      'Dai Stablecoin',
-      'DAI',
-      '18',
-    ],
-  ];
-  const yDAIna = [
-    yDAIAddress,
-    web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('YToken')),
-    [
-      'Not available',
-      'N/A',
-      '0',
-    ],
+    'Dai Stablecoin',
+    'DAI',
+    '18',
   ];
 
   beforeEach(async () => {
@@ -57,26 +45,25 @@ contract.skip('IearnAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('Iearn')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
+    await adapterRegistry.methods.addProtocolAdapters(
+      [
+        `${web3.eth.abi.encodeParameter(
+          'bytes32',
+          web3.utils.toHex('iearn.finance'),
+        )
+          .slice(0, -2)}${ASSET_ADAPTER}`,
+      ],
+      [
         protocolAdapterAddress,
-      ]],
-      [[[
+      ],
+      [[
         yDAIAddress,
         yUSDCAddress,
         yUSDTAddress,
         ySUSDAddress,
         yTUSDAddress,
         yWBTCAddress,
-      ]]],
+      ]],
     )
       .send({
         from: accounts[0],
@@ -96,19 +83,19 @@ contract.skip('IearnAdapter', () => {
     await adapterRegistry.methods.getBalances(testAddress)
       .call()
       .then(async (result) => {
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[0]);
       });
-    await adapterRegistry.methods.getFinalFullTokenBalances(
-      [
-        yDAIAddress,
-      ],
+    await adapterRegistry.methods.getFullTokenBalances(
       [
         web3.utils.toHex('YToken'),
+      ],
+      [
+        yDAIAddress,
       ],
     )
       .call()
       .then((result) => {
-        assert.deepEqual(result[0].underlying[0].metadata, dai);
+        assert.deepEqual(result[0].underlying[0].erc20metadata, dai);
       });
   });
 
@@ -121,13 +108,17 @@ contract.skip('IearnAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.getAdapterBalance(
-      testAddress,
-      protocolAdapterAddress,
+      `${web3.eth.abi.encodeParameter(
+        'bytes32',
+        web3.utils.toHex('iearn.finance'),
+      )
+        .slice(0, -2)}${ASSET_ADAPTER}`,
       [yDAIAddress],
+      testAddress,
     )
       .call()
       .then((result) => {
-        assert.deepEqual(result.balances[0].metadata, yDAIna);
+        assert.equal(result.tokenBalances.length, 1);
       });
   });
 });

@@ -63,15 +63,8 @@ contract('Core', () => {
         .then((result) => {
           adapterRegistry = result.contract;
         });
-      await adapterRegistry.methods.addProtocols(
+      await adapterRegistry.methods.addProtocolAdapters(
         [web3.utils.toHex('Chai')],
-        [[
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ]],
         [[
           chaiAdapterAddress,
         ]],
@@ -97,15 +90,8 @@ contract('Core', () => {
         .then((result) => {
           compoundTokenAdapterAddress = result.address;
         });
-      await adapterRegistry.methods.addProtocols(
+      await adapterRegistry.methods.addProtocolAdapters(
         [web3.utils.toHex('Compound')],
-        [[
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ]],
         [[
           compoundAssetAdapterAddress,
         ]],
@@ -290,15 +276,8 @@ contract('Core', () => {
         .then((result) => {
           adapterRegistry = result.contract;
         });
-      await adapterRegistry.methods.addProtocols(
+      await adapterRegistry.methods.addProtocolAdapters(
         [web3.utils.toHex('OneSplit')],
-        [[
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ]],
         [[
           ZERO, ZERO, protocolAdapterAddress,
         ]],

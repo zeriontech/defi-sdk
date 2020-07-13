@@ -9,13 +9,12 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 const ONE = '0x1111111111111111111111111111111111111111';
 const TWO = '0x2222222222222222222222222222222222222222';
 
-contract.only('AdapterRegistry', () => {
+contract.skip('AdapterRegistry', () => {
   let accounts;
   let adapterRegistry;
   let protocolAdapterAddress;
   let tokenAdapterAddress;
   let compoundTokenAdapterAddress;
-  let mockAsset;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -40,9 +39,9 @@ contract.only('AdapterRegistry', () => {
       [
         protocolAdapterAddress,
       ],
-      [[
+      [
         protocolAdapterAddress,
-      ]],
+      ],
     )
       .send({
         from: accounts[0],
@@ -117,9 +116,9 @@ contract.only('AdapterRegistry', () => {
       [
         protocolAdapterAddress,
       ],
-      [[
+      [
         protocolAdapterAddress,
-      ]],
+      ],
     )
       .send({
         from: accounts[1],
@@ -136,9 +135,9 @@ contract.only('AdapterRegistry', () => {
       [
         protocolAdapterAddress,
       ],
-      [[
+      [
         protocolAdapterAddress,
-      ]],
+      ],
     )
       .send({
         from: accounts[0],
@@ -155,9 +154,9 @@ contract.only('AdapterRegistry', () => {
         protocolAdapterAddress,
         protocolAdapterAddress,
       ],
-      [[
+      [
         protocolAdapterAddress,
-      ]],
+      ],
     )
       .send({
         from: accounts[0],
@@ -206,9 +205,9 @@ contract.only('AdapterRegistry', () => {
       [
         protocolAdapterAddress,
       ],
-      [[
+      [
         protocolAdapterAddress,
-      ]],
+      ],
     )
       .send({
         from: accounts[0],
@@ -222,9 +221,9 @@ contract.only('AdapterRegistry', () => {
       [
         protocolAdapterAddress,
       ],
-      [[
+      [
         protocolAdapterAddress,
-      ]],
+      ],
     )
       .send({
         from: accounts[0],
@@ -238,9 +237,9 @@ contract.only('AdapterRegistry', () => {
       [
         ZERO,
       ],
-      [[
+      [
         protocolAdapterAddress,
-      ]],
+      ],
     )
       .send({
         from: accounts[0],
@@ -254,9 +253,9 @@ contract.only('AdapterRegistry', () => {
       [
         ONE,
       ],
-      [[
+      [
         protocolAdapterAddress,
-      ]],
+      ],
     )
       .send({
         from: accounts[0],
@@ -318,9 +317,9 @@ contract.only('AdapterRegistry', () => {
       [
         protocolAdapterAddress,
       ],
-      [[
+      [
         protocolAdapterAddress,
-      ]],
+      ],
     )
       .send({
         from: accounts[0],
@@ -331,9 +330,9 @@ contract.only('AdapterRegistry', () => {
       [
         protocolAdapterAddress,
       ],
-      [[
+      [
         protocolAdapterAddress,
-      ]],
+      ],
     )
       .send({
         from: accounts[0],
@@ -364,9 +363,9 @@ contract.only('AdapterRegistry', () => {
       [
         protocolAdapterAddress,
       ],
-      [[
+      [
         protocolAdapterAddress,
-      ]],
+      ],
     )
       .send({
         from: accounts[0],

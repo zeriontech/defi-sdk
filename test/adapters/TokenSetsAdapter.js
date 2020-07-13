@@ -1,11 +1,13 @@
 import displayToken from '../helpers/displayToken';
 
+const ASSET_ADAPTER = '01';
+
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./TokenSetsAdapter');
 const TokenAdapter = artifacts.require('./TokenSetsTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract.skip('TokenSetsAdapter', () => {
+contract('TokenSetsAdapter', () => {
   const ETH12DayEMACrossoverSet = '0x2c5a9980B41861D91D30d0E0271d1c093452DcA5';
   const BTCRangeBoundMinVolatilitySet = '0x81c55017F7Ce6E72451cEd49FF7bAB1e3DF64d0C';
 
@@ -17,22 +19,14 @@ contract.skip('TokenSetsAdapter', () => {
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
   const eth12 = [
-    ETH12DayEMACrossoverSet,
-    web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('SetToken')),
-    [
-      'ETH 12 EMA Crossover Set',
-      'ETH12EMACO',
-      '18',
-    ],
+    'ETH 12 EMA Crossover Set',
+    'ETH12EMACO',
+    '18',
   ];
   const btc = [
-    BTCRangeBoundMinVolatilitySet,
-    web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('SetToken')),
-    [
-      'BTC Min Volatility Set',
-      'BTCMINVOL',
-      '18',
-    ],
+    'BTC Min Volatility Set',
+    'BTCMINVOL',
+    '18',
   ];
 
   beforeEach(async () => {
@@ -53,22 +47,21 @@ contract.skip('TokenSetsAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('TokenSets')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
+    await adapterRegistry.methods.addProtocolAdapters(
+      [
+        `${web3.eth.abi.encodeParameter(
+          'bytes32',
+          web3.utils.toHex('TokenSets'),
+        )
+          .slice(0, -2)}${ASSET_ADAPTER}`,
+      ],
+      [
         protocolAdapterAddress,
-      ]],
-      [[[
+      ],
+      [[
         ETH12DayEMACrossoverSet,
         BTCRangeBoundMinVolatilitySet,
-      ]]],
+      ]],
     )
       .send({
         from: accounts[0],
@@ -88,23 +81,23 @@ contract.skip('TokenSetsAdapter', () => {
     await adapterRegistry.methods.getBalances(testAddress)
       .call()
       .then(async (result) => {
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[1]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[0]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[1]);
       });
-    await adapterRegistry.methods.getFinalFullTokenBalances(
+    await adapterRegistry.methods.getFullTokenBalances(
+      [
+        web3.utils.toHex('SetToken'),
+        web3.utils.toHex('SetToken'),
+      ],
       [
         ETH12DayEMACrossoverSet,
         BTCRangeBoundMinVolatilitySet,
       ],
-      [
-        web3.utils.toHex('SetToken'),
-        web3.utils.toHex('SetToken'),
-      ],
     )
       .call()
       .then((result) => {
-        assert.deepEqual(result[0].base.metadata, eth12);
-        assert.deepEqual(result[1].base.metadata, btc);
+        assert.deepEqual(result[0].base.erc20metadata, eth12);
+        assert.deepEqual(result[1].base.erc20metadata, btc);
       });
   });
 });

@@ -34,7 +34,7 @@ contract ERC20TokenAdapter is TokenAdapter {
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant SAI = 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359;
-    address internal constant CSAI = 0x45A2FDfED7F7a2c791fb1bdF6075b83faD821ddE;
+    address internal constant CSAI = 0xF5DCe57282A584D2746FaF1593d3121Fcac444dC;
 
     /**
      * @return Empty Component array.

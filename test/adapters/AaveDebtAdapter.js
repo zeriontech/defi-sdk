@@ -1,10 +1,12 @@
 import displayToken from '../helpers/displayToken';
 
+const DEBT_ADAPTER = '02';
+
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./AaveDebtAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract.skip('AaveDebtAdapter', () => {
+contract('AaveDebtAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const tusdAddress = '0x0000000000085d4780B73119b644AE5ecd22b376';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
@@ -28,22 +30,14 @@ contract.skip('AaveDebtAdapter', () => {
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
   const dai = [
-    daiAddress,
-    web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
-    [
-      'Dai Stablecoin',
-      'DAI',
-      '18',
-    ],
+    'Dai Stablecoin',
+    'DAI',
+    '18',
   ];
   const mkr = [
-    mkrAddress,
-    web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
-    [
-      'Maker',
-      'MKR',
-      '18',
-    ],
+    'Maker',
+    'MKR',
+    '18',
   ];
 
   beforeEach(async () => {
@@ -60,19 +54,18 @@ contract.skip('AaveDebtAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('Aave')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
+    await adapterRegistry.methods.addProtocolAdapters(
+      [
+        `${web3.eth.abi.encodeParameter(
+          'bytes32',
+          web3.utils.toHex('Aave'),
+        )
+          .slice(0, -2)}${DEBT_ADAPTER}`,
+      ],
+      [
         protocolAdapterAddress,
-      ]],
-      [[[
+      ],
+      [[
         daiAddress,
         kncAddress,
         batAddress,
@@ -89,7 +82,7 @@ contract.skip('AaveDebtAdapter', () => {
         zrxAddress,
         snxAddress,
         wbtcAddress,
-      ]]],
+      ]],
     )
       .send({
         from: accounts[0],
@@ -109,23 +102,23 @@ contract.skip('AaveDebtAdapter', () => {
     await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then(async (result) => {
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[1]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[0]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[1]);
       });
-    await adapterRegistry.methods.getFinalFullTokenBalances(
+    await adapterRegistry.methods.getFullTokenBalances(
+      [
+        web3.utils.toHex('ERC20'),
+        web3.utils.toHex('ERC20'),
+      ],
       [
         daiAddress,
         mkrAddress,
       ],
-      [
-        web3.utils.toHex('ERC20'),
-        web3.utils.toHex('ERC20'),
-      ],
     )
       .call()
       .then((result) => {
-        assert.deepEqual(result[0].base.metadata, dai);
-        assert.deepEqual(result[1].base.metadata, mkr);
+        assert.deepEqual(result[0].base.erc20metadata, dai);
+        assert.deepEqual(result[1].base.erc20metadata, mkr);
       });
   });
 });

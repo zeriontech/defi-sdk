@@ -84,7 +84,7 @@ contract('CurveLiquidityInteractiveAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
+    await adapterRegistry.methods.addProtocolAdapters(
       [
         web3.utils.toHex('Uniswap V2'),
         web3.utils.toHex('Weth'),

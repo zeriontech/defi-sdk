@@ -1,15 +1,15 @@
 import displayToken from '../helpers/displayToken';
 
+const ASSET_ADAPTER = '01';
+
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./DmmAssetAdapter');
 const TokenAdapter = artifacts.require('./DmmTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract.skip('DmmAssetAdapter', () => {
+contract('DmmAssetAdapter', () => {
   const mDAIAddress = '0x06301057D77D54B6e14c7FafFB11Ffc7Cab4eaa7';
   const mUSDCAddress = '0x3564ad35b9E95340E5Ace2D6251dbfC76098669B';
-  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-  const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
@@ -18,22 +18,14 @@ contract.skip('DmmAssetAdapter', () => {
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
   const dai = [
-    daiAddress,
-    web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
-    [
-      'Dai Stablecoin',
-      'DAI',
-      '18',
-    ],
+    'Dai Stablecoin',
+    'DAI',
+    '18',
   ];
   const usdc = [
-    usdcAddress,
-    web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
-    [
-      'USD//C',
-      'USDC',
-      '6',
-    ],
+    'USD//C',
+    'USDC',
+    '6',
   ];
 
   beforeEach(async () => {
@@ -54,22 +46,21 @@ contract.skip('DmmAssetAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('DMM')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
+    await adapterRegistry.methods.addProtocolAdapters(
+      [
+        `${web3.eth.abi.encodeParameter(
+          'bytes32',
+          web3.utils.toHex('DMM'),
+        )
+          .slice(0, -2)}${ASSET_ADAPTER}`,
+      ],
+      [
         protocolAdapterAddress,
-      ]],
-      [[[
+      ],
+      [[
         mDAIAddress,
         mUSDCAddress,
-      ]]],
+      ]],
     )
       .send({
         from: accounts[0],
@@ -89,23 +80,23 @@ contract.skip('DmmAssetAdapter', () => {
     await adapterRegistry.methods.getBalances(testAddress)
       .call()
       .then(async (result) => {
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[1]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[0]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[1]);
       });
-    await adapterRegistry.methods.getFinalFullTokenBalances(
+    await adapterRegistry.methods.getFullTokenBalances(
+      [
+        web3.utils.toHex('MToken'),
+        web3.utils.toHex('MToken'),
+      ],
       [
         mDAIAddress,
         mUSDCAddress,
       ],
-      [
-        web3.utils.toHex('MToken'),
-        web3.utils.toHex('MToken'),
-      ],
     )
       .call()
       .then((result) => {
-        assert.deepEqual(result[0].underlying[0].metadata, dai);
-        assert.deepEqual(result[1].underlying[0].metadata, usdc);
+        assert.deepEqual(result[0].underlying[0].erc20metadata, dai);
+        assert.deepEqual(result[1].underlying[0].erc20metadata, usdc);
       });
   });
 });

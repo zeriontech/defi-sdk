@@ -1,10 +1,12 @@
 import displayToken from '../helpers/displayToken';
 
+const ASSET_ADAPTER = '01';
+
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./ZrxAdapter');
 const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract.skip('ZrxAdapter', () => {
+contract('ZrxAdapter', () => {
   const zrxAddress = '0xE41d2489571d322189246DaFA5ebDe1F4699F498';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
@@ -27,21 +29,20 @@ contract.skip('ZrxAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('Zrx')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
+    await adapterRegistry.methods.addProtocolAdapters(
+      [
+        `${web3.eth.abi.encodeParameter(
+          'bytes32',
+          '0x3078205374616b696e67',
+        )
+          .slice(0, -2)}${ASSET_ADAPTER}`,
+      ],
+      [
         protocolAdapterAddress,
-      ]],
-      [[[
+      ],
+      [[
         zrxAddress,
-      ]]],
+      ]],
     )
       .send({
         from: accounts[0],
@@ -61,7 +62,7 @@ contract.skip('ZrxAdapter', () => {
     await adapterRegistry.methods.getBalances(testAddress)
       .call()
       .then(async (result) => {
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[0]);
       });
   });
 });

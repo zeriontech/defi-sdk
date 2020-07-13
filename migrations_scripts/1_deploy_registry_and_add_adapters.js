@@ -571,7 +571,7 @@ module.exports = async (deployer, network, accounts) => {
     });
   await deployer.deploy(AdapterRegistry, { from: accounts[0] })
     .then(async (registry) => {
-      await registry.contract.methods.addProtocols(
+      await registry.contract.methods.addProtocolAdapters(
         protocolNames,
         metadata,
         adapters,

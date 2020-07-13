@@ -3,18 +3,34 @@ import displayToken from '../helpers/displayToken';
 const ASSET_ADAPTER = '01';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./DSRAdapter');
-const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+const ProtocolAdapter = artifacts.require('./UniswapV2LiquidityAdapter');
+const TokenAdapter = artifacts.require('./UniswapV2TokenAdapter');
+const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('DSRAdapter', () => {
-  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-  // DSProxy of '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990'
-  const testAddress = '0x29604c784102D453B476fB099b8DCfc83b508F55';
+contract('UniswapV2LiquidityAdapter', () => {
+  const daiWethUniAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
+  const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
   let adapterRegistry;
   let protocolAdapterAddress;
   let tokenAdapterAddress;
+  let erc20TokenAdapterAddress;
+  const daiWethUni = [
+    'DAI/WETH Pool',
+    'UNI-V2',
+    '18',
+  ];
+  const dai = [
+    'Dai Stablecoin',
+    'DAI',
+    '18',
+  ];
+  const weth = [
+    'Wrapped Ether',
+    'WETH',
+    '18',
+  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -26,6 +42,10 @@ contract('DSRAdapter', () => {
       .then((result) => {
         tokenAdapterAddress = result.address;
       });
+    await ERC20TokenAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        erc20TokenAdapterAddress = result.address;
+      });
     await AdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
         adapterRegistry = result.contract;
@@ -34,7 +54,7 @@ contract('DSRAdapter', () => {
       [
         `${web3.eth.abi.encodeParameter(
           'bytes32',
-          web3.utils.toHex('DSR'),
+          web3.utils.toHex('Uniswap V2'),
         )
           .slice(0, -2)}${ASSET_ADAPTER}`,
       ],
@@ -42,7 +62,7 @@ contract('DSRAdapter', () => {
         protocolAdapterAddress,
       ],
       [[
-        daiAddress,
+        daiWethUniAddress,
       ]],
     )
       .send({
@@ -50,8 +70,11 @@ contract('DSRAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      [web3.utils.toHex('ERC20')],
-      [tokenAdapterAddress],
+      [
+        web3.utils.toHex('ERC20'),
+        web3.utils.toHex('Uniswap V2 Pool Token'),
+      ],
+      [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({
         from: accounts[0],
@@ -64,6 +87,20 @@ contract('DSRAdapter', () => {
       .call()
       .then(async (result) => {
         await displayToken(adapterRegistry, result[0].tokenBalances[0]);
+      });
+    await adapterRegistry.methods.getFullTokenBalances(
+      [
+        web3.utils.toHex('Uniswap V2 Pool Token'),
+      ],
+      [
+        daiWethUniAddress,
+      ],
+    )
+      .call()
+      .then((result) => {
+        assert.deepEqual(result[0].base.erc20metadata, daiWethUni);
+        assert.deepEqual(result[0].underlying[0].erc20metadata, dai);
+        assert.deepEqual(result[0].underlying[1].erc20metadata, weth);
       });
   });
 });

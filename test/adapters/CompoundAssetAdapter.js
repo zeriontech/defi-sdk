@@ -1,11 +1,13 @@
 import displayToken from '../helpers/displayToken';
 
+const ASSET_ADAPTER = '01';
+
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./CompoundAssetAdapter');
 const TokenAdapter = artifacts.require('./CompoundTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract.skip('CompoundAssetAdapter', () => {
+contract('CompoundAssetAdapter', () => {
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
   const cBATAddress = '0x6C8c6b02E7b2BE14d4fA6022Dfd6d75921D90E4E';
   const cETHAddress = '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5';
@@ -14,7 +16,6 @@ contract.skip('CompoundAssetAdapter', () => {
   const cZRXAddress = '0xB3319f5D18Bc0D84dD1b4825Dcde5d5f7266d407';
   const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
   const cWBTCAddress = '0xC11b1268C1A384e55C48c2391d8d480264A3A7F4';
-  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
@@ -23,13 +24,9 @@ contract.skip('CompoundAssetAdapter', () => {
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
   const dai = [
-    daiAddress,
-    web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
-    [
-      'Dai Stablecoin',
-      'DAI',
-      '18',
-    ],
+    'Dai Stablecoin',
+    'DAI',
+    '18',
   ];
 
   beforeEach(async () => {
@@ -50,19 +47,18 @@ contract.skip('CompoundAssetAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('Compound')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
+    await adapterRegistry.methods.addProtocolAdapters(
+      [
+        `${web3.eth.abi.encodeParameter(
+          'bytes32',
+          web3.utils.toHex('Compound'),
+        )
+          .slice(0, -2)}${ASSET_ADAPTER}`,
+      ],
+      [
         protocolAdapterAddress,
-      ]],
-      [[[
+      ],
+      [[
         cDAIAddress,
         cBATAddress,
         cETHAddress,
@@ -71,7 +67,7 @@ contract.skip('CompoundAssetAdapter', () => {
         cZRXAddress,
         cUSDCAddress,
         cWBTCAddress,
-      ]]],
+      ]],
     )
       .send({
         from: accounts[0],
@@ -91,20 +87,20 @@ contract.skip('CompoundAssetAdapter', () => {
     await adapterRegistry.methods.getBalances(testAddress)
       .call()
       .then(async (result) => {
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[1]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[0]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[1]);
       });
-    await adapterRegistry.methods.getFinalFullTokenBalances(
-      [
-        cDAIAddress,
-      ],
+    await adapterRegistry.methods.getFullTokenBalances(
       [
         web3.utils.toHex('CToken'),
+      ],
+      [
+        cDAIAddress,
       ],
     )
       .call()
       .then((result) => {
-        assert.deepEqual(result[0].underlying[0].metadata, dai);
+        assert.deepEqual(result[0].underlying[0].erc20metadata, dai);
       });
   });
 });

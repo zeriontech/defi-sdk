@@ -43,19 +43,12 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           adapterRegistry = result.contract;
         });
-      await adapterRegistry.methods.addProtocols(
+      await adapterRegistry.methods.addProtocolAdapters(
         [web3.utils.toHex('Uniswap V1')],
-        [[
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ]],
         [[
           ZERO, ZERO, protocolAdapterAddress,
         ]],
-        [[[], [], []]],
+        [[], [], []],
       )
         .send({
           from: accounts[0],
@@ -331,19 +324,12 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           adapterRegistry = result.contract;
         });
-      await adapterRegistry.methods.addProtocols(
+      await adapterRegistry.methods.addProtocolAdapters(
         [web3.utils.toHex('Uniswap V1')],
-        [[
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ]],
         [[
           ZERO, ZERO, protocolAdapterAddress,
         ]],
-        [[[], [], []]],
+        [[], [], []],
       )
         .send({
           from: accounts[0],

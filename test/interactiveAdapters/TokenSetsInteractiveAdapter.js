@@ -63,7 +63,7 @@ contract('TokenSetsInteractiveAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
+    await adapterRegistry.methods.addProtocolAdapters(
       [
         web3.utils.toHex('TokenSets'),
         web3.utils.toHex('Weth'),

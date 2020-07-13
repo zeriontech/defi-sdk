@@ -11,13 +11,13 @@ contract.skip('AdapterRegistry deployed', () => {
   });
 
   it('should be correct return values from getters', async () => {
-    await adapterRegistry.methods.getProtocolNames()
+    await adapterRegistry.methods.getProtocolAdapterNames()
       .call()
       .then((result) => {
         assert.deepEqual(
           result,
           [
-            '0x3078205374616b696e67',
+            '0x3078205374616b696e67', // '0x Staking'
             web3.utils.toHex('Weth'),
             web3.utils.toHex('Uniswap V1'),
             web3.utils.toHex('TokenSets'),

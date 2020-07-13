@@ -61,15 +61,8 @@ contract('UniswapV1LiquidityAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
+    await adapterRegistry.methods.addProtocolAdapters(
       [web3.utils.toHex('Uniswap V1')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
       [[
         protocolAdapterAddress, ZERO, uniswapAdapterAddress,
       ]],
@@ -202,8 +195,8 @@ contract('UniswapV1LiquidityAdapter', () => {
     await adapterRegistry.methods['getBalances(address)'](accounts[0])
       .call()
       .then(async (result) => {
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
-        daiUniAmount = result[0].adapterBalances[0].balances[0].amount;
+        await displayToken(adapterRegistry, result[0].tokenBalances[0]);
+        daiUniAmount = result[0].tokenBalances[0].amount;
       });
     await DAIUNI.methods.approve(tokenSpender.options.address, daiUniAmount.toString())
       .send({

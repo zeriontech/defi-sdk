@@ -1,10 +1,12 @@
 import displayToken from '../helpers/displayToken';
 
+const DEBT_ADAPTER = '02';
+
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
 const ProtocolAdapter = artifacts.require('./CompoundDebtAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract.skip('CompoundDebtAdapter', () => {
+contract('CompoundDebtAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const batAddress = '0x0D8775F648430679A709E98d2b0Cb6250d2887EF';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -34,19 +36,18 @@ contract.skip('CompoundDebtAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
-      [web3.utils.toHex('Compound')],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
+    await adapterRegistry.methods.addProtocolAdapters(
+      [
+        `${web3.eth.abi.encodeParameter(
+          'bytes32',
+          web3.utils.toHex('Compound'),
+        )
+          .slice(0, -2)}${DEBT_ADAPTER}`,
+      ],
+      [
         protocolAdapterAddress,
-      ]],
-      [[[
+      ],
+      [[
         daiAddress,
         batAddress,
         ethAddress,
@@ -55,7 +56,7 @@ contract.skip('CompoundDebtAdapter', () => {
         zrxAddress,
         usdcAddress,
         wbtcAddress,
-      ]]],
+      ]],
     )
       .send({
         from: accounts[0],
@@ -75,10 +76,10 @@ contract.skip('CompoundDebtAdapter', () => {
     await adapterRegistry.methods.getBalances(testAddress)
       .call()
       .then(async (result) => {
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[1]);
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[2]);
-        await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[3]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[0]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[1]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[2]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[3]);
       });
   });
 });

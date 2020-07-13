@@ -1,7 +1,7 @@
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 
 let protocolNames = [];
-let metadata = [];
+let erc20metadata = [];
 let adapters = [];
 let tokens = [];
 let tokenAdapters = [];
@@ -10,7 +10,7 @@ module.exports = async (deployer, network, accounts) => {
   adapters.push(['']);
   tokens.push([[]]);
   protocolNames.push(web3.utils.toHex('Initial protocol name'));
-  metadata.push([
+  erc20metadata.push([
     'Name',
     'Description',
     'WebsiteURL',
@@ -24,9 +24,9 @@ module.exports = async (deployer, network, accounts) => {
 
   await AdapterRegistry.at('0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672')
     .then(async (registry) => {
-      await registry.contract.methods.addProtocols(
+      await registry.contract.methods.addProtocolAdapters(
         protocolNames,
-        metadata,
+        erc20metadata,
         adapters,
         tokens,
       )

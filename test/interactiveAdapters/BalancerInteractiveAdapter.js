@@ -63,7 +63,7 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
+    await adapterRegistry.methods.addProtocolAdapters(
       [web3.utils.toHex('Uniswap V1'), web3.utils.toHex('Balancer')],
       [
         [
