@@ -17,8 +17,8 @@ pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
-import { TokenMetadata, Component } from "../Structs.sol";
-import { TokenAdapter } from "../adapters/TokenAdapter.sol";
+import { TokenMetadata, Component } from "../../Structs.sol";
+import { TokenAdapter } from "../TokenAdapter.sol";
 
 
 /**
@@ -42,7 +42,7 @@ contract RDaiTokenAdapter is TokenAdapter {
   /**
    *@dev rDai contract address is proxy contract.
    */
-   address internal constant RDAI = 0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0
+   address internal constant RDAI = 0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0;
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -53,7 +53,7 @@ contract RDaiTokenAdapter is TokenAdapter {
             token: RDAI,
             name: "Redeemable DAI",
             symbol: "rDAI",
-            decimals: uint8(8);
+            decimals: uint8(8)
         });
     }
 
