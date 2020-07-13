@@ -430,6 +430,42 @@ contract.only('AdapterRegistry', () => {
       }));
   });
 
+  it('should not update protocol adapter with different lengths 1', async () => {
+    await expectRevert(adapterRegistry.methods.updateProtocolAdapters(
+      [web3.utils.toHex('Mock')],
+      [ZERO, ZERO],
+      [[ONE]],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      }));
+  });
+
+  it('should not update protocol adapter with different lengths 2', async () => {
+    await expectRevert(adapterRegistry.methods.updateProtocolAdapters(
+      [web3.utils.toHex('Mock')],
+      [ZERO],
+      [[ONE], [ONE]],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      }));
+  });
+
+  it('should not update protocol adapter with empty input', async () => {
+    await expectRevert(adapterRegistry.methods.updateProtocolAdapters(
+      [],
+      [],
+      [],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      }));
+  });
+
   it('should update protocol adapter by the owner', async () => {
     await adapterRegistry.methods.updateProtocolAdapters(
       [web3.utils.toHex('Mock')],
@@ -440,7 +476,7 @@ contract.only('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.getProtocolAdapters(web3.utils.toHex('Mock'))
+    await adapterRegistry.methods.getProtocolAdapterNames(web3.utils.toHex('Mock'))
       .call()
       .then((result) => {
         assert.deepEqual(result, [ONE]);
@@ -468,7 +504,7 @@ contract.only('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.getProtocolAdapters(web3.utils.toHex('Mock'))
+    await adapterRegistry.methods.getProtocolAdapterNames(web3.utils.toHex('Mock'))
       .call()
       .then((result) => {
         assert.deepEqual(result, [TWO]);
@@ -709,6 +745,39 @@ contract.only('AdapterRegistry', () => {
       }));
   });
 
+  it('should not update token adapter with same address', async () => {
+    await expectRevert(adapterRegistry.methods.updateTokenAdapters(
+      [web3.utils.toHex('ERC20')],
+      [tokenAdapterAddress],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      }));
+  });
+
+  it('should not update token adapter with different lengths', async () => {
+    await expectRevert(adapterRegistry.methods.updateTokenAdapters(
+      [web3.utils.toHex('ERC20')],
+      [ZERO, ZERO],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      }));
+  });
+
+  it('should not update token adapter with empty input', async () => {
+    await expectRevert(adapterRegistry.methods.updateTokenAdapters(
+      [],
+      [],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      }));
+  });
+
   it('should not update token adapter with bad name', async () => {
     await expectRevert(adapterRegistry.methods.updateTokenAdapters(
       [web3.utils.toHex('ERC220')],
@@ -779,17 +848,17 @@ contract.only('AdapterRegistry', () => {
         assert.deepEqual(
           result[0].tokenBalances[0],
           [
-            "ERC20",
+            web3.utils.encodeParameter('bytes32', 'ERC20'),
             protocolAdapterAddress,
-            1000,
+            '1000',
           ],
         );
       });
     await adapterRegistry.methods.getFullTokenBalances(
       [[
-        "ERC20",
+        web3.utils.encodeParameter('bytes32', 'ERC20'),
         protocolAdapterAddress,
-        1000,
+        '1000',
       ]],
     )
       .call()
@@ -799,10 +868,10 @@ contract.only('AdapterRegistry', () => {
           result.base,
           [
             protocolAdapterAddress,
-            1000,
+            '1000',
             [
-              "Not available",
-              "N/A",
+              'Not available',
+              'N/A',
               0,
             ],
           ],
@@ -816,5 +885,17 @@ contract.only('AdapterRegistry', () => {
       .then((result) => {
         assert.equal(result.length, 0);
       });
+  });
+
+  it('should not be correct balances with wrong adapter', async () => {
+    await expectRevert(adapterRegistry.methods.getAdapterBalance(
+      web3.utils.toHex('Mock3'),
+      [],
+      accounts[0],
+    )
+      .call()
+      .then((result) => {
+        assert.equal(result.length, 0);
+      }));
   });
 });
