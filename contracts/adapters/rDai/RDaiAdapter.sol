@@ -36,7 +36,7 @@ contract RDaiAdapter is ProtocolAdapter {
      * @return Amount of rDai held by the given account.
      * @param token Address of the rDai contrat.
      */
-    function getBalance(address, address account) external view override returns (uint256) {
+    function getBalance(address token, address account) external view override returns (uint256) {
         return ERC20(token).balanceOf(account);
     }
 }
