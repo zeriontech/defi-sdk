@@ -40,7 +40,7 @@ interface YToken {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract IearnTokenAdapter is TokenAdapter("YToken") {
+contract IearnTokenAdapter is TokenAdapter {
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.

@@ -51,7 +51,7 @@ interface IDmmToken {
  * @dev Implementation of TokenAdapter interface.
  * @author Corey Caplan <corey@dolomite.io>
  */
-contract DmmTokenAdapter is TokenAdapter("MToken") {
+contract DmmTokenAdapter is TokenAdapter {
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given asset.

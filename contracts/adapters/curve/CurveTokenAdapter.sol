@@ -47,7 +47,7 @@ interface stableswap {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CurveTokenAdapter is TokenAdapter("Curve Pool Token") {
+contract CurveTokenAdapter is TokenAdapter {
 
     address internal constant REGISTRY = 0x86A1755BA805ecc8B0608d56c22716bd1d4B68A8;
     address internal constant CDAI = 0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643;

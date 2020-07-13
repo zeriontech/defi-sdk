@@ -31,23 +31,6 @@ import { ERC20Metadata, Component } from "../shared/Structs.sol";
  */
 abstract contract TokenAdapter {
 
-    bytes32 internal immutable _tokenAdapterName;
-
-    /**
-     * @dev Initializes tokenType state variable.
-     * Should be passed as a parameter when overriding.
-     */
-    constructor(bytes32 tokenAdapterName) internal {
-        _tokenAdapterName = tokenAdapterName;
-    }
-
-    /**
-     * @return Token adapter's name.
-     */
-    function getTokenAdapterName() external view returns (bytes32) {
-        return _tokenAdapterName;
-    }
-
     /**
      * @dev MUST return array of Component structs with underlying tokens rates for the given token.
      * struct Component {

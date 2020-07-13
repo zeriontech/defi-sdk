@@ -28,7 +28,7 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  * @dev Implementation of TokenAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract WethTokenAdapter is TokenAdapter("Weth") {
+contract WethTokenAdapter is TokenAdapter {
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 

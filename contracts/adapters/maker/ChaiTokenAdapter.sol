@@ -43,7 +43,7 @@ interface Pot {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract ChaiTokenAdapter is TokenAdapter("Chai Token"), MKRAdapter {
+contract ChaiTokenAdapter is TokenAdapter, MKRAdapter {
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.

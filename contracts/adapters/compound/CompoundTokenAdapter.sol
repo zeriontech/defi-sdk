@@ -40,7 +40,7 @@ interface CToken {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CompoundTokenAdapter is TokenAdapter("CToken") {
+contract CompoundTokenAdapter is TokenAdapter {
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;

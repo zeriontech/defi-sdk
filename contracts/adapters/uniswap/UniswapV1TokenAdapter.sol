@@ -64,7 +64,7 @@ interface Factory {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UniswapV1TokenAdapter is TokenAdapter("Uniswap V1 Pool Token") {
+contract UniswapV1TokenAdapter is TokenAdapter {
     using Helpers for bytes32;
 
     address internal constant FACTORY = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;

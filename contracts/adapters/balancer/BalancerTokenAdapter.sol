@@ -53,7 +53,7 @@ interface BPool {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract BalancerTokenAdapter is TokenAdapter("Balancer Pool Token") {
+contract BalancerTokenAdapter is TokenAdapter {
     using Helpers for bytes32;
     using Helpers for uint256;
 

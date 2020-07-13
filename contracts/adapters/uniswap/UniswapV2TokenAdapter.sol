@@ -52,7 +52,7 @@ interface UniswapV2Pair {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UniswapV2TokenAdapter is TokenAdapter("Uniswap V2 Pool Token") {
+contract UniswapV2TokenAdapter is TokenAdapter {
     using Helpers for bytes32;
 
     /**

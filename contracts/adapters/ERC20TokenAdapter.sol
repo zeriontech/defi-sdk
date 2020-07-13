@@ -29,7 +29,7 @@ import { Helpers } from "../shared/Helpers.sol";
  * @dev Implementation of TokenAdapter abstract contract function.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract ERC20TokenAdapter is TokenAdapter("ERC20") {
+contract ERC20TokenAdapter is TokenAdapter {
     using Helpers for bytes32;
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;

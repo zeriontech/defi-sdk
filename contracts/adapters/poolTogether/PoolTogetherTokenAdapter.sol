@@ -39,7 +39,7 @@ interface BasePool {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract PoolTogetherTokenAdapter is TokenAdapter("PoolTogether Pool") {
+contract PoolTogetherTokenAdapter is TokenAdapter {
 
     address internal constant SAI_POOL = 0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84;
 

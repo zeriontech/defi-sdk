@@ -39,7 +39,7 @@ interface AToken {
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract AaveTokenAdapter is TokenAdapter("AToken") {
+contract AaveTokenAdapter is TokenAdapter {
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.

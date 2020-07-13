@@ -40,7 +40,7 @@ interface IdleToken {
  * @title Token adapter for IdleTokens.
  * @dev Implementation of TokenAdapter abstract contract.
  */
-contract IdleTokenAdapter is TokenAdapter("IdleToken") {
+contract IdleTokenAdapter is TokenAdapter {
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.

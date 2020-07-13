@@ -136,10 +136,6 @@ abstract contract TokenAdapterManager is Ownable {
         require(newTokenAdapterName != bytes32(0), "TAM: zero![1]");
         require(newTokenAdapterAddress != address(0), "TAM: zero![2]");
         require(_tokenAdapterAddress[newTokenAdapterName] == address(0), "TAM: exists!");
-        require(
-            TokenAdapter(newTokenAdapterAddress).getTokenAdapterName() == newTokenAdapterName,
-            "TAM: bad name/type!"
-        );
 
         _tokenAdapterNames.push(newTokenAdapterName);
         _tokenAdapterAddress[newTokenAdapterName] = newTokenAdapterAddress;

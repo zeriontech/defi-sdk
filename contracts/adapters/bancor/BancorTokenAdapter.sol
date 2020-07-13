@@ -82,7 +82,7 @@ interface BancorFormula {
  * @dev Implementation of TokenAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract BancorTokenAdapter is TokenAdapter("SmartToken") {
+contract BancorTokenAdapter is TokenAdapter {
 
     address internal constant REGISTRY = 0x52Ae12ABe5D8BD778BD5397F99cA900624CfADD4;
 
