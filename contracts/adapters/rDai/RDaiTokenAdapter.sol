@@ -32,6 +32,12 @@ interface RToken {
     function allowance() external view returns (uint256);
 }
 
+/**
+ * @dev rDai Compund Allocation Strategy Interface.
+ * Only the functions required for rDaiTokenAdapter contract are added.
+ * The rDai Compund Allocation Strategy Interface contract is available here
+ * github.com/rtoken-project/rtoken-monorepo/blob/master/packages/contracts/contracts/CompoundAllocationStrategy.sol
+ */
 interface CompoundAllocationStrategy {
   function exchangeRateStored() external view returns (uint256);
 }
@@ -69,9 +75,9 @@ contract RDaiTokenAdapter is TokenAdapter {
          Component[] memory underlyingTokens = new Component[](1);
 
          underlyingTokens[0] = Component({
-             token: RToken(token).token(),
+             token: RDAI,
              tokenType: "ERC20",
-             rate: RToken(token).exchangeRateStored()//find out how to get rate properly
+             rate: RToken(token).CompoundAllocationStrategy(exchangeRateStored())//find out how to get rate properly
          });
 
          return underlyingTokens;
