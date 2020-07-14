@@ -39,13 +39,6 @@ abstract contract Ownable {
     }
 
     /**
-     * @return Owner of the contract.
-     */
-    function owner() external returns (address) {
-        return _owner;
-    }
-
-    /**
      * @notice Transfers ownership to the desired address.
      * The function is callable only by the owner.
      */

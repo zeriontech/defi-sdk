@@ -196,7 +196,7 @@ contract Core {
                 abi.encodePacked(
                     "C: ",
                     actualAmount,
-                    " is less then ",
+                    " is less than ",
                     requiredAmount,
                     " for ",
                     token

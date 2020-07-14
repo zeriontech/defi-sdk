@@ -85,6 +85,7 @@ interface BancorFormula {
 contract BancorTokenAdapter is TokenAdapter {
 
     address internal constant REGISTRY = 0x52Ae12ABe5D8BD778BD5397F99cA900624CfADD4;
+    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
@@ -111,7 +112,6 @@ contract BancorTokenAdapter is TokenAdapter {
 
             underlyingTokens[i] = Component({
                 token: underlyingToken,
-                tokenType: "ERC20",
                 rate: BancorFormula(formula).calculateLiquidateReturn(
                     totalSupply,
                     balance,
