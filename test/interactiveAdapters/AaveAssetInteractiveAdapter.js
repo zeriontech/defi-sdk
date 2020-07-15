@@ -2,11 +2,9 @@
 // import expectRevert from './helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
 
+const AAVE_ADAPTER = web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Aave')).slice(0, -2);
 const ASSET_ADAPTER = '01';
-const AAVE_ASSET_ADAPTER = `${web3.eth.abi.encodeParameter(
-  'bytes32',
-  web3.utils.toHex('Aave'),
-).slice(0, -2)}${ASSET_ADAPTER}`;
+const AAVE_ASSET_ADAPTER = `${AAVE_ADAPTER}${ASSET_ADAPTER}`;
 
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
@@ -50,7 +48,9 @@ contract.only('AaveAssetInteractiveAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocolAdapters(
-      [web3.utils.toHex('Aave')],
+      [
+        AAVE_ASSET_ADAPTER,
+      ],
       [
         protocolAdapterAddress,
       ],

@@ -1,16 +1,18 @@
 import convertToShare from '../helpers/convertToShare';
 import expectRevert from '../helpers/expectRevert';
 
-const ASSET_ADAPTER = '01';
-const EXCHANGE_ADAPTER = '03';
-const BALANCER_ASSET_ADAPTER = `${web3.eth.abi.encodeParameter(
-  'bytes32',
-  web3.utils.toHex('Balancer'),
-).slice(0, -2)}${ASSET_ADAPTER}`;
-const UNISWAP_EXCHANGE_ADAPTER = `${web3.eth.abi.encodeParameter(
+const UNISWAP_ADAPTER = web3.eth.abi.encodeParameter(
   'bytes32',
   web3.utils.toHex('Uniswap V1'),
-).slice(0, -2)}${EXCHANGE_ADAPTER}`;
+).slice(0, -2)
+const BALANCER_ADAPTER = web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Balancer'),
+).slice(0, -2);
+const ASSET_ADAPTER = '01';
+const EXCHANGE_ADAPTER = '03';
+const BALANCER_ASSET_ADAPTER = `${BALANCER_ADAPTER}${ASSET_ADAPTER}`;
+const UNISWAP_EXCHANGE_ADAPTER = `${UNISWAP_ADAPTER}${EXCHANGE_ADAPTER}`;
 
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
