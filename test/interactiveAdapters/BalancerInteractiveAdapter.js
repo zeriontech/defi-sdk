@@ -1,14 +1,22 @@
 import convertToShare from '../helpers/convertToShare';
 import expectRevert from '../helpers/expectRevert';
 
+const ASSET_ADAPTER = '01';
+const EXCHANGE_ADAPTER = '03';
+const BALANCER_ASSET_ADAPTER = `${web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Balancer'),
+).slice(0, -2)}${ASSET_ADAPTER}`;
+const UNISWAP_EXCHANGE_ADAPTER = `${web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Uniswap V1'),
+).slice(0, -2)}${EXCHANGE_ADAPTER}`;
+
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;
 // const EMPTY_BYTES = '0x';
-const ADAPTER_ASSET = 0;
-// const ADAPTER_DEBT = 1;
-const ADAPTER_EXCHANGE = 2;
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
@@ -64,34 +72,17 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocolAdapters(
-      [web3.utils.toHex('Uniswap V1'), web3.utils.toHex('Balancer')],
       [
-        [
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ],
-        [
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ],
+        UNISWAP_EXCHANGE_ADAPTER,
+        BALANCER_ASSET_ADAPTER,
+       ],
+      [
+        uniswapAdapterAddress,
+        balancerAdapterAddress,
       ],
       [
-        [
-          ZERO, ZERO, uniswapAdapterAddress,
-        ],
-        [
-          balancerAdapterAddress,
-        ],
-      ],
-      [
-        [[], [], []],
-        [[]],
+        [],
+        [],
       ],
     )
       .send({
@@ -153,9 +144,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         [
           // exchange DAI to MKR to make swap
           [
+            UNISWAP_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [daiAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -163,9 +153,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           ],
           // deposit to pool using mkr
           [
+            BALANCER_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Balancer'),
-            ADAPTER_ASSET,
             [mkrAddress, wethAddress],
             [convertToShare(1), convertToShare(1)], // all MKR
             [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
@@ -207,9 +196,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         [
           // exchange DAI to MKR to make swap
           [
+            UNISWAP_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [daiAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -217,9 +205,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           ],
           // deposit to pool using mkr
           [
+            BALANCER_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Balancer'),
-            ADAPTER_ASSET,
             [mkrAddress],
             [convertToShare(1), convertToShare(1)], // all MKR
             [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
@@ -251,9 +238,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         [
           // exchange 1 ETH to DAI like we had dai initially
           [
+            UNISWAP_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [ethAddress],
             ['1000000000000000000'],
             [AMOUNT_ABSOLUTE],
@@ -300,9 +286,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         [
           // exchange DAI to MKR to make swap
           [
+            UNISWAP_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [daiAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -310,9 +295,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           ],
           // deposit to pool using mkr
           [
+            BALANCER_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Balancer'),
-            ADAPTER_ASSET,
             [mkrAddress],
             [convertToShare(1)], // all MKR
             [AMOUNT_RELATIVE],
@@ -394,9 +378,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         [
           // withdraw pool tokens
           [
+            BALANCER_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Balancer'),
-            ADAPTER_ASSET,
             [poolAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -404,9 +387,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           ],
           // exchange MKR to DAI
           [
+            UNISWAP_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [mkrAddress],
             [web3.utils.toWei('100', 'ether')], // all MKR
             [AMOUNT_ABSOLUTE],
@@ -440,9 +422,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         [
           // withdraw pool tokens
           [
+            BALANCER_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Balancer'),
-            ADAPTER_ASSET,
             [poolAddress, poolAddress],
             [convertToShare(1), convertToShare(1)],
             [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
@@ -450,9 +431,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           ],
           // exchange MKR to DAI
           [
+            UNISWAP_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [mkrAddress],
             [convertToShare(1)], // all MKR
             [AMOUNT_RELATIVE],
@@ -486,9 +466,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         [
           // withdraw pool tokens
           [
+            BALANCER_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Balancer'),
-            ADAPTER_ASSET,
             [poolAddress],
             [convertToShare(1), convertToShare(1)],
             [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
@@ -496,9 +475,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           ],
           // exchange MKR to DAI
           [
+            UNISWAP_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [mkrAddress],
             [convertToShare(1)], // all MKR
             [AMOUNT_RELATIVE],
@@ -543,9 +521,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         [
           // withdraw pool tokens
           [
+            BALANCER_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Balancer'),
-            ADAPTER_ASSET,
             [poolAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -553,9 +530,8 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           ],
           // exchange MKR to DAI
           [
+            UNISWAP_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [mkrAddress],
             [convertToShare(1)], // all MKR
             [AMOUNT_RELATIVE],

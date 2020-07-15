@@ -2,14 +2,19 @@
 // import expectRevert from './helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
 
+const ASSET_ADAPTER = '01';
+const AAVE_ASSET_ADAPTER = `${web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Aave'),
+).slice(0, -2)}${ASSET_ADAPTER}`;
+
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
 // const AMOUNT_ABSOLUTE = 2;
 const EMPTY_BYTES = '0x';
-const ADAPTER_ASSET = 0;
-// const ADAPTER_DEBT = 1;
-// const ADAPTER_EXCHANGE = 2;
+
+
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
@@ -19,7 +24,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('AaveAssetInteractiveAdapter', () => {
+contract.only('AaveAssetInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const aethAddress = '0x3a3A65aAb0dd2A17E3F1947bA16138cd37d08c04';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
@@ -97,9 +102,8 @@ contract('AaveAssetInteractiveAdapter', () => {
       await router.methods.startExecution(
         [
           [
+            AAVE_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Aave'),
-            ADAPTER_ASSET,
             [ethAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -157,9 +161,8 @@ contract('AaveAssetInteractiveAdapter', () => {
       await router.methods.startExecution(
         [
           [
+            AAVE_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Aave'),
-            ADAPTER_ASSET,
             [aethAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -221,9 +224,8 @@ contract('AaveAssetInteractiveAdapter', () => {
       await router.methods.startExecution(
         [
           [
+            AAVE_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Aave'),
-            ADAPTER_ASSET,
             [daiAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -285,9 +287,8 @@ contract('AaveAssetInteractiveAdapter', () => {
       await router.methods.startExecution(
         [
           [
+            AAVE_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Aave'),
-            ADAPTER_ASSET,
             [adaiAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
