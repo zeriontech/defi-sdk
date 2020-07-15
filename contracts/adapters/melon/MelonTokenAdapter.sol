@@ -46,7 +46,7 @@ interface Accounting{
  * @dev Implementation of TokenAdapter interface.
  * @author Connor Martin <cnr.mrtn@gmail.com>
  */
-contract MelonTokenAdapter is TokenaAdapter {
+contract MelonTokenAdapter is TokenAdapter {
 
   address internal constant MLNF = 0xec67005c4E498Ec7f55E092bd1d35cbC47C91892;
 
@@ -81,7 +81,7 @@ contract MelonTokenAdapter is TokenaAdapter {
       Component[] memory underlyingTokens = new Component[](1);
 
       underlyingTokens[0] = Component({
-          token: getUnderlying(token),
+          token: MLNF(token).token,
           tokenType: "ERC20",
           rate: 1e18
       });
@@ -105,3 +105,4 @@ contract MelonTokenAdapter is TokenaAdapter {
                 sharePrice,
                 gavPerShareNetManagementFee);
     }
+  }
