@@ -21,13 +21,13 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { AmountType } from "../../shared/Structs.sol";
-import { UniswapV2LiquidityAdapter } from "../../adapters/uniswap/UniswapV2LiquidityAdapter.sol";
+import { UniswapV2AssetAdapter } from "../../adapters/uniswap/UniswapV2AssetAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
 
 /**
  * @dev UniswapV2Pair contract interface.
- * Only the functions required for UniswapV2LiquidityZapInteractiveAdapter contract are added.
+ * Only the functions required for UniswapV2AssetZapInteractiveAdapter contract are added.
  * The UniswapV2Pair contract is available here
  * github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2Pair.sol.
  */
@@ -45,7 +45,7 @@ interface UniswapV2Pair {
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UniswapV2LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV2LiquidityAdapter {
+contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;

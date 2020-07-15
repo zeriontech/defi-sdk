@@ -21,13 +21,13 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { AmountType } from "../../shared/Structs.sol";
-import { CurveLiquidityAdapter } from "../../adapters/curve/CurveLiquidityAdapter.sol";
+import { CurveAssetAdapter } from "../../adapters/curve/CurveAssetAdapter.sol";
 import { CurveInteractiveAdapter } from "./CurveInteractiveAdapter.sol";
 
 
 /**
  * @dev Stableswap contract interface.
- * Only the functions required for CurveLiquidityInteractiveAdapter contract are added.
+ * Only the functions required for CurveAssetInteractiveAdapter contract are added.
  * The Stableswap contract is available here
  * github.com/curvefi/curve-contract/blob/compounded/vyper/stableswap.vy.
  */
@@ -40,7 +40,7 @@ interface Stableswap {
 
 /**
  * @dev Deposit contract interface.
- * Only the functions required for CurveLiquidityInteractiveAdapter contract are added.
+ * Only the functions required for CurveAssetInteractiveAdapter contract are added.
  * The Deposit contract is available here
  * github.com/curvefi/curve-contract/blob/compounded/vyper/deposit.vy.
  */
@@ -59,7 +59,7 @@ interface Deposit {
  * @dev Implementation of CurveInteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CurveLiquidityInteractiveAdapter is CurveInteractiveAdapter, CurveLiquidityAdapter {
+contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdapter {
     using SafeERC20 for ERC20;
 
     /**

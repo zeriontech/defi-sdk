@@ -27,7 +27,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CurveLiquidityAdapter is ProtocolAdapter {
+contract CurveAssetAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of Curve Pool Tokens held by the given account.

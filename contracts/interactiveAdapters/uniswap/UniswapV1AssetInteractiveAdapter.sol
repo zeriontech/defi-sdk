@@ -21,13 +21,13 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { AmountType } from "../../shared/Structs.sol";
-import { UniswapV1LiquidityAdapter } from "../../adapters/uniswap/UniswapV1LiquidityAdapter.sol";
+import { UniswapV1AssetAdapter } from "../../adapters/uniswap/UniswapV1AssetAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
 
 /**
  * @dev Exchange contract interface.
- * Only the functions required for UniswapV1LiquidityInteractiveAdapter contract are added.
+ * Only the functions required for UniswapV1AssetInteractiveAdapter contract are added.
  * The Exchange contract is available here
  * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_exchange.vy.
  */
@@ -53,7 +53,7 @@ interface Exchange {
 
 /**
  * @dev Factory contract interface.
- * Only the functions required for UniswapV1LiquidityInteractiveAdapter contract are added.
+ * Only the functions required for UniswapV1AssetInteractiveAdapter contract are added.
  * The Factory contract is available here
  * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_factory.vy.
  */
@@ -68,7 +68,7 @@ interface Factory {
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UniswapV1LiquidityInteractiveAdapter is InteractiveAdapter, UniswapV1LiquidityAdapter {
+contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, UniswapV1AssetAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant FACTORY = 0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95;
