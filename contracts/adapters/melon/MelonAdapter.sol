@@ -20,16 +20,6 @@ import { ERC20 } from "../../ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
-/**
- * @dev Shares contract interface.
- * Only the functions required for MelonAdapter contract are added.
- * The Shares contract is available here
- * github.com/melonproject/protocol/blob/develop/contracts/fund/shares/Shares.sol.
- */
-
-interface Shares {
-    function calcGav() public returns (uint256);
-}
 
 /**
  * @dev Accounting contract interface.
@@ -44,8 +34,8 @@ interface Accounting{
         public
         returns (
             uint gav,
-            uint feesInDenominationAsset,  // unclaimed amount
-            uint feesInShares,             // unclaimed amount
+            uint feesInDenominationAsset,  
+            uint feesInShares,
             uint nav,
             uint sharePrice,
             uint gavPerShareNetManagementFee
