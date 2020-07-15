@@ -30,7 +30,7 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  */
 interface Accounting{
     function performCalculations()
-        public
+        external
         returns (
             uint gav,
             uint feesInDenominationAsset,
@@ -81,7 +81,7 @@ contract MelonTokenAdapter is TokenAdapter {
       Component[] memory underlyingTokens = new Component[](1);
 
       underlyingTokens[0] = Component({
-          token: MLNF(token).token,
+          token: MLNF,
           tokenType: "ERC20",
           rate: 1e18
       });
@@ -89,6 +89,7 @@ contract MelonTokenAdapter is TokenAdapter {
 
     function performCalculations()
         public
+        view
         returns (
             uint gav,
             uint feesInDenominationAsset,
