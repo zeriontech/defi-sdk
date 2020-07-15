@@ -2,15 +2,24 @@
 import expectRevert from '../helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
 
+const CURVE_ADAPTER = web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Curve'),
+).slice(0, -2);
+const UNISWAP_V1_ADAPTER = web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Uniswap V1'),
+).slice(0, -2);
+const EXCHANGE_ADAPTER = '03';
+const CURVE_EXCHANGE_ADAPTER = `${CURVE_ADAPTER}${EXCHANGE_ADAPTER}`;
+const UNISWAP_V1_EXCHANGE_ADAPTER = `${UNISWAP_V1_ADAPTER}${EXCHANGE_ADAPTER}`;
+
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;
 const RELATIVE_AMOUNT_BASE = '1000000000000000000';
 // const EMPTY_BYTES = '0x';
-// const ADAPTER_ASSET = 0;
-// const ADAPTER_DEBT = 1;
-const ADAPTER_EXCHANGE = 2;
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
@@ -21,7 +30,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('Curve exchange interactive adapter', () => {
+contract.only('Curve exchange interactive adapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
   const usdtAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
@@ -33,7 +42,7 @@ contract('Curve exchange interactive adapter', () => {
 
   let accounts;
   let core;
-  let tokenSpender;
+  let router;
   let adapterRegistry;
   let protocolAdapterAddress;
   let uniswapAdapterAddress;
@@ -60,34 +69,17 @@ contract('Curve exchange interactive adapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocolAdapters(
-      [web3.utils.toHex('Curve'), web3.utils.toHex('Uniswap V1')],
       [
-        [
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ],
-        [
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ],
+        CURVE_EXCHANGE_ADAPTER,
+        UNISWAP_V1_EXCHANGE_ADAPTER,
       ],
       [
-        [
-          ZERO, ZERO, protocolAdapterAddress,
-        ],
-        [
-          ZERO, ZERO, uniswapAdapterAddress,
-        ],
+        protocolAdapterAddress,
+        uniswapAdapterAddress,
       ],
       [
-        [[], [], []],
-        [[], [], []],
+        [],
+        [],
       ],
     )
       .send({
@@ -106,7 +98,7 @@ contract('Curve exchange interactive adapter', () => {
       { from: accounts[0] },
     )
       .then((result) => {
-        tokenSpender = result.contract;
+        router = result.contract;
       });
     await ERC20.at(daiAddress)
       .then((result) => {
@@ -141,13 +133,12 @@ contract('Curve exchange interactive adapter', () => {
   describe('All possible (1-side) stablecoins swaps', () => {
     it('should prepare fot tests (sell 1 ETH for DAI)', async () => {
       // exchange 1 ETH to DAI like we had DAI initially
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         // actions
         [
           [
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [ethAddress],
             ['1000000000000000000'],
             [AMOUNT_ABSOLUTE],
@@ -173,17 +164,16 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           daiAmount = result;
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         [
           [
+            CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Curve'),
-            ADAPTER_EXCHANGE,
             [daiAddress, daiAddress],
             [convertToShare(1), convertToShare(1)],
             [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
@@ -208,17 +198,16 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           tusdAmount = result;
         });
-      await TUSD.methods.approve(tokenSpender.options.address, tusdAmount.toString())
+      await TUSD.methods.approve(router.options.address, tusdAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         [
           [
+            CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Curve'),
-            ADAPTER_EXCHANGE,
             [tusdAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -243,17 +232,16 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           daiAmount = result;
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         [
           [
+            CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Curve'),
-            ADAPTER_EXCHANGE,
             [daiAddress],
             [convertToShare(1), convertToShare(1)],
             [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
@@ -278,17 +266,16 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           daiAmount = result;
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         [
           [
+            CURVE_EXCHANGE_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Curve'),
-            ADAPTER_EXCHANGE,
             [susdAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -319,17 +306,16 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           console.log(`susd amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Curve'),
-            ADAPTER_EXCHANGE,
             [daiAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -346,7 +332,7 @@ contract('Curve exchange interactive adapter', () => {
           from: accounts[0],
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -383,17 +369,16 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           console.log(`usdc amount before is ${web3.utils.fromWei(result, 'mwei')}`);
         });
-      await SUSD.methods.approve(tokenSpender.options.address, susdAmount)
+      await SUSD.methods.approve(router.options.address, susdAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Curve'),
-            ADAPTER_EXCHANGE,
             [susdAddress],
             [susdAmount],
             [AMOUNT_ABSOLUTE],
@@ -410,7 +395,7 @@ contract('Curve exchange interactive adapter', () => {
           from: accounts[0],
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await SUSD.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -447,17 +432,16 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           console.log(`usdt amount before is ${web3.utils.fromWei(result, 'mwei')}`);
         });
-      await USDC.methods.approve(tokenSpender.options.address, usdcAmount)
+      await USDC.methods.approve(router.options.address, usdcAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Curve'),
-            ADAPTER_EXCHANGE,
             [usdcAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -474,7 +458,7 @@ contract('Curve exchange interactive adapter', () => {
           from: accounts[0],
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await USDC.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -511,17 +495,16 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           console.log(`busd amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await USDT.methods.approve(tokenSpender.options.address, usdtAmount)
+      await USDT.methods.approve(router.options.address, usdtAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Curve'),
-            ADAPTER_EXCHANGE,
             [usdtAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -538,7 +521,7 @@ contract('Curve exchange interactive adapter', () => {
           from: accounts[0],
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await USDT.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -575,17 +558,16 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           console.log(`dai amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await BUSD.methods.approve(tokenSpender.options.address, busdAmount)
+      await BUSD.methods.approve(router.options.address, busdAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Curve'),
-            ADAPTER_EXCHANGE,
             [busdAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -602,7 +584,7 @@ contract('Curve exchange interactive adapter', () => {
           from: accounts[0],
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await BUSD.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -639,17 +621,16 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           console.log(`pax amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount)
+      await DAI.methods.approve(router.options.address, daiAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Curve'),
-            ADAPTER_EXCHANGE,
             [daiAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -666,7 +647,7 @@ contract('Curve exchange interactive adapter', () => {
           from: accounts[0],
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -703,17 +684,16 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           console.log(`dai amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await PAX.methods.approve(tokenSpender.options.address, paxAmount)
+      await PAX.methods.approve(router.options.address, paxAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Curve'),
-            ADAPTER_EXCHANGE,
             [paxAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -730,7 +710,7 @@ contract('Curve exchange interactive adapter', () => {
           from: accounts[0],
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await PAX.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -767,17 +747,16 @@ contract('Curve exchange interactive adapter', () => {
         .then((result) => {
           console.log(`tusd amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount)
+      await DAI.methods.approve(router.options.address, daiAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Curve'),
-            ADAPTER_EXCHANGE,
             [daiAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -794,7 +773,7 @@ contract('Curve exchange interactive adapter', () => {
           from: accounts[0],
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()

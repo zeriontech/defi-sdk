@@ -1,14 +1,29 @@
 import convertToShare from '../helpers/convertToShare';
 import expectRevert from '../helpers/expectRevert';
 
+const TOKENSETS_ADAPTER = web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Curve'),
+).slice(0, -2);
+const UNISWAP_V1_ADAPTER = web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Uniswap V1'),
+).slice(0, -2);
+const WETH_ADAPTER = web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Weth'),
+).slice(0, -2);
+const ASSET_ADAPTER = '01';
+const EXCHANGE_ADAPTER = '03';
+const TOKENSETS_ASSET_ADAPTER = `${TOKENSETS_ADAPTER}${ASSET_ADAPTER}`;
+const WETH_ASSET_ADAPTER = `${WETH_ADAPTER}${ASSET_ADAPTER}`;
+const UNISWAP_V1_EXCHANGE_ADAPTER = `${UNISWAP_V1_ADAPTER}${EXCHANGE_ADAPTER}`;
+
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
 // const AMOUNT_ABSOLUTE = 2;
 const EMPTY_BYTES = '0x';
-const ADAPTER_ASSET = 0;
-// const ADAPTER_DEBT = 1;
-const ADAPTER_EXCHANGE = 2;
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
@@ -21,7 +36,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('TokenSetsInteractiveAdapter', () => {
+contract.only('TokenSetsInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
@@ -31,7 +46,7 @@ contract('TokenSetsInteractiveAdapter', () => {
   let accounts;
   let core;
   let adapterRegistry;
-  let tokenSpender;
+  let router;
   let tokenSetsAdapterAddress;
   let wethAdapterAddress;
   let uniswapAdapterAddress;
@@ -65,48 +80,19 @@ contract('TokenSetsInteractiveAdapter', () => {
       });
     await adapterRegistry.methods.addProtocolAdapters(
       [
-        web3.utils.toHex('TokenSets'),
-        web3.utils.toHex('Weth'),
-        web3.utils.toHex('Uniswap V1'),
+        TOKENSETS_ASSET_ADAPTER,
+        WETH_ASSET_ADAPTER,
+        UNISWAP_V1_EXCHANGE_ADAPTER,
       ],
       [
-        [
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ],
-        [
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ],
-        [
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ],
+        tokenSetsAdapterAddress,
+        wethAdapterAddress,
+        uniswapAdapterAddress,
       ],
       [
-        [
-          tokenSetsAdapterAddress,
-        ],
-        [
-          ZERO, ZERO, wethAdapterAddress,
-        ],
-        [
-          ZERO, ZERO, uniswapAdapterAddress,
-        ],
-      ],
-      [
-        [[]],
-        [[], [], []],
-        [[], [], []],
+        [],
+        [],
+        [],
       ],
     )
       .send({
@@ -133,7 +119,7 @@ contract('TokenSetsInteractiveAdapter', () => {
       { from: accounts[0] },
     )
       .then((result) => {
-        tokenSpender = result.contract;
+        router = result.contract;
       });
     await ERC20.at(usdcAddress)
       .then((result) => {
@@ -153,9 +139,8 @@ contract('TokenSetsInteractiveAdapter', () => {
       const actions = [
         // exchange ETH to USDC
         [
+          UNISWAP_V1_EXCHANGE_ADAPTER,
           ACTION_DEPOSIT,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Uniswap V1')),
-          ADAPTER_EXCHANGE,
           [ethAddress],
           [convertToShare(0.52)],
           [AMOUNT_RELATIVE],
@@ -163,18 +148,16 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
         // exchange ETH to WETH
         [
+          WETH_ASSET_ADAPTER,
           ACTION_DEPOSIT,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Weth')),
-          ADAPTER_EXCHANGE,
           [ethAddress],
           [convertToShare(1)], // 100% of the remaining
           [AMOUNT_RELATIVE],
           EMPTY_BYTES,
         ],
         [
+          TOKENSETS_ASSET_ADAPTER,
           ACTION_DEPOSIT,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('TokenSets')),
-          ADAPTER_ASSET,
           [
             wethAddress,
             usdcAddress,
@@ -196,7 +179,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
       ];
       // console.log(actions);
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         actions,
         [],
         [],
@@ -212,9 +195,8 @@ contract('TokenSetsInteractiveAdapter', () => {
       const actions = [
         // exchange ETH to USDC
         [
+          UNISWAP_V1_EXCHANGE_ADAPTER,
           ACTION_DEPOSIT,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Uniswap V1')),
-          ADAPTER_EXCHANGE,
           [ethAddress],
           [convertToShare(0.52)],
           [AMOUNT_RELATIVE],
@@ -222,18 +204,16 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
         // exchange ETH to WETH
         [
+          WETH_ASSET_ADAPTER,
           ACTION_DEPOSIT,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Weth')),
-          ADAPTER_EXCHANGE,
           [ethAddress],
           [convertToShare(1)], // 100% of the remaining
           [AMOUNT_RELATIVE],
           EMPTY_BYTES,
         ],
         [
+          TOKENSETS_ASSET_ADAPTER,
           ACTION_DEPOSIT,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('TokenSets')),
-          ADAPTER_ASSET,
           [
             wethAddress,
             usdcAddress,
@@ -256,7 +236,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
       ];
       // console.log(actions);
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         actions,
         [],
         [],
@@ -291,9 +271,8 @@ contract('TokenSetsInteractiveAdapter', () => {
       const actions = [
         // exchange ETH to USDC
         [
+          UNISWAP_V1_EXCHANGE_ADAPTER,
           ACTION_DEPOSIT,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Uniswap V1')),
-          ADAPTER_EXCHANGE,
           [ethAddress],
           [convertToShare(0.52)],
           [AMOUNT_RELATIVE],
@@ -301,18 +280,16 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
         // exchange ETH to WETH
         [
+          WETH_ASSET_ADAPTER,
           ACTION_DEPOSIT,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Weth')),
-          ADAPTER_EXCHANGE,
           [ethAddress],
           [convertToShare(1)], // 100% of the remaining
           [AMOUNT_RELATIVE],
           EMPTY_BYTES,
         ],
         [
+          TOKENSETS_ASSET_ADAPTER,
           ACTION_DEPOSIT,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('TokenSets')),
-          ADAPTER_ASSET,
           [
             wethAddress,
             usdcAddress,
@@ -332,7 +309,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
       ];
       // console.log(actions);
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         actions,
         [],
         [],
@@ -343,9 +320,9 @@ contract('TokenSetsInteractiveAdapter', () => {
           value: web3.utils.toWei('1', 'ether'),
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
-      // console.log(tokenSpender.methods.startExecution(
+      // console.log(router.methods.startExecution(
       //   actions,
       //   [],
       // ).encodeABI());
@@ -396,7 +373,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         .then((result) => {
           setAmount = result;
         });
-      await SET.methods.approve(tokenSpender.options.address, setAmount)
+      await SET.methods.approve(router.options.address, setAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
@@ -404,9 +381,8 @@ contract('TokenSetsInteractiveAdapter', () => {
       const actions = [
         // withdraw to all sets
         [
+          TOKENSETS_ASSET_ADAPTER,
           ACTION_WITHDRAW,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('TokenSets')),
-          ADAPTER_ASSET,
           [
             setAddress,
             setAddress,
@@ -421,9 +397,8 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
         // swap change (in USDC) back to ETH
         [
+          UNISWAP_V1_EXCHANGE_ADAPTER,
           ACTION_DEPOSIT,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Uniswap V1')),
-          ADAPTER_EXCHANGE,
           [usdcAddress],
           [convertToShare(1)],
           [AMOUNT_RELATIVE],
@@ -431,9 +406,8 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
         // swap change (in WETH) back to ETH
         [
+          WETH_ASSET_ADAPTER,
           ACTION_WITHDRAW,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Weth')),
-          ADAPTER_EXCHANGE,
           [wethAddress],
           [convertToShare(1)],
           [AMOUNT_RELATIVE],
@@ -441,7 +415,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
       ];
       // console.log(actions);
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         actions,
         [
           [setAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
@@ -461,7 +435,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         .then((result) => {
           setAmount = result;
         });
-      await SET.methods.approve(tokenSpender.options.address, setAmount)
+      await SET.methods.approve(router.options.address, setAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
@@ -469,9 +443,8 @@ contract('TokenSetsInteractiveAdapter', () => {
       const actions = [
         // withdraw to all sets
         [
+          TOKENSETS_ASSET_ADAPTER,
           ACTION_WITHDRAW,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('TokenSets')),
-          ADAPTER_ASSET,
           [
             setAddress,
           ],
@@ -487,9 +460,8 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
         // swap change (in USDC) back to ETH
         [
+          UNISWAP_V1_EXCHANGE_ADAPTER,
           ACTION_DEPOSIT,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Uniswap V1')),
-          ADAPTER_EXCHANGE,
           [usdcAddress],
           [convertToShare(1)],
           [AMOUNT_RELATIVE],
@@ -497,9 +469,8 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
         // swap change (in WETH) back to ETH
         [
+          WETH_ASSET_ADAPTER,
           ACTION_WITHDRAW,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Weth')),
-          ADAPTER_EXCHANGE,
           [wethAddress],
           [convertToShare(1)],
           [AMOUNT_RELATIVE],
@@ -507,7 +478,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
       ];
       // console.log(actions);
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         actions,
         [
           [setAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
@@ -542,7 +513,7 @@ contract('TokenSetsInteractiveAdapter', () => {
           console.log(`set amount before is  ${web3.utils.fromWei(result, 'ether')}`);
           setAmount = result;
         });
-      await SET.methods.approve(tokenSpender.options.address, setAmount)
+      await SET.methods.approve(router.options.address, setAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
@@ -550,9 +521,8 @@ contract('TokenSetsInteractiveAdapter', () => {
       const actions = [
         // withdraw to all sets
         [
+          TOKENSETS_ASSET_ADAPTER,
           ACTION_WITHDRAW,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('TokenSets')),
-          ADAPTER_ASSET,
           [
             setAddress,
           ],
@@ -566,9 +536,8 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
         // swap change (in USDC) back to ETH
         [
+          UNISWAP_V1_EXCHANGE_ADAPTER,
           ACTION_DEPOSIT,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Uniswap V1')),
-          ADAPTER_EXCHANGE,
           [usdcAddress],
           [convertToShare(1)],
           [AMOUNT_RELATIVE],
@@ -576,9 +545,8 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
         // swap change (in WETH) back to ETH
         [
+          WETH_ASSET_ADAPTER,
           ACTION_WITHDRAW,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Weth')),
-          ADAPTER_EXCHANGE,
           [wethAddress],
           [convertToShare(1)],
           [AMOUNT_RELATIVE],
@@ -586,7 +554,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
       ];
       // console.log(actions);
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         actions,
         [
           [setAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
@@ -598,12 +566,8 @@ contract('TokenSetsInteractiveAdapter', () => {
           gas: 5000000,
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
-      // console.log(tokenSpender.methods.startExecution(
-      //   actions,
-      //   [],
-      // ).encodeABI());
       await web3.eth.getBalance(accounts[0])
         .then((result) => {
           console.log(`eth amount after is  ${web3.utils.fromWei(result, 'ether')}`);

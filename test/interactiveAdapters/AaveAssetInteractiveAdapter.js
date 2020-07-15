@@ -12,8 +12,6 @@ const AMOUNT_RELATIVE = 1;
 // const AMOUNT_ABSOLUTE = 2;
 const EMPTY_BYTES = '0x';
 
-
-
 const ZERO = '0x0000000000000000000000000000000000000000';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
@@ -22,7 +20,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('AaveAssetInteractiveAdapter', () => {
+contract('AaveAssetInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const aethAddress = '0x3a3A65aAb0dd2A17E3F1947bA16138cd37d08c04';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
@@ -89,6 +87,119 @@ contract.only('AaveAssetInteractiveAdapter', () => {
   });
 
   describe('ETH <-> aETH', () => {
+    it('should not be correct ETH -> aETH deposit if 2 tokens', async () => {
+      await AETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`aeth amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(` eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await router.methods.startExecution(
+        [
+          [
+            AAVE_ASSET_ADAPTER,
+            ACTION_DEPOSIT,
+            [
+              ethAddress,
+              ethAddress,
+            ],
+            [convertToShare(1)],
+            [AMOUNT_RELATIVE],
+            EMPTY_BYTES,
+          ],
+        ],
+        [],
+        [],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+          value: web3.utils.toWei('1', 'ether'),
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await AETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`aeth amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(` eth amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await AETH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await web3.eth.getBalance(core.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
+    it('should not be correct ETH -> aETH deposit if inconsistent arrays', async () => {
+      await AETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`aeth amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(` eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await router.methods.startExecution(
+        [
+          [
+            AAVE_ASSET_ADAPTER,
+            ACTION_DEPOSIT,
+            [ethAddress],
+            [
+              convertToShare(1),
+              convertToShare(1),
+            ],
+            [
+              AMOUNT_RELATIVE,
+              AMOUNT_RELATIVE,
+            ],
+            EMPTY_BYTES,
+          ],
+        ],
+        [],
+        [],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+          value: web3.utils.toWei('1', 'ether'),
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await AETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`aeth amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(` eth amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await AETH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await web3.eth.getBalance(core.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
     it('should be correct ETH -> aETH deposit', async () => {
       await AETH.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -117,6 +228,132 @@ contract.only('AaveAssetInteractiveAdapter', () => {
           gas: 10000000,
           from: accounts[0],
           value: web3.utils.toWei('1', 'ether'),
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await AETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`aeth amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(` eth amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await AETH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await web3.eth.getBalance(core.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
+    it('should not be correct ETH <- aETH withdraw if 2 tokens', async () => {
+      let aethAmount;
+      await AETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          aethAmount = result;
+          console.log(`aeth amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(` eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await AETH.methods.approve(router.options.address, (aethAmount * 2).toString())
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        });
+      await router.methods.startExecution(
+        [
+          [
+            AAVE_ASSET_ADAPTER,
+            ACTION_WITHDRAW,
+            [
+              aethAddress,
+              aethAddress,
+            ],
+            [convertToShare(1)],
+            [AMOUNT_RELATIVE],
+            EMPTY_BYTES,
+          ],
+        ],
+        [
+          [aethAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+        ],
+        [],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await AETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`aeth amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(` eth amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await AETH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await web3.eth.getBalance(core.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
+    it('should not be correct ETH <- aETH withdraw if inconsistent arrays', async () => {
+      let aethAmount;
+      await AETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          aethAmount = result;
+          console.log(`aeth amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(` eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await AETH.methods.approve(router.options.address, (aethAmount * 2).toString())
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        });
+      await router.methods.startExecution(
+        [
+          [
+            AAVE_ASSET_ADAPTER,
+            ACTION_WITHDRAW,
+            [aethAddress],
+            [
+              convertToShare(1),
+              convertToShare(1),
+            ],
+            [AMOUNT_RELATIVE],
+            EMPTY_BYTES,
+          ],
+        ],
+        [
+          [aethAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+        ],
+        [],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
         })
         .then((receipt) => {
           console.log(`called router for ${receipt.cumulativeGasUsed} gas`);

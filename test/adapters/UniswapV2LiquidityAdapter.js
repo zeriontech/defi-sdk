@@ -3,11 +3,11 @@ import displayToken from '../helpers/displayToken';
 const ASSET_ADAPTER = '01';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./UniswapV2LiquidityAdapter');
+const ProtocolAdapter = artifacts.require('./UniswapV2AssetAdapter');
 const TokenAdapter = artifacts.require('./UniswapV2TokenAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
-contract('UniswapV2LiquidityAdapter', () => {
+contract('UniswapV2AssetAdapter', () => {
   const daiWethUniAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 

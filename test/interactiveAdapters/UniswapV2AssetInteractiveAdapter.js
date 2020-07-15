@@ -2,6 +2,20 @@ import displayToken from '../helpers/displayToken';
 import convertToShare from '../helpers/convertToShare';
 import expectRevert from '../helpers/expectRevert';
 
+const UNISWAP_V2_ADAPTER = web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Uniswap V2'),
+).slice(0, -2);
+const WETH_ADAPTER = web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Weth'),
+).slice(0, -2);
+const ASSET_ADAPTER = '01';
+const EXCHANGE_ADAPTER = '03';
+const UNISWAP_V2_ASSET_ADAPTER = `${UNISWAP_V2_ADAPTER}${ASSET_ADAPTER}`;
+const WETH_ASSET_ADAPTER = `${UNISWAP_V2_ADAPTER}${ASSET_ADAPTER}`;
+const UNISWAP_V2_EXCHANGE_ADAPTER = `${UNISWAP_V2_ADAPTER}${EXCHANGE_ADAPTER}`;
+
 // const { BN } = web3.utils;
 
 const ACTION_DEPOSIT = 1;
@@ -9,14 +23,11 @@ const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;
 const EMPTY_BYTES = '0x';
-const ADAPTER_ASSET = 0;
-// const ADAPTER_DEBT = 1;
-const ADAPTER_EXCHANGE = 2;
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
 const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const UniswapV2Adapter = artifacts.require('./UniswapV2LiquidityInteractiveAdapter');
+const UniswapV2Adapter = artifacts.require('./UniswapV2AssetInteractiveAdapter');
 const UniswapV2ExchangeAdapter = artifacts.require('./UniswapV2ExchangeInteractiveAdapter');
 const WethAdapter = artifacts.require('./WethInteractiveAdapter');
 const UniswapV2TokenAdapter = artifacts.require('./UniswapV2TokenAdapter');
@@ -25,7 +36,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('UniswapV2LiquidityInteractiveAdapter', () => {
+contract.only('UniswapV2AssetInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const wethDaiAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -33,7 +44,7 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
 
   let accounts;
   let core;
-  let tokenSpender;
+  let router;
   let adapterRegistry;
   let erc20TokenAdapterAddress;
   let protocolAdapterAddress;
@@ -71,38 +82,20 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocolAdapters(
-      [web3.utils.toHex('Uniswap V2'), web3.utils.toHex('Weth')],
       [
-        [
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ],
-        [
-          'Mock Protocol Name',
-          'Mock protocol description',
-          'Mock website',
-          'Mock icon',
-          '0',
-        ],
+        UNISWAP_V2_ASSET_ADAPTER,
+        UNISWAP_V2_EXCHANGE_ADAPTER,
+        WETH_ASSET_ADAPTER,
       ],
       [
-        [
-          protocolAdapterAddress, ZERO, uniswapAdapterAddress,
-        ],
-        [
-          wethAdapterAddress,
-        ],
+        protocolAdapterAddress,
+        uniswapAdapterAddress,
+        wethAdapterAddress,
       ],
       [
-        [
-          [wethDaiAddress], [], [],
-        ],
-        [
-          [],
-        ],
+        [wethDaiAddress],
+        [],
+        [],
       ],
     )
       .send({
@@ -129,7 +122,7 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
       { from: accounts[0] },
     )
       .then((result) => {
-        tokenSpender = result.contract;
+        router = result.contract;
       });
     await ERC20.at(daiAddress)
       .then((result) => {
@@ -144,13 +137,12 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
         WETHDAI = result.contract;
       });
     // exchange 1 ETH to WETH like we had WETH initially
-    await tokenSpender.methods.startExecution(
+    await router.methods.startExecution(
       // actions
       [
         [
+          WETH_ASSET_ADAPTER,
           ACTION_DEPOSIT,
-          web3.utils.toHex('Weth'),
-          ADAPTER_ASSET,
           [ethAddress],
           [web3.utils.toWei('1', 'ether')],
           [AMOUNT_ABSOLUTE],
@@ -169,20 +161,19 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
       });
   });
 
-  describe('Uniswap V2 liquidity tests', () => {
+  describe('Uniswap V2 asset tests', () => {
     it('should prepare for tests buyng dai for WETH', async () => {
-      await WETH.methods.approve(tokenSpender.options.address, web3.utils.toWei('0.3', 'ether'))
+      await WETH.methods.approve(router.options.address, web3.utils.toWei('0.3', 'ether'))
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         // actions
         [
           [
+            UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V2'),
-            ADAPTER_EXCHANGE,
             [],
             [web3.utils.toWei('0.3', 'ether')],
             [AMOUNT_ABSOLUTE],
@@ -209,7 +200,7 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
         .then((result) => {
           daiAmount = result;
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
@@ -220,17 +211,16 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
         .then((result) => {
           wethAmount = result;
         });
-      await WETH.methods.approve(tokenSpender.options.address, wethAmount.toString())
+      await WETH.methods.approve(router.options.address, wethAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         [
           [
+            UNISWAP_V2_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V2'),
-            ADAPTER_ASSET,
             [daiAddress],
             [convertToShare(1), convertToShare(1)],
             [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
@@ -261,7 +251,7 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
         .then((result) => {
           daiAmount = result;
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
@@ -272,17 +262,16 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
         .then((result) => {
           wethAmount = result;
         });
-      await WETH.methods.approve(tokenSpender.options.address, wethAmount.toString())
+      await WETH.methods.approve(router.options.address, wethAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         [
           [
+            UNISWAP_V2_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V2'),
-            ADAPTER_ASSET,
             [daiAddress, wethAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -307,18 +296,17 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
     });
 
     it('should buy 1 UNI-V2 with existing DAI and WETH', async () => {
-      await WETH.methods.approve(tokenSpender.options.address, web3.utils.toWei('0.3', 'ether'))
+      await WETH.methods.approve(router.options.address, web3.utils.toWei('0.3', 'ether'))
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         // actions
         [
           [
+            UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V2'),
-            ADAPTER_EXCHANGE,
             [],
             [web3.utils.toWei('0.3', 'ether')],
             [AMOUNT_ABSOLUTE],
@@ -343,7 +331,7 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
           console.log(`dai amount before is     ${web3.utils.fromWei(result, 'ether')}`);
           daiAmount = result;
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
@@ -355,7 +343,7 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
           console.log(`weth amount before is    ${web3.utils.fromWei(result, 'ether')}`);
           wethAmount = result;
         });
-      await WETH.methods.approve(tokenSpender.options.address, wethAmount.toString())
+      await WETH.methods.approve(router.options.address, wethAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
@@ -365,12 +353,11 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
         .then((result) => {
           console.log(`wethdai amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            UNISWAP_V2_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V2'),
-            ADAPTER_ASSET,
             [daiAddress, wethAddress],
             [convertToShare(1), convertToShare(1)],
             [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
@@ -393,14 +380,13 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
           gas: 1000000,
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            UNISWAP_V2_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V2'),
-            ADAPTER_ASSET,
             [daiAddress, wethAddress],
             [convertToShare(1), convertToShare(1)],
             [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
@@ -423,14 +409,13 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
           gas: 1000000,
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            UNISWAP_V2_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V2'),
-            ADAPTER_ASSET,
             [wethAddress, daiAddress],
             [convertToShare(1), convertToShare(1)],
             [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
@@ -453,7 +438,7 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
           gas: 1000000,
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -494,17 +479,16 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
         .then((result) => {
           wethDaiAmount = result[0].tokenBalances[0].amount;
         });
-      await WETHDAI.methods.approve(tokenSpender.options.address, wethDaiAmount.toString())
+      await WETHDAI.methods.approve(router.options.address, wethDaiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         [
           [
+            UNISWAP_V2_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Uniswap V2'),
-            ADAPTER_ASSET,
             [wethDaiAddress, wethDaiAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -529,17 +513,16 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
         .then((result) => {
           wethDaiAmount = result[0].tokenBalances[0].amount;
         });
-      await WETHDAI.methods.approve(tokenSpender.options.address, wethDaiAmount.toString())
+      await WETHDAI.methods.approve(router.options.address, wethDaiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         [
           [
+            UNISWAP_V2_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Uniswap V2'),
-            ADAPTER_ASSET,
             [wethDaiAddress],
             [convertToShare(1), convertToShare(1)],
             [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
@@ -575,17 +558,16 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
           await displayToken(adapterRegistry, result[0].tokenBalances[0]);
           wethDaiAmount = result[0].tokenBalances[0].amount;
         });
-      await WETHDAI.methods.approve(tokenSpender.options.address, wethDaiAmount.toString())
+      await WETHDAI.methods.approve(router.options.address, wethDaiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            UNISWAP_V2_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Uniswap V2'),
-            ADAPTER_ASSET,
             [wethDaiAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -602,7 +584,7 @@ contract('UniswapV2LiquidityInteractiveAdapter', () => {
           gas: 1000000,
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()

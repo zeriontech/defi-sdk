@@ -2,14 +2,18 @@
 // import expectRevert from './helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
 
+const WETH_ADAPTER = web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Weth'),
+).slice(0, -2);
+const ASSET_ADAPTER = '01';
+const WETH_ASSET_ADAPTER = `${WETH_ADAPTER}${ASSET_ADAPTER}`;
+
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;
 const EMPTY_BYTES = '0x';
-const ADAPTER_ASSET = 0;
-// const ADAPTER_DEBT = 1;
-// const ADAPTER_EXCHANGE = 2;
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
@@ -25,7 +29,7 @@ contract('Weth interactive adapter', () => {
 
   let accounts;
   let core;
-  let tokenSpender;
+  let router;
   let adapterRegistry;
   let protocolAdapterAddress;
   let WETH;
@@ -42,11 +46,15 @@ contract('Weth interactive adapter', () => {
           adapterRegistry = result.contract;
         });
       await adapterRegistry.methods.addProtocolAdapters(
-        [web3.utils.toHex('Weth')],
+        [
+          WETH_ASSET_ADAPTER,
+        ],
         [
           protocolAdapterAddress,
         ],
-        [[]],
+        [
+          [],
+        ],
       )
         .send({
           from: accounts[0],
@@ -64,7 +72,7 @@ contract('Weth interactive adapter', () => {
         { from: accounts[0] },
       )
         .then((result) => {
-          tokenSpender = result.contract;
+          router = result.contract;
         });
       await ERC20.at(wethAddress)
         .then((result) => {
@@ -82,12 +90,11 @@ contract('Weth interactive adapter', () => {
         .then((result) => {
           console.log(`eth amount before is  ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            WETH_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Weth'),
-            ADAPTER_ASSET,
             [ethAddress],
             [web3.utils.toWei('1', 'ether')],
             [AMOUNT_ABSOLUTE],
@@ -105,7 +112,7 @@ contract('Weth interactive adapter', () => {
           value: web3.utils.toWei('1', 'ether'),
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await WETH.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -135,7 +142,7 @@ contract('Weth interactive adapter', () => {
           console.log(`weth amount before is ${web3.utils.fromWei(result, 'ether')}`);
           wethAmount = result;
         });
-      await WETH.methods.approve(tokenSpender.options.address, wethAmount.toString())
+      await WETH.methods.approve(router.options.address, wethAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
@@ -144,13 +151,12 @@ contract('Weth interactive adapter', () => {
         .then((result) => {
           console.log(`eth amount before is  ${web3.utils.fromWei(result, 'ether')}`);
         });
-      console.log('calling tokenSpender with action...');
-      await tokenSpender.methods.startExecution(
+      console.log('calling router with action...');
+      await router.methods.startExecution(
         [
           [
+            WETH_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Weth'),
-            ADAPTER_ASSET,
             [wethAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],

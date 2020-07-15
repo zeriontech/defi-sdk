@@ -2,14 +2,18 @@
 // import expectRevert from './helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
 
+const UNISWAP_V1_ADAPTER = web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Uniswap V1'),
+).slice(0, -2);
+const EXCHANGE_ADAPTER = '03';
+const UNISWAP_V1_EXCHANGE_ADAPTER = `${UNISWAP_V1_ADAPTER}${EXCHANGE_ADAPTER}`;
+
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;
 // const EMPTY_BYTES = '0x';
-// const ADAPTER_ASSET = 0;
-// const ADAPTER_DEBT = 1;
-const ADAPTER_EXCHANGE = 2;
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
@@ -19,14 +23,14 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('UniswapV1ExchangeAdapter', () => {
+contract.only('UniswapV1ExchangeAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const mkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
   let accounts;
   let core;
-  let tokenSpender;
+  let router;
   let adapterRegistry;
   let protocolAdapterAddress;
   let DAI;
@@ -44,11 +48,15 @@ contract('UniswapV1ExchangeAdapter', () => {
           adapterRegistry = result.contract;
         });
       await adapterRegistry.methods.addProtocolAdapters(
-        [web3.utils.toHex('Uniswap V1')],
-        [[
-          ZERO, ZERO, protocolAdapterAddress,
-        ]],
-        [[], [], []],
+        [
+          UNISWAP_V1_EXCHANGE_ADAPTER,
+        ],
+        [
+          protocolAdapterAddress,
+        ],
+        [
+          [],
+        ],
       )
         .send({
           from: accounts[0],
@@ -66,7 +74,7 @@ contract('UniswapV1ExchangeAdapter', () => {
         { from: accounts[0] },
       )
         .then((result) => {
-          tokenSpender = result.contract;
+          router = result.contract;
         });
       await ERC20.at(daiAddress)
         .then((result) => {
@@ -84,13 +92,12 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         // actions
         [
           [
+            UNISWAP_V1_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [ethAddress],
             ['1000000000000000000'],
             [AMOUNT_ABSOLUTE],
@@ -110,7 +117,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           value: web3.utils.toWei('1', 'ether'),
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -140,7 +147,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           console.log(`dai amount before is ${web3.utils.fromWei(result, 'ether')}`);
           daiAmount = result;
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
@@ -149,12 +156,11 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            UNISWAP_V1_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [daiAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -172,7 +178,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           value: web3.utils.toWei('1', 'ether'),
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -204,12 +210,11 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            UNISWAP_V1_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [daiAddress],
             ['100000000000000000000'],
             [AMOUNT_ABSOLUTE],
@@ -227,7 +232,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           value: web3.utils.toWei('1', 'ether'),
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -257,7 +262,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           console.log(`dai amount before is ${web3.utils.fromWei(result, 'ether')}`);
           daiAmount = result;
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
@@ -266,12 +271,11 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            UNISWAP_V1_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [ethAddress],
             [web3.utils.toWei('0.3', 'ether')],
             [AMOUNT_ABSOLUTE],
@@ -290,7 +294,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           from: accounts[0],
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -325,11 +329,15 @@ contract('UniswapV1ExchangeAdapter', () => {
           adapterRegistry = result.contract;
         });
       await adapterRegistry.methods.addProtocolAdapters(
-        [web3.utils.toHex('Uniswap V1')],
-        [[
-          ZERO, ZERO, protocolAdapterAddress,
-        ]],
-        [[], [], []],
+        [
+          UNISWAP_V1_EXCHANGE_ADAPTER,
+        ],
+        [
+          protocolAdapterAddress,
+        ],
+        [
+          [],
+        ],
       )
         .send({
           from: accounts[0],
@@ -347,7 +355,7 @@ contract('UniswapV1ExchangeAdapter', () => {
         { from: accounts[0] },
       )
         .then((result) => {
-          tokenSpender = result.contract;
+          router = result.contract;
         });
       await ERC20.at(daiAddress)
         .then((result) => {
@@ -372,17 +380,16 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`mkr amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            UNISWAP_V1_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [daiAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -399,7 +406,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           from: accounts[0],
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -436,17 +443,16 @@ contract('UniswapV1ExchangeAdapter', () => {
           console.log(`mkr amount before is ${web3.utils.fromWei(result, 'ether')}`);
           mkrAmount = result;
         });
-      await MKR.methods.approve(tokenSpender.options.address, mkrAmount.toString())
+      await MKR.methods.approve(router.options.address, mkrAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            UNISWAP_V1_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [mkrAddress],
             [convertToShare(1)],
             [AMOUNT_RELATIVE],
@@ -465,7 +471,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           from: accounts[0],
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -503,17 +509,16 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`mkr amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            UNISWAP_V1_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [mkrAddress],
             [web3.utils.toWei('1', 'ether')],
             [AMOUNT_ABSOLUTE],
@@ -533,7 +538,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           from: accounts[0],
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -570,17 +575,16 @@ contract('UniswapV1ExchangeAdapter', () => {
           console.log(`mkr amount before is ${web3.utils.fromWei(result, 'ether')}`);
           mkrAmount = result;
         });
-      await MKR.methods.approve(tokenSpender.options.address, mkrAmount.toString())
+      await MKR.methods.approve(router.options.address, mkrAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           [
+            UNISWAP_V1_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            web3.utils.toHex('Uniswap V1'),
-            ADAPTER_EXCHANGE,
             [daiAddress],
             [web3.utils.toWei('0.1', 'ether')],
             [AMOUNT_ABSOLUTE],
@@ -599,7 +603,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           from: accounts[0],
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()

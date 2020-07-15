@@ -1,10 +1,10 @@
 import convertToShare from '../helpers/convertToShare';
 import expectRevert from '../helpers/expectRevert';
 
-const UNISWAP_ADAPTER = web3.eth.abi.encodeParameter(
+const UNISWAP_V1_ADAPTER = web3.eth.abi.encodeParameter(
   'bytes32',
   web3.utils.toHex('Uniswap V1'),
-).slice(0, -2)
+).slice(0, -2);
 const BALANCER_ADAPTER = web3.eth.abi.encodeParameter(
   'bytes32',
   web3.utils.toHex('Balancer'),
@@ -12,7 +12,7 @@ const BALANCER_ADAPTER = web3.eth.abi.encodeParameter(
 const ASSET_ADAPTER = '01';
 const EXCHANGE_ADAPTER = '03';
 const BALANCER_ASSET_ADAPTER = `${BALANCER_ADAPTER}${ASSET_ADAPTER}`;
-const UNISWAP_EXCHANGE_ADAPTER = `${UNISWAP_ADAPTER}${EXCHANGE_ADAPTER}`;
+const UNISWAP_V1_EXCHANGE_ADAPTER = `${UNISWAP_V1_ADAPTER}${EXCHANGE_ADAPTER}`;
 
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
@@ -31,7 +31,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('BalancerLiquidityInteractiveAdapter', () => {
+contract.only('BalancerAssetInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const mkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
@@ -40,7 +40,7 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
 
   let accounts;
   let core;
-  let tokenSpender;
+  let router;
   let adapterRegistry;
   let uniswapAdapterAddress;
   let balancerAdapterAddress;
@@ -75,7 +75,7 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
       });
     await adapterRegistry.methods.addProtocolAdapters(
       [
-        UNISWAP_EXCHANGE_ADAPTER,
+        UNISWAP_V1_EXCHANGE_ADAPTER,
         BALANCER_ASSET_ADAPTER,
        ],
       [
@@ -111,7 +111,7 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
       { from: accounts[0] },
     )
       .then((result) => {
-        tokenSpender = result.contract;
+        router = result.contract;
       });
 
     await ERC20.at(daiAddress)
@@ -136,17 +136,17 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         .then((result) => {
           daiAmount = result;
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         // actions
         [
           // exchange DAI to MKR to make swap
           [
-            UNISWAP_EXCHANGE_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [daiAddress],
             [convertToShare(1)],
@@ -188,17 +188,17 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         .then((result) => {
           daiAmount = result;
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         // actions
         [
           // exchange DAI to MKR to make swap
           [
-            UNISWAP_EXCHANGE_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [daiAddress],
             [convertToShare(1)],
@@ -235,12 +235,12 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
 
     it('should buy pool', async () => {
       let daiAmount;
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         // actions
         [
           // exchange 1 ETH to DAI like we had dai initially
           [
-            UNISWAP_EXCHANGE_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [ethAddress],
             ['1000000000000000000'],
@@ -264,7 +264,7 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
           daiAmount = result;
         });
-      await DAI.methods.approve(tokenSpender.options.address, daiAmount.toString())
+      await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
@@ -283,12 +283,12 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         .then((result) => {
           console.log(`eth amount before is  ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         // actions
         [
           // exchange DAI to MKR to make swap
           [
-            UNISWAP_EXCHANGE_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [daiAddress],
             [convertToShare(1)],
@@ -322,7 +322,7 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           gas: 10000000,
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -371,12 +371,12 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         .then((result) => {
           poolAmount = result;
         });
-      await pool.methods.approve(tokenSpender.options.address, poolAmount)
+      await pool.methods.approve(router.options.address, poolAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         [
           // withdraw pool tokens
           [
@@ -389,7 +389,7 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           ],
           // exchange MKR to DAI
           [
-            UNISWAP_EXCHANGE_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [mkrAddress],
             [web3.utils.toWei('100', 'ether')], // all MKR
@@ -415,12 +415,12 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         .then((result) => {
           poolAmount = result;
         });
-      await pool.methods.approve(tokenSpender.options.address, poolAmount)
+      await pool.methods.approve(router.options.address, poolAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         [
           // withdraw pool tokens
           [
@@ -433,7 +433,7 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           ],
           // exchange MKR to DAI
           [
-            UNISWAP_EXCHANGE_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [mkrAddress],
             [convertToShare(1)], // all MKR
@@ -459,12 +459,12 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
         .then((result) => {
           poolAmount = result;
         });
-      await pool.methods.approve(tokenSpender.options.address, poolAmount)
+      await pool.methods.approve(router.options.address, poolAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(tokenSpender.methods.startExecution(
+      await expectRevert(router.methods.startExecution(
         [
           // withdraw pool tokens
           [
@@ -477,7 +477,7 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           ],
           // exchange MKR to DAI
           [
-            UNISWAP_EXCHANGE_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [mkrAddress],
             [convertToShare(1)], // all MKR
@@ -514,12 +514,12 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           console.log(`pool amount before is ${web3.utils.fromWei(result, 'ether')}`);
           poolAmount = result;
         });
-      await pool.methods.approve(tokenSpender.options.address, poolAmount)
+      await pool.methods.approve(router.options.address, poolAmount)
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await tokenSpender.methods.startExecution(
+      await router.methods.startExecution(
         [
           // withdraw pool tokens
           [
@@ -532,7 +532,7 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           ],
           // exchange MKR to DAI
           [
-            UNISWAP_EXCHANGE_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [mkrAddress],
             [convertToShare(1)], // all MKR
@@ -550,7 +550,7 @@ contract('BalancerLiquidityInteractiveAdapter', () => {
           gas: 10000000,
         })
         .then((receipt) => {
-          console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
