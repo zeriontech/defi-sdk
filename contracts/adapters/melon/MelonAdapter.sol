@@ -22,28 +22,8 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @dev Accounting contract interface.
- * Only the functions required for MelonAdapter contract are added.
- * The Accounting contract is available here
- * github.com/melonproject/protocol/blob/master/src/fund/accounting/Accounting.sol
- */
-
-interface Accounting{
-    function getFundHoldings() external returns (uint[] memory, address[] memory);
-    function performCalculations()
-        public
-        returns (
-            uint gav,
-            uint feesInDenominationAsset,  
-            uint feesInShares,
-            uint nav,
-            uint sharePrice,
-            uint gavPerShareNetManagementFee
-        );
-}
-
-/**
  * @title adapter for Melon protocol.
+ * @dev Implementation of ProtocolAdapter interface.
  * @author Connor Martin <cnr.mrtn@gmail.com>
  */
 contract MelonAdapter is ProtocolAdapter {
@@ -52,10 +32,9 @@ contract MelonAdapter is ProtocolAdapter {
 
     string public constant override tokenType = "MelonToken";
 
-    address internal constant MLNF = 0xec67005c4E498Ec7f55E092bd1d35cbC47C91892;
 
     /**
-     * @return Amount of MLNF held by the given account.
+     * @return Amount of MLNF Tokens held by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
