@@ -48,7 +48,7 @@ interface Accounting{
  */
 contract MelonTokenAdapter is TokenaAdapter {
 
-  address internal constant MLN = 0xec67005c4E498Ec7f55E092bd1d35cbC47C91892;
+  address internal constant MLNF = 0xec67005c4E498Ec7f55E092bd1d35cbC47C91892;
 
   /**
    * @return TokenMetadata struct with ERC20-style token info.
@@ -104,4 +104,4 @@ contract MelonTokenAdapter is TokenaAdapter {
                 nav,
                 sharePrice,
                 gavPerShareNetManagementFee);
-    };
+    }

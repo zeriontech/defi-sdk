@@ -22,6 +22,7 @@ const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
+const MelonAdapter = artifacts.require('MelonAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
@@ -110,6 +111,7 @@ const cWBTCAddress = '0xC11b1268C1A384e55C48c2391d8d480264A3A7F4';
 const cUSDTAddress = '0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9';
 
 const mDAIAddress = '0x06301057D77D54B6e14c7FafFB11Ffc7Cab4eaa7';
+const melonTokenAddress = '0xec67005c4e498ec7f55e092bd1d35cbc47c91892';
 const mETHAddress = '0xdF9307DFf0a1B57660F60f9457D32027a55ca0B2';
 const mUSDCAddress = '0x3564ad35b9E95340E5Ace2D6251dbfC76098669B';
 
@@ -314,6 +316,9 @@ const mcdAssetAdapterTokens = [
 ];
 const mcdDebtAdapterTokens = [
   daiAddress,
+];
+const melonAdapterTokens = [
+  mlnAddress,
 ];
 const chiAdapterTokens = [
   chiAddress,
@@ -595,6 +600,18 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(MelonAdapter, { from: accounts[0] });
+  adapters.push([MelonAdapter.address]);
+  tokens.push([melonAdapterTokens]);
+  protocolNames.push('Melon Protocol Token');
+  metadata.push([
+    'Melon Protocol',
+    'Asset Management 3.0',
+    'melonprotocol.com',
+    'protocol-icons.s3.amazonaws.com/melon_token.png',
+    '0',
+  ]);
+
   await deployer.deploy(ChiAdapter, { from: accounts[0] });
   adapters.push([ChiAdapter.address]);
   tokens.push([chiAdapterTokens]);
@@ -762,6 +779,12 @@ module.exports = async (deployer, network, accounts) => {
     .then(() => {
       tokenAdapters.push(
         IearnTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(MelonTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        MelonTokenAdapter.address,
       );
     });
   await deployer.deploy(ChaiTokenAdapter, { from: accounts[0] })
