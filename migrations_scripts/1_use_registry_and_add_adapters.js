@@ -22,6 +22,7 @@ const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
+const MelonAdapter = artifacts.require('MelonAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
@@ -315,6 +316,9 @@ const mcdAssetAdapterTokens = [
 const mcdDebtAdapterTokens = [
   daiAddress,
 ];
+const melonAdapterTokens = [
+  mlnAddress,
+];
 const chiAdapterTokens = [
   chiAddress,
 ];
@@ -592,6 +596,18 @@ module.exports = async (deployer, network, accounts) => {
     'Collateralized loans on Maker',
     'makerdao.com',
     'protocol-icons.s3.amazonaws.com/maker.png',
+    '0',
+  ]);
+
+  await deployer.deploy(MelonAdapter, { from: accounts[0] });
+  adapters.push([MelonAdapter.address]);
+  tokens.push([melonAdapterTokens]);
+  protocolNames.push('Melon Protocol Token');
+  metadata.push([
+    'Melon Protocol',
+    'Asset Management 3.0',
+    'melonprotocol.com',
+    'protocol-icons.s3.amazonaws.com/melon_token.png',
     '0',
   ]);
 
