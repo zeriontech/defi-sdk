@@ -67,8 +67,8 @@ contract.only('UniswapV1AssetAdapter', () => {
       });
     await adapterRegistry.methods.addProtocolAdapters(
       [
-        UNISWAP_V1_EXCHANGE_ADAPTER,
         UNISWAP_V1_ASSET_ADAPTER,
+        UNISWAP_V1_EXCHANGE_ADAPTER,
       ],
       [
         protocolAdapterAddress,
@@ -199,13 +199,13 @@ contract.only('UniswapV1AssetAdapter', () => {
     await DAI.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
-        console.log(`dai amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        console.log(`   dai amount before is ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await adapterRegistry.methods['getBalances(address)'](accounts[0])
+    await DAIUNI.methods.balanceOf(router.options.address)
       .call()
       .then(async (result) => {
-        await displayToken(adapterRegistry, result[0].tokenBalances[0]);
-        daiUniAmount = result[0].tokenBalances[0].amount;
+        console.log(`daiUni amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        daiUniAmount = result;
       });
     await DAIUNI.methods.approve(router.options.address, daiUniAmount.toString())
       .send({

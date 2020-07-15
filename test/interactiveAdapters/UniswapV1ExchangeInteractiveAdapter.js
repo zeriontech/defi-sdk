@@ -96,7 +96,7 @@ contract.only('UniswapV1ExchangeAdapter', () => {
         // actions
         [
           [
-            UNISWAP_V1_ASSET_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [ethAddress],
             ['1000000000000000000'],
@@ -159,7 +159,7 @@ contract.only('UniswapV1ExchangeAdapter', () => {
       await router.methods.startExecution(
         [
           [
-            UNISWAP_V1_ASSET_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [daiAddress],
             [convertToShare(1)],
@@ -213,7 +213,7 @@ contract.only('UniswapV1ExchangeAdapter', () => {
       await router.methods.startExecution(
         [
           [
-            UNISWAP_V1_ASSET_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_WITHDRAW,
             [daiAddress],
             ['100000000000000000000'],
@@ -274,7 +274,7 @@ contract.only('UniswapV1ExchangeAdapter', () => {
       await router.methods.startExecution(
         [
           [
-            UNISWAP_V1_ASSET_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_WITHDRAW,
             [ethAddress],
             [web3.utils.toWei('0.3', 'ether')],
@@ -388,7 +388,7 @@ contract.only('UniswapV1ExchangeAdapter', () => {
       await router.methods.startExecution(
         [
           [
-            UNISWAP_V1_ASSET_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [daiAddress],
             [convertToShare(1)],
@@ -451,7 +451,7 @@ contract.only('UniswapV1ExchangeAdapter', () => {
       await router.methods.startExecution(
         [
           [
-            UNISWAP_V1_ASSET_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [mkrAddress],
             [convertToShare(1)],
@@ -517,7 +517,7 @@ contract.only('UniswapV1ExchangeAdapter', () => {
       await router.methods.startExecution(
         [
           [
-            UNISWAP_V1_ASSET_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_WITHDRAW,
             [mkrAddress],
             [web3.utils.toWei('1', 'ether')],
@@ -583,7 +583,7 @@ contract.only('UniswapV1ExchangeAdapter', () => {
       await router.methods.startExecution(
         [
           [
-            UNISWAP_V1_ASSET_ADAPTER,
+            UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_WITHDRAW,
             [daiAddress],
             [web3.utils.toWei('0.1', 'ether')],

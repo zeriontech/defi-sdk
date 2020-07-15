@@ -77,7 +77,7 @@ contract.only('BalancerAssetInteractiveAdapter', () => {
       [
         UNISWAP_V1_EXCHANGE_ADAPTER,
         BALANCER_ASSET_ADAPTER,
-       ],
+      ],
       [
         uniswapAdapterAddress,
         balancerAdapterAddress,
@@ -158,7 +158,7 @@ contract.only('BalancerAssetInteractiveAdapter', () => {
             BALANCER_ASSET_ADAPTER,
             ACTION_DEPOSIT,
             [mkrAddress, wethAddress],
-            [convertToShare(1), convertToShare(1)], // all MKR
+            [convertToShare(1), convertToShare(1)],
             [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
             web3.eth.abi.encodeParameter(
               'address',
@@ -183,15 +183,53 @@ contract.only('BalancerAssetInteractiveAdapter', () => {
 
     it('should not buy pool with inconsistent arrays', async () => {
       let daiAmount;
+      await router.methods.startExecution(
+        // actions
+        [
+          // exchange 1 ETH to DAI like we had dai initially
+          [
+            UNISWAP_V1_EXCHANGE_ADAPTER,
+            ACTION_DEPOSIT,
+            [ethAddress],
+            ['1000000000000000000'],
+            [AMOUNT_ABSOLUTE],
+            web3.eth.abi.encodeParameter('address', daiAddress),
+          ],
+        ],
+        // inputs
+        [],
+        // outputs
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+          value: web3.utils.toWei('1', 'ether'),
+        });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
+          console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
           daiAmount = result;
         });
       await DAI.methods.approve(router.options.address, daiAmount.toString())
         .send({
           from: accounts[0],
           gas: 1000000,
+        });
+      await MKR.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`mkr amount before is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await pool.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`pool amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`eth amount before is  ${web3.utils.fromWei(result, 'ether')}`);
         });
       await expectRevert(router.methods.startExecution(
         // actions

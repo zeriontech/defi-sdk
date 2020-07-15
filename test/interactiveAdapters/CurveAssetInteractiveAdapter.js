@@ -738,6 +738,89 @@ contract.only('CurveAssetInteractiveAdapter', () => {
         }));
     });
 
+    it('should not sell 100% of pool tokens if 2 tokens', async () => {
+      let poolAmount;
+      await poolToken.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          poolAmount = result;
+        });
+      await poolToken.methods.approve(router.options.address, poolAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        });
+      await expectRevert(router.methods.startExecution(
+        [
+          [
+            CURVE_ASSET_ADAPTER,
+            ACTION_WITHDRAW,
+            [
+              poolTokenAddress,
+              poolTokenAddress,
+            ],
+            [convertToShare(1)],
+            [AMOUNT_RELATIVE],
+            web3.eth.abi.encodeParameter(
+              'address',
+              daiAddress,
+            ),
+          ],
+        ],
+        [
+          [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+        ],
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        }));
+    });
+
+    it('should not sell 100% of pool tokens if inconsistent arrays', async () => {
+      let poolAmount;
+      await poolToken.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          poolAmount = result;
+        });
+      await poolToken.methods.approve(router.options.address, poolAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        });
+      await expectRevert(router.methods.startExecution(
+        [
+          [
+            CURVE_ASSET_ADAPTER,
+            ACTION_WITHDRAW,
+            [poolTokenAddress],
+            [
+              convertToShare(1),
+              convertToShare(1),
+            ],
+            [
+              AMOUNT_RELATIVE,
+              AMOUNT_RELATIVE,
+            ],
+            web3.eth.abi.encodeParameter(
+              'address',
+              daiAddress,
+            ),
+          ],
+        ],
+        [
+          [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+        ],
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        }));
+    });
+
     it('should sell 100% of pool tokens', async () => {
       poolTokenAddress = cPoolToken;
       await ERC20.at(poolTokenAddress)
