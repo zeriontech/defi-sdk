@@ -21,20 +21,56 @@ import { TokenMetadata, Component } from "../../Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
 
+
+/**
+ * @dev Accounting contract interface.
+ * Only the functions required for MelonAdapter contract are added.
+ * The Accounting contract is available here
+ * github.com/melonproject/protocol/blob/master/src/fund/accounting/Accounting.sol
+ */
+interface Accounting{
+    function performCalculations()
+        public
+        returns (
+            uint gav,
+            uint feesInDenominationAsset,
+            uint feesInShares,
+            uint nav,
+            uint sharePrice,
+            uint gavPerShareNetManagementFee
+        );
+}
+
+/**
+ * @title Token adapter for Melon Fund Token.
+ * @dev Implementation of TokenAdapter interface.
+ * @author Connor Martin <cnr.mrtn@gmail.com>
+ */
 contract MelonTokenAdapter is TokenaAdapter {
+
+  address internal constant MLN = 0xec67005c4E498Ec7f55E092bd1d35cbC47C91892;
 
   /**
    * @return TokenMetadata struct with ERC20-style token info.
    * @dev Implementation of TokenAdapter interface function.
    */
   function getMetadata(address token) external view override returns (TokenMetadata memory) {
-      return TokenMetadata({
-          token: Melon,
-          name: "Melon Token",
-          symbol: "MLN",
-          decimals: 18
-      });
-  }
+    if (token == MLNF) {
+        return TokenMetadata({
+            token: MLNF,
+            name: "Melon Fund Share Token",
+            symbol: "MLNF",
+            decimals: ERC20(token).decimals()
+        });
+    } else {
+        return TokenMetadata({
+            token: token,
+            name: ERC20(token).name(),
+            symbol: ERC20(token).symbol(),
+            decimals: ERC20(token).decimals()
+        });
+    }
+}
 
 
     /**
@@ -47,6 +83,25 @@ contract MelonTokenAdapter is TokenaAdapter {
       underlyingTokens[0] = Component({
           token: getUnderlying(token),
           tokenType: "ERC20",
-          rate: Melon(token).exchangeRateStored()
+          rate: 1e18
       });
 }
+
+    function performCalculations()
+        public
+        returns (
+            uint gav,
+            uint feesInDenominationAsset,
+            uint feesInShares,
+            uint nav,
+            uint sharePrice,
+            uint gavPerShareNetManagementFee
+          ){
+              return (
+                gav,
+                feesInDenominationAsset,
+                feesInShares,
+                nav,
+                sharePrice,
+                gavPerShareNetManagementFee);
+    };
