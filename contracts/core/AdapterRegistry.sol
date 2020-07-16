@@ -108,43 +108,88 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
         view
         returns (AdapterBalance[] memory)
     {
+        // Get balances for all the adapters
         AdapterBalance[] memory adapterBalances = getAdapterBalances(
             _protocolAdapterNames,
             account
         );
-        uint256 adaptersCounter = 0;
-        uint256[] memory tokensCounters = new uint256[](adapterBalances.length);
 
+        // Declare temp variable and counters
+        TokenBalance[] memory currentTokenBalances;
+        TokenBalance[] memory nonZeroTokenBalances;
+        uint256 nonZeroAdaptersCounter;
+        uint256[] memory nonZeroTokensCounters;
+
+        // Reset counters
+        nonZeroTokensCounters = new uint256[](adapterBalances.length);
+        nonZeroAdaptersCounter = 0;
+
+        // Iterate over all the adapters' balances
         for (uint256 i = 0; i < adapterBalances.length; i++) {
-            tokensCounters[i] = 0;
-            for (uint256 j = 0; j < adapterBalances[i].tokenBalances.length; j++) {
-                if (adapterBalances[i].tokenBalances[j].amount > 0) {
-                    tokensCounters[i]++;
+            // Fill temp variable
+            currentTokenBalances = adapterBalances[i].tokenBalances;
+
+            // Reset counter
+            nonZeroTokensCounters[i] = 0;
+
+            // Increment if token balance is positive
+            for (uint256 j = 0; j < currentTokenBalances.length; j++) {
+                if (currentTokenBalances[j].amount > 0) {
+                    nonZeroTokensCounters[i]++;
                 }
             }
-            if (tokensCounters[i] > 0) {
-                adaptersCounter++;
+
+            // Increment if at least one positive token balance
+            if (nonZeroTokensCounters[i] > 0) {
+                nonZeroAdaptersCounter++;
             }
         }
 
-        AdapterBalance[] memory nonZeroAdapterBalances = new AdapterBalance[](adaptersCounter);
-        adaptersCounter = 0;
+        // Declare resulting variable
+        AdapterBalance[] memory nonZeroAdapterBalances;
+
+        // Reset resulting variable and counter
+        nonZeroAdapterBalances = new AdapterBalance[](nonZeroAdaptersCounter);
+        nonZeroAdaptersCounter = 0;
+
+        // Iterate over all the adapters' balances
         for (uint256 i = 0; i < adapterBalances.length; i++) {
-            if (tokensCounters[i] > 0) {
-                nonZeroAdapterBalances[adaptersCounter] = AdapterBalance({
-                    protocolAdapterName: adapterBalances[i].protocolAdapterName,
-                    tokenBalances: new TokenBalance[](tokensCounters[i])
-                    });
-                tokensCounters[i] = 0;
-                for (uint256 j = 0; j < adapterBalances[i].tokenBalances.length; j++) {
-                    if (adapterBalances[i].tokenBalances[j].amount > 0) {
-                        nonZeroAdapterBalances[adaptersCounter].tokenBalances[tokensCounters[i]] =
-                        adapterBalances[i].tokenBalances[j];
-                        tokensCounters[i]++;
-                    }
-                }
-                adaptersCounter++;
+            // Skip if no positive token balances
+            if (nonZeroTokensCounters[i] == 0) {
+                continue;
             }
+
+            // Else take only positive ones, first with empty tokenBalances, then fill it
+            nonZeroAdapterBalances[nonZeroAdaptersCounter] = AdapterBalance({
+                protocolAdapterName: adapterBalances[i].protocolAdapterName,
+                tokenBalances: new TokenBalance[](nonZeroTokensCounters[i])
+            });
+
+            // Fill temp variable
+            currentTokenBalances = adapterBalances[i].tokenBalances;
+
+            // Reset temp variable and counter
+            nonZeroTokenBalances = new TokenBalance[](nonZeroTokensCounters[i]);
+            nonZeroTokensCounters[i] = 0;
+
+            for (uint256 j = 0; j < currentTokenBalances.length; j++) {
+                // Skip if balance is not positive
+                if (currentTokenBalances[j].amount == 0) {
+                    continue;
+                }
+
+                // Else fill temp variable
+                nonZeroTokenBalances[nonZeroTokensCounters[i]] = currentTokenBalances[j];
+
+                // Increment counter
+                nonZeroTokensCounters[i]++;
+            }
+
+            // Fill resulting variable
+            nonZeroAdapterBalances[nonZeroAdaptersCounter].tokenBalances = nonZeroTokenBalances;
+
+            // Increment counter
+            nonZeroAdaptersCounter++;
         }
 
         return nonZeroAdapterBalances;
