@@ -39,7 +39,7 @@ interface CToken {
  * github.com/balancer-labs/balancer-core/blob/master/contracts/BPool.sol.
  */
 interface BPool {
-    function getFinalTokens() external view returns (address[] memory);
+    function getCurrentTokens() external view returns (address[] memory);
     function getBalance(address) external view returns (uint256);
     function getNormalizedWeight(address) external view returns (uint256);
 }
@@ -51,7 +51,6 @@ interface BPool {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract BalancerTokenAdapter is TokenAdapter {
-
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -72,7 +71,7 @@ contract BalancerTokenAdapter is TokenAdapter {
      */
     function getComponents(address token) external view override returns (Component[] memory) {
         address[] memory tokens;
-        tokens = BPool(token).getFinalTokens();
+        tokens = BPool(token).getCurrentTokens();
 
         uint256 totalSupply = ERC20(token).totalSupply();
 
@@ -80,7 +79,7 @@ contract BalancerTokenAdapter is TokenAdapter {
 
         for (uint256 i = 0; i < underlyingTokens.length; i++) {
             underlyingTokens[i] = Component({
-                token: underlyingTokensAddresses[i],
+                token: tokens[i],
                 tokenType: getTokenType(tokens[i]),
                 rate: totalSupply == 0 ? 0 : BPool(token).getBalance(tokens[i]) * 1e18 / totalSupply
             });
@@ -91,7 +90,7 @@ contract BalancerTokenAdapter is TokenAdapter {
 
     function getPoolName(address token) internal view returns (string memory) {
         address[] memory underlyingTokensAddresses;
-        try BPool(token).getFinalTokens() returns (address[] memory result) {
+        try BPool(token).getCurrentTokens() returns (address[] memory result) {
             underlyingTokensAddresses = result;
         } catch {
             return "Unknown pool";

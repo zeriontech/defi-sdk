@@ -6,7 +6,7 @@ const TokenAdapter = artifacts.require('BalancerTokenAdapter');
 const CompoundTokenAdapter = artifacts.require('CompoundTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('BalancerAdapter', () => {
+contract.only('BalancerAdapter', () => {
   const wethDai3070PoolAddress = '0x53b89CE35928dda346c574D9105A5479CB87231c';
   const wethMkr2575PoolAddress = '0x987D7Cc04652710b74Fff380403f5c02f82e290a';
   const cusdcCdai5050PoolAddress = '0x622A71fdae6428D015052CF991816F70BB6A4a01';
