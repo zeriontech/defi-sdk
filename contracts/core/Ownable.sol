@@ -22,11 +22,11 @@ pragma experimental ABIEncoderV2;
 abstract contract Ownable {
 
     modifier onlyOwner {
-        require(msg.sender == _owner, "O: only owner!");
+        require(msg.sender == owner_, "O: only owner!");
         _;
     }
 
-    address internal _owner;
+    address internal owner_;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -34,7 +34,7 @@ abstract contract Ownable {
      * @notice Initializes owner variable with msg.sender address.
      */
     constructor() internal {
-        _owner = msg.sender;
+        owner_ = msg.sender;
         emit OwnershipTransferred(address(0), msg.sender);
     }
 
@@ -43,15 +43,15 @@ abstract contract Ownable {
      * The function is callable only by the owner.
      */
     function transferOwnership(address newOwner) external onlyOwner {
-        require(newOwner != address(0), "O: empty _owner!");
-        emit OwnershipTransferred(_owner, newOwner);
-        _owner = newOwner;
+        require(newOwner != address(0), "O: empty newOwner!");
+        emit OwnershipTransferred(owner_, newOwner);
+        owner_ = newOwner;
     }
 
     /**
      * @return Owner of the contract.
      */
     function owner() external view returns (address) {
-        return _owner;
+        return owner_;
     }
 }

@@ -32,7 +32,7 @@ import { Helpers } from "../shared/Helpers.sol";
 contract Core {
     using SafeERC20 for ERC20;
 
-    AdapterRegistry internal immutable _adapterRegistry;
+    AdapterRegistry internal immutable adapterRegistry_;
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
@@ -44,7 +44,7 @@ contract Core {
         public
     {
         require(adapterRegistry != address(0), "C: empty adapterRegistry!");
-        _adapterRegistry = AdapterRegistry(adapterRegistry);
+        adapterRegistry_ = AdapterRegistry(adapterRegistry);
     }
 
     // solhint-disable-next-line no-empty-blocks
@@ -96,12 +96,12 @@ contract Core {
     /**
      * @return Address of the AdapterRegistry contract used.
      */
-    function getAdapterRegistry()
+    function adapterRegistry()
         external
         view
         returns (address)
     {
-        return address(_adapterRegistry);
+        return address(adapterRegistry_);
     }
 
     function executeAction(
@@ -110,7 +110,7 @@ contract Core {
         internal
         returns (address[] memory)
     {
-        address adapter = _adapterRegistry.getProtocolAdapterAddress(action.protocolAdapterName);
+        address adapter = adapterRegistry_.getProtocolAdapterAddress(action.protocolAdapterName);
         require(adapter != address(0), "C: bad name!");
         require(action.actionType != ActionType.None, "C: bad action type!");
         require(action.amounts.length == action.amountTypes.length, "C: inconsistent arrays!");

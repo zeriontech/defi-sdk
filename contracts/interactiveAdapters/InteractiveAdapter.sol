@@ -133,7 +133,7 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         }
 
         uint256 c = a * b;
-        require(c / a == b, "IA: multiplication overflow");
+        require(c / a == b, "IA: mul overflow");
 
         return c;
     }

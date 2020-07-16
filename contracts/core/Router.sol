@@ -34,7 +34,7 @@ interface GST2 {
 contract Router is SignatureVerifier("Zerion Router"), Ownable {
     using SafeERC20 for ERC20;
 
-    Core internal immutable _core;
+    Core internal immutable core_;
 
     address internal constant GAS_TOKEN = 0x0000000000b3F879cb30FE243b4Dfee438691c04;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -44,7 +44,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
     constructor(address payable core) public {
         require(core != address(0), "R: empty core!");
-        _core = Core(core);
+        core = Core(core_);
     }
 
     function returnLostTokens(
@@ -117,12 +117,12 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     /**
      * @return Address of the Core contract used.
      */
-    function getCore()
+    function core()
         external
         view
         returns (address)
     {
-        return address(_core);
+        return address(core_);
     }
 
     function startExecution(
@@ -169,11 +169,11 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     {
         // save initial gas to burn gas token later
         uint256 gas = gasleft();
-        // transfer tokens to _core, handle fees (if any), and add these tokens to outputs
+        // transfer tokens to core_, handle fees (if any), and add these tokens to outputs
         transferTokens(inputs, account);
         Output[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
         // call Core contract with all provided ETH, actions, expected outputs and account address
-        Output[] memory actualOutputs = _core.executeActions{value: msg.value}(
+        Output[] memory actualOutputs = core_.executeActions{value: msg.value}(
             actions,
             modifiedOutputs,
             account
@@ -198,8 +198,8 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
             // in case inputs includes fees:
             //     - absolute amount is amount calculated based on inputs
-            //     - _core amount is absolute amount excluding fee set in inputs
-            //     - beneficiary amount is beneficiary share (80%) of non-_core amount
+            //     - core_ amount is absolute amount excluding fee set in inputs
+            //     - beneficiary amount is beneficiary share (80%) of non-core_ amount
             //     - this contract fee is the rest of beneficiary fee (~20%)
             // otherwise no fees are charged!
             if (inputs[i].fee > 0) {
@@ -213,7 +213,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
                 ERC20(inputs[i].token).safeTransferFrom(
                     account,
-                    address(_core),
+                    address(core_),
                     coreAmount,
                     "R![1]"
                 );
@@ -238,7 +238,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
             } else {
                 ERC20(inputs[i].token).safeTransferFrom(
                     account,
-                    address(_core),
+                    address(core_),
                     absoluteAmount,
                     "R!"
                 );

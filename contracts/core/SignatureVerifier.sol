@@ -23,9 +23,9 @@ import { TransactionData, Action, Input, Output } from "../shared/Structs.sol";
 
 contract SignatureVerifier {
 
-    mapping (address => uint256) internal _nonce;
+    mapping (address => uint256) internal nonce_;
 
-    bytes32 internal immutable _domainSeparator;
+    bytes32 internal immutable domainSeparator_;
 
     bytes32 internal constant DOMAIN_SEPARATOR_TYPEHASH = keccak256(
         abi.encodePacked(
@@ -82,7 +82,7 @@ contract SignatureVerifier {
     );
 
     constructor(string memory name) public {
-        _domainSeparator = keccak256(
+        domainSeparator_ = keccak256(
             abi.encode(
                 DOMAIN_SEPARATOR_TYPEHASH,
                 keccak256(abi.encodePacked(name)),
@@ -94,14 +94,14 @@ contract SignatureVerifier {
     /**
      * @return Address of the Core contract used.
      */
-    function getNonce(
+    function nonce(
         address account
     )
         external
         view
         returns (uint256)
     {
-        return _nonce[account];
+        return nonce_[account];
     }
 
     function getAccountFromSignature(
@@ -129,7 +129,7 @@ contract SignatureVerifier {
                 abi.encodePacked(
                     bytes1(0x19),
                     bytes1(0x01),
-                    _domainSeparator,
+                    domainSeparator_,
                     hash(data)
                 )
             ),
@@ -138,9 +138,9 @@ contract SignatureVerifier {
             s
         );
 
-        require(_nonce[signer] == data.nonce, "SV: bad nonce!");
+        require(nonce_[signer] == data.nonce, "SV: bad nonce!");
 
-        _nonce[signer]++;
+        nonce_[signer]++;
 
         return payable(signer);
     }
