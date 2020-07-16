@@ -29,16 +29,15 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  * github.com/melonproject/protocol/blob/master/src/fund/accounting/Accounting.sol
  */
 interface Accounting{
-    function performCalculations()
-        external
-        returns (
-            uint gav,
-            uint feesInDenominationAsset,
-            uint feesInShares,
-            uint nav,
-            uint sharePrice,
-            uint gavPerShareNetManagementFee
-        );
+  function performCalculations() external returns (
+      uint gav,
+      uint unclaimedFees,
+      uint feesInShares,
+      uint nav,
+      uint sharePrice,
+      uint gavPerShareNetManagementFee
+  );
+   function getOwnedAssets() external view returns (address);
 }
 
 /**
@@ -74,14 +73,14 @@ contract MelonTokenAdapter is TokenAdapter {
 
 
     /**
-     * @return Empty Component array.
+     * @return Array of Component structs with owned assets for the given token
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address) external view override returns (Component[] memory) {
       Component[] memory underlyingTokens = new Component[](1);
 
       underlyingTokens[0] = Component({
-          token: MLNF,
+          token: getOwnedAssets(token),
           tokenType: "ERC20",
           rate: 1e18
       });
