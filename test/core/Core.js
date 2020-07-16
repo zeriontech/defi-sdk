@@ -80,6 +80,22 @@ contract('Core + Router', () => {
       ));
     });
 
+    it('should be correct core', async () => {
+      await router.methods.core()
+      .call()
+      .then((result) => {
+        assert.equal(result, core.options.address);
+      });
+    });
+
+    it('should be correct adapter registry', async () => {
+      await core.methods.adapterRegistry()
+      .call()
+      .then((result) => {
+        assert.equal(result, adapterRegistry.options.address);
+      });
+    });
+
     it('should not deploy core with no registry', async () => {
       await expectRevert(Core.new(
         ZERO,

@@ -40,7 +40,7 @@ contract('AdapterRegistry', () => {
         protocolAdapterAddress,
       ],
       [
-        protocolAdapterAddress,
+        [protocolAdapterAddress],
       ],
     )
       .send({
@@ -108,7 +108,7 @@ contract('AdapterRegistry', () => {
       });
   });
 
-  it('should not add protocol not by the owner', async () => {
+  it('should not add protocol adapter not by the owner', async () => {
     await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       [
         web3.utils.toHex('Mock2'),
@@ -117,7 +117,7 @@ contract('AdapterRegistry', () => {
         protocolAdapterAddress,
       ],
       [
-        protocolAdapterAddress,
+        [protocolAdapterAddress],
       ],
     )
       .send({
@@ -126,7 +126,7 @@ contract('AdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol with bad input (2 names)', async () => {
+  it('should not add protocol adapter with bad input (2 names)', async () => {
     await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       [
         web3.utils.toHex('Mock2'),
@@ -136,7 +136,7 @@ contract('AdapterRegistry', () => {
         protocolAdapterAddress,
       ],
       [
-        protocolAdapterAddress,
+        [protocolAdapterAddress],
       ],
     )
       .send({
@@ -145,7 +145,7 @@ contract('AdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol with bad input (2 addresses)', async () => {
+  it('should not add protocol adapter with bad input (2 addresses)', async () => {
     await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       [
         web3.utils.toHex('Mock2'),
@@ -155,7 +155,7 @@ contract('AdapterRegistry', () => {
         protocolAdapterAddress,
       ],
       [
-        protocolAdapterAddress,
+        [protocolAdapterAddress],
       ],
     )
       .send({
@@ -164,7 +164,7 @@ contract('AdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol with bad input (2 sets of supported tokens)', async () => {
+  it('should not add protocol adapter with bad input (2 sets of supported tokens)', async () => {
     await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       [
         web3.utils.toHex('Mock2'),
@@ -187,7 +187,7 @@ contract('AdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol with empty input', async () => {
+  it('should not add protocol adapter with empty input', async () => {
     await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       [],
       [],
@@ -199,14 +199,14 @@ contract('AdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol with empty name', async () => {
+  it('should not add protocol adapter with empty name', async () => {
     await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       ['0x'],
       [
         protocolAdapterAddress,
       ],
       [
-        protocolAdapterAddress,
+        [protocolAdapterAddress],
       ],
     )
       .send({
@@ -215,14 +215,14 @@ contract('AdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol with existing name', async () => {
+  it('should not add protocol adapter with existing name', async () => {
     await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       [web3.utils.toHex('Mock')],
       [
         protocolAdapterAddress,
       ],
       [
-        protocolAdapterAddress,
+        [protocolAdapterAddress],
       ],
     )
       .send({
@@ -231,14 +231,14 @@ contract('AdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol with zero adapter', async () => {
+  it('should not add protocol adapter with zero adapter', async () => {
     await expectRevert(adapterRegistry.methods.addProtocolAdapters(
       [web3.utils.toHex('Mock2')],
       [
         ZERO,
       ],
       [
-        protocolAdapterAddress,
+        [protocolAdapterAddress],
       ],
     )
       .send({
@@ -254,7 +254,7 @@ contract('AdapterRegistry', () => {
         ONE,
       ],
       [
-        protocolAdapterAddress,
+        [protocolAdapterAddress],
       ],
     )
       .send({
@@ -318,7 +318,7 @@ contract('AdapterRegistry', () => {
         protocolAdapterAddress,
       ],
       [
-        protocolAdapterAddress,
+        [protocolAdapterAddress],
       ],
     )
       .send({
@@ -331,7 +331,7 @@ contract('AdapterRegistry', () => {
         protocolAdapterAddress,
       ],
       [
-        protocolAdapterAddress,
+        [protocolAdapterAddress],
       ],
     )
       .send({
@@ -364,7 +364,7 @@ contract('AdapterRegistry', () => {
         protocolAdapterAddress,
       ],
       [
-        protocolAdapterAddress,
+        [protocolAdapterAddress],
       ],
     )
       .send({

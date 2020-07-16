@@ -76,8 +76,8 @@ contract SignatureVerifier {
     );
     bytes internal constant OUTPUT_ENCODED_TYPE = abi.encodePacked(
         "Output(",
-            "address token,",
-            "uint256 amount",
+        "address token,",
+        "uint256 amount",
         ")"
     );
 

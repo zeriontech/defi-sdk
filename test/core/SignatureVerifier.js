@@ -23,6 +23,8 @@ contract('SignatureVerifier', () => {
   const ZERO = '0x0000000000000000000000000000000000000000';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+  const UNISWAP_EXCHANGE_ADAPTER =
+    '0x556e697377617020563200000000000000000000000000000000000000000003';
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -81,7 +83,7 @@ contract('SignatureVerifier', () => {
       {
         actions: [
           {
-            protocolName: web3.utils.toHex('Uniswap V2'),
+            protocolAdapterName: UNISWAP_EXCHANGE_ADAPTER,
             actionType: 1,
             tokens: [
               daiAddress,
@@ -108,7 +110,7 @@ contract('SignatureVerifier', () => {
             beneficiary: ZERO,
           },
         ],
-        outputs: [
+        requiredOutputs: [
           {
             token: wethAddress,
             amount: web3.utils.toWei('1', 'ether'),
@@ -125,7 +127,7 @@ contract('SignatureVerifier', () => {
       [
         [
           [
-            web3.utils.toHex('Uniswap V2'),
+            UNISWAP_EXCHANGE_ADAPTER,
             1,
             [daiAddress],
             [web3.utils.toWei('1', 'ether')],
