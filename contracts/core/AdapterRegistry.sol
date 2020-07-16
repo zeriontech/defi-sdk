@@ -26,6 +26,7 @@ import {
     TokenBalance,
     Component
 } from "../shared/Structs.sol";
+import { ERC20 } from "../shared/ERC20.sol";
 import { Ownable } from "./Ownable.sol";
 import { ProtocolAdapterManager } from "./ProtocolAdapterManager.sol";
 import { TokenAdapterManager } from "./TokenAdapterManager.sol";
@@ -88,7 +89,7 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
                 TokenBalance({
                     tokenAdapterName: tokenAdapterNames[i],
                     token: tokens[i],
-                    amount: 1e18
+                    amount: uint256(10) ** ERC20(tokens[i]).decimals()
                 })
             );
         }

@@ -44,7 +44,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
     constructor(address payable core) public {
         require(core != address(0), "R: empty core!");
-        core = Core(core_);
+        core_ = Core(core);
     }
 
     function returnLostTokens(
