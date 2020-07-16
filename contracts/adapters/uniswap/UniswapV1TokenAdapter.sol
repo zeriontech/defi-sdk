@@ -88,7 +88,6 @@ contract UniswapV1TokenAdapter is TokenAdapter {
     function getComponents(address token) external view override returns (Component[] memory) {
         address underlyingToken = Factory(FACTORY).getToken(token);
         uint256 totalSupply = ERC20(token).totalSupply();
-        string memory underlyingTokenType;
         Component[] memory underlyingTokens = new Component[](2);
 
         underlyingTokens[0] = Component({
@@ -97,15 +96,9 @@ contract UniswapV1TokenAdapter is TokenAdapter {
             rate: token.balance * 1e18 / totalSupply
         });
 
-        try CToken(underlyingToken).isCToken{gas: 2000}() returns (bool) {
-            underlyingTokenType = "CToken";
-        } catch {
-            underlyingTokenType = "ERC20";
-        }
-
         underlyingTokens[1] = Component({
             token: underlyingToken,
-            tokenType: underlyingTokenType,
+            tokenType: getTokenType(underlyingToken),
             rate: ERC20(underlyingToken).balanceOf(token) * 1e18 / totalSupply
         });
 
@@ -131,6 +124,22 @@ contract UniswapV1TokenAdapter is TokenAdapter {
             return convertToString(abi.decode(returnData, (bytes32)));
         } else {
             return abi.decode(returnData, (string));
+        }
+    }
+
+    function getTokenType(address token) internal view returns (string memory) {
+        (bool success, bytes memory returnData) = token.staticcall{gas: 2000}(
+            abi.encodeWithSelector(CToken(token).isCToken.selector)
+        );
+
+        if (success) {
+            if (returnData.length == 32) {
+                return abi.decode(returnData, (bool)) ? "CToken" : "ERC20";
+            } else {
+                return "ERC20";
+            }
+        } else {
+            return "ERC20";
         }
     }
 
