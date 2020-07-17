@@ -1,4 +1,4 @@
-import displayToken from './helpers/displayToken';
+import displayToken from '../helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('AmpleforthStakingAdapter');
