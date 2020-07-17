@@ -49,7 +49,7 @@ interface CompoundAllocationStrategy {
 contract RDaiTokenAdapter is TokenAdapter {
 
   /**
-   *@dev RDAI contract address is proxy contract.
+   * @dev rDAI contract address is proxy contract.
    */
     address internal constant RDAI = 0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0;
     address internal constant CDAI = 0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643;
