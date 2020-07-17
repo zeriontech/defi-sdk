@@ -838,7 +838,7 @@ module.exports = async (deployer, network, accounts) => {
           'Chai token',
           'Chi token',
           'PoolTogether pool',
-          'Rtoken',
+          'RToken',
           'SetToken',
           'SmartToken',
           'Uniswap V1 pool token',
