@@ -20,29 +20,6 @@ import { ERC20 } from "../../ERC20.sol";
 import { TokenMetadata, Component } from "../../Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
-
-/**
- * @dev rDai contract interface.
- * Only the functions required for rDaiTokenAdapter contract are added.
- * The rDai contract is available here
- * github.com/rtoken-project/rtoken-monorepo/blob/master/packages/contracts/contracts/RToken.sol.
- */
-interface RToken {
-    function balanceOf() external view returns (uint256);
-    function allowance() external view returns (uint256);
-}
-
-/**
- * @dev RDAI Compund Allocation Strategy Interface.
- * Only the functions required for rDaiTokenAdapter contract are added.
- * The rDai Compund Allocation Strategy Interface contract is available here
- * github.com/rtoken-project/rtoken-monorepo/blob/master/packages/contracts/contracts/CompoundAllocationStrategy.sol
- */
-interface CompoundAllocationStrategy {
-  function exchangeRateStored() external view returns (uint256);
-}
-
-
 /**
  * @author Connor Martin <cnr.mrtn@gmail.com>
  */
@@ -51,7 +28,7 @@ contract RDaiTokenAdapter is TokenAdapter {
   /**
    * @dev rDAI contract address is proxy contract.
    */
-    address internal constant RDAI = 0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0;
+    address internal constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
