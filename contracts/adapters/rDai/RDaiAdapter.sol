@@ -29,7 +29,7 @@ contract RDaiAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "Redeemable Dai";
+    string public constant override tokenType = "RToken";
 
 
     /**
