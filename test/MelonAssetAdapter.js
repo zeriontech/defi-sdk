@@ -109,7 +109,7 @@ contract('MelonProtocolAdapter', () => {
           ],
         ],
         [[protocolAdapterAddress]],
-        [[[mlnfTestAddress]]]
+        [[[mlnfManagerAddress]]]
       )
       .send({
         from: accounts[0],

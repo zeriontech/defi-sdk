@@ -36,11 +36,9 @@ interface Shares {
  * @dev Registry contract interface.
  * Only the functions required for MelonAdapter contract are added.
  * The Registrycontract is available here
- * @github.com/melonproject/protocol/blob/master/src/version/Registry.sol.
+ * github.com/melonproject/protocol/blob/master/src/version/Registry.sol.
  */
 interface Registry {
-    function getSymbol(address _asset) external view returns (string memory);
-    function getName(address _asset) external view returns (string memory);
     function isFund(address _who) external view returns (bool);
 }
 
@@ -61,7 +59,7 @@ interface Accounting{
  * github.com/melonproject/protocol/blob/master/src/version/Version.sol.
  */
 interface Version{
-    function managersToHubs(address) external view returns (uint256);
+    function managersToHubs(address) external view returns (address);
 }
 
 /**
@@ -100,7 +98,7 @@ contract MelonTokenAdapter is TokenAdapter {
             quantities = balance;
         } catch {
             fundHoldings = new address[](0);
-            quantities = 0;
+            quantities = new uint[](0);
         }
 
         uint256 totalSupply = ERC20(token).totalSupply();
@@ -147,7 +145,7 @@ contract MelonTokenAdapter is TokenAdapter {
     /**
     * @dev Internal function to get Hub address
     */
-    function getHub(address fundOwner) internal pure returns (uint256) {
+    function getHub(address fundOwner) internal view returns (address) {
         return Version(VERSION).managersToHubs(fundOwner);
     }
 

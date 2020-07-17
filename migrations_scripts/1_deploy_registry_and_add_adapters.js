@@ -23,12 +23,9 @@ const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
-<<<<<<< HEAD
-const MelonAdapter = artifacs.require('MelonAdapter');
 
-=======
+const MelonAdapter = artifacs.require('MelonAdapter');
 const MstableAssetAdapter = artifacts.require('MstableAssetAdapter');
->>>>>>> 5ac62436e2fcf13ee283af5120a711710a7ce3e8
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
@@ -330,13 +327,11 @@ const mcdAssetAdapterTokens = [
 const mcdDebtAdapterTokens = [
   daiAddress,
 ];
-<<<<<<< HEAD
 const melonAdapterTokens = [
   melonAddress,
-=======
+];
 const mstableAssetAdapterTokens = [
   mUsdAddress,
->>>>>>> 5ac62436e2fcf13ee283af5120a711710a7ce3e8
 ];
 const chiAdapterTokens = [
   chiAddress,
