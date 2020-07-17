@@ -76,7 +76,7 @@ contract RDaiTokenAdapter is TokenAdapter {
          Component[] memory underlyingTokens = new Component[](1);
 
          underlyingTokens[0] = Component({
-             token: RDAI,
+             token: DAI,
              tokenType: "ERC20",
              rate: 1e18
          });
