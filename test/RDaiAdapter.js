@@ -61,7 +61,7 @@ contract.only('RDaiAdapter', () => {
         gasLimit: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20', 'rDai'],
+      ['ERC20', 'RToken'],
       [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({
