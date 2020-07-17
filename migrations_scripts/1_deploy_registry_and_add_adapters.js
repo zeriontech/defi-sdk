@@ -165,6 +165,7 @@ const mUsdAddress = '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5';
 const chiAddress = '0x0000000000004946c0e9F43F4Dee607b0eF1fA1c';
 
 const BTCPPAddress = '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd';
+const USDPPAddress = '0x9A48BD0EC040ea4f1D3147C025cd4076A2e71e3e';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -330,6 +331,7 @@ const chiAdapterTokens = [
 ];
 const pieDAOPieAdapterTokens = [
   BTCPPAddress,
+  USDPPAddress,
 ];
 const poolTogetherAdapterTokens = [
   saiPoolAddress,
@@ -643,9 +645,9 @@ module.exports = async (deployer, network, accounts) => {
   tokens.push([pieDAOPieAdapterTokens]);
   protocolNames.push('PieDAO');
   metadata.push([
-    'PieDAO BTC++',
-    'BTC on Ethereum diversified',
-    'btc.piedao.org',
+    'PieDAO',
+    'The Asset Allocation DAO',
+    'piedao.org',
     'protocol-icons.s3.us-east-1.amazonaws.com/piedao.png',
     '0',
   ]);
