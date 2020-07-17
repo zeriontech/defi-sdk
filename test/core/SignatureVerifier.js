@@ -16,7 +16,7 @@ async function signTypedData(account, data) {
   });
 }
 
-contract('SignatureVerifier', () => {
+contract.only('SignatureVerifier', () => {
   let accounts;
   let signatureVerifier;
 

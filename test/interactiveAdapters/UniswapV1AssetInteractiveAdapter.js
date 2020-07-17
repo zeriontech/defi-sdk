@@ -28,7 +28,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('UniswapV1AssetAdapter', () => {
+contract('UniswapV1AssetAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const daiUniAddress = '0x2a1530C4C41db0B0b2bB646CB5Eb1A67b7158667';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
