@@ -634,7 +634,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(RDaiAdapter, { from: accounts[0] });
   adapters.push([RDaiAdapter.address]);
   tokens.push([rdaiAdapterTokens]);
-  protocolNames.push('Redeemable Dai');
+  protocolNames.push('rDAI');
   metadata.push([
     'rDAI',
     'Redeemable Dai',
