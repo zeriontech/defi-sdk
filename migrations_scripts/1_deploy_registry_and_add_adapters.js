@@ -154,7 +154,6 @@ const iETHAddress = '0xA9859874e1743A32409f75bB11549892138BBA1E';
 const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
 const melonAddress = '0xec67005c4e498ec7f55e092bd1d35cbc47c91892';
-const mlnfAddress = '0xd485c308df50f13cb1ec06d5fd3a44a0ae49c7fc';
 
 const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
 const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
@@ -320,7 +319,6 @@ const mcdDebtAdapterTokens = [
 ];
 const melonAdapterTokens = [
   melonAddress,
-  mlnfAddress,
 ];
 const chiAdapterTokens = [
   chiAddress,
@@ -607,7 +605,7 @@ module.exports = async (deployer, network, accounts) => {
     'Melon Fund Token',
     'Melon Protocol: A Blockchain protocol for digital asset management drafts',
     'melonport.com/',
-    'etherscan.io/token/images/melon_28_2.png',
+    'protocol-icons.s3.amazonaws.com/melon.png',
     '0',
   ]);
 

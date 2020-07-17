@@ -52,7 +52,16 @@ interface Registry {
  */
 interface Accounting{
     function getFundHoldings() external view returns (uint[] memory, address[] memory);
-    function calcAssetGAV(address) external view returns (uint);
+}
+
+/**
+ * @dev Version contract interface.
+ * Only the functions required for MelonAdapter contract are added.
+ * The Version contract is available here
+ * github.com/melonproject/protocol/blob/master/src/version/Version.sol.
+ */
+interface Version{
+    function managersToHubs(address) external view returns (uint256);
 }
 
 /**
@@ -63,6 +72,7 @@ interface Accounting{
 contract MelonTokenAdapter is TokenAdapter {
 
     address internal constant REGISTRY = 0xb9Cb55C9366a224647B7ff66252b3613185DA0B9;
+    address internal constant VERSION = 0x5f9AE054C7F0489888B1ea46824b4B9618f8A711;
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -71,7 +81,7 @@ contract MelonTokenAdapter is TokenAdapter {
     function getMetadata(address token) external view override returns (TokenMetadata memory) {
         return TokenMetadata({
             token: token,
-            name: Registry(REGISTRY).getName(token),
+            name: getFundName(token),
             symbol: ERC20(token).symbol(),
             decimals: ERC20(token).decimals()
         });
@@ -84,7 +94,8 @@ contract MelonTokenAdapter is TokenAdapter {
     function getComponents(address token) external view override returns (Component[] memory) {  
         uint[] memory quantities;
         address[] memory fundHoldings;
-        try Accounting(token).getFundHoldings() returns (uint[] memory balance, address[] memory result) {
+        address hub = getHub(token);
+        try Accounting(hub).getFundHoldings() returns (uint[] memory balance, address[] memory result) {
             fundHoldings = result;
             quantities = balance;
         } catch {
@@ -96,12 +107,10 @@ contract MelonTokenAdapter is TokenAdapter {
 
         Component[] memory underlyingTokens = new Component[](fundHoldings.length);
 
-        address underlyingToken;
         for (uint256 i = 0; i < fundHoldings.length; i++) {
-            underlyingToken = fundHoldings[i];
 
             underlyingTokens[i] = Component({
-                token: underlyingToken,
+                token: fundHoldings[i],
                 tokenType: "ERC20",
                 rate: quantities[i] * 1e18 / totalSupply
             });
@@ -109,4 +118,42 @@ contract MelonTokenAdapter is TokenAdapter {
 
         return underlyingTokens;
     }
+    /**
+     * @dev Internal function to convert string memory in legible string
+     */
+    function convert(string memory inputString) internal pure returns (string memory) {
+        bytes memory inputBytes = bytes(inputString);
+        uint256 resultLength = 0;
+        
+        for (uint256 i = 0; i < inputBytes.length; i++) {
+            if (inputBytes[i] != bytes1(0)) {
+                resultLength++;
+            }
+        }
+        
+        bytes memory result = new bytes(resultLength);
+        uint256 counter = 0;
+        
+        for (uint256 i = 0; i < inputBytes.length; i++) {
+            if (inputBytes[i] != bytes1(0)) {
+                result[counter] = inputBytes[i];
+                counter++;
+            }
+        }
+        
+        return string(result);
+    }
+    
+    /**
+    * @dev Internal function to get Hub address
+    */
+    function getHub(address fundOwner) internal pure returns (uint256) {
+        return Version(VERSION).managersToHubs(fundOwner);
+    }
+
+    function getFundName(address token) internal view returns (string memory) {            
+        return convert(ERC20(token).name());
+    }
+
+
 }

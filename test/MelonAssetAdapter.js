@@ -6,9 +6,8 @@ const TokenAdapter = artifacts.require('MelonTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('MelonProtocolAdapter', () => {
-  const MLNAddress = '0xec67005c4e498ec7f55e092bd1d35cbc47c91892';
-  const versionAddress = '0x5f9AE054C7F0489888B1ea46824b4B9618f8A711';
-  const testAddress = '0xcFC24B3d0fF80D0c3709a634623cC44D340F6Fe1';
+  const mlnfTestToken = "0xfC14b7257e1d1ef0d2198774c234CFD553877dBc";
+  const mlnfManagerAddress = '0x978cc856357946F980Fba68Db3B7f0D72E570DA8';
   const testFund = '0xFa237DDB98d3250179411DF9D5b08bB09B6d8F0b';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
@@ -24,10 +23,10 @@ contract('MelonProtocolAdapter', () => {
   let protocolAdapterAddress;
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
-  const MLN = [
-    MLNAddress,
-    'Melon Token',
-    'MLN',
+  const mlnf = [
+    mlnfTestToken,
+    'Melon Fund Token',
+    'MLNF',
     '18',
   ];
   const mkr = [
@@ -97,29 +96,27 @@ contract('MelonProtocolAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
-      ['Melon'],
-      [[
-        'Melon Protocol',
-        'Melon Protocol: A Blockchain protocol for digital asset management draft',
-        'https://melonport.com/',
-        'https://etherscan.io/token/images/melon_28_2.png',
-        '0',
-      ]],
-      [[
-        protocolAdapterAddress,
-      ]],
-      [[[
-        MLNaddress,
-        MLNAddress,
-      ]]],
-    )
+    await adapterRegistry.methods
+      .addProtocols(
+        ["MLNF Test Fund"],
+        [
+          [
+            "Melon Fund Test",
+            "Melon Protocol: A Blockchain protocol for digital asset management draft",
+            "https://melonport.com/",
+            "https://etherscan.io/token/images/melon_28_2.png",
+            "0",
+          ],
+        ],
+        [[protocolAdapterAddress]],
+        [[[mlnfTestAddress]]]
+      )
       .send({
         from: accounts[0],
-        gas: '1000000',
+        gas: "1000000",
       });
     await adapterRegistry.methods.addTokenAdapters(
-        ['ERC20', 'MelonToken'],
+        ['ERC20', 'MelonTestMLRFToken'],
       [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({
@@ -143,4 +140,19 @@ contract('MelonProtocolAdapter', () => {
         assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[3].metadata, knc);
       });
   });
+
+  it("should return correct balances MLNF", async () => {
+    await adapterRegistry.methods["getBalances(address)"](mlnfManagerAddress)
+      .call()
+      .then((result) => {
+        displayToken(result[0].adapterBalances[0].balances[0].base);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[1]);
+        assert.deepEqual(
+          result[0].adapterBalances[0].balances[0].underlying[0].metadata,
+          mlnf
+        );
+      });
+  });
+
 });
