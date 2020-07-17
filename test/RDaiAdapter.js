@@ -6,7 +6,7 @@ const TokenAdapter = artifacts.require('RDaiTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract.only('RDaiAdapter', () => {
-  const rtokenAddress = '0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0';
+  const rDaiAddress = '0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0';
 
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
