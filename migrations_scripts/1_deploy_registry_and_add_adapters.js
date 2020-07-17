@@ -636,7 +636,7 @@ module.exports = async (deployer, network, accounts) => {
   tokens.push([rdaiAdapterTokens]);
   protocolNames.push('Redeemable Dai');
   metadata.push([
-    'RToken',
+    'rDAI',
     'Redeemable Dai',
     'rdai.money',
     'protocol-icons.s3.amazonaws.com/rdai.png',
