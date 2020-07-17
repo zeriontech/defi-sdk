@@ -1,3 +1,4 @@
+
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
@@ -6,9 +7,9 @@ const TokenAdapter = artifacts.require('RDaiTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract.only('RDaiAdapter', () => {
-  const rDaiAddress = '0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0';
+  const rtokenAddress = '0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0';
 
-  const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
+  const testAddress = '0x261b45d85ccfeabb11f022eba346ee8d1cd488c0';
 
   let accounts;
   let adapterRegistry;
