@@ -25,7 +25,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @dev Implementation of ProtocolAdapter interface.
  * @author Connor Martin <cnr.mrtn@gmail.com>
  */
-contract FYIAdapter is ProtocolAdapter {
+contract YFIAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 

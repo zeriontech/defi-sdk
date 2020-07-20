@@ -48,6 +48,7 @@ const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
+const YFITokenAdapter = artifacts.require('YFITokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 
 const aDaiAddress = '0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d';
@@ -154,6 +155,8 @@ const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
 const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
 const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
+
+const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
 
 const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
 
@@ -332,6 +335,10 @@ const synthetixAssetAdapterTokens = [
 ];
 const synthetixDebtAdapterTokens = [
   susdAddress,
+];
+const yfiAdapterTokens = [
+  yfiAddress,
+  aDaiAddress
 ];
 const zrxAdapterTokens = [
   zrxAddress,
@@ -675,6 +682,18 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(YFIAdapter, { from: accounts[0] });
+  adapters.push([YFIAdapter.address]);
+  tokens.push([yfiAdapterTokens]);
+  protocolNames.push('YFI Governance');
+  metadata.push([
+    'yearn.finance Governance Token',
+    'Liquidity rewards with ZRX',
+    'yearn.finance',
+    'protocol-icons.s3.amazonaws.com/YFI.png',
+    '0',
+  ]);
+
   await deployer.deploy(ZrxAdapter, { from: accounts[0] });
   adapters.push([ZrxAdapter.address]);
   tokens.push([zrxAdapterTokens]);
@@ -789,6 +808,12 @@ module.exports = async (deployer, network, accounts) => {
         UniswapV2TokenAdapter.address,
       );
     });
+  await deployer.deploy(YFITokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        YFITokenAdapter.address,
+      );
+    });
   await deployer.deploy(AdapterRegistry, { from: accounts[0] })
     .then(async (registry) => {
       await registry.contract.methods.addProtocols(
@@ -819,6 +844,7 @@ module.exports = async (deployer, network, accounts) => {
           'SmartToken',
           'Uniswap V1 pool token',
           'Uniswap V2 pool token',
+          'YFI Token',
         ],
         tokenAdapters,
       )

@@ -19,6 +19,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../ERC20.sol";
 import { TokenMetadata, Component } from "../../Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
+//mport { YFIAdapter } from "./YFIAdapter.sol";
 
 
 /**
@@ -28,7 +29,7 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  * 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862
  */
 interface YearnRewards {
-    function claimable(address _claimer) public view returns (uint);
+    function claimable(address) external view returns (uint);
 }
 
 
@@ -37,11 +38,13 @@ interface YearnRewards {
  * @dev Implementation of TokenAdapter interface.
  * @author Connor Martin <cnr.mrtn@gmail.com>
  */
-contract YFITokenAdapter is TokenAdapter {
+contract YFITokenAdapter is TokenAdapter
+//, YFIAdapter
+{
 
 
-    address internal constant ADAI = "0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d";
-    address internal constant YFI = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e";
+    address internal constant ADAI = 0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d;
+    address internal constant YFI = 0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e;
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -66,7 +69,7 @@ contract YFITokenAdapter is TokenAdapter {
         underlyingTokens[0] = Component({
             token: ADAI,
             tokenType: "ERC20",
-            rate: YearnRewards(token).claimable()
+            rate: YearnRewards().claimable("0xc47a8d09c304644674300c7f22a74f72c9bc35cb")
         });
 
         return underlyingTokens;
