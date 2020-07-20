@@ -27,7 +27,6 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  */
 contract FYIAdapter is ProtocolAdapter {
 
-    address internal constant aDAI = "0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d";
 
     string public constant override adapterType = "Asset";
 

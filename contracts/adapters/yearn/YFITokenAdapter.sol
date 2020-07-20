@@ -22,6 +22,16 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 
 
 /**
+ * @dev YearnRewards contract interface.
+ * Only the functions required for YFITokenAdapter contract are added.
+ * The YearnRewards contract is available here
+ * 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862
+ */
+interface YearnRewards {
+    function claimable(address _claimer) public view returns (uint);
+  }
+
+/**
  * @title Token adapter for YFITokens.
  * @dev Implementation of TokenAdapter interface.
  * @author Connor Martin <cnr.mrtn@gmail.com>
@@ -30,9 +40,6 @@ contract YFITokenAdapter is TokenAdapter {
 
 
 
-  interface YearnRewards {
-    function claimable(address _claimer) public view returns (uint);
-  }
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -57,7 +64,7 @@ contract YFITokenAdapter is TokenAdapter {
         underlyingTokens[0] = Component({
             token: YFIToken(token).token(),
             tokenType: "ERC20",
-            rate: (token).getPricePerFullShare()
+            rate: YearnRewards(token).claimable()
         });
 
         return underlyingTokens;
