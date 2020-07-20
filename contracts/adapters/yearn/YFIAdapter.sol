@@ -27,7 +27,6 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  */
 contract FYIAdapter is ProtocolAdapter {
 
-
     string public constant override adapterType = "Asset";
 
     string public constant override tokenType = "FYIToken";

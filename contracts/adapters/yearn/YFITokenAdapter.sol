@@ -29,7 +29,8 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  */
 interface YearnRewards {
     function claimable(address _claimer) public view returns (uint);
-  }
+}
+
 
 /**
  * @title Token adapter for YFITokens.
@@ -39,7 +40,8 @@ interface YearnRewards {
 contract YFITokenAdapter is TokenAdapter {
 
 
-
+    address internal constant ADAI = "0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d";
+    address internal constant YFI = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e";
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -62,7 +64,7 @@ contract YFITokenAdapter is TokenAdapter {
         Component[] memory underlyingTokens = new Component[](1);
 
         underlyingTokens[0] = Component({
-            token: YFIToken(token).token(),
+            token: ADAI,
             tokenType: "ERC20",
             rate: YearnRewards(token).claimable()
         });
