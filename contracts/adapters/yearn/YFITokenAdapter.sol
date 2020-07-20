@@ -69,7 +69,7 @@ contract YFITokenAdapter is TokenAdapter
         underlyingTokens[0] = Component({
             token: ADAI,
             tokenType: "ERC20",
-            rate: YearnRewards().claimable("0xc47a8d09c304644674300c7f22a74f72c9bc35cb")
+            rate: YearnRewards().claimable(account)
         });
 
         return underlyingTokens;
