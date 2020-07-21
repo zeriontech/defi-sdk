@@ -29,7 +29,7 @@ contract YFIAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "FYIToken";
+    string public constant override tokenType = "YFIToken";
 
     /**
      * @return Amount of YTokens held by the given account.
