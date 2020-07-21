@@ -2,11 +2,14 @@ import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('YFIAdapter');
-const TokenAdapter = artifacts.require('ERC20TokenAdapter');
+const TokenAdapter = artifacts.require('YFITokenAdapter');
+const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
+
 
 contract.only('YFIAdapter', () => {
   const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
   const testAddress = '0xa2df955e88c437c0224a50c24870606b4c795bc6';
+
 
   let accounts;
   let adapterRegistry;
@@ -14,10 +17,11 @@ contract.only('YFIAdapter', () => {
   let tokenAdapterAddress;
   const yfi = [
     yfiAddress,
-    'YFI Governance Token',
-    'FYI',
+    'yearn.finance',
+    'YFI',
     '18',
   ];
+
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
