@@ -1,21 +1,21 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('ZrxAdapter');
+const ProtocolAdapter = artifacts.require('YFIAdapter');
 const TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('ZrxAdapter', () => {
-  const zrxAddress = '0xE41d2489571d322189246DaFA5ebDe1F4699F498';
-  const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
+contract.only('YFIAdapter', () => {
+  const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
+  const testAddress = '0xa2df955e88c437c0224a50c24870606b4c795bc6';
 
   let accounts;
   let adapterRegistry;
   let protocolAdapterAddress;
   let tokenAdapterAddress;
-  const zrx = [
-    zrxAddress,
-    '0x Protocol Token',
-    'ZRX',
+  const yfi = [
+    yfiAddress,
+    'YFI Governance Token',
+    'FYI',
     '18',
   ];
 
@@ -34,7 +34,7 @@ contract('ZrxAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Zrx'],
+      ['YFI'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -46,7 +46,7 @@ contract('ZrxAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        zrxAddress,
+        yfiAddress,
       ]]],
     )
       .send({
@@ -68,7 +68,7 @@ contract('ZrxAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, zrx);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, yfi);
         assert.equal(result[0].adapterBalances[0].balances[0].underlying.length, 0);
       });
   });
