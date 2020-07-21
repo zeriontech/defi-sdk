@@ -45,6 +45,7 @@ contract YFITokenAdapter is TokenAdapter
 
     address internal constant ADAI = 0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d;
     address internal constant YFI = 0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e;
+    address internal constant YEARNREWARDS = 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862;
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -69,7 +70,7 @@ contract YFITokenAdapter is TokenAdapter
         underlyingTokens[0] = Component({
             token: ADAI,
             tokenType: "ERC20",
-            rate: YearnRewards().claimable(account)
+            rate: YearnRewards(YEARNREWARDS).claimable(token)
         });
 
         return underlyingTokens;
