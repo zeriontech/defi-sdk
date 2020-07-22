@@ -33,7 +33,9 @@ contract YearnAssetAdapter is ProtocolAdapter {
 
     string public constant override tokenType = "ERC20";
 
-    address internal constant YEARNREWARDS = 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862;
+    address internal constant YEARNREWARDS_YFICLAIMABLE = 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862;
+    address internal constant YEARNREWARDS_STAKEREWARDS = 0x0001FB050Fe7312791bF6475b96569D83F695C9f;
+
 
 
 
@@ -42,6 +44,6 @@ contract YearnAssetAdapter is ProtocolAdapter {
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        return ERC20(YEARNREWARDS).balanceOf(account);
+        return ERC20(YEARNREWARDS_STAKEREWARDS).balanceOf(account);
     }
 }

@@ -20,21 +20,45 @@ import { ERC20 } from "../../ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
+
+
+
+/**
+ * @dev YearnRewards contract interface.
+ * Only the functions required for YFIAdapter contract are added.
+ * The YearnRewards contract is available here
+ * 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862
+ */
+interface YearnRewards {
+    function claimable(address) external view returns (uint);
+}
+
+
 /**
  * @title Adapter for iearn.finance protocol.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Connor Martin <cnr.mrtn@gmail.com>
  */
+
+
+
 contract YFIAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
     string public constant override tokenType = "YFIToken";
 
+    address internal constant YEARNREWARDS_YFICLAIMABLE = 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862;
+    address internal constant YEARNREWARDS_STAKEREWARDS = 0x0001FB050Fe7312791bF6475b96569D83F695C9f;
+    address internal constant YFI = 0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e;
+
+
     /**
      * @return Amount of YTokens held by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
+
+
     function getBalance(address token, address account) external view override returns (uint256) {
         return ERC20(token).balanceOf(account);
     }
