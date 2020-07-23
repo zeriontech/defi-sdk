@@ -27,6 +27,7 @@
     "core-js": "3.6.5",
     "dotenv": "8.2.0",
     "regenerator-runtime": "0.13.5",
+    "remixd": "^0.2.3-alpha.4",
     "truffle": "5.1.31",
     "truffle-plugin-verify": "0.3.10"
   },

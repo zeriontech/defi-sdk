@@ -30,7 +30,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862
  */
 interface YearnRewards {
-    function claimable(address) external view returns (uint);
+    function earned(address) external view returns (uint256);
 }
 
 
@@ -48,10 +48,11 @@ contract YFIAdapter is ProtocolAdapter {
 
     string public constant override tokenType = "YFIToken";
 
-    address internal constant YEARNREWARDS_YFICLAIMABLE = 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862;
-    address internal constant YEARNREWARDS_STAKEREWARDS = 0x0001FB050Fe7312791bF6475b96569D83F695C9f;
+    address internal constant YEARNREWARDS_STAKING_CURVEPOOL = 0x0001FB050Fe7312791bF6475b96569D83F695C9f;
+    address internal constant YEARNREWARDS_STAKING_BALANCERPOOL = 0x033E52f513F9B98e129381c6708F9faA2DEE5db5;
+    address internal constant YEARNREWARDS_STAKING_GOVERNANCEPOOL = 0x3A22dF48d84957F907e67F4313E3D43179040d6E;
     address internal constant YFI = 0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e;
-
+    address internal constant BPT = 0x95C4B6C7CfF608c0CA048df8b81a484aA377172B;
 
     /**
      * @return Amount of YTokens held by the given account.
@@ -60,6 +61,7 @@ contract YFIAdapter is ProtocolAdapter {
 
 
     function getBalance(address token, address account) external view override returns (uint256) {
-        return ERC20(token).balanceOf(account);
+        return YearnRewards(YEARNREWARDS_STAKING_CURVEPOOL).earned(account);
+
     }
 }

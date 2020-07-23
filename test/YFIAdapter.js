@@ -8,7 +8,7 @@ const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract.only('YFIAdapter', () => {
   const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
-  const testAddress = '0xa2df955e88c437c0224a50c24870606b4c795bc6';
+  const testAddress = '0xd45404b8E15ECFaCB7C63d6A60559E460f3Ded51';
 
 
   let accounts;
