@@ -48,7 +48,6 @@ const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
-const YFITokenAdapter = artifacts.require('YFITokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 
 const aDaiAddress = '0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d';
@@ -157,6 +156,9 @@ const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
 const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
 
 const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
+const yearnRewardsStakingCurvePool = '0x0001FB050Fe7312791bF6475b96569D83F695C9f';
+const yearnRewardsStakingBalancerPool = '0x033E52f513F9B98e129381c6708F9faA2DEE5db5'
+const yearnRewardsStakingGovernancePool = '0x3A22dF48d84957F907e67F4313E3D43179040d6E'
 
 const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
 
@@ -338,7 +340,9 @@ const synthetixDebtAdapterTokens = [
 ];
 const yfiAdapterTokens = [
   yfiAddress,
-  aDaiAddress
+  yearnRewardsStakingCurvePool,
+  yearnRewardsStakingBalancerPool,
+  yearnRewardsStakingGovernancePool,
 ];
 const zrxAdapterTokens = [
   zrxAddress,
@@ -687,8 +691,8 @@ module.exports = async (deployer, network, accounts) => {
   tokens.push([yfiAdapterTokens]);
   protocolNames.push('YFI Governance');
   metadata.push([
-    'yearn.finance Governance Token',
-    'Liquidity rewards with ZRX',
+    'YFI',
+    'Yearn Governance Token'
     'yearn.finance',
     'protocol-icons.s3.amazonaws.com/YFI.png',
     '0',
@@ -806,12 +810,6 @@ module.exports = async (deployer, network, accounts) => {
     .then(() => {
       tokenAdapters.push(
         UniswapV2TokenAdapter.address,
-      );
-    });
-  await deployer.deploy(YFITokenAdapter, { from: accounts[0] })
-    .then(() => {
-      tokenAdapters.push(
-        YFITokenAdapter.address,
       );
     });
   await AdapterRegistry.at('0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672')

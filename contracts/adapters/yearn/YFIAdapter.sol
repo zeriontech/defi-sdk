@@ -26,20 +26,32 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 /**
  * @dev YearnRewards contract interface.
  * Only the functions required for YFIAdapter contract are added.
- * The YearnRewards contract is available here
+ * The YearnRewards Curve Pool contract is available here
  * 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862
+ * The YearnRewards Balancer Pool contract is available here
+ * 0x033E52f513F9B98e129381c6708F9faA2DEE5db5
  */
+
 interface YearnRewards {
     function earned(address) external view returns (uint256);
 }
 
+/**
+ * @dev YearnGovernance contract interface.
+ * Only the functions required for YFIAdapter contract are added.
+ * The YearnRewards Governance contract is available here
+ * 0x3A22dF48d84957F907e67F4313E3D43179040d6E
+ */
+
+interface YearnGovernance {
+    function earned(address) external view returns (uint256);
+}
 
 /**
- * @title Adapter for iearn.finance protocol.
+ * @title Adapter for Yearn.finance YFI Staking protocol.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Connor Martin <cnr.mrtn@gmail.com>
  */
-
 
 
 contract YFIAdapter is ProtocolAdapter {
@@ -52,16 +64,22 @@ contract YFIAdapter is ProtocolAdapter {
     address internal constant YEARNREWARDS_STAKING_BALANCERPOOL = 0x033E52f513F9B98e129381c6708F9faA2DEE5db5;
     address internal constant YEARNREWARDS_STAKING_GOVERNANCEPOOL = 0x3A22dF48d84957F907e67F4313E3D43179040d6E;
     address internal constant YFI = 0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e;
-    address internal constant BPT = 0x95C4B6C7CfF608c0CA048df8b81a484aA377172B;
 
     /**
-     * @return Amount of YTokens held by the given account.
+     * @return Amount of YFI rewards earned after staking in a given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
 
 
     function getBalance(address token, address account) external view override returns (uint256) {
-        return YearnRewards(YEARNREWARDS_STAKING_CURVEPOOL).earned(account);
-
+        if (token == YEARNREWARDS_STAKING_CURVEPOOL) {
+          return YearnRewards(YEARNREWARDS_STAKING_CURVEPOOL).earned(account);
+      } else if (token == YEARNREWARDS_STAKING_BALANCERPOOL) {
+          return YearnRewards(YEARNREWARDS_STAKING_BALANCERPOOL).earned(account);
+      }  else if (token == YEARNREWARDS_STAKING_GOVERNANCEPOOL) {
+          return YearnGovernance(YEARNREWARDS_STAKING_GOVERNANCEPOOL).earned(account);
+      }  else   {
+        return 0;
+      }
     }
-}
+  }

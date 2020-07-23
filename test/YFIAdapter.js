@@ -2,14 +2,15 @@ import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('YFIAdapter');
-const TokenAdapter = artifacts.require('YFITokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 
 contract.only('YFIAdapter', () => {
   const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
   const testAddress = '0xd45404b8E15ECFaCB7C63d6A60559E460f3Ded51';
-
+  const yearnRewardsStakingCurvePool = '0x0001FB050Fe7312791bF6475b96569D83F695C9f';
+  const yearnRewardsStakingBalancerPool = '0x033E52f513F9B98e129381c6708F9faA2DEE5db5'
+  const yearnRewardsStakingGovernancePool = '0x3A22dF48d84957F907e67F4313E3D43179040d6E'
 
   let accounts;
   let adapterRegistry;
@@ -29,7 +30,7 @@ contract.only('YFIAdapter', () => {
       .then((result) => {
         protocolAdapterAddress = result.address;
       });
-    await TokenAdapter.new({ from: accounts[0] })
+    await ERC20TokenAdapter.new({ from: accounts[0] })
       .then((result) => {
         tokenAdapterAddress = result.address;
       });
@@ -51,6 +52,9 @@ contract.only('YFIAdapter', () => {
       ]],
       [[[
         yfiAddress,
+        yearnRewardsStakingCurvePool,
+        yearnRewardsStakingBalancerPool,
+        yearnRewardsStakingGovernancePool
       ]]],
     )
       .send({
@@ -59,7 +63,7 @@ contract.only('YFIAdapter', () => {
       });
     await adapterRegistry.methods.addTokenAdapters(
       ['ERC20'],
-      [tokenAdapterAddress],
+      [erc20TokenAdapterAddress],
     )
       .send({
         from: accounts[0],
@@ -74,6 +78,7 @@ contract.only('YFIAdapter', () => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, yfi);
         assert.equal(result[0].adapterBalances[0].balances[0].underlying.length, 0);
+
       });
   });
 });
