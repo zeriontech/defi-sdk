@@ -156,9 +156,10 @@ const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
 const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
 
 const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
-const yearnRewardsStakingCurvePool = '0x0001FB050Fe7312791bF6475b96569D83F695C9f';
-const yearnRewardsStakingBalancerPool = '0x033E52f513F9B98e129381c6708F9faA2DEE5db5'
-const yearnRewardsStakingGovernancePool = '0x3A22dF48d84957F907e67F4313E3D43179040d6E'
+const yearnRewardsStakingCurvePoolAddress = '0x0001FB050Fe7312791bF6475b96569D83F695C9f';
+const yearnRewardsStakingBalancerPoolAddress = '0x033E52f513F9B98e129381c6708F9faA2DEE5db5';
+const yearnRewardsStakingGovernancePoolAddress = '0x3A22dF48d84957F907e67F4313E3D43179040d6E';
+const yearnRewardsContractAddress = '0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862';
 
 const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
 
@@ -343,6 +344,7 @@ const yfiAdapterTokens = [
   yearnRewardsStakingCurvePool,
   yearnRewardsStakingBalancerPool,
   yearnRewardsStakingGovernancePool,
+  yearnRewardsContract,
 ];
 const zrxAdapterTokens = [
   zrxAddress,

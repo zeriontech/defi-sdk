@@ -23,6 +23,20 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 
+
+/**
+ * @dev Yearn YFI Rewards Token Interface.
+ * Only the functions required for YFIAdapter contract are added.
+ * The YearnRewards contract is available here
+ * 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862
+ */
+
+/*
+interface YearnRewards {
+    function claimable(address) external view returns (uint);
+}
+*/
+
 /**
  * @dev YearnRewards contract interface.
  * Only the functions required for YFIAdapter contract are added.
@@ -47,12 +61,13 @@ interface YearnGovernance {
     function earned(address) external view returns (uint256);
 }
 
+
+
 /**
  * @title Adapter for Yearn.finance YFI Staking protocol.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Connor Martin <cnr.mrtn@gmail.com>
  */
-
 
 contract YFIAdapter is ProtocolAdapter {
 
@@ -63,6 +78,7 @@ contract YFIAdapter is ProtocolAdapter {
     address internal constant YEARNREWARDS_STAKING_CURVEPOOL = 0x0001FB050Fe7312791bF6475b96569D83F695C9f;
     address internal constant YEARNREWARDS_STAKING_BALANCERPOOL = 0x033E52f513F9B98e129381c6708F9faA2DEE5db5;
     address internal constant YEARNREWARDS_STAKING_GOVERNANCEPOOL = 0x3A22dF48d84957F907e67F4313E3D43179040d6E;
+    //address internal constant YEARNREWARDS_CONTRACT = 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862;
     address internal constant YFI = 0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e;
 
     /**
@@ -72,7 +88,9 @@ contract YFIAdapter is ProtocolAdapter {
 
 
     function getBalance(address token, address account) external view override returns (uint256) {
-        if (token == YEARNREWARDS_STAKING_CURVEPOOL) {
+      /*  if (token == YFI) {
+          return YearnRewards(YEARNREWARDS_CONTRACT).claimable(account);
+      }  else */if (token == YEARNREWARDS_STAKING_CURVEPOOL) {
           return YearnRewards(YEARNREWARDS_STAKING_CURVEPOOL).earned(account);
       } else if (token == YEARNREWARDS_STAKING_BALANCERPOOL) {
           return YearnRewards(YEARNREWARDS_STAKING_BALANCERPOOL).earned(account);

@@ -28,7 +28,7 @@
     "dotenv": "8.2.0",
     "regenerator-runtime": "0.13.5",
     "remixd": "^0.2.3-alpha.4",
-    "truffle": "5.1.31",
+    "truffle": "^5.1.31",
     "truffle-plugin-verify": "0.3.10"
   },
   "devDependencies": {
@@ -38,7 +38,7 @@
     "eslint-plugin-import": "2.20.2",
     "eth-gas-reporter": "0.2.17",
     "ethlint": "1.2.5",
-    "ganache-cli": "6.9.1",
+    "ganache-cli": "^6.9.1",
     "solhint": "3.0.0",
     "solidity-coverage": "0.7.5"
   }
