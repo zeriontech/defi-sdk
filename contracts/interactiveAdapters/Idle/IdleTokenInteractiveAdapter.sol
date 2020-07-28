@@ -18,12 +18,21 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
+import { ERC20 } from "../../shared/ERC20.sol";
+import { SafeERC20 } from "../../shared/SafeERC20.sol";
+import { Action, AmountType } from "../../shared/Structs.sol";
+import { IdleAdapter } from "../../adapters/idle/IdleAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
 
+interface IdleTokenV3 {
+    function mintIdleToken(uint256, uint256) external returns (uint256);
+    function redeemIdleToken(uint256, bool, uint256) external returns (uint256);
 
-abstract contract IdleInteractiveAdapter is InteractiveAdapter, {
+}
 
+contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, {
+  using SafeERC20 for ERC20;
 
   address internal constant IDLE_DAI = 0x78751B12Da02728F467A44eAc40F5cbc16Bd7934;
   address internal constant IDLE_USDC = 0x12B98C621E8754Ae70d0fDbBC73D6208bC3e3cA6;
@@ -44,24 +53,15 @@ abstract contract IdleInteractiveAdapter is InteractiveAdapter, {
 
 
 
-  function getDeposit(address token) internal pure returns (address){
-    if (token == DAI) {
-      return IDLE_DAI;
-    } else if (token == USDC) {
-      return IDLE_USDC;
-    } else if (token == USDT) {
-      return IDLE_USDT;
-    } else if (token == SUSD) {
-      return IDLE_SUSD;
-    } else if (token == TUSD) {
-      return IDLE_TUSD;
-    } else if (token == WBTC) {
-      return IDLE_WBTC;
-    } else {
-      revert("IIA; bad token!");
-    }
-  }
-
-
-
-  }
+  function deposit(
+      address[] memory tokens,
+      uint256[] memory amounts,
+      AmountType[] memory amountTypes,
+      bytes memory data
+  )
+      public
+      payable
+      override
+      returns (address[] memory tokensToBeWithdrawn)
+  {
+}
