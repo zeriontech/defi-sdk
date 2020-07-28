@@ -28,8 +28,8 @@ import { IdleIinteractiveAdapter } from "./IdleInteractiveAdapter.sol";
 
 
 interface IdleTokenV3 {
-    function mintIdleToken(uint256, uint256) external returns (uint256);
-    function redeemIdleToken(uint256, bool, uint256) external returns (uint256);
+    function mintIdleToken(uint256 _amount, bool _skipWholeRebalance) external returns (uint256 mintedTokens);
+    function redeemIdleToken(uint256 _amount, bool _skipRebalance, uint256[] calldata _clientProtocolAmounts) external returns (uint256 redeemedTokens);
 
 }
 
@@ -38,16 +38,49 @@ contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, IdleInt
 
 
 
+    function deposit(
+        address[] memory tokens,
+        uint256[] memory amounts,
+        AmountType[] memory amountTypes,
+        bytes memory data
+    )
+        public
+        payable
+        override
+        returns (address[] memory tokensToBeWithdrawn)
+    {
+      address destination = getDeposit(tokens[0]);
 
-  function deposit(
-      address[] memory tokens,
-      uint256[] memory amounts,
-      AmountType[] memory amountTypes,
-      bytes memory data
-  )
-      public
-      payable
-      override
-      returns (address[] memory tokensToBeWithdrawn)
-  {
+      require(tokens.length == 1, "IIA: should be 1 tokens!");
+      require(tokens.length == amounts.length, "IIA: inconsistent arrays!");
+
+      uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
+
+      ERC20(tokens[0]).safeApprove(destination) amount, "IIA!");
+
+      try destination.mintIdleToken(amount, true) {
+      }  catch Error(string meory reason) {
+          revert(reason);
+      } catch {
+          revert("IIA: deposit fail!");
+      }
+  }
+
+
+
+    function withdraw(
+        address[] memory,
+        uint256[] memory amounts,
+        AmountType[] memory amountTypes,
+        bytes memory
+    )
+        public
+        payable
+        override
+        returns (address[] memory tokensToBeWithdrawn)
+    {
+
+    uint256 amount = getAbsoluteAmountWithdraw(IdleToken, amounts[0], amountTypes[0]);
+
+
 }
