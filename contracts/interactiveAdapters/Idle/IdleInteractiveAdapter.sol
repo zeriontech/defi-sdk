@@ -31,6 +31,7 @@ abstract contract IdleInteractiveAdapter is InteractiveAdapter, {
   address internal constant IDLE_SUSD = 0xe79e177d2a5c7085027d7c64c8f271c81430fc9b;
   address internal constant IDLE_TUSD = 0x51C77689A9c2e8cCBEcD4eC9770a1fA5fA83EeF1;
   address internal constant IDLE_WBTC = 0xD6f279B7ccBCD70F8be439d25B9Df93AEb60eC55;
+
   address internal constant IDLE_DAI_RISK_ADJUSTED = 0x1846bdfDB6A0f5c473dEc610144513bd071999fB;
   address internal constant IDLE_USDC_RISK_ADJUSTED = 0xcDdB1Bceb7a1979C6caa0229820707429dd3Ec6C;
   address internal constant IDLE_USDT_RISK_ADJUSTED = 0x42740698959761BAF1B06baa51EfBD88CB1D862B;
@@ -44,24 +45,33 @@ abstract contract IdleInteractiveAdapter is InteractiveAdapter, {
 
 
 
-  function getDeposit(address token) internal pure returns (address){
+function getDeposit(address token) internal pure returns (address) {
     if (token == DAI) {
-      return IDLE_DAI;
+        return IDLE_DAI;
     } else if (token == USDC) {
-      return IDLE_USDC;
+        return IDLE_USDC;
     } else if (token == USDT) {
-      return IDLE_USDT;
+        return IDLE_USDT;
     } else if (token == SUSD) {
-      return IDLE_SUSD;
+        return IDLE_SUSD;
     } else if (token == TUSD) {
-      return IDLE_TUSD;
+        return IDLE_TUSD;
     } else if (token == WBTC) {
-      return IDLE_WBTC;
+        return IDLE_WBTC;
     } else {
-      revert("IIA; bad token!");
+        revert("IIA: bad token!");
     }
-  }
+}
 
-
-
-  }
+function getRiskAdjustedDeposit(address token) internal pure returns (address) {
+    if (token == DAI) {
+        return IDLE_DAI_RISK_ADJUSTED;
+    } else if (token == USDC) {
+        return IDLE_USDC_RISK_ADJUSTED;
+    } else if (token == USDT) {
+        return IDLE_USDT_RISK_ADJUSTED;
+    } else {
+        revert ("IIA: bad token!");
+    }
+}
+}
