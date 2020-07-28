@@ -56,10 +56,10 @@ contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, IdleInt
 
       uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
-      ERC20(tokens[0]).safeApprove(destination) amount, "IIA!");
+      ERC20(tokens[0]).safeApprove(destination, amount, "IIA!");
 
       try destination.mintIdleToken(amount, true) {
-      }  catch Error(string meory reason) {
+      }  catch Error(string memory reason) {
           revert(reason);
       } catch {
           revert("IIA: deposit fail!");
@@ -80,7 +80,19 @@ contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, IdleInt
         returns (address[] memory tokensToBeWithdrawn)
     {
 
+    require(tokens.length == 1, "IIA should be 1 token!");
+    require(amounts.length == 1, "IIA: should be 1 amount");
+
+
+
     uint256 amount = getAbsoluteAmountWithdraw(IdleToken, amounts[0], amountTypes[0]);
 
+    tokensToBeWithdrawn = new address[](1);
 
+    try destination.redeemIdleToken(tokens[0], amount, []) {
+    } catch Error(string memory reason) {
+        revert(reason);
+    } catch {
+        revert("IIA: idleToken fail!");
+    }
 }

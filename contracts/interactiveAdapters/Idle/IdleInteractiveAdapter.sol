@@ -22,7 +22,7 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
 
 
-abstract contract IdleInteractiveAdapter is InteractiveAdapter, {
+abstract contract IdleInteractiveAdapter is InteractiveAdapter {
 
 
   address internal constant IDLE_DAI = 0x78751B12Da02728F467A44eAc40F5cbc16Bd7934;
