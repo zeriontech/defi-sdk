@@ -23,7 +23,7 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { Action, AmountType } from "../../shared/Structs.sol";
 import { IdleAdapter } from "../../adapters/idle/IdleAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-import { IdleIinteractiveAdapter } from "./IdleInteractiveAdapter.sol";
+import { IdleInteractiveAdapter } from "./IdleInteractiveAdapter.sol";
 
 
 
@@ -32,7 +32,11 @@ interface IdleTokenV3 {
     function redeemIdleToken(uint256 _amount, bool _skipRebalance, uint256[] calldata _clientProtocolAmounts) external returns (uint256 redeemedTokens);
 
 }
-
+/**
+ * @title Interactive adapter for Idle.finance.
+ * @dev Implementation of InteractiveAdapter abstract contract.
+ * @author Connor Martin <cnr.mrtn@gmail.com>
+ */
 contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, IdleInteractiveAdapter {
   using SafeERC20 for ERC20;
 
@@ -52,13 +56,15 @@ contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, IdleInt
       address destination = getDeposit(tokens[0]);
 
       require(tokens.length == 1, "IIA: should be 1 tokens!");
-      require(tokens.length == amounts.length, "IIA: inconsistent arrays!");
 
       uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
+      tokensToBeWithdrawn = new address[](1);
+      tokensToBeWithdrawn[0] = IdleTokenV3(destination).token();
+
       ERC20(tokens[0]).safeApprove(destination, amount, "IIA!");
 
-      try destination.mintIdleToken(amount, true) {
+      try IdleTokenV3(getDeposit(tokens[0])).mintIdleToken(amount, true) {
       }  catch Error(string memory reason) {
           revert(reason);
       } catch {
@@ -85,14 +91,16 @@ contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, IdleInt
 
 
 
-    uint256 amount = getAbsoluteAmountWithdraw(IdleToken, amounts[0], amountTypes[0]);
+    uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
 
     tokensToBeWithdrawn = new address[](1);
 
-    try destination.redeemIdleToken(tokens[0], amount, []) {
+    try IdleTokenV3(getDeposit(tokens[0])).redeemIdleToken(tokens[0], amount, []) {
     } catch Error(string memory reason) {
         revert(reason);
     } catch {
         revert("IIA: idleToken fail!");
     }
+}
+
 }
