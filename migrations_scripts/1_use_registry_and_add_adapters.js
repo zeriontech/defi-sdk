@@ -26,7 +26,6 @@ const MelonAdapter = artifacts.require('MelonAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
-const RDaiAdapter = artifacts.require('RDaiAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
@@ -47,7 +46,6 @@ const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
 const ChiTokenAdapter = artifacts.require('ChiTokenAdapter');
 const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
-const RDaiTokenAdapter = artifacts.require('RDaiTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
@@ -329,9 +327,6 @@ const poolTogetherAdapterTokens = [
   saiPoolAddress,
   daiPoolAddress,
   usdcPoolAddress,
-];
-const rdaiAdapterTokens = [
-  rdaiAddress,
 ];
 const synthetixAssetAdapterTokens = [
   snxAddress,
@@ -647,18 +642,6 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
-  await deployer.deploy(RDaiAdapter, { from: accounts[0] });
-  adapters.push([RDaiAdapter.address]);
-  tokens.push([rdaiAdapterTokens]);
-  protocolNames.push('Redeemable Dai');
-  metadata.push([
-    'RToken',
-    'Redeemable Dai',
-    'rdai.money',
-    'protocol-icons.s3.amazonaws.com/rdai.png',
-    '0',
-  ]);
-
   await deployer.deploy(SynthetixAssetAdapter, { from: accounts[0] });
   await deployer.deploy(SynthetixDebtAdapter, { from: accounts[0] });
   adapters.push([SynthetixAssetAdapter.address, SynthetixDebtAdapter.address]);
@@ -802,12 +785,6 @@ module.exports = async (deployer, network, accounts) => {
     .then(() => {
       tokenAdapters.push(
         PoolTogetherTokenAdapter.address,
-      );
-    });
-  await deployer.deploy(RDaiTokenAdapter, { from: accounts[0] })
-    .then(() => {
-      tokenAdapters.push(
-        RDaiTokenAdapter.address,
       );
     });
   await deployer.deploy(TokenSetsTokenAdapter, { from: accounts[0] })
