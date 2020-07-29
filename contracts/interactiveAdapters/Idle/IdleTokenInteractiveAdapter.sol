@@ -42,6 +42,12 @@ contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, IdleInt
 
 
 
+
+  /**
+   * @notice Wraps deposited token in IdleToken
+   * @dev Implementation of InteractiveAdapter function.
+   */
+
     function deposit(
         address[] memory tokens,
         uint256[] memory amounts,
@@ -53,9 +59,11 @@ contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, IdleInt
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-      address destination = getDeposit(tokens[0]);
+      address destination = getDeposit(tokens[0]); //unused currently
 
-      require(tokens.length == 1, "IIA: should be 1 tokens!");
+      require(tokens.length == 1, "IIA: should be 1 tokens![1]");
+      require(tokens.length == amounts.length, "IIA: inconsistent arrays![1]");
+
 
       uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
@@ -72,7 +80,10 @@ contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, IdleInt
       }
   }
 
-
+  /**
+   * @notice Unwraps deposited token from Wrapped IdleToken.
+   * @dev Implementation of InteractiveAdapter function.
+   */
 
     function withdraw(
         address[] memory,
@@ -86,8 +97,8 @@ contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, IdleInt
         returns (address[] memory tokensToBeWithdrawn)
     {
 
-    require(tokens.length == 1, "IIA should be 1 token!");
-    require(amounts.length == 1, "IIA: should be 1 amount");
+    require(tokens.length == 1, "IIA should be 1 token![2]");
+    require(tokens.length == amounts.length, "IIA: inconsistent arrays![2]");
 
 
 
