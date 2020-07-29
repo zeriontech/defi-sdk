@@ -331,9 +331,6 @@ const poolTogetherAdapterTokens = [
   daiPoolAddress,
   usdcPoolAddress,
 ];
-const rdaiAdapterTokens = [
-  rdaiAddress,
-];
 const synthetixAssetAdapterTokens = [
   snxAddress,
   sethUniAddress,
@@ -645,18 +642,6 @@ module.exports = async (deployer, network, accounts) => {
     'Decentralized no-loss lottery',
     'pooltogether.com',
     'protocol-icons.s3.amazonaws.com/pooltogether.png',
-    '0',
-  ]);
-
-  await deployer.deploy(RDaiAdapter, { from: accounts[0] });
-  adapters.push([RDaiAdapter.address]);
-  tokens.push([rdaiAdapterTokens]);
-  protocolNames.push('Redeemable Dai');
-  metadata.push([
-    'RToken',
-    'Redeemable Dai',
-    'rdai.money',
-    'protocol-icons.s3.amazonaws.com/rdai.png',
     '0',
   ]);
 
