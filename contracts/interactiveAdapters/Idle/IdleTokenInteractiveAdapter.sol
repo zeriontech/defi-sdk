@@ -25,7 +25,12 @@ import { IdleAdapter } from "../../adapters/idle/IdleAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { IdleInteractiveAdapter } from "./IdleInteractiveAdapter.sol";
 
-
+/**
+ * @dev IdleTokenV3 contract interface.
+ * Only the functions required for IdleTokenInteractiveAdapter contract are added.
+ * The IdleTokenV3 DAI contract is available here
+ * 0x78751b12da02728f467a44eac40f5cbc16bd7934.
+ */
 
 interface IdleTokenV3 {
     function mintIdleToken(uint256 _amount, bool _skipWholeRebalance) external returns (uint256 mintedTokens);
