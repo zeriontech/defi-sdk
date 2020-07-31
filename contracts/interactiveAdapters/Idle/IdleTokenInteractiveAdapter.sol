@@ -33,31 +33,28 @@ import { IdleInteractiveAdapter } from "./IdleInteractiveAdapter.sol";
  */
 
 interface IdleTokenV3 {
-    function mintIdleToken(uint256 _amount, bool _skipWholeRebalance) external returns (uint256 mintedTokens);
-    function redeemIdleToken(uint256 _amount, bool _skipRebalance, uint256[] calldata _clientProtocolAmounts) external returns (uint256 redeemedTokens);
-
+    function mintIdleToken(uint256, bool) external returns (uint256);
+    function redeemIdleToken(uint256, bool, uint256) external returns (uint256);
 }
+
 /**
  * @title Interactive adapter for Idle.finance.
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Connor Martin <cnr.mrtn@gmail.com>
  */
 contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, IdleInteractiveAdapter {
-  using SafeERC20 for ERC20;
+    using SafeERC20 for ERC20;
 
 
-
-
-  /**
-   * @notice Wraps deposited token in IdleToken
-   * @dev Implementation of InteractiveAdapter function.
-   */
-
+    /**
+    * @notice Wraps deposited token in IdleToken
+    * @dev Implementation of InteractiveAdapter function.
+    */
     function deposit(
         address[] memory tokens,
         uint256[] memory amounts,
         AmountType[] memory amountTypes,
-        bytes memory data
+        bytes memory
     )
         public
         payable
@@ -73,7 +70,7 @@ contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, IdleInt
       uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
 
       tokensToBeWithdrawn = new address[](1);
-      tokensToBeWithdrawn[0] = IdleTokenV3(destination).token();
+      tokensToBeWithdrawn[0] = IdleTokenV3(getDeposit(tokens[0]));
 
       ERC20(tokens[0]).safeApprove(destination, amount, "IIA!");
 
@@ -91,7 +88,7 @@ contract IdleTokenInteractiveAdapter is InteractiveAdapter, IdleAdapter, IdleInt
    */
 
     function withdraw(
-        address[] memory,
+        address[] memory tokens,
         uint256[] memory amounts,
         AmountType[] memory amountTypes,
         bytes memory

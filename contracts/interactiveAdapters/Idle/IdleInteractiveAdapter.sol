@@ -28,7 +28,7 @@ abstract contract IdleInteractiveAdapter is InteractiveAdapter {
   address internal constant IDLE_DAI = 0x78751B12Da02728F467A44eAc40F5cbc16Bd7934;
   address internal constant IDLE_USDC = 0x12B98C621E8754Ae70d0fDbBC73D6208bC3e3cA6;
   address internal constant IDLE_USDT = 0x63D27B3DA94A9E871222CB0A32232674B02D2f2D;
-  address internal constant IDLE_SUSD = 0xe79e177d2a5c7085027d7c64c8f271c81430fc9b;
+  address internal constant IDLE_SUSD = 0xE79E177d2a5c7085027d7C64c8F271c81430fc9b;
   address internal constant IDLE_TUSD = 0x51C77689A9c2e8cCBEcD4eC9770a1fA5fA83EeF1;
   address internal constant IDLE_WBTC = 0xD6f279B7ccBCD70F8be439d25B9Df93AEb60eC55;
 
