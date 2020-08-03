@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 
 /**
- * @title Protocol adapter interface.
+ * @title Protocol adapter abstract contract.
  * @dev adapterType(), tokenType(), and getBalance() functions MUST be implemented.
  * @author Igor Sobolev <sobolev@zerion.io>
  */

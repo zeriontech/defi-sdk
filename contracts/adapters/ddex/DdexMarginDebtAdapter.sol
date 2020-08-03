@@ -35,7 +35,7 @@ interface Hydro {
 
 /**
  * @title Debt adapter for DDEX protocol (margin account).
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract DdexMarginDebtAdapter is ProtocolAdapter {
@@ -46,9 +46,17 @@ contract DdexMarginDebtAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of tokens held by the given account.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(address token, address account) external view override returns (uint256) {
+    function getBalance(
+        address token,
+        address account
+    )
+        public
+        view
+        override
+        returns (uint256, bytes32)
+    {
         uint256 allMarketsCount = Hydro(HYDRO).getAllMarketsCount();
         uint256 totalAmountBorrowed = 0;
 
@@ -62,6 +70,6 @@ contract DdexMarginDebtAdapter is ProtocolAdapter {
             } catch {} // solhint-disable-line no-empty-blocks
         }
 
-        return totalAmountBorrowed;
+        return (totalAmountBorrowed, "ERC20");
     }
 }

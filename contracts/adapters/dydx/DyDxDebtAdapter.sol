@@ -57,14 +57,14 @@ interface SoloMargin {
 
 /**
  * @title Debt adapter for dYdX protocol.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract DyDxDebtAdapter is ProtocolAdapter, DyDxAdapter {
 
     /**
      * @return Amount of tokens held by the given account.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address token,
@@ -75,7 +75,11 @@ contract DyDxDebtAdapter is ProtocolAdapter, DyDxAdapter {
         override
         returns (uint256, bytes32)
     {
-        Wei memory accountWei = SoloMargin(SOLO).getAccountWei(Info(account, 0), getMarketId(token));
+        Wei memory accountWei = SoloMargin(SOLO).getAccountWei(
+            Info(account, 0),
+            getMarketId(token)
+        );
+
         return (accountWei.sign ? 0 : accountWei.value, "ERC20");
     }
 }

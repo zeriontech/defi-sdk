@@ -1,5 +1,5 @@
-// import displayToken from './helpers/displayToken';
-// import expectRevert from './helpers/expectRevert';
+// import displayToken from '../helpers/displayToken';
+// import expectRevert from '../helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
 
 const WETH_ADAPTER = web3.eth.abi.encodeParameter(

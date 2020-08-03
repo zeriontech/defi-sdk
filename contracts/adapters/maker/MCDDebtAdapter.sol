@@ -19,7 +19,7 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-import { MKRAdapter } from "./MKRAdapter.sol";
+import { MKRAdapter } from "./MakerAdapter.sol";
 
 
 /**
@@ -62,14 +62,14 @@ interface DssCdpManager {
 
 /**
  * @title Debt adapter for MCD protocol.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract MCDDebtAdapter is ProtocolAdapter, MKRAdapter {
 
     /**
      * @return Amount of debt of the given account for the protocol.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address,

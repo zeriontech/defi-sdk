@@ -1,4 +1,4 @@
-// import displayToken from './helpers/displayToken';
+// import displayToken from '../helpers/displayToken';
 import convertToShare from '../helpers/convertToShare';
 import expectRevert from '../helpers/expectRevert';
 

@@ -19,7 +19,7 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-import { MKRAdapter } from "./MKRAdapter.sol";
+import { MKRAdapter } from "./MakerAdapter.sol";
 
 
 /**
@@ -38,14 +38,14 @@ interface Pot {
 
 /**
  * @title Adapter for DSR protocol.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract DSRAdapter is ProtocolAdapter, MKRAdapter {
 
     /**
      * @return Amount of DAI locked on the protocol by the given account.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      * This function repeats the calculations made in drip() function of Pot contract.
      */
     function getBalance(

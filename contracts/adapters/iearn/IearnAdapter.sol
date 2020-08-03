@@ -24,14 +24,14 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 /**
  * @title Adapter for iearn.finance protocol.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract IearnAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of YTokens held by the given account.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address token,

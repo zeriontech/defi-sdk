@@ -35,7 +35,7 @@ interface Staking {
 
 /**
  * @title Adapter for 0x protocol.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ZrxAdapter is ProtocolAdapter {
@@ -44,7 +44,7 @@ contract ZrxAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of ZRX locked on the protocol by the given account.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address,

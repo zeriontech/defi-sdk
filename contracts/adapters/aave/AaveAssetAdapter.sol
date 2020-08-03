@@ -24,14 +24,14 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 /**
  * @title Asset adapter for Aave protocol.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract AaveAssetAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of ATokens held by the given account.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address token,

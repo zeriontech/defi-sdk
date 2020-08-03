@@ -24,7 +24,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 /**
  * @title Adapter for Curve protocol (liquidity).
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CurveAssetAdapter is ProtocolAdapter {
@@ -32,7 +32,7 @@ contract CurveAssetAdapter is ProtocolAdapter {
     /**
      * @return Amount of Curve Pool Tokens held by the given account.
      * @param token Address of the Pool Token!
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address token,

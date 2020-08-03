@@ -24,14 +24,14 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 /**
  * @title Asset adapter for Ampleforth.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract AmpleforthAssetAdapter is ProtocolAdapter {
     
     /**
      * @return AMPL balance.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address token,

@@ -42,7 +42,7 @@ interface CToken {
  * github.com/balancer-labs/balancer-core/blob/master/contracts/BPool.sol.
  */
 interface BPool {
-    function getFinalTokens() external view returns (address[] memory);
+    function getCurrentTokens() external view returns (address[] memory);
     function getBalance(address) external view returns (uint256);
     function getNormalizedWeight(address) external view returns (uint256);
 }
@@ -68,12 +68,20 @@ contract BalancerTokenAdapter is TokenAdapter {
         uint256 totalSupply = ERC20(token).totalSupply();
 
         Component[] memory components = new Component[](currentTokens.length);
-
-        for (uint256 i = 0; i < components.length; i++) {
-            components[i] = Component({
-                token: currentTokens[i],
-                rate: totalSupply == 0 ? 0 : BPool(token).getBalance(tokens[i]) * 1e18 / totalSupply
-            });
+        if (totalSupply == 0) {
+            for (uint256 i = 0; i < components.length; i++) {
+                components[i] = Component({
+                    token: currentTokens[i],
+                    rate: 0
+                });
+            }
+        } else {
+            for (uint256 i = 0; i < components.length; i++) {
+                components[i] = Component({
+                    token: currentTokens[i],
+                    rate: BPool(token).getBalance(currentTokens[i]) * 1e18 / totalSupply
+                });
+            }
         }
 
         return components;
@@ -83,19 +91,19 @@ contract BalancerTokenAdapter is TokenAdapter {
      * @return Pool name.
      */
     function getName(address token) internal view override returns (string memory) {
-        address[] memory underlyingTokens;
-        try BPool(token).getFinalTokens() returns (address[] memory result) {
-            underlyingTokens = result;
+        address[] memory currentTokens;
+        try BPool(token).getCurrentTokens() returns (address[] memory result) {
+            currentTokens = result;
         } catch {
             return "Unknown Pool";
         }
 
         string memory poolName = "";
-        uint256 lastIndex = underlyingTokens.length - 1;
-        for (uint256 i = 0; i < underlyingTokens.length; i++) {
+        uint256 lastIndex = currentTokens.length - 1;
+        for (uint256 i = 0; i < currentTokens.length; i++) {
             poolName = string(abi.encodePacked(
                 poolName,
-                getPoolElement(token, underlyingTokens[i]),
+                getPoolElement(token, currentTokens[i]),
                 i == lastIndex ? " Pool" : " + "
             ));
         }

@@ -24,7 +24,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 /**
  * @title Asset adapter for Compound protocol.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * Base contract for Compound Asset interactive adapter.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
@@ -32,7 +32,7 @@ contract CompoundAssetAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of CTokens held by the given account.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address token,

@@ -24,14 +24,14 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 /**
  * @title Asset adapter for the DMM protocol.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Corey Caplan <corey@dolomite.io>
  */
 contract DmmAssetAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of MTokens held by the given account.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address token,

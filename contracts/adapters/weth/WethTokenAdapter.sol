@@ -25,7 +25,7 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 
 /**
  * @title Token adapter for Wrapped Ether.
- * @dev Implementation of TokenAdapter interface.
+ * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract WethTokenAdapter is TokenAdapter {
@@ -34,7 +34,7 @@ contract WethTokenAdapter is TokenAdapter {
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given asset.
-     * @dev Implementation of TokenAdapter interface function.
+     * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address) external view override returns (Component[] memory) {
         Component[] memory components = new Component[](1);

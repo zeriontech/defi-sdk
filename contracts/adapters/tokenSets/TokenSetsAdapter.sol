@@ -24,7 +24,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 /**
  * @title Adapter for TokenSets.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * Base contract for TokenSets interactive adapter.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
@@ -33,7 +33,7 @@ contract TokenSetsAdapter is ProtocolAdapter {
     /**
      * @return Amount of SetTokens held by the given account.
      * @param token Address of the SetToken contract.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address token,

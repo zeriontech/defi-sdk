@@ -27,11 +27,11 @@ contract('AmpleforthAssetAdapter', () => {
       .then((result) => {
         adapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocols(
+    await adapterRegistry.methods.addProtocolAdapters(
       [
         `${web3.eth.abi.encodeParameter(
           'bytes32',
-          web3.utils.toHex('Aave'),
+          web3.utils.toHex('Ampleforth'),
         )
           .slice(0, -2)}${ASSET_ADAPTER}`,
       ],
@@ -47,7 +47,7 @@ contract('AmpleforthAssetAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20'],
+      [web3.utils.toHex('ERC20')],
       [erc20TokenAdapterAddress],
     )
       .send({

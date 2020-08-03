@@ -34,7 +34,7 @@ interface TokenGeyser {
 
 /**
  * @title Asset adapter for Ampleforth Staking.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract AmpleforthStakingAdapter is ProtocolAdapter {
@@ -52,7 +52,7 @@ contract AmpleforthStakingAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of UNI-tokens locked on the protocol by the given account.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address,
@@ -63,6 +63,6 @@ contract AmpleforthStakingAdapter is ProtocolAdapter {
         override
         returns (uint256, bytes32)
     {
-        TokenGeyser(geyser_).totalStakedFor(account);
+        return (TokenGeyser(geyser_).totalStakedFor(account), "ERC20");
     }
 }

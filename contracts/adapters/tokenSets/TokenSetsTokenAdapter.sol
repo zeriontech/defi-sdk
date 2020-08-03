@@ -62,7 +62,7 @@ interface RebalancingSetToken {
 
 /**
  * @title Token adapter for TokenSets.
- * @dev Implementation of TokenAdapter interface.
+ * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract TokenSetsTokenAdapter is TokenAdapter {
@@ -71,7 +71,7 @@ contract TokenSetsTokenAdapter is TokenAdapter {
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
-     * @dev Implementation of TokenAdapter interface function.
+     * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
         RebalancingSetToken rebalancingSetToken = RebalancingSetToken(token);

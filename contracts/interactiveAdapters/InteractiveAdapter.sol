@@ -26,7 +26,7 @@ import { ERC20 } from "../shared/ERC20.sol";
 /**
  * @title Base contract for interactive protocol adapters.
  * @dev deposit() and withdraw() functions MUST be implemented
- * as well as all the functions from ProtocolAdapter interface.
+ * as well as all the functions from ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract InteractiveAdapter is ProtocolAdapter {

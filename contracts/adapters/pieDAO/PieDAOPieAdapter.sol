@@ -18,30 +18,31 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
+import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @title Adapter for OneSplit exchange.
- * @dev Implementation of ProtocolAdapter interface.
- * Base contract for OneSplit interactive adapter.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @title Adapter for PieDAO pools.
+ * @dev Implementation of ProtocolAdapter abstract contract.
+ * @author Mick de Graaf <mick@dexlab.io>
  */
-contract OneSplitAdapter is ProtocolAdapter {
+contract PieDAOPieAdapter is ProtocolAdapter {
 
     /**
-     * @return Amount of Uniswap Pool Tokens held by the given account.
+     * @return Amount of PieDAO pool tokens held by the given account.
+     * @param token Address of the pool!
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(
-        address,
-        address
+        address token,
+        address account
     )
         public
         view
         override
         returns (uint256, bytes32)
     {
-        revert("OSA: no balance!");
+        return (ERC20(token).balanceOf(account), "PieDAO Pie");
     }
 }

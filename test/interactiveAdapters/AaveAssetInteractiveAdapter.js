@@ -1,5 +1,5 @@
-// import displayToken from './helpers/displayToken';
-// import expectRevert from './helpers/expectRevert';
+// import displayToken from '../helpers/displayToken';
+// import expectRevert from '../helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
 
 const AAVE_ADAPTER = web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Aave')).slice(0, -2);

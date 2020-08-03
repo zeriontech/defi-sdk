@@ -22,7 +22,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @dev LendingPoolAddressesProvider contract interface.
+ * @dev LendingPoolAddressesProvider interface.
  * Only the functions required for AaveDebtAdapter contract are added.
  * The LendingPoolAddressesProvider contract is available here
  * github.com/aave/aave-protocol/blob/master/contracts/configuration/LendingPoolAddressesProvider.sol.
@@ -45,16 +45,26 @@ interface LendingPool {
 
 /**
  * @title Debt adapter for Aave protocol.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract AaveDebtAdapter is ProtocolAdapter {
 
-    address internal constant PROVIDER = 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8;
+    address internal immutable provider_;
+
+    constructor(
+        address provider,
+    )
+        public
+    {
+        require(provider != address(0), "ADA: empty provider!");
+
+        provider_ = provider;
+    }
 
     /**
      * @return Amount of debt of the given account for the protocol.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address token,

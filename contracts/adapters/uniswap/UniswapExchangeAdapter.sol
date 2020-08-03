@@ -24,7 +24,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 /**
  * @title Adapter for Uniswap V1/V2 protocol (exchange).
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * Base contract for Uniswap V1/V2 exchange adapter.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
@@ -32,7 +32,7 @@ contract UniswapExchangeAdapter is ProtocolAdapter {
 
     /**
      * @notice This function is unavailable for exchange adapter.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address,

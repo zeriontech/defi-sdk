@@ -24,7 +24,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 /**
  * @title Adapter for Uniswap V2 protocol (liquidity).
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract UniswapV2AssetAdapter is ProtocolAdapter {
@@ -32,7 +32,7 @@ contract UniswapV2AssetAdapter is ProtocolAdapter {
     /**
      * @return Amount of Uniswap Pool Tokens held by the given account.
      * @param token Address of the exchange (pair)!
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address token,

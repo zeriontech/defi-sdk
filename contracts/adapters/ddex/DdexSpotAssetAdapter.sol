@@ -34,7 +34,7 @@ interface Hydro {
 
 /**
  * @title Asset adapter for DDEX protocol (spot account).
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract DdexSpotAssetAdapter is ProtocolAdapter {
@@ -45,9 +45,17 @@ contract DdexSpotAssetAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of tokens held by the given account.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(address token, address account) external view override returns (uint256) {
-        return Hydro(HYDRO).balanceOf(token == ETH ? HYDRO_ETH : token, account);
+    function getBalance(
+        address token,
+        address account
+    )
+        public
+        view
+        override
+        returns (uint256, bytes32)
+    {
+        return (Hydro(HYDRO).balanceOf(token == ETH ? HYDRO_ETH : token, account), "ERC20");
     }
 }

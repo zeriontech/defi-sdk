@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-import { MKRAdapter } from "./MKRAdapter.sol";
+import { MKRAdapter } from "./MakerAdapter.sol";
 
 
 /**

@@ -45,7 +45,7 @@ interface Synthetix {
 
 /**
  * @title Debt adapter for Synthetix protocol.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract SynthetixDebtAdapter is ProtocolAdapter {
@@ -54,7 +54,7 @@ contract SynthetixDebtAdapter is ProtocolAdapter {
 
     /**
      * @return Amount of debt of the given account for the protocol.
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address,

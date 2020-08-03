@@ -24,7 +24,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 /**
  * @title Adapter for Balancer protocol.
- * @dev Implementation of ProtocolAdapter interface.
+ * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract BalancerAdapter is ProtocolAdapter {
@@ -32,7 +32,7 @@ contract BalancerAdapter is ProtocolAdapter {
     /**
      * @return Amount of Balancer Pool Tokens held by the given account.
      * @param token Address of the pool!
-     * @dev Implementation of ProtocolAdapter interface function.
+     * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
         address token,
