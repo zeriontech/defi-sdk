@@ -97,7 +97,7 @@ contract BancorTokenAdapter is TokenAdapter {
         address converter = SmartToken(token).owner();
         uint256 connectorTokenCount = BancorConverter(converter).connectorTokenCount();
 
-        Component[] memory underlyingTokens = new Component[](connectorTokenCount);
+        Component[] memory components = new Component[](connectorTokenCount);
 
         address underlyingToken;
         uint256 balance;
@@ -110,7 +110,7 @@ contract BancorTokenAdapter is TokenAdapter {
                 balance = ERC20(underlyingToken).balanceOf(converter);
             }
 
-            underlyingTokens[i] = Component({
+            components[i] = Component({
                 token: underlyingToken,
                 rate: BancorFormula(formula).calculateLiquidateReturn(
                     totalSupply,
@@ -118,9 +118,9 @@ contract BancorTokenAdapter is TokenAdapter {
                     uint32(1000000),
                     uint256(1e18)
                 )
-                });
+            });
         }
 
-        return underlyingTokens;
+        return components;
     }
 }
