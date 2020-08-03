@@ -62,21 +62,17 @@ contract BalancerTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        address[] memory underlyingTokens;
-        try BPool(token).getFinalTokens() returns (address[] memory result) {
-            underlyingTokens = result;
-        } catch {
-            underlyingTokens = new address[](0);
-        }
+        address[] memory currentTokens;
+        currentTokens = BPool(token).getCurrentTokens();
 
         uint256 totalSupply = ERC20(token).totalSupply();
 
-        Component[] memory components = new Component[](underlyingTokens.length);
+        Component[] memory components = new Component[](currentTokens.length);
 
         for (uint256 i = 0; i < components.length; i++) {
             components[i] = Component({
-                token: underlyingTokens[i],
-                rate: BPool(token).getBalance(underlyingTokens[i]) * 1e18 / totalSupply
+                token: currentTokens[i],
+                rate: totalSupply == 0 ? 0 : BPool(token).getBalance(tokens[i]) * 1e18 / totalSupply
             });
         }
 
