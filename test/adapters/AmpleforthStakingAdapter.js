@@ -1,5 +1,7 @@
 import displayToken from '../helpers/displayToken';
 
+const ASSET_ADAPTER = '01';
+
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('AmpleforthStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');

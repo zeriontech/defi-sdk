@@ -15,18 +15,6 @@ contract.only('KyberAssetAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
-  const knc = [
-    kncAddress,
-    'Kyber Network Crystal',
-    'KNC',
-    '18',
-  ];
-  // const eth = [
-  //   ethAddress,
-  //   'Ether',
-  //   'ETH',
-  //   '18',
-  // ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -77,7 +65,6 @@ contract.only('KyberAssetAdapter', () => {
       .call()
       .then(async (result) => {
         await displayToken(adapterRegistry, result[0].tokenBalances[0]);
-        await displayToken(adapterRegistry, result[0].tokenBalances[1]);
       });
   });
 });

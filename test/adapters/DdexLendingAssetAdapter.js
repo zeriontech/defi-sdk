@@ -6,7 +6,7 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('DdexLendingAssetAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('DdexLendingAssetAdapter', () => {
+contract('DdexLendingAssetAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
@@ -15,12 +15,6 @@ contract.only('DdexLendingAssetAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
-  const dai = [
-    daiAddress,
-    'Dai Stablecoin',
-    'DAI',
-    '18',
-  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -71,7 +65,6 @@ contract.only('DdexLendingAssetAdapter', () => {
       .call()
       .then(async (result) => {
         await displayToken(adapterRegistry, result[0].tokenBalances[0]);
-        await displayToken(adapterRegistry, result[0].tokenBalances[1]);
       });
   });
 });

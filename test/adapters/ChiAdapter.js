@@ -7,7 +7,7 @@ const ProtocolAdapter = artifacts.require('ChiAdapter');
 const TokenAdapter = artifacts.require('ChiTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('ChiAdapter', () => {
+contract('ChiAdapter', () => {
   const chiAddress = '0x0000000000004946c0e9F43F4Dee607b0eF1fA1c';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';

@@ -15,18 +15,6 @@ contract.only('DdexMarginAssetAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
-  const dai = [
-    daiAddress,
-    'Dai Stablecoin',
-    'DAI',
-    '18',
-  ];
-  const eth = [
-    ethAddress,
-    'Ether',
-    'ETH',
-    '18',
-  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -73,7 +61,7 @@ contract.only('DdexMarginAssetAdapter', () => {
   });
 
   it('should return correct balances', async () => {
-    await adapterRegistry.methods['getBalances(address)'](testAddress)
+    await adapterRegistry.methods.getBalances(testAddress)
       .call()
       .then(async (result) => {
         await displayToken(adapterRegistry, result[0].tokenBalances[0]);

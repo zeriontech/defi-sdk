@@ -7,6 +7,8 @@ const ProtocolAdapter = artifacts.require('./AaveDebtAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 
 contract('AaveDebtAdapter', () => {
+  const aaveMarketProvider = '0x24a42fD28C976A61Df5D00D0599C34c4f90748c8';
+
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const tusdAddress = '0x0000000000085d4780B73119b644AE5ecd22b376';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
@@ -42,7 +44,7 @@ contract('AaveDebtAdapter', () => {
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await ProtocolAdapter.new({ from: accounts[0] })
+    await ProtocolAdapter.new(aaveMarketProvider, { from: accounts[0] })
       .then((result) => {
         protocolAdapterAddress = result.address;
       });

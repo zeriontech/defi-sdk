@@ -7,7 +7,7 @@ const ProtocolAdapter = artifacts.require('MstableAssetAdapter');
 const TokenAdapter = artifacts.require('MstableTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('MstableAssetAdapter', () => {
+contract('MstableAssetAdapter', () => {
   const mUsdAddress = '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
@@ -21,25 +21,21 @@ contract.only('MstableAssetAdapter', () => {
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
   const dai = [
-    daiAddress,
     'Dai Stablecoin',
     'DAI',
     '18',
   ];
   const usdc = [
-    usdcAddress,
     'USD//C',
     'USDC',
     '6',
   ];
   const tusd = [
-    tusdAddress,
     'TrueUSD',
     'TUSD',
     '18',
   ];
   const usdt = [
-    usdtAddress,
     'Tether USD',
     'USDT',
     '6',
@@ -67,7 +63,7 @@ contract.only('MstableAssetAdapter', () => {
       [
         `${web3.eth.abi.encodeParameter(
           'bytes32',
-          web3.utils.toHex('Mstable'),
+          web3.utils.toHex('mStable'),
         )
           .slice(0, -2)}${ASSET_ADAPTER}`,
       ],
@@ -83,7 +79,7 @@ contract.only('MstableAssetAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      [web3.utils.toHex('ERC20'), web3.utils.toHex('Masset')],
+      [web3.utils.toHex('ERC20'), web3.utils.toHex('MAsset')],
       [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({
@@ -97,6 +93,21 @@ contract.only('MstableAssetAdapter', () => {
       .call()
       .then(async (result) => {
         await displayToken(adapterRegistry, result[0].tokenBalances[0]);
+      });
+    await adapterRegistry.methods.getFullTokenBalances(
+      [
+        web3.utils.toHex('MAsset'),
+      ],
+      [
+        mUsdAddress,
+      ],
+    )
+      .call()
+      .then((result) => {
+        assert.deepEqual(result[0].underlying[0].erc20metadata, dai);
+        assert.deepEqual(result[0].underlying[1].erc20metadata, usdc);
+        assert.deepEqual(result[0].underlying[2].erc20metadata, tusd);
+        assert.deepEqual(result[0].underlying[3].erc20metadata, usdt);
       });
   });
 });

@@ -7,14 +7,15 @@ const ProtocolAdapter = artifacts.require('PieDAOPieAdapter');
 const TokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('PieDAOPieAdapter', () => {
+contract('PieDAOPieAdapter', () => {
   const BTCPPAddress = '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd';
+  const USDPPAddress = '0x9A48BD0EC040ea4f1D3147C025cd4076A2e71e3e';
   const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
   const pbtcAddress = '0x5228a22e72ccC52d415EcFd199F99D0665E7733b';
   const imbtcAddress = '0x3212b29E33587A00FB1C83346f5dBFA69A458923';
   const sbtcAddress = '0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6';
-
-  const testAddress = '0xd4DBF96Db2FDf8ED40296d8d104b371aDF7dEE12';
+  // Balancer BTC++ / USD++ Pool
+  const testAddress = '0x7d2F4bcB767eB190Aed0f10713fe4D9c07079ee8';
 
   let accounts;
   let adapterRegistry;
@@ -22,32 +23,22 @@ contract.only('PieDAOPieAdapter', () => {
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
 
-  const btcpp = [
-    BTCPPAddress,
-    'PieDAO BTC++',
-    'BTC++',
-    '18',
-  ];
   const wbtc = [
-    wbtcAddress,
     'Wrapped BTC',
     'WBTC',
     '8',
   ];
   const pbtc = [
-    pbtcAddress,
     'pTokens BTC',
     'pBTC',
     '18',
   ];
   const imbtc = [
-    imbtcAddress,
     'The Tokenized Bitcoin',
     'imBTC',
     '8',
   ];
   const sbtc = [
-    sbtcAddress,
     'Synth sBTC',
     'sBTC',
     '18',
@@ -84,6 +75,7 @@ contract.only('PieDAOPieAdapter', () => {
       ],
       [[
         BTCPPAddress,
+        USDPPAddress,
       ]],
     )
       .send({
@@ -91,7 +83,7 @@ contract.only('PieDAOPieAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20', 'PieDAO Pie Token'],
+      [web3.utils.toHex('ERC20'), web3.utils.toHex('PieDAO Pie Token')],
       [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({
@@ -105,6 +97,22 @@ contract.only('PieDAOPieAdapter', () => {
       .call()
       .then(async (result) => {
         await displayToken(adapterRegistry, result[0].tokenBalances[0]);
+        await displayToken(adapterRegistry, result[0].tokenBalances[1]);
+      });
+    await adapterRegistry.methods.getFullTokenBalances(
+      [
+        web3.utils.toHex('PieDAO Pie Token'),
+      ],
+      [
+        BTCPPAddress,
+      ],
+    )
+      .call()
+      .then((result) => {
+        assert.deepEqual(result[0].underlying[0].erc20metadata, wbtc);
+        assert.deepEqual(result[0].underlying[1].erc20metadata, pbtc);
+        assert.deepEqual(result[0].underlying[2].erc20metadata, imbtc);
+        assert.deepEqual(result[0].underlying[3].erc20metadata, sbtc);
       });
   });
 });

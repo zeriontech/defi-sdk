@@ -15,12 +15,6 @@ contract.only('DdexMarginDebtAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
-  const eth = [
-    ethAddress,
-    'Ether',
-    'ETH',
-    '18',
-  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -42,7 +36,7 @@ contract.only('DdexMarginDebtAdapter', () => {
           'bytes32',
           web3.utils.toHex('DDEX • Margin'),
         )
-          .slice(0, -2)}${ASSET_ADAPTER}`,
+          .slice(0, -2)}${DEBT_ADAPTER}`,
       ],
       [
         protocolAdapterAddress,
@@ -67,7 +61,7 @@ contract.only('DdexMarginDebtAdapter', () => {
   });
 
   it('should return correct balances', async () => {
-    await adapterRegistry.methods['getBalances(address)'](testAddress)
+    await adapterRegistry.methods.getBalances(testAddress)
       .call()
       .then(async (result) => {
         await displayToken(adapterRegistry, result[0].tokenBalances[0]);

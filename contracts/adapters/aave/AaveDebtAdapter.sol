@@ -53,7 +53,7 @@ contract AaveDebtAdapter is ProtocolAdapter {
     address internal immutable provider_;
 
     constructor(
-        address provider,
+        address provider
     )
         public
     {
@@ -75,7 +75,7 @@ contract AaveDebtAdapter is ProtocolAdapter {
         override
         returns (uint256, bytes32)
     {
-        address pool = LendingPoolAddressesProvider(PROVIDER).getLendingPool();
+        address pool = LendingPoolAddressesProvider(provider_).getLendingPool();
 
         (, uint256 debtAmount) = LendingPool(pool).getUserReserveData(token, account);
 

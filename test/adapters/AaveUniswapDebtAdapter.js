@@ -6,7 +6,9 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('AaveDebtAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('AaveUniswapDebtAdapter', () => {
+contract('AaveUniswapDebtAdapter', () => {
+  const uniswapMarketProvider = '0x7fd53085B9A29D236235D6FC593b47C9C33429F1';
+
   const usdtAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
@@ -23,7 +25,7 @@ contract.only('AaveUniswapDebtAdapter', () => {
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await ProtocolAdapter.new({ from: accounts[0] })
+    await ProtocolAdapter.new(uniswapMarketProvider, { from: accounts[0] })
       .then((result) => {
         protocolAdapterAddress = result.address;
       });
@@ -68,7 +70,6 @@ contract.only('AaveUniswapDebtAdapter', () => {
     await adapterRegistry.methods.getBalances(testAddress)
       .call()
       .then(async (result) => {
-      console.log(result)
         await displayToken(adapterRegistry, result[0].tokenBalances[0]);
       });
   });

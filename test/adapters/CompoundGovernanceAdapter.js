@@ -6,7 +6,7 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('CompoundGovernanceAdapter');
 const TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('CompoundGovernanceAdapter', () => {
+contract('CompoundGovernanceAdapter', () => {
   const compAddress = '0xc00e94Cb662C3520282E6f5717214004A7f26888';
   const testAddress = '0xA218A8346454c982912Cf6d14c714663C2d510D8';
 
@@ -14,12 +14,6 @@ contract.only('CompoundGovernanceAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let tokenAdapterAddress;
-  const comp = [
-    compAddress,
-    'Compound',
-    'COMP',
-    '18',
-  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();

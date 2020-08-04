@@ -85,11 +85,13 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
         FullTokenBalance[] memory fullTokenBalances = new FullTokenBalance[](length);
 
         for (uint256 i = 0; i < length; i++) {
+            uint8 decimals = tokens[i] == ETH ? 18 : ERC20(tokens[i]).decimals();
+
             fullTokenBalances[i] = getFullTokenBalance(
                 TokenBalance({
                     tokenAdapterName: tokenAdapterNames[i],
                     token: tokens[i],
-                    amount: uint256(10) ** ERC20(tokens[i]).decimals()
+                    amount: uint256(10) ** decimals
                 })
             );
         }

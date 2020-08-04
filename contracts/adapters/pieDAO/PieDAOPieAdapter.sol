@@ -43,6 +43,6 @@ contract PieDAOPieAdapter is ProtocolAdapter {
         override
         returns (uint256, bytes32)
     {
-        return (ERC20(token).balanceOf(account), "PieDAO Pie");
+        return (ERC20(token).balanceOf(account), "PieDAO Pie Token");
     }
 }
