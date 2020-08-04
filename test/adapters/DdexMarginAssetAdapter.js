@@ -6,7 +6,7 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('DdexMarginAssetAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('DdexMarginAssetAdapter', () => {
+contract('DdexMarginAssetAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
