@@ -18,7 +18,6 @@ contract('ChiAdapter', () => {
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
   const eth = [
-    ethAddress,
     'Ether',
     'ETH',
     '18',

@@ -7,6 +7,8 @@ const ProtocolAdapter = artifacts.require('AmpleforthStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('AmpleforthStakingAdapter', () => {
+  const newGeyserAddress = '0x0eEf70ab0638A763acb5178Dd3C62E49767fd940';
+
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
@@ -16,7 +18,7 @@ contract('AmpleforthStakingAdapter', () => {
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await ProtocolAdapter.new({ from: accounts[0] })
+    await ProtocolAdapter.new(newGeyserAddress, { from: accounts[0] })
       .then((result) => {
         protocolAdapterAddress = result.address;
       });
