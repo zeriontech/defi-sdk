@@ -9,10 +9,6 @@ const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('MstableAssetAdapter', () => {
   const mUsdAddress = '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5';
-  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-  const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
-  const tusdAddress = '0x0000000000085d4780B73119b644AE5ecd22b376';
-  const usdtAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;

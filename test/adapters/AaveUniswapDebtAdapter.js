@@ -16,12 +16,6 @@ contract('AaveUniswapDebtAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
-  const usdt = [
-    usdtAddress,
-    'Tether USD',
-    'USDT',
-    '6',
-  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();

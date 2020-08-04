@@ -9,7 +9,6 @@ const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('AaveUniswapAssetAdapter', () => {
   const aUniDAIAddress = '0xBbBb7F2aC04484F7F04A2C2C16f20479791BbB44';
-  const uniDAIAddress = '0x2a1530C4C41db0B0b2bB646CB5Eb1A67b7158667';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;

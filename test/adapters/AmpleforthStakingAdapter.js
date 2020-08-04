@@ -7,7 +7,6 @@ const ProtocolAdapter = artifacts.require('AmpleforthStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('AmpleforthStakingAdapter', () => {
-  const amplUniAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;

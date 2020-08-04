@@ -10,10 +10,6 @@ const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 contract('PieDAOPieAdapter', () => {
   const BTCPPAddress = '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd';
   const USDPPAddress = '0x9A48BD0EC040ea4f1D3147C025cd4076A2e71e3e';
-  const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
-  const pbtcAddress = '0x5228a22e72ccC52d415EcFd199F99D0665E7733b';
-  const imbtcAddress = '0x3212b29E33587A00FB1C83346f5dBFA69A458923';
-  const sbtcAddress = '0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6';
   // Balancer BTC++ / USD++ Pool
   const testAddress = '0x7d2F4bcB767eB190Aed0f10713fe4D9c07079ee8';
 

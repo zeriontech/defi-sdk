@@ -41,6 +41,8 @@ import { TokenAdapter } from "../adapters/TokenAdapter.sol";
  */
 contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager {
 
+    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+
     /**
      * @dev Fullfills FullTokenBalance struct for an array of tokens.
      * @param tokenBalances Array of TokenBalance structs consisting of
