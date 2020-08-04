@@ -166,6 +166,9 @@ const chiAddress = '0x0000000000004946c0e9F43F4Dee607b0eF1fA1c';
 
 const BTCPPAddress = '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd';
 const USDPPAddress = '0x9A48BD0EC040ea4f1D3147C025cd4076A2e71e3e';
+const DEFIPLAddress = '0x24d1917c1ae6c085e6b68b6c1a41b8f9de5bd441';
+const DEFIPSAddress = '0xad6a626ae2b43dcb1b39430ce496d2fa0365ba9c';
+const DEFIPPAddress = '0x880873a96ce38c7fd39dc714592902b069bde048';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -332,6 +335,9 @@ const chiAdapterTokens = [
 const pieDAOPieAdapterTokens = [
   BTCPPAddress,
   USDPPAddress,
+  DEFIPLAddress,
+  DEFIPSAddress,
+  DEFIPPAddress,
 ];
 const poolTogetherAdapterTokens = [
   saiPoolAddress,
