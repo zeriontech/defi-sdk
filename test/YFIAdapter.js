@@ -7,12 +7,10 @@ const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 
 contract.only('YFIAdapter', () => {
-  const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
-  const testAddress = '0xd45404b8E15ECFaCB7C63d6A60559E460f3Ded51';
-  const yearnRewardsStakingCurvePoolAddress = '0x0001FB050Fe7312791bF6475b96569D83F695C9f';
-  const yearnRewardsStakingBalancerPoolAddress = '0x033E52f513F9B98e129381c6708F9faA2DEE5db5';
-  const yearnRewardsStakingGovernancePoolAddress = '0x3A22dF48d84957F907e67F4313E3D43179040d6E';
-//  const yearnRewardsContractAddress = '0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862';
+  const yfi = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
+  const curve_Y = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
+  const balancer_DAI_YFI_98_2 = '0x60626db611a9957C1ae4Ac5b7eDE69e24A3B76c5';
+  const balancer_YFI_CURVE_Y_2_98 = '0x95C4B6C7CfF608c0CA048df8b81a484aA377172B';
 
   let accounts;
   let adapterRegistry;
@@ -20,25 +18,25 @@ contract.only('YFIAdapter', () => {
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
   const yfi = [
-    yfiAddress,
+    yfi,
     'yearn.finance',
     'YFI',
     '18',
   ];
-  const yearnRewardsStakingCurvePool = [
-    yearnRewardsStakingCurvePoolAddress,
+  const curve_Y = [
+    curve_Y,
     'Not available',
     'N/A',
     '0',
   ];
-  const yearnRewardsStakingBalancerPool = [
-    yearnRewardsStakingBalancerPoolAddress,
+  const balancer_DAI_YFI_98_2 = [
+    balancer_DAI_YFI_98_2,
     'Not available',
     'N/A',
     '0',
   ];
-  const yearnRewardsStakingGovernancePool = [
-    yearnRewardsStakingGovernancePoolAddress,
+  const balancer_YFI_CURVE_Y_2_98 = [
+    balancer_YFI_CURVE_Y_2_98,
     'Not available',
     'N/A',
     '0',
@@ -81,11 +79,10 @@ contract.only('YFIAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        yfiAddress,
-        yearnRewardsStakingCurvePoolAddress,
-        yearnRewardsStakingBalancerPoolAddress,
-        yearnRewardsStakingGovernancePoolAddress,
-      //  yearnRewardsContractAddress,
+        yfi,
+        curve_Y,
+        balancer_DAI_YFI_98_2,
+        balancer_YFI_CURVE_Y_2_98,
       ]]],
     )
       .send({
@@ -110,18 +107,14 @@ contract.only('YFIAdapter', () => {
         assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, yfi);
         assert.equal(result[0].adapterBalances[0].balances[0].underlying.length, 0);
         displayToken(result[0].adapterBalances[0].balances[1].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, yearnRewardsStakingCurvePool);
+        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, curve_Y);
         assert.equal(result[0].adapterBalances[0].balances[1].underlying.length, 0);
         displayToken(result[0].adapterBalances[0].balances[2].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[2].base.metadata, yearnRewardsStakingBalancerPool);
+        assert.deepEqual(result[0].adapterBalances[0].balances[2].base.metadata, balancer_DAI_YFI_98_2);
         assert.equal(result[0].adapterBalances[0].balances[2].underlying.length, 0);
         displayToken(result[0].adapterBalances[0].balances[3].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[3].base.metadata, yearnRewardsStakingGovernancePool);
+        assert.deepEqual(result[0].adapterBalances[0].balances[3].base.metadata, balancer_YFI_CURVE_Y_2_98);
         assert.equal(result[0].adapterBalances[0].balances[3].underlying.length, 0);
-      //  displayToken(result[0].adapterBalances[0].balances[4].base);
-      //  assert.deepEqual(result[0].adapterBalances[0].balances[4].base.metadata, yearnRewardsContract);
-      //  assert.equal(result[0].adapterBalances[0].balances[4].underlying.length, 0);
-
       });
   });
 });
