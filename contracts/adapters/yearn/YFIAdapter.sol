@@ -66,7 +66,7 @@ contract YFIAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "YFIToken";
+    string public constant override tokenType = "ERC20";
 
     address internal constant YEARNREWARDS_STAKING_CURVEPOOL = 0x0001FB050Fe7312791bF6475b96569D83F695C9f;
     address internal constant YEARNREWARDS_STAKING_BALANCERPOOL = 0x033E52f513F9B98e129381c6708F9faA2DEE5db5;
