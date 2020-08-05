@@ -34,15 +34,12 @@ interface YearnRewards {
 */
 
 /**
- * @dev YearnRewards contract interface.
- * Only the functions required for YFIAdapter contract are added.
- * The YearnRewards Curve Pool contract is available here
- * 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862
- * The YearnRewards Balancer Pool contract is available here
- * 0x033E52f513F9B98e129381c6708F9faA2DEE5db5
+ * @dev StakingRewards contract interface.
+ * Only the functions required for YearnStakingV1Adapter contract are added.
+ * The StakingRewards contract is available here
+ * github.com/Synthetixio/synthetix/blob/master/contracts/StakingRewards.sol.
  */
-
-interface YearnRewards {
+interface StakingRewards {
     function earned(address) external view returns (uint256);
 }
 
