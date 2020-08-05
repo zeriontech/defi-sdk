@@ -155,11 +155,10 @@ const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
 const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
 const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
 
-const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
-const yearnRewardsStakingCurvePoolAddress = '0x0001FB050Fe7312791bF6475b96569D83F695C9f';
-const yearnRewardsStakingBalancerPoolAddress = '0x033E52f513F9B98e129381c6708F9faA2DEE5db5';
-const yearnRewardsStakingGovernancePoolAddress = '0x3A22dF48d84957F907e67F4313E3D43179040d6E';
-const yearnRewardsContractAddress = '0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862';
+const yfi = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
+const curve_Y = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
+const balancer_DAI_YFI_98_2 = '0x60626db611a9957C1ae4Ac5b7eDE69e24A3B76c5';
+const balancer_YFI_CURVE_Y_2_98 = '0x95C4B6C7CfF608c0CA048df8b81a484aA377172B';
 
 const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
 
@@ -340,11 +339,10 @@ const synthetixDebtAdapterTokens = [
   susdAddress,
 ];
 const yfiAdapterTokens = [
-  yfiAddress,
-  yearnRewardsStakingCurvePool,
-  yearnRewardsStakingBalancerPool,
-  yearnRewardsStakingGovernancePool,
-  yearnRewardsContract,
+  yfi,
+  curve_Y,
+  balancer_DAI_YFI_98_2,
+  balancer_YFI_CURVE_Y_2_98,
 ];
 const zrxAdapterTokens = [
   zrxAddress,
@@ -691,7 +689,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(YFIAdapter, { from: accounts[0] });
   adapters.push([YFIAdapter.address]);
   tokens.push([yfiAdapterTokens]);
-  protocolNames.push('YFI Governance');
+  protocolNames.push('Yearn Staking V1');
   metadata.push([
     'YFI',
     'Yearn Governance Token'
@@ -844,7 +842,6 @@ module.exports = async (deployer, network, accounts) => {
           'SmartToken',
           'Uniswap V1 pool token',
           'Uniswap V2 pool token',
-          'YFI Token',
         ],
         tokenAdapters,
       )
