@@ -41,12 +41,6 @@ contract.only('YFIAdapter', () => {
     'N/A',
     '0',
   ];
-//  const yearnRewardsContract = [
-//    yearnRewardsContractAddress,
-//    'Not available',
-//    'N/A',
-//    '0',
-//  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
