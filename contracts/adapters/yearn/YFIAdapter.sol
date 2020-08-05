@@ -20,10 +20,6 @@ import { ERC20 } from "../../ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
-
-
-
-
 /**
  * @dev Yearn YFI Rewards Token Interface.
  * Only the functions required for YFIAdapter contract are added.
