@@ -85,16 +85,22 @@ contract YearnStakingV1Adapter is ProtocolAdapter {
 
 
     function getBalance(address token, address account) external view override returns (uint256) {
-      /*  if (token == YFI) {
-          return YearnRewards(YEARNREWARDS_CONTRACT).claimable(account);
-      }  else */if (token == YEARNREWARDS_STAKING_CURVEPOOL) {
-          return YearnRewards(YEARNREWARDS_STAKING_CURVEPOOL).earned(account);
-      } else if (token == YEARNREWARDS_STAKING_BALANCERPOOL) {
-          return YearnRewards(YEARNREWARDS_STAKING_BALANCERPOOL).earned(account);
-      }  else if (token == YEARNREWARDS_STAKING_GOVERNANCEPOOL) {
-          return YearnGovernance(YEARNREWARDS_STAKING_GOVERNANCEPOOL).earned(account);
-      }  else   {
-        return 0;
+      if (token == YFI) {
+          uint256 totalRewards = 0;
+          totalRewards += ERC20(CURVE).earned(account);
+          totalRewards += ERC20(BALANCER).earned(account);
+          totalRewards += ERC20(GOVERNANCE).earned(account);
+          totalRewards += ERC20(FEE_REWARDS).balanceOf(account);
+          return totalRewards;
+      } else if (token == CURVE_Y) {
+          return ERC20(CURVE).balanceOf(account);
+          return StakingRewards(FEE_REWARDS).earned(account);
+      } else if (token == BALANCER_DAI_YFI_98_2) {
+          return ERC20(BALANCER).balanceOf(account);
+      } else if (token == BALANCER_YFI_CURVE_Y_2_98) {
+          return ERC20(GOVERNANCE).balanceOf(account);
+      } else {
+          return 0;
       }
     }
   }
