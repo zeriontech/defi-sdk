@@ -62,7 +62,7 @@ interface YearnGovernance {
  * @author Connor Martin <cnr.mrtn@gmail.com>
  */
 
-contract YFIAdapter is ProtocolAdapter {
+contract YearnStakingV1Adapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
