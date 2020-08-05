@@ -17,6 +17,7 @@ const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
 const GnosisProtocolAdapter = artifacts.require('GnosisProtocolAdapter');
 const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
+const KeeperDaoAssetAdapter = artifacts.require('KeeperDaoAssetAdapter');
 const KyberAdapter = artifacts.require('KyberAdapter');
 const ChaiAdapter = artifacts.require('ChaiAdapter');
 const DSRAdapter = artifacts.require('DSRAdapter');
@@ -43,6 +44,7 @@ const CurveTokenAdapter = artifacts.require('CurveTokenAdapter');
 const DmmTokenAdapter = artifacts.require('DmmTokenAdapter');
 const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
+const KeeperDaoTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
 const MstableTokenAdapter = artifacts.require('MstableTokenAdapter');
 const ChiTokenAdapter = artifacts.require('ChiTokenAdapter');
@@ -138,6 +140,9 @@ const idleBestYieldWBTC = '0xD6f279B7ccBCD70F8be439d25B9Df93AEb60eC55';
 const idleRiskAdjustedDAI = '0x1846bdfDB6A0f5c473dEc610144513bd071999fB';
 const idleRiskAdjustedUSDC = '0xcDdB1Bceb7a1979C6caa0229820707429dd3Ec6C';
 const idleRiskAdjustedUSDT = '0x42740698959761BAF1B06baa51EfBD88CB1D862B';
+
+const kETHAddress = '0xC4c43C78fb32F2c7F8417AF5af3B85f090F1d327';
+const kWETHAddress = '0xac19815455C2c438af8A8b4623F65f091364be10';
 
 const cCrvAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
 const tCrvAddress = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
@@ -302,6 +307,10 @@ const iearn3AdapterTokens = [
   yUSDCv3,
   yUSDTv3,
   yBUSDv3,
+];
+const keeperDaoAdapterTokens = [
+  kETHAddress,
+  kWETHAddress,
 ];
 const kyberAdapterTokens = [
   kncAddress,
@@ -555,6 +564,18 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(KeeperDaoAssetAdapter, { from: accounts[0] });
+  adapters.push([KeeperDaoAssetAdapter.address]);
+  tokens.push([keeperDaoAdapterTokens]);
+  protocolNames.push('KeeperDAO');
+  metadata.push([
+    'KeeperDAO',
+    'An on-chain liquidity underwriter for DeFi',
+    'keeperdao.com',
+    'protocol-icons.s3.amazonaws.com/keeperDAO.png',
+    '0',
+  ]);
+
   await deployer.deploy(KyberAdapter, { from: accounts[0] });
   adapters.push([KyberAdapter.address]);
   tokens.push([kyberAdapterTokens]);
@@ -785,6 +806,12 @@ module.exports = async (deployer, network, accounts) => {
         IearnTokenAdapter.address,
       );
     });
+  await deployer.deploy(KeeperDaoTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        KeeperDaoTokenAdapter.address,
+      );
+    });
   await deployer.deploy(ChaiTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -856,6 +883,7 @@ module.exports = async (deployer, network, accounts) => {
           'MToken',
           'IdleToken',
           'YToken',
+          'KToken',
           'Chai token',
           'Masset',
           'Chi token',
