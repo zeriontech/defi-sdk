@@ -21,19 +21,6 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @dev Yearn YFI Rewards Token Interface.
- * Only the functions required for YFIAdapter contract are added.
- * The YearnRewards contract is available here
- * 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862
- */
-
-/*
-interface YearnRewards {
-    function claimable(address) external view returns (uint);
-}
-*/
-
-/**
  * @dev StakingRewards contract interface.
  * Only the functions required for YearnStakingV1Adapter contract are added.
  * The StakingRewards contract is available here
@@ -42,18 +29,6 @@ interface YearnRewards {
 interface StakingRewards {
     function earned(address) external view returns (uint256);
 }
-
-/**
- * @dev YearnGovernance contract interface.
- * Only the functions required for YFIAdapter contract are added.
- * The YearnRewards Governance contract is available here
- * 0x3A22dF48d84957F907e67F4313E3D43179040d6E
- */
-
-interface YearnGovernance {
-    function earned(address) external view returns (uint256);
-}
-
 
 
 /**
@@ -72,7 +47,7 @@ contract YearnStakingV1Adapter is ProtocolAdapter {
     address internal constant CURVE_Y = 0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8;
     address internal constant BALANCER_DAI_YFI_98_2 = 0x60626db611a9957C1ae4Ac5b7eDE69e24A3B76c5;
     address internal constant BALANCER_YFI_CURVE_Y_2_98 = 0x95C4B6C7CfF608c0CA048df8b81a484aA377172B;
-    
+
     address internal constant CURVE = 0x0001FB050Fe7312791bF6475b96569D83F695C9f;
     address internal constant BALANCER = 0x033E52f513F9B98e129381c6708F9faA2DEE5db5;
     address internal constant GOVERNANCE = 0x3A22dF48d84957F907e67F4313E3D43179040d6E;
