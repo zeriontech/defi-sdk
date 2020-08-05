@@ -68,11 +68,15 @@ contract YearnStakingV1Adapter is ProtocolAdapter {
 
     string public constant override tokenType = "ERC20";
 
-    address internal constant YEARNREWARDS_STAKING_CURVEPOOL = 0x0001FB050Fe7312791bF6475b96569D83F695C9f;
-    address internal constant YEARNREWARDS_STAKING_BALANCERPOOL = 0x033E52f513F9B98e129381c6708F9faA2DEE5db5;
-    address internal constant YEARNREWARDS_STAKING_GOVERNANCEPOOL = 0x3A22dF48d84957F907e67F4313E3D43179040d6E;
-    //address internal constant YEARNREWARDS_CONTRACT = 0xcc9EFea3ac5Df6AD6A656235Ef955fBfEF65B862;
     address internal constant YFI = 0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e;
+    address internal constant CURVE_Y = 0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8;
+    address internal constant BALANCER_DAI_YFI_98_2 = 0x60626db611a9957C1ae4Ac5b7eDE69e24A3B76c5;
+    address internal constant BALANCER_YFI_CURVE_Y_2_98 = 0x95C4B6C7CfF608c0CA048df8b81a484aA377172B;
+    
+    address internal constant CURVE = 0x0001FB050Fe7312791bF6475b96569D83F695C9f;
+    address internal constant BALANCER = 0x033E52f513F9B98e129381c6708F9faA2DEE5db5;
+    address internal constant GOVERNANCE = 0x3A22dF48d84957F907e67F4313E3D43179040d6E;
+    address internal constant FEE_REWARDS = 0xb01419E74D8a2abb1bbAD82925b19c36C191A701;
 
     /**
      * @return Amount of YFI rewards earned after staking in a given account.
