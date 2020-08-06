@@ -33,10 +33,7 @@ interface StakingRewards {
 
 /**
  * @title Adapter for Yearn.finance YFI Staking protocol.
- * @dev Implementation of ProtocolAdapter interface.
- * @author Connor Martin <cnr.mrtn@gmail.com>
  */
-
 contract YearnStakingV1Adapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
