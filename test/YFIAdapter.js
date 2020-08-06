@@ -104,7 +104,7 @@ contract.only('YFIAdapter', () => {
         assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, yCrv);
         assert.equal(result[0].adapterBalances[0].balances[1].underlying.length, 0);
         displayToken(result[0].adapterBalances[0].balances[2].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[2].base.metadata, balancer_DAI_YFI_98_2);
+        assert.deepEqual(result[0].adapterBalances[0].balances[2].base.metadata, balancerDai98Yfi2);
         assert.equal(result[0].adapterBalances[0].balances[2].underlying.length, 0);
         displayToken(result[0].adapterBalances[0].balances[3].base);
         assert.deepEqual(result[0].adapterBalances[0].balances[3].base.metadata, balancerYfi2yCrv98);
