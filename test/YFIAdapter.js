@@ -85,7 +85,7 @@ contract.only('YFIAdapter', () => {
       });
     await adapterRegistry.methods.addTokenAdapters(
       ['ERC20'],
-      [erc20TokenAdapterAddress, tokenAdapterAddress],
+      [erc20TokenAdapterAddress],
     )
       .send({
         from: accounts[0],
