@@ -339,9 +339,9 @@ const synthetixDebtAdapterTokens = [
 ];
 const yfiAdapterTokens = [
   yfi,
-  curve_Y,
-  balancer_DAI_YFI_98_2,
-  balancer_YFI_CURVE_Y_2_98,
+  yCrv,
+  balancerDai98Yfi2,
+  balancerYfi2yCrv98,
 ];
 const zrxAdapterTokens = [
   zrxAddress,
