@@ -57,8 +57,6 @@ contract YearnStakingV1Adapter is ProtocolAdapter {
      * @return Amount of YFI rewards earned after staking in a given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-
-
     function getBalance(address token, address account) external view override returns (uint256) {
       if (token == YFI) {
           uint256 totalRewards = 0;
