@@ -18,7 +18,6 @@ contract('MstableStakingAdapter', () => {
   let accounts;
   let adapterRegistry;
   let protocolAdapterAddress;
-  let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
 
   beforeEach(async () => {

@@ -12,7 +12,6 @@ contract('YearnStakingV2Adapter', () => {
   let accounts;
   let adapterRegistry;
   let protocolAdapterAddress;
-  let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
 
   beforeEach(async () => {
