@@ -25,6 +25,7 @@ const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
 const MstableAssetAdapter = artifacts.require('MstableAssetAdapter');
+const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
@@ -33,6 +34,7 @@ const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
 const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const UniswapV2Adapter = artifacts.require('UniswapV2Adapter');
+const YearnStakingV2Adapter = artifacts.require('YearnStakingV2Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const AaveTokenAdapter = artifacts.require('AaveTokenAdapter');
@@ -171,6 +173,16 @@ const chiAddress = '0x0000000000004946c0e9F43F4Dee607b0eF1fA1c';
 
 const BTCPPAddress = '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd';
 const USDPPAddress = '0x9A48BD0EC040ea4f1D3147C025cd4076A2e71e3e';
+
+const mtaAddress = '0xa3BeD4E1c75D00fa6f4E5E6922DB7261B5E9AcD2';
+const balAddress = '0xba100000625a3754423978a60c9317c58a424e3D';
+const balancerMusd20Mta80Address = '0x003a70265a3662342010823bEA15Dc84C6f7eD54';
+const balancerUsdc50Musd50Address = '0x72Cd8f4504941Bf8c5a21d1Fd83A96499FD71d2C';
+const balancerMusd95Mta5Address = '0xa5DA8Cc7167070B62FdCB332EF097A55A68d8824';
+const balancerWeth50Musd50Address = '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513';
+const uniswapMtaWethAddress = '0x0d0d65E7A7dB277d3E0F5E1676325E75f3340455';
+
+const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -335,6 +347,15 @@ const mcdDebtAdapterTokens = [
 const mstableAssetAdapterTokens = [
   mUsdAddress,
 ];
+const mstableStakingAdapterTokens = [
+  mtaAddress,
+  balAddress,
+  balancerMusd20Mta80Address,
+  balancerUsdc50Musd50Address,
+  balancerMusd95Mta5Address,
+  balancerWeth50Musd50Address,
+  uniswapMtaWethAddress,
+];
 const chiAdapterTokens = [
   chiAddress,
 ];
@@ -355,6 +376,10 @@ const synthetixAssetAdapterTokens = [
 ];
 const synthetixDebtAdapterTokens = [
   susdAddress,
+];
+const yearnStakingV2AdapterTokens = [
+  yfiAddress,
+  yCrvAddress,
 ];
 const zrxAdapterTokens = [
   zrxAddress,
@@ -541,8 +566,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(IearnAdapter, { from: accounts[0] });
-  adapters.push([IearnAdapter.address]);
-  tokens.push([iearn2AdapterTokens]);
+  adapters.push([IearnAdapter.address, YearnStakingV2Adapter.address]);
+  tokens.push([iearn2AdapterTokens, yearnStakingV2AdapterTokens]);
   protocolNames.push('iearn.finance (v2)');
   metadata.push([
     'iearn.finance (v2)',
@@ -638,8 +663,9 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(MstableAssetAdapter, { from: accounts[0] });
-  adapters.push([MstableAssetAdapter.address]);
-  tokens.push([mstableAssetAdapterTokens]);
+  await deployer.deploy(MstableStakingAdapter, { from: accounts[0] });
+  adapters.push([MstableAssetAdapter.address, MstableStakingAdapter.address]);
+  tokens.push([mstableAssetAdapterTokens, mstableStakingAdapterTokens]);
   protocolNames.push('mStable');
   metadata.push([
     'mStable',
