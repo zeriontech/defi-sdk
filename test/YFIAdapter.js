@@ -24,7 +24,7 @@ contract('YFIAdapter', () => {
     '18',
   ];
   const yCrv = [
-    curve_Y,
+    yCrvAddress,
     'Not available',
     'N/A',
     '0',
