@@ -29,8 +29,8 @@ contract('YFIAdapter', () => {
     'yDAI+yUSDC+yUSDT+yTUSD',
     '18',
   ];
-  const balancer_DAI_YFI_98_2 = [
-    balancer_DAI_YFI_98_2,
+  const balancerDai98Yfi2 = [
+    balancerDai98Yfi2Address,
     'Not available',
     'N/A',
     '0',
