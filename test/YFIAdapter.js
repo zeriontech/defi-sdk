@@ -48,10 +48,6 @@ contract('YFIAdapter', () => {
       .then((result) => {
         protocolAdapterAddress = result.address;
       });
-    await TokenAdapter.new({ from: accounts[0] })
-      .then((result) => {
-        tokenAdapterAddress = result.address;
-      });
     await ERC20TokenAdapter.new({ from: accounts[0] })
       .then((result) => {
         erc20TokenAdapterAddress = result.address;
