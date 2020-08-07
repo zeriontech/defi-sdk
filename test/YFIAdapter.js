@@ -8,9 +8,9 @@ const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('YFIAdapter', () => {
   const yfi = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
-  const curve_Y = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
-  const balancer_DAI_YFI_98_2 = '0x60626db611a9957C1ae4Ac5b7eDE69e24A3B76c5';
-  const balancer_YFI_CURVE_Y_2_98 = '0x95C4B6C7CfF608c0CA048df8b81a484aA377172B';
+  const yCrvAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
+  const balancerDai98Yfi2Address = '0x60626db611a9957C1ae4Ac5b7eDE69e24A3B76c5';
+  const balancerYfi2yCrv98Address = '0x95C4B6C7CfF608c0CA048df8b81a484aA377172B';
 
   let accounts;
   let adapterRegistry;
