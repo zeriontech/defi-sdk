@@ -23,7 +23,7 @@ contract('YFIAdapter', () => {
     'YFI',
     '18',
   ];
-  const curve_Y = [
+  const yCrv = [
     curve_Y,
     'Not available',
     'N/A',
