@@ -25,9 +25,9 @@ contract('YFIAdapter', () => {
   ];
   const yCrv = [
     yCrvAddress,
-    'Not available',
-    'N/A',
-    '0',
+    'Curve.fi',
+    'yDAI+yUSDC+yUSDT+yTUSD',
+    '18',
   ];
   const balancer_DAI_YFI_98_2 = [
     balancer_DAI_YFI_98_2,
