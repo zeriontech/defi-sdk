@@ -6,7 +6,7 @@ const TokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 
-contract.only('YFIAdapter', () => {
+contract('YFIAdapter', () => {
   const yfi = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
   const curve_Y = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
   const balancer_DAI_YFI_98_2 = '0x60626db611a9957C1ae4Ac5b7eDE69e24A3B76c5';
@@ -104,7 +104,7 @@ contract.only('YFIAdapter', () => {
         assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, yCrv);
         assert.equal(result[0].adapterBalances[0].balances[1].underlying.length, 0);
         displayToken(result[0].adapterBalances[0].balances[2].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[2].base.metadata, balancer_DAI_YFI_98_2);
+        assert.deepEqual(result[0].adapterBalances[0].balances[2].base.metadata, balancerDai98Yfi2);
         assert.equal(result[0].adapterBalances[0].balances[2].underlying.length, 0);
         displayToken(result[0].adapterBalances[0].balances[3].base);
         assert.deepEqual(result[0].adapterBalances[0].balances[3].base.metadata, balancerYfi2yCrv98);
