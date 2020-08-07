@@ -18,7 +18,7 @@ contract('YFIAdapter', () => {
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
   const yfi = [
-    yfi,
+    yfiAddress,
     'yearn.finance',
     'YFI',
     '18',
