@@ -217,6 +217,7 @@ All the deployed contracts' addresses are available [here](../../wiki/Addresses)
 | [Uniswap V1](./contracts/adapters/uniswap) | Automated liquidity protocol. | [Asset adapter](./contracts/adapters/uniswap/UniswapV1Adapter.sol) supports all Uniswap V1 pools | ["Uniswap V1 pool token"](./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol) |
 | [Uniswap V2](./contracts/adapters/uniswap) | Automated liquidity protocol. | [Asset adapter](./contracts/adapters/uniswap/UniswapV2Adapter.sol) supports all Uniswap V2 pools | ["Uniswap V2 pool token"](./contracts/adapters/uniswap/UniswapV2TokenAdapter.sol) |
 | [0x Staking](./contracts/adapters/zrx) | Liquidity rewards for staking ZRX. | [Asset adapter](./contracts/adapters/zrx/ZrxAdapter.sol) | — |
+| [Melon Protocol](./contracts/adapters/melonProtocol) | Protocol for decentralized on-chain wealth management.. | [Asset adapter](./contracts/adapters/melonProtocol/MelonAdapter.sol) | — |
 
 ## How to Add Your Adapter
 

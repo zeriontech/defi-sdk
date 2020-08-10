@@ -24,6 +24,7 @@ const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
+const MelonTokenAdapter = artifacts.require('MelonTokenAdapter');
 const MstableAssetAdapter = artifacts.require('MstableAssetAdapter');
 const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
@@ -844,6 +845,12 @@ module.exports = async (deployer, network, accounts) => {
         ChaiTokenAdapter.address,
       );
     });
+  await deployer.deploy(MelonTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        MelonTokenAdapter.address,
+      );
+    });
   await deployer.deploy(MstableTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -911,6 +918,7 @@ module.exports = async (deployer, network, accounts) => {
           'YToken',
           'KToken',
           'Chai token',
+          'MelonToken',
           'Masset',
           'Chi token',
           'PoolTogether pool',
