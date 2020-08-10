@@ -169,6 +169,10 @@ const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
 const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
 const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
 
+const yfi = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
+const balancerDai98Yfi2 = '0x60626db611a9957C1ae4Ac5b7eDE69e24A3B76c5';
+const balancerYfi2yCrv98 = '0x95C4B6C7CfF608c0CA048df8b81a484aA377172B';
+
 const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
 
 const mUsdAddress = '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5';
@@ -384,6 +388,12 @@ const synthetixAssetAdapterTokens = [
 const synthetixDebtAdapterTokens = [
   susdAddress,
 ];
+const yearnStakingV1AdapterTokens = [
+  yfi,
+  yCrv,
+  balancerDai98Yfi2,
+  balancerYfi2yCrv98,
+];
 const yearnStakingV2AdapterTokens = [
   yfiAddress,
   yCrvAddress,
@@ -573,8 +583,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(IearnAdapter, { from: accounts[0] });
-  adapters.push([IearnAdapter.address, YearnStakingV2Adapter.address]);
-  tokens.push([iearn2AdapterTokens, yearnStakingV2AdapterTokens]);
+  adapters.push([IearnAdapter.address, YearnStakingV1Adapter.address, YearnStakingV2Adapter.address]);
+  tokens.push([iearn2AdapterTokens, yearnStakingV1AdapterToken, yearnStakingV2AdapterTokens]);
   protocolNames.push('iearn.finance (v2)');
   metadata.push([
     'iearn.finance (v2)',
