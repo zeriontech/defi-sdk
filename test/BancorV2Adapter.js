@@ -83,6 +83,11 @@ contract('BancorAdapter', () => {
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
         displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
+        assert.deepEqual(
+          result[0].adapterBalances[0].balances[0].base.metadata,
+          linkBntPool1,
+        );
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, link);
       });
   });
 });
