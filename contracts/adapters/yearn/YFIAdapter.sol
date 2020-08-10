@@ -59,9 +59,9 @@ contract YearnStakingV1Adapter is ProtocolAdapter {
     function getBalance(address token, address account) external view override returns (uint256) {
       if (token == YFI) {
           uint256 totalRewards = 0;
-          totalRewards += ERC20(CURVE).earned(account);
-          totalRewards += ERC20(BALANCER).earned(account);
-          totalRewards += ERC20(GOVERNANCE).earned(account);
+          totalRewards += StakingRewards(CURVE).earned(account);
+          totalRewards += StakingRewards(BALANCER).earned(account);
+          totalRewards += StakingRewards(GOVERNANCE).earned(account);
           totalRewards += ERC20(FEE_REWARDS).balanceOf(account);
           return totalRewards;
       } else if (token == CURVE_Y) {
