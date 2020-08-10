@@ -65,8 +65,10 @@ contract YearnStakingV1Adapter is ProtocolAdapter {
           totalRewards += ERC20(FEE_REWARDS).balanceOf(account);
           return totalRewards;
       } else if (token == CURVE_Y) {
-          return ERC20(CURVE).balanceOf(account);
-          return StakingRewards(FEE_REWARDS).earned(account);
+          uint256 totalRewards = 0;
+          totalRewards += ERC20(CURVE).balanceOf(account);
+          totalRewards += StakingRewards(FEE_REWARDS).earned(account);
+          return totalRewards;
       } else if (token == BALANCER_DAI_YFI_98_2) {
           return ERC20(BALANCER).balanceOf(account);
       } else if (token == BALANCER_YFI_CURVE_Y_2_98) {
