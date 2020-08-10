@@ -17,11 +17,17 @@ const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
 const GnosisProtocolAdapter = artifacts.require('GnosisProtocolAdapter');
 const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
+const KeeperDaoAssetAdapter = artifacts.require('KeeperDaoAssetAdapter');
+const KyberAdapter = artifacts.require('KyberAdapter');
 const ChaiAdapter = artifacts.require('ChaiAdapter');
 const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
+
+const MelonAdapter = artifacs.require('MelonAdapter');
+const MstableAssetAdapter = artifacts.require('MstableAssetAdapter');
+const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
@@ -30,6 +36,7 @@ const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
 const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const UniswapV2Adapter = artifacts.require('UniswapV2Adapter');
+const YearnStakingV2Adapter = artifacts.require('YearnStakingV2Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const AaveTokenAdapter = artifacts.require('AaveTokenAdapter');
@@ -41,7 +48,9 @@ const CurveTokenAdapter = artifacts.require('CurveTokenAdapter');
 const DmmTokenAdapter = artifacts.require('DmmTokenAdapter');
 const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
+const KeeperDaoTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
+const MstableTokenAdapter = artifacts.require('MstableTokenAdapter');
 const ChiTokenAdapter = artifacts.require('ChiTokenAdapter');
 const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
@@ -136,6 +145,9 @@ const idleRiskAdjustedDAI = '0x1846bdfDB6A0f5c473dEc610144513bd071999fB';
 const idleRiskAdjustedUSDC = '0xcDdB1Bceb7a1979C6caa0229820707429dd3Ec6C';
 const idleRiskAdjustedUSDT = '0x42740698959761BAF1B06baa51EfBD88CB1D862B';
 
+const kETHAddress = '0xC4c43C78fb32F2c7F8417AF5af3B85f090F1d327';
+const kWETHAddress = '0xac19815455C2c438af8A8b4623F65f091364be10';
+
 const cCrvAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
 const tCrvAddress = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
 const yCrvAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
@@ -151,6 +163,8 @@ const iETHAddress = '0xA9859874e1743A32409f75bB11549892138BBA1E';
 
 const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
+const melonAddress = '0xec67005c4e498ec7f55e092bd1d35cbc47c91892';
+
 const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
 const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
 const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
@@ -161,9 +175,22 @@ const balancerYfi2yCrv98 = '0x95C4B6C7CfF608c0CA048df8b81a484aA377172B';
 
 const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
 
+const mUsdAddress = '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5';
+
 const chiAddress = '0x0000000000004946c0e9F43F4Dee607b0eF1fA1c';
 
 const BTCPPAddress = '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd';
+const USDPPAddress = '0x9A48BD0EC040ea4f1D3147C025cd4076A2e71e3e';
+
+const mtaAddress = '0xa3BeD4E1c75D00fa6f4E5E6922DB7261B5E9AcD2';
+const balAddress = '0xba100000625a3754423978a60c9317c58a424e3D';
+const balancerMusd20Mta80Address = '0x003a70265a3662342010823bEA15Dc84C6f7eD54';
+const balancerUsdc50Musd50Address = '0x72Cd8f4504941Bf8c5a21d1Fd83A96499FD71d2C';
+const balancerMusd95Mta5Address = '0xa5DA8Cc7167070B62FdCB332EF097A55A68d8824';
+const balancerWeth50Musd50Address = '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513';
+const uniswapMtaWethAddress = '0x0d0d65E7A7dB277d3E0F5E1676325E75f3340455';
+
+const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -301,6 +328,14 @@ const iearn3AdapterTokens = [
   yUSDTv3,
   yBUSDv3,
 ];
+const keeperDaoAdapterTokens = [
+  kETHAddress,
+  kWETHAddress,
+];
+const kyberAdapterTokens = [
+  kncAddress,
+  ethAddress,
+];
 const dsrAdapterTokens = [
   daiAddress,
 ];
@@ -317,11 +352,27 @@ const mcdAssetAdapterTokens = [
 const mcdDebtAdapterTokens = [
   daiAddress,
 ];
+const melonAdapterTokens = [
+  melonAddress,
+];
+const mstableAssetAdapterTokens = [
+  mUsdAddress,
+];
+const mstableStakingAdapterTokens = [
+  mtaAddress,
+  balAddress,
+  balancerMusd20Mta80Address,
+  balancerUsdc50Musd50Address,
+  balancerMusd95Mta5Address,
+  balancerWeth50Musd50Address,
+  uniswapMtaWethAddress,
+];
 const chiAdapterTokens = [
   chiAddress,
 ];
 const pieDAOPieAdapterTokens = [
   BTCPPAddress,
+  USDPPAddress,
 ];
 const poolTogetherAdapterTokens = [
   saiPoolAddress,
@@ -337,11 +388,15 @@ const synthetixAssetAdapterTokens = [
 const synthetixDebtAdapterTokens = [
   susdAddress,
 ];
-const yfiAdapterTokens = [
+const yearnStakingV1AdapterTokens = [
   yfi,
   yCrv,
   balancerDai98Yfi2,
   balancerYfi2yCrv98,
+];
+const yearnStakingV2AdapterTokens = [
+  yfiAddress,
+  yCrvAddress,
 ];
 const zrxAdapterTokens = [
   zrxAddress,
@@ -528,8 +583,8 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(IearnAdapter, { from: accounts[0] });
-  adapters.push([IearnAdapter.address]);
-  tokens.push([iearn2AdapterTokens]);
+  adapters.push([IearnAdapter.address, YearnStakingV1Adapter.address, YearnStakingV2Adapter.address]);
+  tokens.push([iearn2AdapterTokens, yearnStakingV1AdapterToken, yearnStakingV2AdapterTokens]);
   protocolNames.push('iearn.finance (v2)');
   metadata.push([
     'iearn.finance (v2)',
@@ -548,6 +603,30 @@ module.exports = async (deployer, network, accounts) => {
     'Yield aggregator for lending platforms',
     'iearn.finance',
     'protocol-icons.s3.amazonaws.com/iearn.png',
+    '0',
+  ]);
+
+  await deployer.deploy(KeeperDaoAssetAdapter, { from: accounts[0] });
+  adapters.push([KeeperDaoAssetAdapter.address]);
+  tokens.push([keeperDaoAdapterTokens]);
+  protocolNames.push('KeeperDAO');
+  metadata.push([
+    'KeeperDAO',
+    'An on-chain liquidity underwriter for DeFi',
+    'keeperdao.com',
+    'protocol-icons.s3.amazonaws.com/keeperDAO.png',
+    '0',
+  ]);
+
+  await deployer.deploy(KyberAdapter, { from: accounts[0] });
+  adapters.push([KyberAdapter.address]);
+  tokens.push([kyberAdapterTokens]);
+  protocolNames.push('KyberDAO');
+  metadata.push([
+    'KyberDAO',
+    'Platform that allows KNC token holders to participate in governance',
+    'kyber.network',
+    'protocol-icons.s3.amazonaws.com/kyber.png',
     '0',
   ]);
 
@@ -600,6 +679,31 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(MelonAdapter { from: accounts[0] });
+  adapters.push([MelonAdapter.address]);
+  tokens.push([melonAdapterTokens]);
+  protocolNames.push('Melon Token Fund');
+  metadata.push([
+    'Melon Fund Token',
+    'Melon Protocol: A Blockchain protocol for digital asset management drafts',
+    'melonport.com/',
+    'protocol-icons.s3.amazonaws.com/melon.png',
+    '0',
+  ]);
+
+  await deployer.deploy(MstableAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(MstableStakingAdapter, { from: accounts[0] });
+  adapters.push([MstableAssetAdapter.address, MstableStakingAdapter.address]);
+  tokens.push([mstableAssetAdapterTokens, mstableStakingAdapterTokens]);
+  protocolNames.push('mStable');
+  metadata.push([
+    'mStable',
+    'mStable unifies stablecoins, lending and swapping into one standard',
+    'mstable.org',
+    'protocol-icons.s3.amazonaws.com/mstable.png',
+    '0',
+  ]);
+
   await deployer.deploy(ChiAdapter, { from: accounts[0] });
   adapters.push([ChiAdapter.address]);
   tokens.push([chiAdapterTokens]);
@@ -617,9 +721,9 @@ module.exports = async (deployer, network, accounts) => {
   tokens.push([pieDAOPieAdapterTokens]);
   protocolNames.push('PieDAO');
   metadata.push([
-    'PieDAO BTC++',
-    'BTC on Ethereum diversified',
-    'btc.piedao.org',
+    'PieDAO',
+    'The Asset Allocation DAO',
+    'piedao.org',
     'protocol-icons.s3.us-east-1.amazonaws.com/piedao.png',
     '0',
   ]);
@@ -685,18 +789,6 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
-  await deployer.deploy(YFIAdapter, { from: accounts[0] });
-  adapters.push([YFIAdapter.address]);
-  tokens.push([yfiAdapterTokens]);
-  protocolNames.push('Yearn Staking V1');
-  metadata.push([
-    'YFI',
-    'Yearn Governance Token'
-    'yearn.finance',
-    'protocol-icons.s3.amazonaws.com/YFI.png',
-    '0',
-  ]);
-
   await deployer.deploy(ZrxAdapter, { from: accounts[0] });
   adapters.push([ZrxAdapter.address]);
   tokens.push([zrxAdapterTokens]);
@@ -708,6 +800,8 @@ module.exports = async (deployer, network, accounts) => {
     'protocol-icons.s3.amazonaws.com/0x-staking.png',
     '0',
   ]);
+
+  
 
   await deployer.deploy(ERC20TokenAdapter, { from: accounts[0] })
     .then(() => {
@@ -769,10 +863,22 @@ module.exports = async (deployer, network, accounts) => {
         IearnTokenAdapter.address,
       );
     });
+  await deployer.deploy(KeeperDaoTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        KeeperDaoTokenAdapter.address,
+      );
+    });
   await deployer.deploy(ChaiTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
         ChaiTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(MstableTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        MstableTokenAdapter.address,
       );
     });
   await deployer.deploy(ChiTokenAdapter, { from: accounts[0] })
@@ -834,7 +940,9 @@ module.exports = async (deployer, network, accounts) => {
           'MToken',
           'IdleToken',
           'YToken',
+          'KToken',
           'Chai token',
+          'Masset',
           'Chi token',
           'PoolTogether pool',
           'SetToken',
