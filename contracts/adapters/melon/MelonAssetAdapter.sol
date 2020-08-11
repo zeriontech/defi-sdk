@@ -19,12 +19,13 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
+
 /**
  * @title Asset adapter for Melon protocol.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Codingsh <codinsh@pm.me>
  */
-contract MelonAdapter is ProtocolAdapter {
+contract MelonAssetAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 

@@ -24,7 +24,7 @@ const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
-const MelonTokenAdapter = artifacts.require('MelonTokenAdapter');
+const MelonAssetAdapter = artifacs.require('MelonAssetAdapter');
 const MstableAssetAdapter = artifacts.require('MstableAssetAdapter');
 const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
@@ -49,6 +49,7 @@ const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
 const KeeperDaoTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
+const MelonTokenAdapter = artifacts.require('MelonTokenAdapter');
 const MstableTokenAdapter = artifacts.require('MstableTokenAdapter');
 const ChiTokenAdapter = artifacts.require('ChiTokenAdapter');
 const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
@@ -663,6 +664,18 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(MelonAssetAdapter, { from: accounts[0] });
+  adapters.push([MelonAssetAdapter.address]);
+  tokens.push([]);
+  protocolNames.push('Melon');
+  metadata.push([
+    'Melon',
+    'A protocol for decentralized on-chain asset management',
+    'melonport.com',
+    'protocol-icons.s3.amazonaws.com/melon.png',
+    '0',
+  ]);
+
   await deployer.deploy(MstableAssetAdapter, { from: accounts[0] });
   await deployer.deploy(MstableStakingAdapter, { from: accounts[0] });
   adapters.push([MstableAssetAdapter.address, MstableStakingAdapter.address]);
@@ -911,6 +924,7 @@ module.exports = async (deployer, network, accounts) => {
           'AToken',
           'AToken Uniswap Market',
           'Balancer pool token',
+          'SmartToken',
           'CToken',
           'Curve pool token',
           'MToken',
@@ -921,9 +935,9 @@ module.exports = async (deployer, network, accounts) => {
           'MelonToken',
           'Masset',
           'Chi token',
+          'PieDAO Pie Token',
           'PoolTogether pool',
           'SetToken',
-          'SmartToken',
           'Uniswap V1 pool token',
           'Uniswap V2 pool token',
         ],

@@ -210,6 +210,7 @@ All the deployed contracts' addresses are available [here](../../wiki/Addresses)
 | [Dai Savings Protocol](./contracts/adapters/maker) | Decentralized lending protocol. | [Asset adapter](./contracts/adapters/maker/DSRAdapter.sol) | — |
 | [Maker Governance](./contracts/adapters/maker) | MKR tokens locked on the MakerDAO governance contracts. | [Asset adapter](./contracts/adapters/maker/MakerGovernanceAdapter.sol) | — |
 | [Multi-Collateral Dai](./contracts/adapters/maker) | Collateralized loans on Maker. | [Asset adapter](./contracts/adapters/maker/MCDAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/maker/MCDDebtAdapter.sol) | — |
+| [Melon](contracts/adapters/melon) | A protocol for decentralized on-chain asset management. | [Asset adapter](contracts/adapters/melon/MelonAssetAdapter.sol) | ["MelonToken"](./contracts/adapters/melon/MelonTokenAdapter.sol) |
 | [mStable](./contracts/adapters/mstable) | mStable unifies stablecoins, lending and swapping into one standard. | [Asset adapter](./contracts/adapters/mstable/MstableAssetAdapter.sol) <br> [Staking adapter](./contracts/adapters/mstable/MstableStakingAdapter.sol) | ["Masset"](./contracts/adapters/mstable/MstableTokenAdapter.sol) |
 | [PoolTogether](./contracts/adapters/poolTogether) | Decentralized no-loss lottery. Supports SAI, DAI, and USDC pools. | [Asset adapter](./contracts/adapters/poolTogether/PoolTogetherAdapter.sol) | ["PoolTogether pool"](./contracts/adapters/poolTogether/PoolTogetherTokenAdapter.sol) |
 | [Synthetix](./contracts/adapters/synthetix) | Synthetic assets protocol. Asset adapter returns amount of SNX locked as collateral. | [Asset adapter](./contracts/adapters/synthetix/SynthetixAssetAdapter.sol) <br> [Debt adapter](./contracts/adapters/synthetix/SynthetixDebtAdapter.sol) | — |
@@ -217,7 +218,6 @@ All the deployed contracts' addresses are available [here](../../wiki/Addresses)
 | [Uniswap V1](./contracts/adapters/uniswap) | Automated liquidity protocol. | [Asset adapter](./contracts/adapters/uniswap/UniswapV1Adapter.sol) supports all Uniswap V1 pools | ["Uniswap V1 pool token"](./contracts/adapters/uniswap/UniswapV1TokenAdapter.sol) |
 | [Uniswap V2](./contracts/adapters/uniswap) | Automated liquidity protocol. | [Asset adapter](./contracts/adapters/uniswap/UniswapV2Adapter.sol) supports all Uniswap V2 pools | ["Uniswap V2 pool token"](./contracts/adapters/uniswap/UniswapV2TokenAdapter.sol) |
 | [0x Staking](./contracts/adapters/zrx) | Liquidity rewards for staking ZRX. | [Asset adapter](./contracts/adapters/zrx/ZrxAdapter.sol) | — |
-| [Melon Protocol](./contracts/adapters/melonProtocol) | Protocol for decentralized on-chain wealth management.. | [Asset adapter](./contracts/adapters/melonProtocol/MelonAdapter.sol) | — |
 
 ## How to Add Your Adapter
 
