@@ -24,8 +24,7 @@ const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
-
-const MelonAdapter = artifacs.require('MelonAdapter');
+const MelonAssetAdapter = artifacs.require('MelonAssetAdapter');
 const MstableAssetAdapter = artifacts.require('MstableAssetAdapter');
 const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
@@ -50,6 +49,7 @@ const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
 const KeeperDaoTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
+const MelonTokenAdapter = artifacts.require('MelonTokenAdapter');
 const MstableTokenAdapter = artifacts.require('MstableTokenAdapter');
 const ChiTokenAdapter = artifacts.require('ChiTokenAdapter');
 const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
@@ -162,8 +162,6 @@ const curveSnxAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
 const iETHAddress = '0xA9859874e1743A32409f75bB11549892138BBA1E';
 
 const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
-
-const melonAddress = '0xec67005c4e498ec7f55e092bd1d35cbc47c91892';
 
 const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
 const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
@@ -351,9 +349,6 @@ const mcdAssetAdapterTokens = [
 ];
 const mcdDebtAdapterTokens = [
   daiAddress,
-];
-const melonAdapterTokens = [
-  melonAddress,
 ];
 const mstableAssetAdapterTokens = [
   mUsdAddress,
@@ -679,14 +674,14 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
-  await deployer.deploy(MelonAdapter { from: accounts[0] });
-  adapters.push([MelonAdapter.address]);
-  tokens.push([melonAdapterTokens]);
-  protocolNames.push('Melon Token Fund');
+  await deployer.deploy(MelonAssetAdapter, { from: accounts[0] });
+  adapters.push([MelonAssetAdapter.address]);
+  tokens.push([]);
+  protocolNames.push('Melon');
   metadata.push([
-    'Melon Fund Token',
-    'Melon Protocol: A Blockchain protocol for digital asset management drafts',
-    'melonport.com/',
+    'Melon',
+    'A protocol for decentralized on-chain asset management',
+    'melonport.com',
     'protocol-icons.s3.amazonaws.com/melon.png',
     '0',
   ]);
@@ -801,8 +796,6 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
-  
-
   await deployer.deploy(ERC20TokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -875,6 +868,12 @@ module.exports = async (deployer, network, accounts) => {
         ChaiTokenAdapter.address,
       );
     });
+  await deployer.deploy(MelonTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        MelonTokenAdapter.address,
+      );
+    });
   await deployer.deploy(MstableTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -935,6 +934,7 @@ module.exports = async (deployer, network, accounts) => {
           'AToken',
           'AToken Uniswap Market',
           'Balancer pool token',
+          'SmartToken',
           'CToken',
           'Curve pool token',
           'MToken',
@@ -942,11 +942,12 @@ module.exports = async (deployer, network, accounts) => {
           'YToken',
           'KToken',
           'Chai token',
+          'MelonToken',
           'Masset',
           'Chi token',
+          'PieDAO Pie Token',
           'PoolTogether pool',
           'SetToken',
-          'SmartToken',
           'Uniswap V1 pool token',
           'Uniswap V2 pool token',
         ],
