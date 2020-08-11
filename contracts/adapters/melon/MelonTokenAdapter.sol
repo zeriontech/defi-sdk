@@ -151,7 +151,12 @@ contract MelonTokenAdapter is TokenAdapter {
         uint256 counter = 0;
 
         while (result) {
-            (result, ) = trading.staticcall(abi.encodeWithSelector(Trading(trading).exchanges.selector, counter));
+            (result, ) = trading.staticcall(
+                abi.encodeWithSelector(
+                    Trading(trading).exchanges.selector,
+                    counter
+                )
+            );
             counter++;
         }
 

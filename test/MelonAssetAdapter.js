@@ -8,7 +8,6 @@ const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 contract.only('MelonAssetAdapter', () => {
   const mlnfAddress = '0xfC14b7257e1d1ef0d2198774c234CFD553877dBc';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
-  const wbtcAddress = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
   // Random address with positive balance
   const testAddress = '0x3dB962e4A0fbD60A6c68957DA8C7C1cfD264B203';
 
@@ -19,7 +18,7 @@ contract.only('MelonAssetAdapter', () => {
   let erc20TokenAdapterAddress;
   const mlnf = [
     mlnfAddress,
-    '0x000000000000000000000000000000000000000000005268696e6f2046756e64', //'Rhino Fund',
+    '0x000000000000000000000000000000000000000000005268696e6f2046756e64', // 'Rhino Fund',
     'MLNF',
     '18',
   ];
