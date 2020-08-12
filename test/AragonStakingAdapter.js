@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('AragonStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 
-contract.only('AragonStakingAdapter', () => {
+contract('AragonStakingAdapter', () => {
   const antAddress = '0x960b236A07cf122663c4303350609A66A7B288C0';
   const uniAntWethAddress = '0xfa19de406e8F5b9100E4dD5CaD8a503a6d686Efe';
   // Random address with positive balance
