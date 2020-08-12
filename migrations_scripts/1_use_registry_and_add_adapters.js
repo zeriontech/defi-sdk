@@ -1,3 +1,4 @@
+const AragonStakingAdapter = artifacts.require('AragonStakingAdapter');
 const AaveAssetAdapter = artifacts.require('AaveAssetAdapter');
 const AaveDebtAdapter = artifacts.require('AaveDebtAdapter');
 const AaveUniswapAssetAdapter = artifacts.require('AaveUniswapAssetAdapter');
@@ -58,6 +59,9 @@ const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
+
+const antAddress = '0x960b236A07cf122663c4303350609A66A7B288C0';
+const uniAntWethAddress = '0xfa19de406e8F5b9100E4dD5CaD8a503a6d686Efe';
 
 const aDaiAddress = '0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d';
 const aTusdAddress = '0x4DA9b813057D04BAef4e5800E36083717b4a0341';
@@ -167,9 +171,9 @@ const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
 const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
 const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
 
-const yfi = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
-const balancerDai98Yfi2 = '0x60626db611a9957C1ae4Ac5b7eDE69e24A3B76c5';
-const balancerYfi2yCrv98 = '0x95C4B6C7CfF608c0CA048df8b81a484aA377172B';
+const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
+const balancerDai98Yfi2Address = '0x60626db611a9957C1ae4Ac5b7eDE69e24A3B76c5';
+const balancerYfi2yCrv98Address = '0x95C4B6C7CfF608c0CA048df8b81a484aA377172B';
 
 const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
 
@@ -188,7 +192,8 @@ const balancerMusd95Mta5Address = '0xa5DA8Cc7167070B62FdCB332EF097A55A68d8824';
 const balancerWeth50Musd50Address = '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513';
 const uniswapMtaWethAddress = '0x0d0d65E7A7dB277d3E0F5E1676325E75f3340455';
 
-const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
+const amplAddress = '0xD46bA6D942050d489DBd938a2C909A5d5039A161';
+const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -246,6 +251,15 @@ const aaveUniswapDebtAdapterTokens = [
   usdtAddress,
   daiAddress,
 ];
+const ampleforthAdapterTokens = [
+  amplAddress,
+  uniAmplWethAddress,
+];
+
+const aragonStakingAdapterTokens = [
+    antAddress,
+    uniAntWethAddress,
+  ];
 const compoundAssetAdapterTokens = [
   cDAIAddress,
   cBATAddress,
@@ -384,10 +398,10 @@ const synthetixDebtAdapterTokens = [
   susdAddress,
 ];
 const yearnStakingV1AdapterTokens = [
-  yfi,
-  yCrv,
-  balancerDai98Yfi2,
-  balancerYfi2yCrv98,
+  yfiAddress,
+  yCrvAddress,
+  balancerDai98Yfi2Address,
+  balancerYfi2yCrv98Address,
 ];
 const yearnStakingV2AdapterTokens = [
   yfiAddress,
@@ -427,6 +441,30 @@ module.exports = async (deployer, network, accounts) => {
     'Decentralized lending & borrowing protocol',
     'aave.com',
     'protocol-icons.s3.amazonaws.com/aave.png',
+    '0',
+  ]);
+
+  await deployer.deploy(AmpleforthAdapter, { from: accounts[0] });
+  adapters.push([AmpleforthAdapter.address]);
+  tokens.push([ampleforthAdapterTokens]);
+  protocolNames.push('Ampleforth');
+  metadata.push([
+    'Ampleforth',
+    'An adaptive money built on sound economics',
+    'ampleforth.org',
+    'protocol-icons.s3.amazonaws.com/ampl.png',
+    '0',
+  ]);
+
+  await deployer.deploy(AragonStakingAdapter, { from: accounts[0] });
+  adapters.push([AragonStakingAdapter.address]);
+  tokens.push([aragonStakingAdapterTokens]);
+  protocolNames.push('Aragon');
+  metadata.push([
+    'Aragon',
+    'ANT liquidity rewards',
+    'liquidity.aragon.org',
+    'protocol-icons.s3.amazonaws.com/aragon.png',
     '0',
   ]);
 
@@ -579,7 +617,7 @@ module.exports = async (deployer, network, accounts) => {
 
   await deployer.deploy(IearnAdapter, { from: accounts[0] });
   adapters.push([IearnAdapter.address, YearnStakingV1Adapter.address, YearnStakingV2Adapter.address]);
-  tokens.push([iearn2AdapterTokens, yearnStakingV1AdapterTokens, yearnStakingV2AdapterTokens]);
+  tokens.push([iearn2AdapterTokens, yearnStakingV1AdapterToken, yearnStakingV2AdapterTokens]);
   protocolNames.push('iearn.finance (v2)');
   metadata.push([
     'iearn.finance (v2)',
