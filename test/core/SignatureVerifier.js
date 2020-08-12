@@ -50,20 +50,18 @@ contract.only('SignatureVerifier', () => {
           ],
           TransactionData: [
             { name: 'actions', type: 'Action[]' },
-            { name: 'inputs', type: 'Input[]' },
+            { name: 'inputs', type: 'TokenAmount[]' },
             { name: 'fee', type: 'Fee' },
-            { name: 'requiredOutputs', type: 'Output[]' },
+            { name: 'requiredOutputs', type: 'AbsoluteTokenAmount[]' },
             { name: 'nonce', type: 'uint256' },
           ],
           Action: [
             { name: 'protocolAdapterName', type: 'bytes32' },
             { name: 'actionType', type: 'uint8' },
-            { name: 'tokens', type: 'address[]' },
-            { name: 'amounts', type: 'uint256[]' },
-            { name: 'amountTypes', type: 'uint8[]' },
+            { name: 'tokenAmounts', type: 'TokenAmount[]' },
             { name: 'data', type: 'bytes' },
           ],
-          Input: [
+          TokenAmount: [
             { name: 'token', type: 'address' },
             { name: 'amount', type: 'uint256' },
             { name: 'amountType', type: 'uint8' },
@@ -72,7 +70,7 @@ contract.only('SignatureVerifier', () => {
             { name: 'share', type: 'uint256' },
             { name: 'beneficiary', type: 'address' },
           ],
-          Output: [
+          AbsoluteTokenAmount: [
             { name: 'token', type: 'address' },
             { name: 'amount', type: 'uint256' },
           ],
@@ -94,13 +92,13 @@ contract.only('SignatureVerifier', () => {
           {
             protocolAdapterName: UNISWAP_EXCHANGE_ADAPTER,
             actionType: 1,
-            tokens: [
-              daiAddress,
+            tokenAmounts: [
+              {
+                token: daiAddress,
+                amount: web3.utils.toWei('1', 'ether'),
+                amountType: 2,
+              }
             ],
-            amounts: [
-              web3.utils.toWei('1', 'ether'),
-            ],
-            amountTypes: [2],
             data: web3.eth.abi.encodeParameter(
               'address[]',
               [

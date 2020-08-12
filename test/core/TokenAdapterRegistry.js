@@ -9,7 +9,7 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 const ONE = '0x1111111111111111111111111111111111111111';
 const TWO = '0x2222222222222222222222222222222222222222';
 
-contract.only('AdapterRegistry', () => {
+contract.only('TokenAdapterRegistry', () => {
   let accounts;
   let tokenAdapterRegistry;
   let protocolAdapterAddress;
@@ -351,14 +351,14 @@ contract.only('AdapterRegistry', () => {
 
   it('should not propose ownership not by the owner', async () => {
     await expectRevert(
-      protocolAdapterRegistry.methods.proposeOwnership(accounts[1])
+      tokenAdapterRegistry.methods.proposeOwnership(accounts[1])
         .send({ from: accounts[1] }),
     );
   });
 
   it('should not propose ownership to the zero address', async () => {
     await expectRevert(
-      protocolAdapterRegistry.methods.proposeOwnership(ZERO)
+      tokenAdapterRegistry.methods.proposeOwnership(ZERO)
         .send({
           from: accounts[0],
           gas: '300000',
@@ -367,29 +367,29 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should propose ownership by the owner', async () => {
-    await protocolAdapterRegistry.methods.proposeOwnership(accounts[1])
+    await tokenAdapterRegistry.methods.proposeOwnership(accounts[1])
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await protocolAdapterRegistry.methods.pendingOwner()
+    await tokenAdapterRegistry.methods.pendingOwner()
       .call()
       .then((result) => {
         assert.equal(result, accounts[1]);
       });
     await expectRevert(
-      protocolAdapterRegistry.methods.acceptOwnership()
+      tokenAdapterRegistry.methods.acceptOwnership()
         .send({
           from: accounts[0],
           gas: '300000',
         }),
     );
-    await protocolAdapterRegistry.methods.acceptOwnership()
+    await tokenAdapterRegistry.methods.acceptOwnership()
       .send({
         from: accounts[1],
         gas: '300000',
       });
-    await protocolAdapterRegistry.methods.owner()
+    await tokenAdapterRegistry.methods.owner()
       .call()
       .then((result) => {
         assert.equal(result, accounts[1]);

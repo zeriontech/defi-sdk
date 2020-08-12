@@ -9,7 +9,7 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 const ONE = '0x1111111111111111111111111111111111111111';
 const TWO = '0x2222222222222222222222222222222222222222';
 
-contract.only('AdapterRegistry', () => {
+contract.only('ProtocolAdapterRegistry', () => {
   let accounts;
   let protocolAdapterRegistry;
   let protocolAdapterAddress;
@@ -568,9 +568,8 @@ contract.only('AdapterRegistry', () => {
           web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Mock')),
         );
         assert.deepEqual(
-          result[0].tokenBalances[0],
+          result[0].absoluteTokenAmounts[0],
           [
-            web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
             protocolAdapterAddress,
             '1000',
           ],

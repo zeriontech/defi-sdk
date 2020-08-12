@@ -28,9 +28,7 @@
     "@babel/register": "7.9.0",
     "@truffle/hdwallet-provider": "1.0.35",
     "core-js": "3.6.5",
-    "did-jwt": "^4.5.1",
     "dotenv": "8.2.0",
-    "eth-typed-data": "0.1.0-beta.0",
     "regenerator-runtime": "0.13.5",
     "truffle": "5.1.33"
   },
@@ -42,6 +40,6 @@
     "eth-gas-reporter": "0.2.17",
     "ganache-cli": "6.9.1",
     "solhint": "3.0.0",
-    "solidity-coverage": "^0.7.10"
+    "solidity-coverage": "0.7.10"
   }
 }
