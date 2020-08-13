@@ -24,12 +24,13 @@ import { ERC20 } from "../shared/ERC20.sol";
 import { AdapterRegistry } from "./AdapterRegistry.sol";
 import { SafeERC20 } from "../shared/SafeERC20.sol";
 import { Helpers } from "../shared/Helpers.sol";
+import { ReentrancyGuard } from "./ReentrancyGuard.sol";
 
 
 /**
  * @title Main contract executing actions.
  */
-contract Core {
+contract Core is ReentrancyGuard {
     using SafeERC20 for ERC20;
 
     AdapterRegistry internal immutable adapterRegistry_;
@@ -64,6 +65,7 @@ contract Core {
     )
         external
         payable
+        nonReentrant
         returns (Output[] memory)
     {
         require(account != address(0), "C: empty account!");
