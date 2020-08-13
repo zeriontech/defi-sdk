@@ -26,7 +26,13 @@ abstract contract Ownable {
         _;
     }
 
+    modifier onlyPendingOwner {
+        require(msg.sender == pendingOwner_, "O: only pending owner!");
+        _;
+    }
+
     address internal owner_;
+    address internal pendingOwner_;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -39,13 +45,23 @@ abstract contract Ownable {
     }
 
     /**
-     * @notice Transfers ownership to the desired address.
+     * @notice Sets pending owner to the desired address.
      * The function is callable only by the owner.
      */
-    function transferOwnership(address newOwner) external onlyOwner {
+    function proposeOwnership(address newOwner) external onlyOwner {
         require(newOwner != address(0), "O: empty newOwner!");
-        emit OwnershipTransferred(owner_, newOwner);
-        owner_ = newOwner;
+        require(newOwner != owner_, "O: equal to owner_!");
+        require(newOwner != pendingOwner_, "O: equal to pendingOwner_!");
+        pendingOwner_ = newOwner;
+    }
+
+    /**
+     * @notice Transfers ownership to the pending owner.
+     * The function is callable only by the pending owner.
+     */
+    function acceptOwnership() external onlyPendingOwner {
+        emit OwnershipTransferred(owner_, msg.sender);
+        owner_ = msg.sender;
     }
 
     /**
@@ -53,5 +69,12 @@ abstract contract Ownable {
      */
     function owner() external view returns (address) {
         return owner_;
+    }
+
+    /**
+     * @return Pending owner of the contract.
+     */
+    function pendingOwner() external view returns (address) {
+        return pendingOwner_;
     }
 }

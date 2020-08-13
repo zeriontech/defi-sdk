@@ -65,6 +65,21 @@ contract.only('AdapterRegistry', () => {
       });
   });
 
+  it('should be correct pending owner', async () => {
+    await adapterRegistry.methods.proposeOwnership(accounts[1])
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      });
+    await adapterRegistry.methods.pendingOwner()
+      .call()
+      .then((result) => {
+        assert.equal(
+          result,
+          accounts[1],
+        );
+  });
+
   it('should be correct protocols names', async () => {
     await adapterRegistry.methods.getProtocolAdapterNames()
       .call()
@@ -809,16 +824,16 @@ contract.only('AdapterRegistry', () => {
       });
   });
 
-  it('should not transfer ownership not by the owner', async () => {
+  it('should not propose ownership not by the owner', async () => {
     await expectRevert(
-      adapterRegistry.methods.transferOwnership(accounts[1])
+      adapterRegistry.methods.proposeOwnership(accounts[1])
         .send({ from: accounts[1] }),
     );
   });
 
-  it('should not transfer ownership to the zero address', async () => {
+  it('should not propose ownership to the zero address', async () => {
     await expectRevert(
-      adapterRegistry.methods.transferOwnership(ZERO)
+      adapterRegistry.methods.proposeOwnership(ZERO)
         .send({
           from: accounts[0],
           gas: '300000',
@@ -826,10 +841,68 @@ contract.only('AdapterRegistry', () => {
     );
   });
 
-  it('should transfer ownership by the owner', async () => {
-    await adapterRegistry.methods.transferOwnership(accounts[1])
+  it('should not propose ownership to the owner address', async () => {
+    await expectRevert(
+      adapterRegistry.methods.proposeOwnership(accounts[0])
+        .send({
+          from: accounts[0],
+          gas: '300000',
+        }),
+    );
+  });
+
+  it('should not propose ownership to the pending owner address', async () => {
+    await adapterRegistry.methods.proposeOwnership(accounts[1])
       .send({
         from: accounts[0],
+        gas: '300000',
+      });
+    await expectRevert(
+      adapterRegistry.methods.proposeOwnership(accounts[1])
+        .send({
+          from: accounts[0],
+          gas: '300000',
+        }),
+    );
+  });
+
+  it('should propose ownership by the owner', async () => {
+    await adapterRegistry.methods.proposeOwnership(accounts[1])
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      });
+    await adapterRegistry.methods.owner()
+      .call()
+      .then((result) => {
+        assert.equal(result, accounts[0]);
+      });
+  });
+
+  it('should not accept ownership not by the pending owner', async () => {
+    await adapterRegistry.methods.proposeOwnership(accounts[1])
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      });
+    await expectRevert(
+      adapterRegistry.methods.acceptOwnership()
+        .send({
+          from: accounts[2],
+          gas: '300000',
+        }),
+    );
+  });
+
+  it('should accept ownership by the pending owner', async () => {
+    await adapterRegistry.methods.proposeOwnership(accounts[1])
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      });
+    await adapterRegistry.methods.acceptOwnership()
+      .send({
+        from: accounts[1],
         gas: '300000',
       });
     await adapterRegistry.methods.owner()
