@@ -115,11 +115,11 @@ abstract contract ProtocolManager is Ownable {
     function getTokenAdapterName(
         bytes32 hash
     )
-        external
+        public
         view
         returns (bytes32)
     {
-        return _tokenAdapterName[hash] == bytes32(0) ? bytes32("ERC20") : _tokenAdapterName[hash];
+        return _tokenAdapterName[hash];
     }
 
     /**

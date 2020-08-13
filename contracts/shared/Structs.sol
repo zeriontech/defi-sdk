@@ -57,7 +57,6 @@ struct AdapterBalance {
 // and token adapter's name, which should be used
 // to retrieve underlying tokens and rates.
 struct TokenBalance {
-    bytes32 tokenAdapterName;
     address token;
     uint256 amount;
 }

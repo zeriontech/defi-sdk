@@ -19,7 +19,6 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import { Ownable } from "./Ownable.sol";
-import { TokenAdapter } from "../adapters/TokenAdapter.sol";
 
 
 /**
