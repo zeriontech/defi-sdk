@@ -78,6 +78,7 @@ contract.only('AdapterRegistry', () => {
           result,
           accounts[1],
         );
+      });
   });
 
   it('should be correct protocols names', async () => {
