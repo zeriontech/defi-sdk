@@ -114,7 +114,10 @@ contract Core is ReentrancyGuard {
     {
         address adapter = adapterRegistry_.getProtocolAdapterAddress(action.protocolAdapterName);
         require(adapter != address(0), "C: bad name!");
-        require(action.actionType != ActionType.None, "C: bad action type!");
+        require(
+            action.actionType == ActionType.Deposit || action.actionType == ActionType.Withdraw,
+            "C: bad action type!"
+        );
         require(action.amounts.length == action.amountTypes.length, "C: inconsistent arrays!");
         bytes4 selector;
         if (action.actionType == ActionType.Deposit) {

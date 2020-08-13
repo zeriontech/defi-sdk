@@ -279,10 +279,13 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         AmountType amountType = input.amountType;
         uint256 amount = input.amount;
 
-        require(amountType != AmountType.None, "R: bad type!");
+        require(
+            amountType == AmountType.Relative || amountType == AmountType.Absolute,
+            "R: bad amount type!"
+        );
 
         if (amountType == AmountType.Relative) {
-            require(amount <= DELIMITER, "R: bad value!");
+            require(amount <= DELIMITER, "R: bad amount!");
             if (amount == DELIMITER) {
                 return ERC20(token).balanceOf(account);
             } else {

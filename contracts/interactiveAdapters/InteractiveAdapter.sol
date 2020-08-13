@@ -74,7 +74,10 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         virtual
         returns (uint256)
     {
-        require(amountType != AmountType.None, "IA: bad amountType!");
+        require(
+            amountType == AmountType.Relative || amountType == AmountType.Absolute,
+            "IA: bad amount type!"
+        );
         if (amountType == AmountType.Relative) {
             require(amount <= DELIMITER, "IA: bad amount!");
 
@@ -105,7 +108,10 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         virtual
         returns (uint256)
     {
-        require(amountType != AmountType.None, "IA: bad amountType!");
+        require(
+            amountType == AmountType.Relative || amountType == AmountType.Absolute,
+            "IA: bad amount type!"
+        );
         if (amountType == AmountType.Relative) {
             require(amount <= DELIMITER, "IA: bad amount!");
 
