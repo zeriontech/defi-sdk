@@ -61,8 +61,8 @@ contract SynthetixAssetAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
-        return (Synthetix(Proxy(token).target()).collateral(account), "ERC20");
+        return Synthetix(Proxy(token).target()).collateral(account);
     }
 }

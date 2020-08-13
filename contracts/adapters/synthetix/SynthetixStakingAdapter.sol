@@ -101,14 +101,14 @@ contract SynthetixAssetAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         if (token == stakingToken_) {
             return (ERC20(stakingContract_).balanceOf(account), stakingTokenAdapterName_);
         } else if (token == rewardsToken_) {
             return (StakingRewards(stakingContract_).earned(account), rewardsTokenAdapterName_);
         } else {
-            return (0, bytes32(0));
+            return 0;
         }
     }
 }

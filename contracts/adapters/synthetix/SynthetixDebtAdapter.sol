@@ -63,10 +63,10 @@ contract SynthetixDebtAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         Synthetix synthetix = Synthetix(Proxy(SNX).target());
 
-        return (synthetix.debtBalanceOf(account, "sUSD"), "ERC20");
+        return synthetix.debtBalanceOf(account, "sUSD");
     }
 }

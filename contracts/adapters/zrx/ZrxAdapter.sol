@@ -53,8 +53,8 @@ contract ZrxAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
-        return (Staking(STAKING).getTotalStake(account), "ERC20");
+        return Staking(STAKING).getTotalStake(account);
     }
 }

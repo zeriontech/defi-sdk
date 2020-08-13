@@ -52,8 +52,8 @@ contract MakerGovernanceAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
-        return (DSChief(GOVERNANCE).deposits(account), "ERC20");
+        return DSChief(GOVERNANCE).deposits(account);
     }
 }

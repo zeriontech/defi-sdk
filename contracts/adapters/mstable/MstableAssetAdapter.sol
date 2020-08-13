@@ -56,11 +56,11 @@ contract MstableAssetAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         uint256 credits = SavingsContract(SAVINGS).creditBalances(account);
         uint256 exchangeRate = SavingsContract(SAVINGS).exchangeRate();
 
-        return (ERC20(token).balanceOf(account) + credits * exchangeRate / FULL_SCALE, "ERC20");
+        return ERC20(token).balanceOf(account) + credits * exchangeRate / FULL_SCALE;
     }
 }

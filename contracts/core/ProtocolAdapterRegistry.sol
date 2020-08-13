@@ -193,15 +193,13 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
             try ProtocolAdapter(adapter).getBalance(
                 tokens[i],
                 account
-            ) returns (uint256 amount, bytes32 tokenAdapterName) {
+            ) returns (uint256 amount) {
                 tokenBalances[i] = TokenBalance({
-                    tokenAdapterName: tokenAdapterName,
                     token: tokens[i],
                     amount: amount
                 });
             } catch {
                 tokenBalances[i] = TokenBalance({
-                    tokenAdapterName: "ERC20",
                     token: tokens[i],
                     amount: 0
                 });

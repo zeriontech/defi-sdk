@@ -55,7 +55,7 @@ contract DdexMarginDebtAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         uint256 allMarketsCount = Hydro(HYDRO).getAllMarketsCount();
         uint256 totalAmountBorrowed = 0;
@@ -70,6 +70,6 @@ contract DdexMarginDebtAdapter is ProtocolAdapter {
             } catch {} // solhint-disable-line no-empty-blocks
         }
 
-        return (totalAmountBorrowed, "ERC20");
+        return totalAmountBorrowed;
     }
 }

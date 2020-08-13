@@ -68,7 +68,7 @@ contract PoolTogetherAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         uint256 totalBalance = BasePool(token).totalBalanceOf(account);
         if (token == DAI_POOL) {
@@ -77,7 +77,7 @@ contract PoolTogetherAdapter is ProtocolAdapter {
             totalBalance += getPodBalance(USDC_POD, account);
         }
 
-        return (totalBalance, "PoolTogether Pool");
+        return totalBalance;
     }
 
     function getPodBalance(address pod, address account) internal view returns (uint256) {

@@ -55,12 +55,12 @@ contract DSRAdapter is ProtocolAdapter, MKRAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         Pot pot = Pot(POT);
         // solhint-disable-next-line not-rely-on-time
         uint256 chi = mkrRmul(mkrRpow(pot.dsr(), now - pot.rho(), ONE), pot.chi());
 
-        return (mkrRmul(chi, pot.pie(account)), "ERC20");
+        return mkrRmul(chi, pot.pie(account));
     }
 }

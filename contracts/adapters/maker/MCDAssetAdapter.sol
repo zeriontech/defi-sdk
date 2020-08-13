@@ -78,7 +78,7 @@ contract MCDAssetAdapter is ProtocolAdapter, MKRAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         DssCdpManager manager = DssCdpManager(MANAGER);
         Vat vat = Vat(VAT);
@@ -104,6 +104,6 @@ contract MCDAssetAdapter is ProtocolAdapter, MKRAdapter {
             totalValue = totalValue + value;
         }
 
-        return (totalValue, "ERC20");
+        return totalValue;
     }
 }

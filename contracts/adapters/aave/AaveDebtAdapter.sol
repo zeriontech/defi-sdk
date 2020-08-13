@@ -73,12 +73,12 @@ contract AaveDebtAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         address pool = LendingPoolAddressesProvider(provider_).getLendingPool();
 
         (, uint256 debtAmount) = LendingPool(pool).getUserReserveData(token, account);
 
-        return (debtAmount, "ERC20");
+        return debtAmount;
     }
 }

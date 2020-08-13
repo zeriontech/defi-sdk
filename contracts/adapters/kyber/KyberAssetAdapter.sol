@@ -88,13 +88,13 @@ contract KyberAssetAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         if (token == KNC) {
             uint256 stake;
             uint256 delegatedStake;
             (stake, delegatedStake) = KyberStaking(STAKING).getLatestStakerData(account);
-            return (stake + delegatedStake, "ERC20");
+            return stake + delegatedStake;
         } else if (token == ETH) {
             uint256 reward = 0;
             uint256 rewardPercentage;
@@ -109,9 +109,9 @@ contract KyberAssetAdapter is ProtocolAdapter {
                     }
                 }
             }
-            return (reward, "ERC20");
+            return reward;
         } else {
-            return (0, "");
+            return 0;
         }
     }
 }

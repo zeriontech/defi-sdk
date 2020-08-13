@@ -43,7 +43,7 @@ contract MockAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         return (balanceOf[account], "ERC20");
     }
