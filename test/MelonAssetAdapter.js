@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('MelonAssetAdapter');
 const TokenAdapter = artifacts.require('MelonTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('MelonAssetAdapter', () => {
+contract('MelonAssetAdapter', () => {
   const mlnfAddress = '0xfC14b7257e1d1ef0d2198774c234CFD553877dBc';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   // Random address with positive balance

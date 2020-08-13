@@ -601,7 +601,7 @@ module.exports = async (deployer, network, accounts) => {
   adapters.push(
     [IearnAdapter.address, YearnStakingV1Adapter.address, YearnStakingV2Adapter.address],
   );
-  tokens.push([iearn2AdapterTokens, yearnStakingV1AdapterToken, yearnStakingV2AdapterTokens]);
+  tokens.push([iearn2AdapterTokens, yearnStakingV1AdapterTokens, yearnStakingV2AdapterTokens]);
   protocolNames.push('iearn.finance (v2)');
   metadata.push([
     'iearn.finance (v2)',
