@@ -36,6 +36,9 @@ const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
 const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const UniswapV2Adapter = artifacts.require('UniswapV2Adapter');
+const YamAssetAdapter = artifacts.require('YamAssetAdapter');
+const YamStakingAdapter = artifacts.require('YamStakingAdapter');
+const YearnStakingV1Adapter = artifacts.require('YearnStakingV1Adapter');
 const YearnStakingV2Adapter = artifacts.require('YearnStakingV2Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
@@ -99,12 +102,12 @@ const zrxAddress = '0xE41d2489571d322189246DaFA5ebDe1F4699F498';
 const snxAddress = '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F';
 const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
 
-const uniUsdcEthAddress = '0x1D0e53A0e524E3CC92C1f0f33Ae268FfF8D7E7a5';
-const uniLinkEthAddress = '0x9548DB8b1cA9b6c757485e7861918b640390169c';
-const uniDaiEthAddress = '0xBbBb7F2aC04484F7F04A2C2C16f20479791BbB44';
-const uniLendEthAddress = '0xc88ebbf7c523f38ef3eb8a151273c0f0da421e63';
-const uniMkrEthAddress = '0x8c69f7A4C9B38F1b48005D216c398Efb2F1Ce3e4';
-const uniSethEthAddress = '0x84BBcaB430717ff832c3904fa6515f97fc63C76F';
+const aUniUsdcEthAddress = '0x1D0e53A0e524E3CC92C1f0f33Ae268FfF8D7E7a5';
+const aUniLinkEthAddress = '0x9548DB8b1cA9b6c757485e7861918b640390169c';
+const aUniDaiEthAddress = '0xBbBb7F2aC04484F7F04A2C2C16f20479791BbB44';
+const aUniLendEthAddress = '0xc88ebbf7c523f38ef3eb8a151273c0f0da421e63';
+const aUniMkrEthAddress = '0x8c69f7A4C9B38F1b48005D216c398Efb2F1Ce3e4';
+const aUniSethEthAddress = '0x84BBcaB430717ff832c3904fa6515f97fc63C76F';
 const auDaiAddress = '0x048930eec73c91B44b0844aEACdEBADC2F2b6efb';
 const auUsdcAddress = '0xe02b2Ad63eFF3Ac1D5827cBd7AB9DD3DaC4f4AD0';
 const auUsdtAddress = '0xb977ee318010A5252774171494a1bCB98E7fab65';
@@ -195,6 +198,8 @@ const uniswapMtaWethAddress = '0x0d0d65E7A7dB277d3E0F5E1676325E75f3340455';
 const amplAddress = '0xD46bA6D942050d489DBd938a2C909A5d5039A161';
 const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
 
+const compAddress = '0xc00e94Cb662C3520282E6f5717214004A7f26888';
+
 const aaveAssetAdapterTokens = [
   aDaiAddress,
   aTusdAddress,
@@ -234,22 +239,22 @@ const aaveDebtAdapterTokens = [
   wbtcAddress,
 ];
 const aaveUniswapAssetAdapterTokens = [
-  uniUsdcEthAddress,
-  uniLinkEthAddress,
-  uniDaiEthAddress,
-  uniLendEthAddress,
-  uniMkrEthAddress,
-  uniSethEthAddress,
-  auEthAddress,
+  aUniUsdcEthAddress,
+  aUniLinkEthAddress,
+  aUniDaiEthAddress,
+  aUniLendEthAddress,
+  aUniMkrEthAddress,
+  aUniSethEthAddress,
+  auDaiAddress,
   auUsdcAddress,
   auUsdtAddress,
-  auDaiAddress,
+  auEthAddress,
 ];
 const aaveUniswapDebtAdapterTokens = [
-  ethAddress,
+  daiAddress,
   usdcAddress,
   usdtAddress,
-  daiAddress,
+  ethAddress,
 ];
 const ampleforthAdapterTokens = [
   amplAddress,
@@ -257,9 +262,9 @@ const ampleforthAdapterTokens = [
 ];
 
 const aragonStakingAdapterTokens = [
-    antAddress,
-    uniAntWethAddress,
-  ];
+  antAddress,
+  uniAntWethAddress,
+];
 const compoundAssetAdapterTokens = [
   cDAIAddress,
   cBATAddress,
@@ -396,6 +401,20 @@ const synthetixAssetAdapterTokens = [
 ];
 const synthetixDebtAdapterTokens = [
   susdAddress,
+];
+const yamAssetAdapterTokens = [
+  yamAddress,
+];
+const yamStakingAdapterTokens = [
+  yamAddress,
+  yfiAddress,
+  wethAddress,
+  uniAmplWethAddress,
+  compAddress,
+  linkAddress,
+  lendAddress,
+  snxAddress,
+  mkrAddress,
 ];
 const yearnStakingV1AdapterTokens = [
   yfiAddress,
@@ -616,8 +635,12 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(IearnAdapter, { from: accounts[0] });
-  adapters.push([IearnAdapter.address, YearnStakingV1Adapter.address, YearnStakingV2Adapter.address]);
-  tokens.push([iearn2AdapterTokens, yearnStakingV1AdapterToken, yearnStakingV2AdapterTokens]);
+  await deployer.deploy(YearnStakingV1Adapter, { from: accounts[0] });
+  await deployer.deploy(YearnStakingV2Adapter, { from: accounts[0] });
+  adapters.push(
+    [IearnAdapter.address, YearnStakingV1Adapter.address, YearnStakingV2Adapter.address],
+  );
+  tokens.push([iearn2AdapterTokens, yearnStakingV1AdapterTokens, yearnStakingV2AdapterTokens]);
   protocolNames.push('iearn.finance (v2)');
   metadata.push([
     'iearn.finance (v2)',
@@ -819,6 +842,19 @@ module.exports = async (deployer, network, accounts) => {
     'Automated liquidity protocol',
     'uniswap.org',
     'protocol-icons.s3.amazonaws.com/Uniswap.png',
+    '0',
+  ]);
+
+  await deployer.deploy(YamAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(YamStakingAdapter, { from: accounts[0] });
+  adapters.push([YamAssetAdapter.address, YamStakingAdapter.address]);
+  tokens.push([[yamAssetAdapterTokens, yamStakingAdapterTokens]]);
+  protocolNames.push('Yam Finance');
+  metadata.push([
+    'Yam Finance',
+    'A stabilizing reserve currency protocol',
+    'yam.finance',
+    'protocol-icons.s3.amazonaws.com/yam.png',
     '0',
   ]);
 
