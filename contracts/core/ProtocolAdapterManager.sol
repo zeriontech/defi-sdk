@@ -22,8 +22,8 @@ import { Ownable } from "./Ownable.sol";
 
 
 /**
- * @title AdapterRegistry part responsible for protocol adapters management.
- * @dev Base contract for AdapterRegistry.
+ * @title ProtocolAdapterRegistry part responsible for protocol adapters management.
+ * @dev Base contract for ProtocolAdapterRegistry.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract ProtocolAdapterManager is Ownable {
