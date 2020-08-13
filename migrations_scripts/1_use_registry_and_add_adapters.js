@@ -1,3 +1,4 @@
+const AragonStakingAdapter = artifacts.require('AragonStakingAdapter');
 const AaveAssetAdapter = artifacts.require('AaveAssetAdapter');
 const AaveDebtAdapter = artifacts.require('AaveDebtAdapter');
 const AaveUniswapAssetAdapter = artifacts.require('AaveUniswapAssetAdapter');
@@ -61,6 +62,9 @@ const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
+
+const antAddress = '0x960b236A07cf122663c4303350609A66A7B288C0';
+const uniAntWethAddress = '0xfa19de406e8F5b9100E4dD5CaD8a503a6d686Efe';
 
 const aDaiAddress = '0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d';
 const aTusdAddress = '0x4DA9b813057D04BAef4e5800E36083717b4a0341';
@@ -191,6 +195,8 @@ const balancerMusd95Mta5Address = '0xa5DA8Cc7167070B62FdCB332EF097A55A68d8824';
 const balancerWeth50Musd50Address = '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513';
 const uniswapMtaWethAddress = '0x0d0d65E7A7dB277d3E0F5E1676325E75f3340455';
 
+const amplAddress = '0xD46bA6D942050d489DBd938a2C909A5d5039A161';
+const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
 
 const compAddress = '0xc00e94Cb662C3520282E6f5717214004A7f26888';
 
@@ -249,6 +255,15 @@ const aaveUniswapDebtAdapterTokens = [
   usdcAddress,
   usdtAddress,
   ethAddress,
+];
+const ampleforthAdapterTokens = [
+  amplAddress,
+  uniAmplWethAddress,
+];
+
+const aragonStakingAdapterTokens = [
+  antAddress,
+  uniAntWethAddress,
 ];
 const compoundAssetAdapterTokens = [
   cDAIAddress,
@@ -445,6 +460,30 @@ module.exports = async (deployer, network, accounts) => {
     'Decentralized lending & borrowing protocol',
     'aave.com',
     'protocol-icons.s3.amazonaws.com/aave.png',
+    '0',
+  ]);
+
+  await deployer.deploy(AmpleforthAdapter, { from: accounts[0] });
+  adapters.push([AmpleforthAdapter.address]);
+  tokens.push([ampleforthAdapterTokens]);
+  protocolNames.push('Ampleforth');
+  metadata.push([
+    'Ampleforth',
+    'An adaptive money built on sound economics',
+    'ampleforth.org',
+    'protocol-icons.s3.amazonaws.com/ampl.png',
+    '0',
+  ]);
+
+  await deployer.deploy(AragonStakingAdapter, { from: accounts[0] });
+  adapters.push([AragonStakingAdapter.address]);
+  tokens.push([aragonStakingAdapterTokens]);
+  protocolNames.push('Aragon');
+  metadata.push([
+    'Aragon',
+    'ANT liquidity rewards',
+    'liquidity.aragon.org',
+    'protocol-icons.s3.amazonaws.com/aragon.png',
     '0',
   ]);
 
