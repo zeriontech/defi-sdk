@@ -1,14 +1,13 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('YamStakingAdapter');
+const ProtocolAdapter = artifacts.require('CurveStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('YamStakingAdapter', () => {
-  const yamAddress = '0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16';
-  const mkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2';
+contract('CurveStakingAdapter', () => {
+  const cCrvAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
   // Random address with positive balances
-  const testAddress = '0xd9b99266c42d427bb3a64f30a0242bbeb41f6830';
+  const testAddress = '0x6346BA47665092855c879428aef512C63d249351';
 
   let accounts;
   let adapterRegistry;
@@ -30,7 +29,7 @@ contract('YamStakingAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Yam Finance'],
+      ['Curve Gauges'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -42,8 +41,7 @@ contract('YamStakingAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        yamAddress,
-        mkrAddress,
+        cCrvAddress,
       ]]],
     )
       .send({
@@ -65,7 +63,6 @@ contract('YamStakingAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
-        displayToken(result[0].adapterBalances[0].balances[1].base);
       });
   });
 });

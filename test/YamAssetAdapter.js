@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('YamAssetAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('YamAssetAdapter', () => {
+contract('YamAssetAdapter', () => {
   const yamAddress = '0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16';
   // Random address with YAM tokens
   const testAddress = '0x587A07cE5c265A38Dd6d42def1566BA73eeb06F5';

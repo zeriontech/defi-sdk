@@ -8,6 +8,7 @@ const BancorAdapter = artifacts.require('BancorAdapter');
 const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
 const CompoundDebtAdapter = artifacts.require('CompoundDebtAdapter');
 const CurveAdapter = artifacts.require('CurveAdapter');
+const CurveStakingAdapter = artifacts.require('CurveStakingAdapter');
 const DdexLendingAssetAdapter = artifacts.require('DdexLendingAssetAdapter');
 const DdexMarginAssetAdapter = artifacts.require('DdexMarginAssetAdapter');
 const DdexMarginDebtAdapter = artifacts.require('DdexMarginDebtAdapter');
@@ -155,6 +156,8 @@ const idleRiskAdjustedUSDT = '0x42740698959761BAF1B06baa51EfBD88CB1D862B';
 const kETHAddress = '0xC4c43C78fb32F2c7F8417AF5af3B85f090F1d327';
 const kWETHAddress = '0xac19815455C2c438af8A8b4623F65f091364be10';
 
+const crvAddress = '0xD533a949740bb3306d119CC777fa900bA034cd52';
+
 const cCrvAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
 const tCrvAddress = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
 const yCrvAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
@@ -163,6 +166,7 @@ const sCrvAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
 const pCrvAddress = '0xD905e2eaeBe188fc92179b6350807D8bd91Db0D8';
 const tbtcCrvAddress = '0x1f2a662FB513441f06b8dB91ebD9a1466462b275';
 const renCrvAddress = '0x49849C98ae39Fff122806C06791Fa73784FB3675';
+const sbtcCrvAddress = '0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3';
 
 const sethUniAddress = '0xe9Cf7887b93150D4F2Da7dFc6D502B216438F244';
 const curveSnxAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
@@ -295,6 +299,17 @@ const curveAdapterTokens = [
   pCrvAddress,
   tbtcCrvAddress,
   renCrvAddress,
+  sbtcCrvAddress,
+];
+const curveStakingAdapterTokens = [
+  crvAddress,
+  cCrvAddress,
+  yCrvAddress,
+  bCrvAddress,
+  sCrvAddress,
+  pCrvAddress,
+  renCrvAddress,
+  sbtcCrvAddress,
 ];
 const ddexAdapterTokens = [
   busdAddress,
@@ -524,8 +539,9 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(CurveAdapter, { from: accounts[0] });
-  adapters.push([CurveAdapter.address]);
-  tokens.push([curveAdapterTokens]);
+  await deployer.deploy(CurveStakingAdapter, { from: accounts[0] });
+  adapters.push([CurveAdapter.address, CurveStakingAdapter.address]);
+  tokens.push([curveAdapterTokens, curveStakingAdapterTokens]);
   protocolNames.push('Curve');
   metadata.push([
     'Curve',
