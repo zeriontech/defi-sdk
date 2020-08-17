@@ -12,8 +12,7 @@ contract('MstableStakingAdapter', () => {
   const balancerMusd95Mta5Address = '0xa5DA8Cc7167070B62FdCB332EF097A55A68d8824';
   const balancerWeth50Musd50Address = '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513';
   const uniswapMtaWethAddress = '0x0d0d65E7A7dB277d3E0F5E1676325E75f3340455';
-  // Random address with non-zero balances
-  const testAddress = '0x0d703ccd7debd7f6f4b0ffb29d2d710d19b09025';
+  const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
   let adapterRegistry;
@@ -76,7 +75,6 @@ contract('MstableStakingAdapter', () => {
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
         displayToken(result[0].adapterBalances[0].balances[1].base);
-        displayToken(result[0].adapterBalances[0].balances[2].base);
       });
   });
 });

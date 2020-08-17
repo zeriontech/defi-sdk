@@ -16,10 +16,10 @@ contract('DyDxDebtAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
-  const weth = [
-    wethAddress,
-    'Wrapped Ether',
-    'WETH',
+  const dai = [
+    daiAddress,
+    'Dai Stablecoin',
+    'DAI',
     '18',
   ];
 
@@ -74,8 +74,7 @@ contract('DyDxDebtAdapter', () => {
     await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then((result) => {
-        displayToken(result[0].adapterBalances[0].balances[0].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, weth);
+        assert.deepEqual(result, []);
       });
   });
 

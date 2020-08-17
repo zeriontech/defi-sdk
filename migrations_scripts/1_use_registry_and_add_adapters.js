@@ -37,8 +37,6 @@ const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
 const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const UniswapV2Adapter = artifacts.require('UniswapV2Adapter');
-const YamAssetAdapter = artifacts.require('YamAssetAdapter');
-const YamStakingAdapter = artifacts.require('YamStakingAdapter');
 const YearnStakingV1Adapter = artifacts.require('YearnStakingV1Adapter');
 const YearnStakingV2Adapter = artifacts.require('YearnStakingV2Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
@@ -415,20 +413,6 @@ const synthetixAssetAdapterTokens = [
 ];
 const synthetixDebtAdapterTokens = [
   susdAddress,
-];
-const yamAssetAdapterTokens = [
-  yamAddress,
-];
-const yamStakingAdapterTokens = [
-  yamAddress,
-  yfiAddress,
-  wethAddress,
-  uniAmplWethAddress,
-  compAddress,
-  linkAddress,
-  lendAddress,
-  snxAddress,
-  mkrAddress,
 ];
 const yearnStakingV1AdapterTokens = [
   yfiAddress,
@@ -860,19 +844,6 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
-  await deployer.deploy(YamAssetAdapter, { from: accounts[0] });
-  await deployer.deploy(YamStakingAdapter, { from: accounts[0] });
-  adapters.push([YamAssetAdapter.address, YamStakingAdapter.address]);
-  tokens.push([[yamAssetAdapterTokens, yamStakingAdapterTokens]]);
-  protocolNames.push('Yam Finance');
-  metadata.push([
-    'Yam Finance',
-    'A stabilizing reserve currency protocol',
-    'yam.finance',
-    'protocol-icons.s3.amazonaws.com/yam.png',
-    '0',
-  ]);
-
   await deployer.deploy(ZrxAdapter, { from: accounts[0] });
   adapters.push([ZrxAdapter.address]);
   tokens.push([zrxAdapterTokens]);
@@ -1005,7 +976,7 @@ module.exports = async (deployer, network, accounts) => {
         UniswapV2TokenAdapter.address,
       );
     });
-  await deployer.deploy(AdapterRegistry, { from: accounts[0] })
+  await AdapterRegistry.at('0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672')
     .then(async (registry) => {
       await registry.contract.methods.addProtocols(
         protocolNames,
