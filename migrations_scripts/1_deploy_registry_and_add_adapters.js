@@ -8,6 +8,7 @@ const BancorAdapter = artifacts.require('BancorAdapter');
 const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
 const CompoundDebtAdapter = artifacts.require('CompoundDebtAdapter');
 const CurveAdapter = artifacts.require('CurveAdapter');
+const CurveStakingAdapter = artifacts.require('CurveStakingAdapter');
 const DdexLendingAssetAdapter = artifacts.require('DdexLendingAssetAdapter');
 const DdexMarginAssetAdapter = artifacts.require('DdexMarginAssetAdapter');
 const DdexMarginDebtAdapter = artifacts.require('DdexMarginDebtAdapter');
@@ -36,8 +37,6 @@ const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
 const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const UniswapV2Adapter = artifacts.require('UniswapV2Adapter');
-const YamAssetAdapter = artifacts.require('YamAssetAdapter');
-const YamStakingAdapter = artifacts.require('YamStakingAdapter');
 const YearnStakingV1Adapter = artifacts.require('YearnStakingV1Adapter');
 const YearnStakingV2Adapter = artifacts.require('YearnStakingV2Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
@@ -155,6 +154,8 @@ const idleRiskAdjustedUSDT = '0x42740698959761BAF1B06baa51EfBD88CB1D862B';
 const kETHAddress = '0xC4c43C78fb32F2c7F8417AF5af3B85f090F1d327';
 const kWETHAddress = '0xac19815455C2c438af8A8b4623F65f091364be10';
 
+const crvAddress = '0xD533a949740bb3306d119CC777fa900bA034cd52';
+
 const cCrvAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
 const tCrvAddress = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
 const yCrvAddress = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
@@ -163,6 +164,7 @@ const sCrvAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
 const pCrvAddress = '0xD905e2eaeBe188fc92179b6350807D8bd91Db0D8';
 const tbtcCrvAddress = '0x1f2a662FB513441f06b8dB91ebD9a1466462b275';
 const renCrvAddress = '0x49849C98ae39Fff122806C06791Fa73784FB3675';
+const sbtcCrvAddress = '0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3';
 
 const sethUniAddress = '0xe9Cf7887b93150D4F2Da7dFc6D502B216438F244';
 const curveSnxAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
@@ -197,8 +199,6 @@ const uniswapMtaWethAddress = '0x0d0d65E7A7dB277d3E0F5E1676325E75f3340455';
 
 const amplAddress = '0xD46bA6D942050d489DBd938a2C909A5d5039A161';
 const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
-
-const compAddress = '0xc00e94Cb662C3520282E6f5717214004A7f26888';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -295,6 +295,17 @@ const curveAdapterTokens = [
   pCrvAddress,
   tbtcCrvAddress,
   renCrvAddress,
+  sbtcCrvAddress,
+];
+const curveStakingAdapterTokens = [
+  crvAddress,
+  cCrvAddress,
+  yCrvAddress,
+  bCrvAddress,
+  sCrvAddress,
+  pCrvAddress,
+  renCrvAddress,
+  sbtcCrvAddress,
 ];
 const ddexAdapterTokens = [
   busdAddress,
@@ -400,20 +411,6 @@ const synthetixAssetAdapterTokens = [
 ];
 const synthetixDebtAdapterTokens = [
   susdAddress,
-];
-const yamAssetAdapterTokens = [
-  yamAddress,
-];
-const yamStakingAdapterTokens = [
-  yamAddress,
-  yfiAddress,
-  wethAddress,
-  uniAmplWethAddress,
-  compAddress,
-  linkAddress,
-  lendAddress,
-  snxAddress,
-  mkrAddress,
 ];
 const yearnStakingV1AdapterTokens = [
   yfiAddress,
@@ -524,8 +521,9 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(CurveAdapter, { from: accounts[0] });
-  adapters.push([CurveAdapter.address]);
-  tokens.push([curveAdapterTokens]);
+  await deployer.deploy(CurveStakingAdapter, { from: accounts[0] });
+  adapters.push([CurveAdapter.address, CurveStakingAdapter.address]);
+  tokens.push([curveAdapterTokens, curveStakingAdapterTokens]);
   protocolNames.push('Curve');
   metadata.push([
     'Curve',
@@ -841,19 +839,6 @@ module.exports = async (deployer, network, accounts) => {
     'Automated liquidity protocol',
     'uniswap.org',
     'protocol-icons.s3.amazonaws.com/Uniswap.png',
-    '0',
-  ]);
-
-  await deployer.deploy(YamAssetAdapter, { from: accounts[0] });
-  await deployer.deploy(YamStakingAdapter, { from: accounts[0] });
-  adapters.push([YamAssetAdapter.address, YamStakingAdapter.address]);
-  tokens.push([[yamAssetAdapterTokens, yamStakingAdapterTokens]]);
-  protocolNames.push('Yam Finance');
-  metadata.push([
-    'Yam Finance',
-    'A stabilizing reserve currency protocol',
-    'yam.finance',
-    'protocol-icons.s3.amazonaws.com/yam.png',
     '0',
   ]);
 

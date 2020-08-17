@@ -1,4 +1,4 @@
-import displayToken from './helpers/displayToken';
+// import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('DyDxDebtAdapter');
@@ -16,12 +16,6 @@ contract('DyDxDebtAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
-  const weth = [
-    wethAddress,
-    'Wrapped Ether',
-    'WETH',
-    '18',
-  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -74,8 +68,7 @@ contract('DyDxDebtAdapter', () => {
     await adapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then((result) => {
-        displayToken(result[0].adapterBalances[0].balances[0].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, weth);
+        assert.deepEqual(result, []);
       });
   });
 

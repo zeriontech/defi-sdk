@@ -1,13 +1,13 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('YamAssetAdapter');
+const ProtocolAdapter = artifacts.require('CurveStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('YamAssetAdapter', () => {
-  const yamAddress = '0x0e2298E3B3390e3b945a5456fBf59eCc3f55DA16';
-  // Random address with YAM tokens
-  const testAddress = '0x587A07cE5c265A38Dd6d42def1566BA73eeb06F5';
+contract('CurveStakingAdapter', () => {
+  const cCrvAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
+  // Random address with positive balances
+  const testAddress = '0x6346BA47665092855c879428aef512C63d249351';
 
   let accounts;
   let adapterRegistry;
@@ -29,7 +29,7 @@ contract.only('YamAssetAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Yam Finance'],
+      ['Curve Gauges'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -41,7 +41,7 @@ contract.only('YamAssetAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        yamAddress,
+        cCrvAddress,
       ]]],
     )
       .send({
