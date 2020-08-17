@@ -1,4 +1,4 @@
-import displayToken from './helpers/displayToken';
+// import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('DyDxDebtAdapter');
@@ -16,12 +16,6 @@ contract('DyDxDebtAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
-  const dai = [
-    daiAddress,
-    'Dai Stablecoin',
-    'DAI',
-    '18',
-  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();

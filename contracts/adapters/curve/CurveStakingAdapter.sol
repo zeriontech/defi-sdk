@@ -21,15 +21,6 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @dev CurveGauge contract interface.
- * Only the functions required for CurveStakingAdapter contract are added.
- */
-interface CurveGauge {
-    function claimable_tokens(address) external view returns (uint256);
-}
-
-
-/**
  * @title Adapter for Curve protocol (staking).
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>

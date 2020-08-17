@@ -200,8 +200,6 @@ const uniswapMtaWethAddress = '0x0d0d65E7A7dB277d3E0F5E1676325E75f3340455';
 const amplAddress = '0xD46bA6D942050d489DBd938a2C909A5d5039A161';
 const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
 
-const compAddress = '0xc00e94Cb662C3520282E6f5717214004A7f26888';
-
 const aaveAssetAdapterTokens = [
   aDaiAddress,
   aTusdAddress,
