@@ -83,7 +83,7 @@ interface BancorFormula {
 contract BancorTokenAdapter is TokenAdapter {
 
     address internal constant REGISTRY = 0x52Ae12ABe5D8BD778BD5397F99cA900624CfADD4;
-
+    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     /**
      * @return TokenMetadata struct with ERC20-style token info.
      * @dev Implementation of TokenAdapter interface function.
@@ -105,20 +105,27 @@ contract BancorTokenAdapter is TokenAdapter {
         address formula = ContractRegistry(REGISTRY).addressOf("BancorFormula");
         uint256 totalSupply = SmartToken(token).totalSupply();
         address converter = SmartToken(token).owner();
-        uint256 length = BancorConverter(converter).connectorTokenCount();
+        uint256 connectorTokenCount = BancorConverter(converter).connectorTokenCount();
 
-        Component[] memory underlyingTokens = new Component[](length);
+        Component[] memory underlyingTokens = new Component[](connectorTokenCount);
 
         address underlyingToken;
-        for (uint256 i = 0; i < length; i++) {
+        uint256 balance;
+        for (uint256 i = 0; i < connectorTokenCount; i++) {
             underlyingToken = BancorConverter(converter).connectorTokens(i);
+
+            if (underlyingToken == ETH) {
+                balance = converter.balance;
+            } else {
+                balance = ERC20(underlyingToken).balanceOf(converter);
+            }
 
             underlyingTokens[i] = Component({
                 token: underlyingToken,
                 tokenType: "ERC20",
                 rate: BancorFormula(formula).calculateLiquidateReturn(
                     totalSupply,
-                    ERC20(underlyingToken).balanceOf(converter),
+                    balance,
                     uint32(1000000),
                     uint256(1e18)
                 )

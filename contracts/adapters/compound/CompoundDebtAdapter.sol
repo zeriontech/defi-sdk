@@ -59,8 +59,8 @@ contract CompoundDebtAdapter is ProtocolAdapter {
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        CToken cToken = CToken(CompoundRegistry(REGISTRY).getCToken(token));
+        address cToken = CompoundRegistry(REGISTRY).getCToken(token);
 
-        return cToken.borrowBalanceStored(account);
+        return CToken(cToken).borrowBalanceStored(account);
     }
 }

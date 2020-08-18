@@ -21,35 +21,12 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @dev CurveRewards contract interface.
+ * @dev StakingRewards contract interface.
  * Only the functions required for SynthetixAssetAdapter contract are added.
- * The CurveRewards contract is available here
- * github.com/Synthetixio/Unipool/blob/master/contracts/CurveRewards.sol.
+ * The StakingRewards contract is available here
+ * github.com/Synthetixio/synthetix/blob/master/contracts/StakingRewards.sol.
  */
-interface CurveRewards {
-    function earned(address) external view returns (uint256);
-}
-
-
-/**
- * @dev iETHRewards contract interface.
- * Only the functions required for SynthetixAssetAdapter contract are added.
- * The iETHRewards contract is available here
- * github.com/Synthetixio/Unipool/blob/master/contracts/iETHRewards.sol.
- */
-// solhint-disable-next-line contract-name-camelcase
-interface iETHRewards {
-    function earned(address) external view returns (uint256);
-}
-
-
-/**
- * @dev Unipool contract interface.
- * Only the functions required for SynthetixAssetAdapter contract are added.
- * The Unipool contract is available here
- * github.com/Synthetixio/Unipool/blob/master/contracts/Unipool.sol.
- */
-interface Unipool {
+interface StakingRewards {
     function earned(address) external view returns (uint256);
 }
 
@@ -88,12 +65,19 @@ contract SynthetixAssetAdapter is ProtocolAdapter {
     string public constant override tokenType = "ERC20";
 
     address internal constant SNX = 0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F;
-    address internal constant SUSD_POOL_TOKEN = 0xC25a3A3b969415c80451098fa907EC722572917F;
+    address internal constant CURVE_SUSD = 0xC25a3A3b969415c80451098fa907EC722572917F;
+    address internal constant CURVE_SBTC = 0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3;
     address internal constant IETH = 0xA9859874e1743A32409f75bB11549892138BBA1E;
     address internal constant UNISWAP_SETH = 0xe9Cf7887b93150D4F2Da7dFc6D502B216438F244;
-    address internal constant LP_REWARD_CURVE = 0xDCB6A51eA3CA5d3Fd898Fd6564757c7aAeC3ca92;
+    address internal constant UNISWAP_SXAU = 0x34a0216C5057bC18e5d34D4405284564eFd759b2;
+    address internal constant BALANCER_SNX_USDC = 0x815F8eF4863451f4Faf34FBc860034812E7377d9;
+    address internal constant BALANCER_SNX_REN = 0x330416C863f2acCE7aF9C9314B422d24c672534a;
+    address internal constant LP_REWARD_SUSD = 0xDCB6A51eA3CA5d3Fd898Fd6564757c7aAeC3ca92;
     address internal constant LP_REWARD_IETH = 0xC746bc860781DC90BBFCD381d6A058Dc16357F8d;
-    address internal constant LP_REWARD_UNISWAP = 0x48D7f315feDcaD332F68aafa017c7C158BC54760;
+    address internal constant LP_REWARD_SETH = 0x48D7f315feDcaD332F68aafa017c7C158BC54760;
+    address internal constant LP_REWARD_SXAU = 0x8302FE9F0C509a996573D3Cc5B0D5D51e4FDD5eC;
+    address internal constant LP_REWARD_SBTC = 0x13C1542A468319688B89E323fe9A3Be3A90EBb27;
+    address internal constant LP_REWARD_BALANCER = 0xFBaEdde70732540cE2B11A8AC58Eb2dC0D69dE10;
 
     /**
      * @return Amount of SNX locked on the protocol by the given account.
@@ -102,16 +86,26 @@ contract SynthetixAssetAdapter is ProtocolAdapter {
     function getBalance(address token, address account) external view override returns (uint256) {
         if (token == SNX) {
             uint256 balance = Synthetix(Proxy(SNX).target()).collateral(account);
-            balance += CurveRewards(LP_REWARD_CURVE).earned(account);
-            balance += iETHRewards(LP_REWARD_IETH).earned(account);
-            balance += Unipool(LP_REWARD_UNISWAP).earned(account);
+            balance += StakingRewards(LP_REWARD_SUSD).earned(account);
+            balance += StakingRewards(LP_REWARD_IETH).earned(account);
+            balance += StakingRewards(LP_REWARD_SETH).earned(account);
+            balance += StakingRewards(LP_REWARD_SXAU).earned(account);
+            balance += StakingRewards(LP_REWARD_BALANCER).earned(account);
             return balance;
-        } else if (token == SUSD_POOL_TOKEN) {
-            return ERC20(LP_REWARD_CURVE).balanceOf(account);
+        } else if (token == BALANCER_SNX_REN) {
+            return StakingRewards(LP_REWARD_SBTC).earned(account);
+        } else if (token == CURVE_SUSD) {
+            return ERC20(LP_REWARD_SUSD).balanceOf(account);
+        } else if (token == CURVE_SBTC) {
+            return ERC20(LP_REWARD_SBTC).balanceOf(account);
         } else if (token == IETH) {
             return ERC20(LP_REWARD_IETH).balanceOf(account);
         } else if (token == UNISWAP_SETH) {
-            return ERC20(LP_REWARD_UNISWAP).balanceOf(account);
+            return ERC20(LP_REWARD_SETH).balanceOf(account);
+        } else if (token == UNISWAP_SXAU) {
+            return ERC20(LP_REWARD_SXAU).balanceOf(account);
+        } else if (token == BALANCER_SNX_USDC) {
+            return ERC20(LP_REWARD_BALANCER).balanceOf(account);
         } else {
             return 0;
         }

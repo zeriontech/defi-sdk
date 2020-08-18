@@ -39,7 +39,7 @@ interface CToken {
  * github.com/balancer-labs/balancer-core/blob/master/contracts/BPool.sol.
  */
 interface BPool {
-    function getFinalTokens() external view returns (address[] memory);
+    function getCurrentTokens() external view returns (address[] memory);
     function getBalance(address) external view returns (uint256);
     function getNormalizedWeight(address) external view returns (uint256);
 }
@@ -51,7 +51,6 @@ interface BPool {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract BalancerTokenAdapter is TokenAdapter {
-
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -71,32 +70,18 @@ contract BalancerTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        address[] memory underlyingTokensAddresses;
-        try BPool(token).getFinalTokens() returns (address[] memory result) {
-            underlyingTokensAddresses = result;
-        } catch {
-            underlyingTokensAddresses = new address[](0);
-        }
+        address[] memory tokens;
+        tokens = BPool(token).getCurrentTokens();
 
         uint256 totalSupply = ERC20(token).totalSupply();
 
-        Component[] memory underlyingTokens = new Component[](underlyingTokensAddresses.length);
+        Component[] memory underlyingTokens = new Component[](tokens.length);
 
-        address underlyingToken;
-        string memory underlyingTokenType;
         for (uint256 i = 0; i < underlyingTokens.length; i++) {
-            underlyingToken = underlyingTokensAddresses[i];
-
-            try CToken(underlyingToken).isCToken{gas: 2000}() returns (bool) {
-                underlyingTokenType = "CToken";
-            } catch {
-                underlyingTokenType = "ERC20";
-            }
-
             underlyingTokens[i] = Component({
-                token: underlyingToken,
-                tokenType: underlyingTokenType,
-                rate: BPool(token).getBalance(underlyingToken) * 1e18 / totalSupply
+                token: tokens[i],
+                tokenType: getTokenType(tokens[i]),
+                rate: totalSupply == 0 ? 0 : BPool(token).getBalance(tokens[i]) * 1e18 / totalSupply
             });
         }
 
@@ -105,7 +90,7 @@ contract BalancerTokenAdapter is TokenAdapter {
 
     function getPoolName(address token) internal view returns (string memory) {
         address[] memory underlyingTokensAddresses;
-        try BPool(token).getFinalTokens() returns (address[] memory result) {
+        try BPool(token).getCurrentTokens() returns (address[] memory result) {
             underlyingTokensAddresses = result;
         } catch {
             return "Unknown pool";
@@ -120,6 +105,7 @@ contract BalancerTokenAdapter is TokenAdapter {
                 i == lastIndex ? " pool" : " + "
             ));
         }
+
         return poolName;
     }
 
@@ -140,6 +126,22 @@ contract BalancerTokenAdapter is TokenAdapter {
             return convertToString(abi.decode(returnData, (bytes32)));
         } else {
             return abi.decode(returnData, (string));
+        }
+    }
+
+    function getTokenType(address token) internal view returns (string memory) {
+        (bool success, bytes memory returnData) = token.staticcall{gas: 2000}(
+            abi.encodeWithSelector(CToken(token).isCToken.selector)
+        );
+
+        if (success) {
+            if (returnData.length == 32) {
+                return abi.decode(returnData, (bool)) ? "CToken" : "ERC20";
+            } else {
+                return "ERC20";
+            }
+        } else {
+            return "ERC20";
         }
     }
 

@@ -20,38 +20,32 @@ import { ERC20 } from "../../ERC20.sol";
 import { TokenMetadata, Component } from "../../Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
-/**
- * @dev OneSplit contract interface.
- * Only the functions required for OneSplit contract are added.
- * The OneSplit contract is available here
- * github.com/CryptoManiacsZone/1inchProtocol/blob/master/contracts/OneSplit.sol.
- */
-interface IOneSplit {
 
-    function getExpectedReturn(
-        ERC20 fromToken,
-        ERC20 toToken,
-        uint256 amount,
-        uint256 parts,
-        uint256 disableFlags
-    )
-    external
-    view
-    returns(
-        uint256 returnAmount,
-        uint256[] memory distribution
-    );
+interface Ownable {
+    function owner() external view returns (address);
 }
 
 
 /**
- * @title Token adapter for Chi Gastoken by 1inch.
- * @dev Implementation of Chi Token interface.
+ * @dev LiquidityPoolV2Converter contract interface.
+ * Only the functions required for BancorV2TokenAdapter contract are added.
+ * The LiquidityPoolV2Converter interface is available here
+ * github.com/bancorprotocol/contracts-solidity/blob/master/solidity/contracts/converter/interfaces/IConverter.sol.
  */
-contract OneInchChiTokenAdapter is TokenAdapter {
+interface LiquidityPoolV2Converter {
+    function connectorTokenCount() external view returns (uint256);
+    function connectorTokens(uint256) external view returns (address);
+    function poolToken(address) external view returns (address);
+    function removeLiquidityReturnAndFee(address, uint256) external view returns (uint256);
+}
 
-    ERC20 private constant ETH_ADDRESS = ERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
-    IOneSplit private constant oneSplit = IOneSplit(0xC586BeF4a0992C495Cf22e1aeEE4E446CECDee0E);
+
+/**
+ * @title Token adapter for SmartTokens V2.
+ * @dev Implementation of TokenAdapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
+ */
+contract BancorV2TokenAdapter is TokenAdapter {
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -71,21 +65,27 @@ contract OneInchChiTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        (uint256 rate, ) = oneSplit.getExpectedReturn(
-            ERC20(token),
-            ERC20(ETH_ADDRESS),
-            1,
-            1,
-            0
-        );
+        address poolTokensContainer = Ownable(token).owner();
+        address converter = Ownable(poolTokensContainer).owner();
+        uint256 connectorTokenCount = LiquidityPoolV2Converter(converter).connectorTokenCount();
 
         Component[] memory underlyingTokens = new Component[](1);
 
-        underlyingTokens[0] = Component({
-            token: token,
-            tokenType: "ERC20",
-            rate: rate
-        });
+        address underlyingToken;
+        for (uint256 i = 0; i < connectorTokenCount; i++) {
+            underlyingToken = LiquidityPoolV2Converter(converter).connectorTokens(i);
+
+            if (LiquidityPoolV2Converter(converter).poolToken(underlyingToken) == token) {
+                underlyingTokens[0] = Component({
+                    token: underlyingToken,
+                    tokenType: "ERC20",
+                    rate: LiquidityPoolV2Converter(converter).removeLiquidityReturnAndFee(
+                        token,
+                        1e18
+                    )
+                });
+            }
+        }
 
         return underlyingTokens;
     }

@@ -75,17 +75,10 @@ contract UniswapV2TokenAdapter is TokenAdapter {
         uint256 totalSupply = ERC20(token).totalSupply();
         Component[] memory underlyingTokens = new Component[](2);
 
-        string memory underlyingTokenType;
         for (uint256 i = 0; i < 2; i++) {
-            try CToken(tokens[i]).isCToken{gas: 2000}() returns (bool) {
-                underlyingTokenType = "CToken";
-            } catch {
-                underlyingTokenType = "ERC20";
-            }
-
             underlyingTokens[i] = Component({
                 token: tokens[i],
-                tokenType: underlyingTokenType,
+                tokenType: getTokenType(tokens[i]),
                 rate: ERC20(tokens[i]).balanceOf(token) * 1e18 / totalSupply
             });
         }
@@ -113,6 +106,22 @@ contract UniswapV2TokenAdapter is TokenAdapter {
             return convertToString(abi.decode(returnData, (bytes32)));
         } else {
             return abi.decode(returnData, (string));
+        }
+    }
+
+    function getTokenType(address token) internal view returns (string memory) {
+        (bool success, bytes memory returnData) = token.staticcall{gas: 2000}(
+            abi.encodeWithSelector(CToken(token).isCToken.selector)
+        );
+
+        if (success) {
+            if (returnData.length == 32) {
+                return abi.decode(returnData, (bool)) ? "CToken" : "ERC20";
+            } else {
+                return "ERC20";
+            }
+        } else {
+            return "ERC20";
         }
     }
 

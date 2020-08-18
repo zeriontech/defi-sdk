@@ -1,3 +1,4 @@
+const AragonStakingAdapter = artifacts.require('AragonStakingAdapter');
 const AaveAssetAdapter = artifacts.require('AaveAssetAdapter');
 const AaveDebtAdapter = artifacts.require('AaveDebtAdapter');
 const AaveUniswapAssetAdapter = artifacts.require('AaveUniswapAssetAdapter');
@@ -7,15 +8,28 @@ const BancorAdapter = artifacts.require('BancorAdapter');
 const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
 const CompoundDebtAdapter = artifacts.require('CompoundDebtAdapter');
 const CurveAdapter = artifacts.require('CurveAdapter');
+const CurveStakingAdapter = artifacts.require('CurveStakingAdapter');
+const DdexLendingAssetAdapter = artifacts.require('DdexLendingAssetAdapter');
+const DdexMarginAssetAdapter = artifacts.require('DdexMarginAssetAdapter');
+const DdexMarginDebtAdapter = artifacts.require('DdexMarginDebtAdapter');
+const DdexSpotAssetAdapter = artifacts.require('DdexSpotAssetAdapter');
 const DmmAssetAdapter = artifacts.require('DmmAssetAdapter');
 const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
+const GnosisProtocolAdapter = artifacts.require('GnosisProtocolAdapter');
 const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
+const KeeperDaoAssetAdapter = artifacts.require('KeeperDaoAssetAdapter');
+const KyberAdapter = artifacts.require('KyberAdapter');
 const ChaiAdapter = artifacts.require('ChaiAdapter');
 const DSRAdapter = artifacts.require('DSRAdapter');
+const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
+const MelonAssetAdapter = artifacs.require('MelonAssetAdapter');
+const MstableAssetAdapter = artifacts.require('MstableAssetAdapter');
+const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
+const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
@@ -23,6 +37,8 @@ const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
 const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const UniswapV2Adapter = artifacts.require('UniswapV2Adapter');
+const YearnStakingV1Adapter = artifacts.require('YearnStakingV1Adapter');
+const YearnStakingV2Adapter = artifacts.require('YearnStakingV2Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const AaveTokenAdapter = artifacts.require('AaveTokenAdapter');
@@ -34,13 +50,20 @@ const CurveTokenAdapter = artifacts.require('CurveTokenAdapter');
 const DmmTokenAdapter = artifacts.require('DmmTokenAdapter');
 const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
+const KeeperDaoTokenAdapter = artifacts.require('IearnTokenAdapter');
 const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
+const MelonTokenAdapter = artifacts.require('MelonTokenAdapter');
+const MstableTokenAdapter = artifacts.require('MstableTokenAdapter');
+const ChiTokenAdapter = artifacts.require('ChiTokenAdapter');
 const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
+
+const antAddress = '0x960b236A07cf122663c4303350609A66A7B288C0';
+const uniAntWethAddress = '0xfa19de406e8F5b9100E4dD5CaD8a503a6d686Efe';
 
 const aDaiAddress = '0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d';
 const aTusdAddress = '0x4DA9b813057D04BAef4e5800E36083717b4a0341';
@@ -78,12 +101,12 @@ const zrxAddress = '0xE41d2489571d322189246DaFA5ebDe1F4699F498';
 const snxAddress = '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F';
 const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
 
-const uniUsdcEthAddress = '0x1D0e53A0e524E3CC92C1f0f33Ae268FfF8D7E7a5';
-const uniLinkEthAddress = '0x9548DB8b1cA9b6c757485e7861918b640390169c';
-const uniDaiEthAddress = '0xBbBb7F2aC04484F7F04A2C2C16f20479791BbB44';
-const uniLendEthAddress = '0xc88ebbf7c523f38ef3eb8a151273c0f0da421e63';
-const uniMkrEthAddress = '0x8c69f7A4C9B38F1b48005D216c398Efb2F1Ce3e4';
-const uniSethEthAddress = '0x84BBcaB430717ff832c3904fa6515f97fc63C76F';
+const aUniUsdcEthAddress = '0x1D0e53A0e524E3CC92C1f0f33Ae268FfF8D7E7a5';
+const aUniLinkEthAddress = '0x9548DB8b1cA9b6c757485e7861918b640390169c';
+const aUniDaiEthAddress = '0xBbBb7F2aC04484F7F04A2C2C16f20479791BbB44';
+const aUniLendEthAddress = '0xc88ebbf7c523f38ef3eb8a151273c0f0da421e63';
+const aUniMkrEthAddress = '0x8c69f7A4C9B38F1b48005D216c398Efb2F1Ce3e4';
+const aUniSethEthAddress = '0x84BBcaB430717ff832c3904fa6515f97fc63C76F';
 const auDaiAddress = '0x048930eec73c91B44b0844aEACdEBADC2F2b6efb';
 const auUsdcAddress = '0xe02b2Ad63eFF3Ac1D5827cBd7AB9DD3DaC4f4AD0';
 const auUsdtAddress = '0xb977ee318010A5252774171494a1bCB98E7fab65';
@@ -117,8 +140,21 @@ const yUSDCv3 = '0x26EA744E5B887E5205727f55dFBE8685e3b21951';
 const yUSDTv3 = '0xE6354ed5bC4b393a5Aad09f21c46E101e692d447';
 const yBUSDv3 = '0x04bC0Ab673d88aE9dbC9DA2380cB6B79C4BCa9aE';
 
-const idleDAI = '0x10eC0D497824e342bCB0EDcE00959142aAa766dD';
-const idleUSDC = '0xeB66ACc3d011056B00ea521F8203580C2E5d3991';
+const idleBestYieldDAI = '0x78751B12Da02728F467A44eAc40F5cbc16Bd7934';
+const idleBestYieldUSDC = '0x12B98C621E8754Ae70d0fDbBC73D6208bC3e3cA6';
+const idleBestYieldUSDT = '0x63D27B3DA94A9E871222CB0A32232674B02D2f2D';
+const idleBestYieldSUSD = '0xb39ca0261a1b2986a6a9Fe38d344B56374963dE5';
+const idleBestYieldTUSD = '0x7DB7A4a50b26602E56536189Aa94678C80F8E5b6';
+const idleBestYieldWBTC = '0xD6f279B7ccBCD70F8be439d25B9Df93AEb60eC55';
+
+const idleRiskAdjustedDAI = '0x1846bdfDB6A0f5c473dEc610144513bd071999fB';
+const idleRiskAdjustedUSDC = '0xcDdB1Bceb7a1979C6caa0229820707429dd3Ec6C';
+const idleRiskAdjustedUSDT = '0x42740698959761BAF1B06baa51EfBD88CB1D862B';
+
+const kETHAddress = '0xC4c43C78fb32F2c7F8417AF5af3B85f090F1d327';
+const kWETHAddress = '0xac19815455C2c438af8A8b4623F65f091364be10';
+
+const crvAddress = '0xD533a949740bb3306d119CC777fa900bA034cd52';
 
 const cCrvAddress = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
 const tCrvAddress = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
@@ -128,6 +164,7 @@ const sCrvAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
 const pCrvAddress = '0xD905e2eaeBe188fc92179b6350807D8bd91Db0D8';
 const tbtcCrvAddress = '0x1f2a662FB513441f06b8dB91ebD9a1466462b275';
 const renCrvAddress = '0x49849C98ae39Fff122806C06791Fa73784FB3675';
+const sbtcCrvAddress = '0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3';
 
 const sethUniAddress = '0xe9Cf7887b93150D4F2Da7dFc6D502B216438F244';
 const curveSnxAddress = '0xC25a3A3b969415c80451098fa907EC722572917F';
@@ -139,9 +176,29 @@ const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';
 const daiPoolAddress = '0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958';
 const usdcPoolAddress = '0x0034Ea9808E620A0EF79261c51AF20614B742B24';
 
+const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
+const balancerDai98Yfi2Address = '0x60626db611a9957C1ae4Ac5b7eDE69e24A3B76c5';
+const balancerYfi2yCrv98Address = '0x95C4B6C7CfF608c0CA048df8b81a484aA377172B';
+
 const chaiAddress = '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215';
 
+const mUsdAddress = '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5';
+
+const chiAddress = '0x0000000000004946c0e9F43F4Dee607b0eF1fA1c';
+
 const BTCPPAddress = '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd';
+const USDPPAddress = '0x9A48BD0EC040ea4f1D3147C025cd4076A2e71e3e';
+
+const mtaAddress = '0xa3BeD4E1c75D00fa6f4E5E6922DB7261B5E9AcD2';
+const balAddress = '0xba100000625a3754423978a60c9317c58a424e3D';
+const balancerMusd20Mta80Address = '0x003a70265a3662342010823bEA15Dc84C6f7eD54';
+const balancerUsdc50Musd50Address = '0x72Cd8f4504941Bf8c5a21d1Fd83A96499FD71d2C';
+const balancerMusd95Mta5Address = '0xa5DA8Cc7167070B62FdCB332EF097A55A68d8824';
+const balancerWeth50Musd50Address = '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513';
+const uniswapMtaWethAddress = '0x0d0d65E7A7dB277d3E0F5E1676325E75f3340455';
+
+const amplAddress = '0xD46bA6D942050d489DBd938a2C909A5d5039A161';
+const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -182,22 +239,30 @@ const aaveDebtAdapterTokens = [
   wbtcAddress,
 ];
 const aaveUniswapAssetAdapterTokens = [
-  uniUsdcEthAddress,
-  uniLinkEthAddress,
-  uniDaiEthAddress,
-  uniLendEthAddress,
-  uniMkrEthAddress,
-  uniSethEthAddress,
-  auEthAddress,
+  aUniUsdcEthAddress,
+  aUniLinkEthAddress,
+  aUniDaiEthAddress,
+  aUniLendEthAddress,
+  aUniMkrEthAddress,
+  aUniSethEthAddress,
+  auDaiAddress,
   auUsdcAddress,
   auUsdtAddress,
-  auDaiAddress,
+  auEthAddress,
 ];
 const aaveUniswapDebtAdapterTokens = [
-  ethAddress,
+  daiAddress,
   usdcAddress,
   usdtAddress,
-  daiAddress,
+  ethAddress,
+];
+const ampleforthAdapterTokens = [
+  amplAddress,
+  uniAmplWethAddress,
+];
+const aragonStakingAdapterTokens = [
+  antAddress,
+  uniAntWethAddress,
 ];
 const compoundAssetAdapterTokens = [
   cDAIAddress,
@@ -230,6 +295,25 @@ const curveAdapterTokens = [
   pCrvAddress,
   tbtcCrvAddress,
   renCrvAddress,
+  sbtcCrvAddress,
+];
+const curveStakingAdapterTokens = [
+  crvAddress,
+  cCrvAddress,
+  yCrvAddress,
+  bCrvAddress,
+  sCrvAddress,
+  pCrvAddress,
+  renCrvAddress,
+  sbtcCrvAddress,
+];
+const ddexAdapterTokens = [
+  busdAddress,
+  daiAddress,
+  ethAddress,
+  usdcAddress,
+  usdtAddress,
+  wbtcAddress,
 ];
 const dmmAssetAdapterTokens = [
   mDAIAddress,
@@ -242,9 +326,20 @@ const dydxAdapterTokens = [
   usdcAddress,
   daiAddress,
 ];
-const idleAdapterTokens = [
-  idleDAI,
-  idleUSDC,
+const gnosisProtocolAdapterTokens = [
+];
+const idleBestYieldAdapterTokens = [
+  idleBestYieldDAI,
+  idleBestYieldUSDC,
+  idleBestYieldUSDT,
+  idleBestYieldSUSD,
+  idleBestYieldTUSD,
+  idleBestYieldWBTC,
+];
+const idleRiskAdjustedAdapterTokens = [
+  idleRiskAdjustedDAI,
+  idleRiskAdjustedUSDC,
+  idleRiskAdjustedUSDT,
 ];
 const iearn2AdapterTokens = [
   yDAIv2,
@@ -260,8 +355,19 @@ const iearn3AdapterTokens = [
   yUSDTv3,
   yBUSDv3,
 ];
+const keeperDaoAdapterTokens = [
+  kETHAddress,
+  kWETHAddress,
+];
+const kyberAdapterTokens = [
+  kncAddress,
+  ethAddress,
+];
 const dsrAdapterTokens = [
   daiAddress,
+];
+const governanceAdapterTokens = [
+  mkrAddress,
 ];
 const chaiAdapterTokens = [
   chaiAddress,
@@ -273,8 +379,24 @@ const mcdAssetAdapterTokens = [
 const mcdDebtAdapterTokens = [
   daiAddress,
 ];
+const mstableAssetAdapterTokens = [
+  mUsdAddress,
+];
+const mstableStakingAdapterTokens = [
+  mtaAddress,
+  balAddress,
+  balancerMusd20Mta80Address,
+  balancerUsdc50Musd50Address,
+  balancerMusd95Mta5Address,
+  balancerWeth50Musd50Address,
+  uniswapMtaWethAddress,
+];
+const chiAdapterTokens = [
+  chiAddress,
+];
 const pieDAOPieAdapterTokens = [
   BTCPPAddress,
+  USDPPAddress,
 ];
 const poolTogetherAdapterTokens = [
   saiPoolAddress,
@@ -289,6 +411,16 @@ const synthetixAssetAdapterTokens = [
 ];
 const synthetixDebtAdapterTokens = [
   susdAddress,
+];
+const yearnStakingV1AdapterTokens = [
+  yfiAddress,
+  yCrvAddress,
+  balancerDai98Yfi2Address,
+  balancerYfi2yCrv98Address,
+];
+const yearnStakingV2AdapterTokens = [
+  yfiAddress,
+  yCrvAddress,
 ];
 const zrxAdapterTokens = [
   zrxAddress,
@@ -324,6 +456,30 @@ module.exports = async (deployer, network, accounts) => {
     'Decentralized lending & borrowing protocol',
     'aave.com',
     'protocol-icons.s3.amazonaws.com/aave.png',
+    '0',
+  ]);
+
+  await deployer.deploy(AmpleforthAdapter, { from: accounts[0] });
+  adapters.push([AmpleforthAdapter.address]);
+  tokens.push([ampleforthAdapterTokens]);
+  protocolNames.push('Ampleforth');
+  metadata.push([
+    'Ampleforth',
+    'An adaptive money built on sound economics',
+    'ampleforth.org',
+    'protocol-icons.s3.amazonaws.com/ampl.png',
+    '0',
+  ]);
+
+  await deployer.deploy(AragonStakingAdapter, { from: accounts[0] });
+  adapters.push([AragonStakingAdapter.address]);
+  tokens.push([aragonStakingAdapterTokens]);
+  protocolNames.push('Aragon');
+  metadata.push([
+    'Aragon',
+    'ANT liquidity rewards',
+    'liquidity.aragon.org',
+    'protocol-icons.s3.amazonaws.com/aragon.png',
     '0',
   ]);
 
@@ -365,8 +521,9 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(CurveAdapter, { from: accounts[0] });
-  adapters.push([CurveAdapter.address]);
-  tokens.push([curveAdapterTokens]);
+  await deployer.deploy(CurveStakingAdapter, { from: accounts[0] });
+  adapters.push([CurveAdapter.address, CurveStakingAdapter.address]);
+  tokens.push([curveAdapterTokens, curveStakingAdapterTokens]);
   protocolNames.push('Curve');
   metadata.push([
     'Curve',
@@ -376,9 +533,46 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(DdexLendingAssetAdapter, { from: accounts[0] });
+  adapters.push([DdexLendingAssetAdapter.address]);
+  tokens.push([ddexAdapterTokens]);
+  protocolNames.push('DDEX • Lending');
+  metadata.push([
+    'DDEX • Lending',
+    'Decentralized margin trading',
+    'ddex.io',
+    'protocol-icons.s3.amazonaws.com/ddex.png',
+    '0',
+  ]);
+
+  await deployer.deploy(DdexMarginAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(DdexMarginDebtAdapter, { from: accounts[0] });
+  adapters.push([DdexMarginAssetAdapter.address, DdexMarginDebtAdapter.address]);
+  tokens.push([ddexAdapterTokens, ddexAdapterTokens]);
+  protocolNames.push('DDEX • Margin');
+  metadata.push([
+    'DDEX • Margin',
+    'Decentralized margin trading',
+    'ddex.io',
+    'protocol-icons.s3.amazonaws.com/ddex.png',
+    '0',
+  ]);
+
+  await deployer.deploy(DdexSpotAssetAdapter, { from: accounts[0] });
+  adapters.push([DdexSpotAssetAdapter.address]);
+  tokens.push([ddexAdapterTokens]);
+  protocolNames.push('DDEX • Spot');
+  metadata.push([
+    'DDEX • Spot',
+    'Decentralized margin trading',
+    'ddex.io',
+    'protocol-icons.s3.amazonaws.com/ddex.png',
+    '0',
+  ]);
+
   await deployer.deploy(DmmAssetAdapter, { from: accounts[0] });
-  adapters.push(DmmAssetAdapter.address);
-  tokens.push(dmmAssetAdapterTokens);
+  adapters.push([DmmAssetAdapter.address]);
+  tokens.push([dmmAssetAdapterTokens]);
   protocolNames.push('DeFi Money Market');
   metadata.push([
     'DeFi Money Market',
@@ -401,21 +595,49 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(GnosisProtocolAdapter, { from: accounts[0] });
+  adapters.push([GnosisProtocolAdapter.address]);
+  tokens.push([gnosisProtocolAdapterTokens]);
+  protocolNames.push('Gnosis Protocol');
+  metadata.push([
+    'Gnosis Protocol',
+    'A DEX that enables ring trades to maximize liquidity',
+    'gnosis.io',
+    'protocol-icons.s3.amazonaws.com/gnosis.png',
+    '0',
+  ]);
+
   await deployer.deploy(IdleAdapter, { from: accounts[0] });
   adapters.push([IdleAdapter.address]);
-  tokens.push([idleAdapterTokens]);
-  protocolNames.push('Idle');
+  tokens.push([idleBestYieldAdapterTokens]);
+  protocolNames.push('Idle • Best-Yield');
   metadata.push([
-    'Idle',
-    'Yield aggregator for lending platforms',
+    'Idle • Best-Yield',
+    'Maximize your returns across DeFi lending protocols',
+    'idle.finance',
+    'protocol-icons.s3.amazonaws.com/idle.png',
+    '0',
+  ]);
+
+  await deployer.deploy(IdleAdapter, { from: accounts[0] });
+  adapters.push([IdleAdapter.address]);
+  tokens.push([idleRiskAdjustedAdapterTokens]);
+  protocolNames.push('Idle • Risk-Adjusted');
+  metadata.push([
+    'Idle • Risk-Adjusted',
+    'Optimize your risk exposure across DeFi lending protocols',
     'idle.finance',
     'protocol-icons.s3.amazonaws.com/idle.png',
     '0',
   ]);
 
   await deployer.deploy(IearnAdapter, { from: accounts[0] });
-  adapters.push([IearnAdapter.address]);
-  tokens.push([iearn2AdapterTokens]);
+  await deployer.deploy(YearnStakingV1Adapter, { from: accounts[0] });
+  await deployer.deploy(YearnStakingV2Adapter, { from: accounts[0] });
+  adapters.push(
+    [IearnAdapter.address, YearnStakingV1Adapter.address, YearnStakingV2Adapter.address],
+  );
+  tokens.push([iearn2AdapterTokens, yearnStakingV1AdapterTokens, yearnStakingV2AdapterTokens]);
   protocolNames.push('iearn.finance (v2)');
   metadata.push([
     'iearn.finance (v2)',
@@ -434,6 +656,30 @@ module.exports = async (deployer, network, accounts) => {
     'Yield aggregator for lending platforms',
     'iearn.finance',
     'protocol-icons.s3.amazonaws.com/iearn.png',
+    '0',
+  ]);
+
+  await deployer.deploy(KeeperDaoAssetAdapter, { from: accounts[0] });
+  adapters.push([KeeperDaoAssetAdapter.address]);
+  tokens.push([keeperDaoAdapterTokens]);
+  protocolNames.push('KeeperDAO');
+  metadata.push([
+    'KeeperDAO',
+    'An on-chain liquidity underwriter for DeFi',
+    'keeperdao.com',
+    'protocol-icons.s3.amazonaws.com/keeperDAO.png',
+    '0',
+  ]);
+
+  await deployer.deploy(KyberAdapter, { from: accounts[0] });
+  adapters.push([KyberAdapter.address]);
+  tokens.push([kyberAdapterTokens]);
+  protocolNames.push('KyberDAO');
+  metadata.push([
+    'KyberDAO',
+    'Platform that allows KNC token holders to participate in governance',
+    'kyber.network',
+    'protocol-icons.s3.amazonaws.com/kyber.png',
     '0',
   ]);
 
@@ -461,6 +707,18 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(GovernanceAdapter, { from: accounts[0] });
+  adapters.push([GovernanceAdapter.address]);
+  tokens.push([governanceAdapterTokens]);
+  protocolNames.push('Maker Governance');
+  metadata.push([
+    'Maker Governance',
+    'MKR tokens locked on the MakerDAO governance contracts',
+    'vote.makerdao.com',
+    'protocol-icons.s3.amazonaws.com/maker.png',
+    '0',
+  ]);
+
   await deployer.deploy(MCDAssetAdapter, { from: accounts[0] });
   await deployer.deploy(MCDDebtAdapter, { from: accounts[0] });
   adapters.push([MCDAssetAdapter.address, MCDDebtAdapter.address]);
@@ -474,6 +732,55 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(MelonAssetAdapter, { from: accounts[0] });
+  adapters.push([MelonAssetAdapter.address]);
+  tokens.push([]);
+  protocolNames.push('Melon');
+  metadata.push([
+    'Melon',
+    'A protocol for decentralized on-chain asset management',
+    'melonport.com',
+    'protocol-icons.s3.amazonaws.com/melon.png',
+    '0',
+  ]);
+
+  await deployer.deploy(MstableAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(MstableStakingAdapter, { from: accounts[0] });
+  adapters.push([MstableAssetAdapter.address, MstableStakingAdapter.address]);
+  tokens.push([mstableAssetAdapterTokens, mstableStakingAdapterTokens]);
+  protocolNames.push('mStable');
+  metadata.push([
+    'mStable',
+    'mStable unifies stablecoins, lending and swapping into one standard',
+    'mstable.org',
+    'protocol-icons.s3.amazonaws.com/mstable.png',
+    '0',
+  ]);
+
+  await deployer.deploy(ChiAdapter, { from: accounts[0] });
+  adapters.push([ChiAdapter.address]);
+  tokens.push([chiAdapterTokens]);
+  protocolNames.push('Chi Gastoken by 1inch');
+  metadata.push([
+    'Chi Gastoken by 1inch',
+    'Next-generation Gastoken',
+    '1inch.exchange',
+    'protocol-icons.s3.amazonaws.com/chi_token.png',
+    '0',
+  ]);
+
+  await deployer.deploy(PieDAOPieAdapter, { from: accounts[0] });
+  adapters.push([PieDAOPieAdapter.address]);
+  tokens.push([pieDAOPieAdapterTokens]);
+  protocolNames.push('PieDAO');
+  metadata.push([
+    'PieDAO',
+    'The Asset Allocation DAO',
+    'piedao.org',
+    'protocol-icons.s3.us-east-1.amazonaws.com/piedao.png',
+    '0',
+  ]);
+
   await deployer.deploy(PoolTogetherAdapter, { from: accounts[0] });
   adapters.push([PoolTogetherAdapter.address]);
   tokens.push([poolTogetherAdapterTokens]);
@@ -483,18 +790,6 @@ module.exports = async (deployer, network, accounts) => {
     'Decentralized no-loss lottery',
     'pooltogether.com',
     'protocol-icons.s3.amazonaws.com/pooltogether.png',
-    '0',
-  ]);
-
-  await deployer.deploy(PieDAOPieAdapter, { from: accounts[0] });
-  adapters.push([PieDAOPieAdapter.address]);
-  tokens.push([pieDAOPieAdapterTokens]);
-  protocolNames.push('PieDAO');
-  metadata.push([
-    'PieDAO BTC++',
-    'BTC on Ethereum diversified',
-    'btc.piedao.org',
-    'protocol-icons.s3.us-east-1.amazonaws.com/piedao.png',
     '0',
   ]);
 
@@ -619,10 +914,34 @@ module.exports = async (deployer, network, accounts) => {
         IearnTokenAdapter.address,
       );
     });
+  await deployer.deploy(KeeperDaoTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        KeeperDaoTokenAdapter.address,
+      );
+    });
   await deployer.deploy(ChaiTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
         ChaiTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(MelonTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        MelonTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(MstableTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        MstableTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(ChiTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        ChiTokenAdapter.address,
       );
     });
   await deployer.deploy(PieDAOPieTokenAdapter, { from: accounts[0] })
@@ -673,15 +992,20 @@ module.exports = async (deployer, network, accounts) => {
           'AToken',
           'AToken Uniswap Market',
           'Balancer pool token',
+          'SmartToken',
           'CToken',
           'Curve pool token',
           'MToken',
           'IdleToken',
           'YToken',
+          'KToken',
           'Chai token',
+          'MelonToken',
+          'Masset',
+          'Chi token',
+          'PieDAO Pie Token',
           'PoolTogether pool',
           'SetToken',
-          'SmartToken',
           'Uniswap V1 pool token',
           'Uniswap V2 pool token',
         ],

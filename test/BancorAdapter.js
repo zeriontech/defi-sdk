@@ -5,10 +5,10 @@ const ProtocolAdapter = artifacts.require('BancorAdapter');
 const TokenAdapter = artifacts.require('BancorTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('BalancerAdapter', () => {
+contract('BancorAdapter', () => {
   const bntBethPoolAddress = '0xb1CD6e4153B2a390Cf00A6556b0fC1458C4A5533';
   const bntAddress = '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C';
-  const bethAddress = '0xc0829421C1d260BD3cB3E0F06cfE2D52db2cE315';
+  const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
@@ -29,8 +29,8 @@ contract('BalancerAdapter', () => {
     '18',
   ];
   const beth = [
-    bethAddress,
-    'Ether Token',
+    ethAddress,
+    'Ether',
     'ETH',
     '18',
   ];
