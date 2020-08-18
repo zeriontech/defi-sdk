@@ -133,11 +133,13 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         payable
         returns (Output[] memory)
     {
+        address account = getAccountFromSignature(data, signature);
+        updateNonce(account);
         return startExecution(
             data.actions,
             data.inputs,
             data.requiredOutputs,
-            getAccountFromSignature(data, signature)
+            account;
         );
     }
 

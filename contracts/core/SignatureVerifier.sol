@@ -104,11 +104,20 @@ contract SignatureVerifier {
         return nonce_[account];
     }
 
+    function updateNonce(
+        address account
+    )
+        internal
+    {
+        nonce_[account]++;
+    }
+
     function getAccountFromSignature(
         TransactionData memory data,
         bytes memory signature
     )
-        public
+        internal
+        view
         returns (address payable)
     {
         require(signature.length == 65, "SV: bad sig length!");
@@ -139,8 +148,6 @@ contract SignatureVerifier {
         );
 
         require(nonce_[signer] == data.nonce, "SV: bad nonce!");
-
-        nonce_[signer]++;
 
         return payable(signer);
     }
