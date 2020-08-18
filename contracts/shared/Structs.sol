@@ -77,6 +77,7 @@ struct Component {
 struct TransactionData {
     Action[] actions;
     Input[] inputs;
+    Fee fee;
     Output[] requiredOutputs;
     uint256 nonce;
 }
@@ -96,7 +97,11 @@ struct Input {
     address token;
     uint256 amount;
     AmountType amountType;
-    uint256 fee;
+}
+
+
+struct Fee {
+    uint256 share;
     address beneficiary;
 }
 

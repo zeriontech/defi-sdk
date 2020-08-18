@@ -20,11 +20,17 @@ contract.only('SignatureVerifier', () => {
   let accounts;
   let signatureVerifier;
 
+  const EXCHANGE_ADAPTER = '03';
   const ZERO = '0x0000000000000000000000000000000000000000';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
-  const UNISWAP_EXCHANGE_ADAPTER =
-    '0x556e697377617020563200000000000000000000000000000000000000000003';
+  const UNISWAP_EXCHANGE_ADAPTER = `${
+    web3.eth.abi.encodeParameter(
+      'bytes32',
+      web3.utils.toHex('Uniswap V2'),
+    )
+      .slice(0, -2)
+  }${EXCHANGE_ADAPTER}`;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -45,6 +51,7 @@ contract.only('SignatureVerifier', () => {
           TransactionData: [
             { name: 'actions', type: 'Action[]' },
             { name: 'inputs', type: 'Input[]' },
+            { name: 'fee', type: 'Fee' },
             { name: 'requiredOutputs', type: 'Output[]' },
             { name: 'nonce', type: 'uint256' },
           ],
@@ -60,7 +67,9 @@ contract.only('SignatureVerifier', () => {
             { name: 'token', type: 'address' },
             { name: 'amount', type: 'uint256' },
             { name: 'amountType', type: 'uint8' },
-            { name: 'fee', type: 'uint256' },
+          ],
+          Fee: [
+            { name: 'share', type: 'uint256' },
             { name: 'beneficiary', type: 'address' },
           ],
           Output: [
@@ -106,10 +115,12 @@ contract.only('SignatureVerifier', () => {
             token: daiAddress,
             amount: web3.utils.toWei('1', 'ether'),
             amountType: 2,
-            fee: 0,
-            beneficiary: ZERO,
           },
         ],
+        fee: {
+          share: 0,
+          beneficiary: ZERO,
+        },
         requiredOutputs: [
           {
             token: wethAddress,

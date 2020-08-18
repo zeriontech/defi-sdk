@@ -18,7 +18,7 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-import { TransactionData, Action, Input, Output, AmountType } from "../shared/Structs.sol";
+import { TransactionData, Action, Input, Fee, Output, AmountType } from "../shared/Structs.sol";
 import { ERC20 } from "../shared/ERC20.sol";
 import { SafeERC20 } from "../shared/SafeERC20.sol";
 import { SignatureVerifier } from "./SignatureVerifier.sol";
@@ -39,8 +39,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     address internal constant GAS_TOKEN = 0x0000000000b3F879cb30FE243b4Dfee438691c04;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     uint256 internal constant DELIMITER = 1e18; // 100%
-    uint256 internal constant BENEFICIARY_FEE_LIMIT = 1e16; // 1%
-    uint256 internal constant BENEFICIARY_SHARE = 8e17; // 80%
+    uint256 internal constant FEE_LIMIT = 1e16; // 1%
 
     constructor(address payable core) public {
         require(core != address(0), "R: empty core!");
@@ -133,19 +132,23 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         payable
         returns (Output[] memory)
     {
-        address account = getAccountFromSignature(data, signature);
+        address payable account = getAccountFromSignature(data, signature);
+
         updateNonce(account);
+
         return startExecution(
             data.actions,
             data.inputs,
+            data.fee,
             data.requiredOutputs,
-            account;
+            account
         );
     }
 
     function startExecution(
         Action[] memory actions,
         Input[] memory inputs,
+        Fee memory fee,
         Output[] memory requiredOutputs
     )
         public
@@ -155,6 +158,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         return startExecution(
             actions,
             inputs,
+            fee,
             requiredOutputs,
             msg.sender
         );
@@ -163,6 +167,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     function startExecution(
         Action[] memory actions,
         Input[] memory inputs,
+        Fee memory fee,
         Output[] memory requiredOutputs,
         address payable account
     )
@@ -172,15 +177,15 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         // save initial gas to burn gas token later
         uint256 gas = gasleft();
         // transfer tokens to core_, handle fees (if any), and add these tokens to outputs
-        transferTokens(inputs, account);
+        transferTokens(inputs, fee, account);
         Output[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
         // call Core contract with all provided ETH, actions, expected outputs and account address
-        Output[] memory actualOutputs = core_.executeActions{value: msg.value}(
+        Output[] memory actualOutputs = core_.executeActions{value: address(this).balance}(
             actions,
             modifiedOutputs,
             account
         );
-        // burn gas token to save some gas
+        // try to burn gas token to save some gas
         freeGasToken(gas - gasleft());
 
         return actualOutputs;
@@ -188,63 +193,48 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
     function transferTokens(
         Input[] memory inputs,
+        Fee memory fee,
         address account
     )
         internal
     {
         uint256 absoluteAmount;
+        uint256 feeAmount;
+
+        if (fee.share > 0) {
+            require(fee.beneficiary != address(0), "R: bad beneficiary!");
+            require(fee.share <= FEE_LIMIT, "R: bad fee!");
+        }
 
         for (uint256 i = 0; i < inputs.length; i++) {
             absoluteAmount = getAbsoluteAmount(inputs[i], account);
             require(absoluteAmount > 0, "R: zero amount!");
 
-            // in case inputs includes fees:
-            //     - absolute amount is amount calculated based on inputs
-            //     - core_ amount is absolute amount excluding fee set in inputs
-            //     - beneficiary amount is beneficiary share (80%) of non-core_ amount
-            //     - this contract fee is the rest of beneficiary fee (~20%)
-            // otherwise no fees are charged!
-            if (inputs[i].fee > 0) {
-                require(inputs[i].beneficiary != address(0), "R: bad beneficiary!");
-                require(inputs[i].fee <= BENEFICIARY_FEE_LIMIT, "R: bad fee!");
+            feeAmount = mul(absoluteAmount, fee.share) / DELIMITER;
 
-                uint256 feeAmount = mul(absoluteAmount, inputs[i].fee) / DELIMITER;
-                uint256 beneficiaryAmount = mul(feeAmount, BENEFICIARY_SHARE) / DELIMITER;
-                uint256 thisAmount = feeAmount - beneficiaryAmount;
-                uint256 coreAmount = absoluteAmount - feeAmount;
-
+            if (feeAmount > 0) {
                 ERC20(inputs[i].token).safeTransferFrom(
                     account,
-                    address(core_),
-                    coreAmount,
+                    fee.beneficiary,
+                    feeAmount,
                     "R![1]"
                 );
-
-                if (beneficiaryAmount > 0) {
-                    ERC20(inputs[i].token).safeTransferFrom(
-                        account,
-                        inputs[i].beneficiary,
-                        beneficiaryAmount,
-                        "R![2]"
-                    );
-                }
-
-                if (thisAmount > 0) {
-                    ERC20(inputs[i].token).safeTransferFrom(
-                        account,
-                        address(this),
-                        thisAmount,
-                        "R![3]"
-                    );
-                }
-            } else {
-                ERC20(inputs[i].token).safeTransferFrom(
-                    account,
-                    address(core_),
-                    absoluteAmount,
-                    "R!"
-                );
             }
+
+            ERC20(inputs[i].token).safeTransferFrom(
+                account,
+                address(core_),
+                absoluteAmount - feeAmount,
+                "R![2]"
+            );
+        }
+
+        feeAmount = mul(address(this).balance, fee.share) / DELIMITER;
+
+        if (feeAmount > 0) {
+            // solhint-disable-next-line avoid-low-level-calls
+            (bool success, ) = fee.beneficiary.call{value: feeAmount}(new bytes(0));
+            require(success, "ETH transfer to beneficiary failed!");
         }
     }
 

@@ -18,7 +18,7 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-import { TransactionData, Action, Input, Output } from "../shared/Structs.sol";
+import { TransactionData, Action, Input, Fee, Output } from "../shared/Structs.sol";
 
 
 contract SignatureVerifier {
@@ -40,11 +40,13 @@ contract SignatureVerifier {
             TX_DATA_ENCODED_TYPE,
             ACTION_ENCODED_TYPE,
             INPUT_ENCODED_TYPE,
+            FEE_ENCODED_TYPE,
             OUTPUT_ENCODED_TYPE
         )
     );
     bytes32 internal constant ACTION_TYPEHASH = keccak256(ACTION_ENCODED_TYPE);
     bytes32 internal constant INPUT_TYPEHASH = keccak256(INPUT_ENCODED_TYPE);
+    bytes32 internal constant FEE_TYPEHASH = keccak256(FEE_ENCODED_TYPE);
     bytes32 internal constant OUTPUT_TYPEHASH = keccak256(OUTPUT_ENCODED_TYPE);
 
     bytes internal constant TX_DATA_ENCODED_TYPE = abi.encodePacked(
@@ -69,8 +71,12 @@ contract SignatureVerifier {
         "Input(",
         "address token,",
         "uint256 amount,",
-        "uint8 amountType,",
-        "uint256 fee,",
+        "uint8 amountType",
+        ")"
+    );
+    bytes internal constant FEE_ENCODED_TYPE = abi.encodePacked(
+        "Fee(",
+        "uint256 share,",
         "address beneficiary",
         ")"
     );
@@ -165,6 +171,7 @@ contract SignatureVerifier {
                 TX_DATA_TYPEHASH,
                 hash(data.actions),
                 hash(data.inputs),
+                hash(data.fee),
                 hash(data.requiredOutputs),
                 data.nonce
             )
@@ -215,15 +222,29 @@ contract SignatureVerifier {
                         INPUT_TYPEHASH,
                         inputs[i].token,
                         inputs[i].amount,
-                        inputs[i].amountType,
-                        inputs[i].fee,
-                        inputs[i].beneficiary
+                        inputs[i].amountType
                     )
                 )
             );
         }
 
         return keccak256(inputsData);
+    }
+
+    function hash(
+        Fee memory fee
+    )
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(
+            abi.encode(
+                FEE_TYPEHASH,
+                fee.share,
+                fee.beneficiary
+            )
+        );
     }
 
     function hash(

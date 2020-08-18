@@ -118,6 +118,11 @@ contract.only('Core + Router', () => {
         ],
         // inputs
         [],
+        // fee
+        [
+          0,
+          ZERO,
+        ],
         // outputs
         [],
       )
@@ -143,6 +148,11 @@ contract.only('Core + Router', () => {
         ],
         // inputs
         [],
+        // fee
+        [
+          0,
+          ZERO,
+        ],
         // outputs
         [],
       )
@@ -168,6 +178,11 @@ contract.only('Core + Router', () => {
         ],
         // inputs
         [],
+        // fee
+        [
+          0,
+          ZERO,
+        ],
         // outputs
         [],
       )
@@ -195,7 +210,12 @@ contract.only('Core + Router', () => {
         ],
         // inputs
         [
-          [wethAddress, convertToShare(0.5), AMOUNT_RELATIVE, 0, ZERO],
+          [wethAddress, convertToShare(0.5), AMOUNT_RELATIVE],
+        ],
+        // fee
+        [
+          0,
+          ZERO,
         ],
         // outputs
         [
@@ -223,6 +243,11 @@ contract.only('Core + Router', () => {
         ],
         // inputs
         [],
+        // fee
+        [
+          0,
+          ZERO,
+        ],
         // outputs
         [],
       )
@@ -248,6 +273,11 @@ contract.only('Core + Router', () => {
         ],
         // inputs
         [],
+        // fee
+        [
+          0,
+          ZERO,
+        ],
         // outputs
         [],
       )
@@ -294,7 +324,7 @@ contract.only('Core + Router', () => {
         });
       await router.methods.getRequiredAllowances(
         [
-          [wethAddress, 2, AMOUNT_ABSOLUTE, 0, ZERO],
+          [wethAddress, 2, AMOUNT_ABSOLUTE],
         ],
         accounts[0],
       )
@@ -304,7 +334,7 @@ contract.only('Core + Router', () => {
         });
       await router.methods.getRequiredAllowances(
         [
-          [wethAddress, 1, AMOUNT_ABSOLUTE, 0, ZERO],
+          [wethAddress, 1, AMOUNT_ABSOLUTE],
         ],
         accounts[0],
       )
@@ -322,7 +352,7 @@ contract.only('Core + Router', () => {
         });
       await router.methods.getRequiredBalances(
         [
-          [wethAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+          [wethAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
         ],
         accounts[0],
       )
@@ -335,7 +365,7 @@ contract.only('Core + Router', () => {
         });
       await router.methods.getRequiredBalances(
         [
-          [wethAddress, 1, AMOUNT_ABSOLUTE, 0, ZERO],
+          [wethAddress, 1, AMOUNT_ABSOLUTE],
         ],
         accounts[0],
       )
