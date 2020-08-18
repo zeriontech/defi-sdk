@@ -109,7 +109,7 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         if (amountType == AmountType.Relative) {
             require(amount <= DELIMITER, "IA: bad amount!");
 
-            (uint256 balance, ) = getBalance(token, address(this));
+            uint256 balance = getBalance(token, address(this));
             if (amount == DELIMITER) {
                 return balance;
             } else {

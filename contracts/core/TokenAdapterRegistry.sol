@@ -29,7 +29,7 @@ import {
 import { ERC20 } from "../shared/ERC20.sol";
 import { Ownable } from "./Ownable.sol";
 import { ProtocolAdapterManager } from "./ProtocolAdapterManager.sol";
-import { ProtocolManager } from "./ProtocolManager.sol";
+import { TokenAdapterNamesManager } from "./TokenAdapterNamesManager.sol";
 import { TokenAdapterManager } from "./TokenAdapterManager.sol";
 import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
 import { TokenAdapter } from "../adapters/TokenAdapter.sol";
@@ -40,7 +40,7 @@ import { TokenAdapter } from "../adapters/TokenAdapter.sol";
  * @notice getBalances() function implements the main functionality.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract TokenAdapterRegistry is Ownable, TokenAdapterManager, ProtocolManager {
+contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNamesManager {
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
@@ -144,7 +144,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, ProtocolManager {
         view
         returns (Component[] memory)
     {
-        bytes32 tokenAdapterName = getTokenAdapterName(tokenBalance.token);
+        bytes32 tokenAdapterName = getTokenAdapterNameByToken(tokenBalance.token);
         address tokenAdapter = _tokenAdapterAddress[tokenAdapterName];
         Component[] memory components;
 
@@ -181,7 +181,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, ProtocolManager {
         view
         returns (TokenBalanceMeta memory)
     {
-        bytes32 tokenAdapterName = getTokenAdapterName(tokenBalance.token);
+        bytes32 tokenAdapterName = getTokenAdapterNameByToken(tokenBalance.token);
         address tokenAdapter = _tokenAdapterAddress[tokenAdapterName];
         ERC20Metadata memory erc20metadata;
 
@@ -212,26 +212,5 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, ProtocolManager {
             amount: tokenBalance.amount,
             erc20metadata: erc20metadata
         });
-    }
-
-    /**
-     * @notice Given token address tries to find token adapter name.
-     * @param token Token address.
-     * @return Token adapter name.
-     */
-    function getTokenAdapterName(
-        address token
-    )
-        internal
-        view
-        returns (bytes32)
-    {
-        bytes32 hash;
-
-        assembly {
-            hash := extcodehash(token)
-        }
-
-        return getTokenAdapterName(hash);
     }
 }

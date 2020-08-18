@@ -45,6 +45,6 @@ contract MockAdapter is ProtocolAdapter {
         override
         returns (uint256)
     {
-        return (balanceOf[account], "ERC20");
+        return balanceOf[account];
     }
 }
