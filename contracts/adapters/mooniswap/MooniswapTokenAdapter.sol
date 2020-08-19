@@ -58,7 +58,7 @@ contract MooniswapTokenAdapter is TokenAdapter {
         return TokenMetadata({
             token: token,
             name: ERC20(token).name(),
-            symbol: getSymbol(token),
+            symbol: ERC20(token).symbol(),
             decimals: ERC20(token).decimals()
         });
     }
@@ -81,18 +81,6 @@ contract MooniswapTokenAdapter is TokenAdapter {
         }
 
         return underlyingTokens;
-    }
-
-    function getSymbol(address token) internal view returns (string memory) {
-        (, bytes memory returnData) = token.staticcall(
-            abi.encodeWithSelector(ERC20(token).symbol.selector)
-        );
-
-        if (returnData.length == 32) {
-            return convertToString(abi.decode(returnData, (bytes32)));
-        } else {
-            return abi.decode(returnData, (string));
-        }
     }
 
     function getTokenType(address token) internal view returns (string memory) {
@@ -121,27 +109,5 @@ contract MooniswapTokenAdapter is TokenAdapter {
 
     function isETH(ERC20 token) internal pure returns(bool) {
         return (address(token) == address(0));
-    }
-
-    /**
-     * @dev Internal function to convert bytes32 to string and trim zeroes.
-     */
-    function convertToString(bytes32 data) internal pure returns (string memory) {
-        uint256 length = 0;
-        bytes memory result;
-
-        for (uint256 i = 0; i < 32; i++) {
-            if (data[i] != byte(0)) {
-                length++;
-            }
-        }
-
-        result = new bytes(length);
-
-        for (uint256 i = 0; i < length; i++) {
-            result[i] = data[i];
-        }
-
-        return string(result);
     }
 }
