@@ -41,7 +41,9 @@ library Helpers {
         result = new bytes(length);
 
         for (uint256 i = 0; i < length; i++) {
-            result[i] = data[i];
+            if (data[i] != bytes1(0)) {
+                result[i] = data[i];
+            }
         }
 
         return string(result);
