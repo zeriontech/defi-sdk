@@ -63,6 +63,8 @@ library Helpers {
 
         bytes memory result = new bytes(length);
         dataCopy = data;
+
+        // Here, we have on-purpose underflow cause we need case `i = 0` to be included in the loop
         for (uint256 i = length - 1; i < length; i--) {
             result[i] = bytes1(uint8(48 + dataCopy % 10));
             dataCopy /= 10;
