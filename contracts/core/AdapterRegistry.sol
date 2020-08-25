@@ -168,12 +168,6 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
                 continue;
             }
 
-            // Else take only positive ones, first with empty tokenBalances, then fill it
-            nonZeroAdapterBalances[nonZeroAdaptersCounter] = AdapterBalance({
-                protocolAdapterName: adapterBalances[i].protocolAdapterName,
-                tokenBalances: new TokenBalance[](nonZeroTokensCounters[i])
-            });
-
             // Fill temp variable
             currentTokenBalances = adapterBalances[i].tokenBalances;
 
@@ -196,7 +190,10 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
             }
 
             // Fill resulting variable
-            nonZeroAdapterBalances[nonZeroAdaptersCounter].tokenBalances = nonZeroTokenBalances;
+            nonZeroAdapterBalances[nonZeroAdaptersCounter] = AdapterBalance({
+                protocolAdapterName: adapterBalances[i].protocolAdapterName,
+                tokenBalances: nonZeroTokenBalances
+            });
 
             // Increment counter
             nonZeroAdaptersCounter++;
