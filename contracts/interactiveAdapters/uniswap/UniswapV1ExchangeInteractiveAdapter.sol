@@ -213,7 +213,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             address exchange = Factory(FACTORY).getExchange(tokens[0]);
             require(exchange != address(0), "UEIA: no exchange![1]");
 
-            try Exchange(exchange).ethToTokenSwapOutput{value: msg.value}(
+            try Exchange(exchange).ethToTokenSwapOutput{value: address(this).balance}(
                 amounts[0],
                 // solhint-disable-next-line not-rely-on-time
                 now

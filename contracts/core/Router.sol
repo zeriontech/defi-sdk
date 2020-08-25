@@ -197,22 +197,26 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     )
         internal
     {
+        address input;
         uint256 absoluteAmount;
         uint256 feeAmount;
+        uint256 length = inputs.length;
 
         if (fee.share > 0) {
             require(fee.beneficiary != address(0), "R: bad beneficiary!");
             require(fee.share <= FEE_LIMIT, "R: bad fee!");
         }
 
-        for (uint256 i = 0; i < inputs.length; i++) {
-            absoluteAmount = getAbsoluteAmount(inputs[i], account);
+        uint256 length = inputs.length;
+        for (uint256 i = 0; i < length; i++) {
+            input = inputs[i];
+            absoluteAmount = getAbsoluteAmount(input, account);
             require(absoluteAmount > 0, "R: zero amount!");
 
             feeAmount = mul(absoluteAmount, fee.share) / DELIMITER;
 
             if (feeAmount > 0) {
-                ERC20(inputs[i].token).safeTransferFrom(
+                ERC20(input.token).safeTransferFrom(
                     account,
                     fee.beneficiary,
                     feeAmount,
@@ -220,20 +224,26 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
                 );
             }
 
-            ERC20(inputs[i].token).safeTransferFrom(
+            ERC20(input.token).safeTransferFrom(
                 account,
-                address(core_),
+                core_,
                 absoluteAmount - feeAmount,
                 "R![2]"
             );
         }
 
-        feeAmount = mul(address(this).balance, fee.share) / DELIMITER;
+        if (msg.value > 0) {
+            feeAmount = mul(msg.value, fee.share) / DELIMITER;
 
-        if (feeAmount > 0) {
+            if (feeAmount > 0) {
+                // solhint-disable-next-line avoid-low-level-calls
+                (bool success, ) = fee.beneficiary.call{value: feeAmount}(new bytes(0));
+                require(success, "ETH transfer to beneficiary failed!");
+            }
+
             // solhint-disable-next-line avoid-low-level-calls
-            (bool success, ) = fee.beneficiary.call{value: feeAmount}(new bytes(0));
-            require(success, "ETH transfer to beneficiary failed!");
+            (bool success, ) = core_.call{value: msg.value - feeAmount}(new bytes(0));
+            // This call cannot fail
         }
     }
 
