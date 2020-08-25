@@ -9,6 +9,7 @@ const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
 const CompoundDebtAdapter = artifacts.require('CompoundDebtAdapter');
 const CurveAdapter = artifacts.require('CurveAdapter');
 const CurveStakingAdapter = artifacts.require('CurveStakingAdapter');
+const CurveVestingAdapter = artifacts.require('CurveVestingAdapter');
 const DdexLendingAssetAdapter = artifacts.require('DdexLendingAssetAdapter');
 const DdexMarginAssetAdapter = artifacts.require('DdexMarginAssetAdapter');
 const DdexMarginDebtAdapter = artifacts.require('DdexMarginDebtAdapter');
@@ -29,6 +30,7 @@ const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
 const MaticStakingAdapter = artifacs.require('MaticStakingAdapter');
 const MelonAssetAdapter = artifacs.require('MelonAssetAdapter');
 const MstableAssetAdapter = artifacts.require('MstableAssetAdapter');
+const NexusStakingAdapter = artifacts.require('NexusStakingAdapter');
 const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
@@ -203,6 +205,8 @@ const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
 
 const maticAddress = '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0';
 
+const nxmAddress = '0xd7c49CEE7E9188cCa6AD8FF264C1DA2e69D4Cf3B';
+
 const aaveAssetAdapterTokens = [
   aDaiAddress,
   aTusdAddress,
@@ -310,6 +314,9 @@ const curveStakingAdapterTokens = [
   renCrvAddress,
   sbtcCrvAddress,
 ];
+const CurveVestingAdapterTokens = [
+  crvAddress,
+];
 const ddexAdapterTokens = [
   busdAddress,
   daiAddress,
@@ -387,6 +394,9 @@ const maticStakingAdapterTokens = [
 ];
 const mstableAssetAdapterTokens = [
   mUsdAddress,
+];
+const nexusStakingAdapterTokens = [
+  nxmAddress,
 ];
 const mstableStakingAdapterTokens = [
   mtaAddress,
@@ -528,8 +538,9 @@ module.exports = async (deployer, network, accounts) => {
 
   await deployer.deploy(CurveAdapter, { from: accounts[0] });
   await deployer.deploy(CurveStakingAdapter, { from: accounts[0] });
-  adapters.push([CurveAdapter.address, CurveStakingAdapter.address]);
-  tokens.push([curveAdapterTokens, curveStakingAdapterTokens]);
+  await deployer.deploy(CurveVestingAdapter, { from: accounts[0] });
+  adapters.push([CurveAdapter.address, CurveStakingAdapter.address, CurveVestingAdapter.address]);
+  tokens.push([curveAdapterTokens, curveStakingAdapterTokens, CurveVestingAdapterTokens]);
   protocolNames.push('Curve');
   metadata.push([
     'Curve',
@@ -772,6 +783,18 @@ module.exports = async (deployer, network, accounts) => {
     'mStable unifies stablecoins, lending and swapping into one standard',
     'mstable.org',
     'protocol-icons.s3.amazonaws.com/mstable.png',
+    '0',
+  ]);
+
+  await deployer.deploy(NexusStakingAdapter, { from: accounts[0] });
+  adapters.push([NexusStakingAdapter.address]);
+  tokens.push([nexusStakingAdapterTokens]);
+  protocolNames.push('Nexus Mutual');
+  metadata.push([
+    'Nexus Mutual',
+    'A people-powered alternative to insurance',
+    'nexusmutual.io',
+    'protocol-icons.s3.amazonaws.com/nexusmutual.png',
     '0',
   ]);
 
