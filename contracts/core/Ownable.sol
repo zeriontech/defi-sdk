@@ -31,8 +31,8 @@ abstract contract Ownable {
         _;
     }
 
-    address internal owner_;
-    address internal pendingOwner_;
+    address private owner_;
+    address private pendingOwner_;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
