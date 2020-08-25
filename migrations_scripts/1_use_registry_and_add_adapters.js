@@ -26,6 +26,7 @@ const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
+const MaticStakingAdapter = artifacs.require('MaticStakingAdapter');
 const MelonAssetAdapter = artifacs.require('MelonAssetAdapter');
 const MstableAssetAdapter = artifacts.require('MstableAssetAdapter');
 const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
@@ -199,6 +200,8 @@ const uniswapMtaWethAddress = '0x0d0d65E7A7dB277d3E0F5E1676325E75f3340455';
 
 const amplAddress = '0xD46bA6D942050d489DBd938a2C909A5d5039A161';
 const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
+
+const maticAddress = '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -378,6 +381,9 @@ const mcdAssetAdapterTokens = [
 ];
 const mcdDebtAdapterTokens = [
   daiAddress,
+];
+const maticStakingAdapterTokens = [
+  maticAddress,
 ];
 const mstableAssetAdapterTokens = [
   mUsdAddress,
@@ -741,6 +747,18 @@ module.exports = async (deployer, network, accounts) => {
     'A protocol for decentralized on-chain asset management',
     'melonport.com',
     'protocol-icons.s3.amazonaws.com/melon.png',
+    '0',
+  ]);
+
+  await deployer.deploy(MaticStakingAdapter, { from: accounts[0] });
+  adapters.push([MaticStakingAdapter.address]);
+  tokens.push([maticStakingAdapterTokens]);
+  protocolNames.push('Matic');
+  metadata.push([
+    'Matic',
+    'A scaling solution for public blockchains',
+    'matic.network',
+    'protocol-icons.s3.amazonaws.com/matic.png',
     '0',
   ]);
 
