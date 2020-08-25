@@ -47,17 +47,16 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function returnLostTokens(
-        ERC20 token,
+        address token,
         address payable beneficiary
     )
         external
         onlyOwner
     {
-        token.safeTransfer(beneficiary, token.balanceOf(address(this)), "R!");
-
-        uint256 ethBalance = address(this).balance;
-        if (ethBalance > 0) {
-            beneficiary.transfer(ethBalance);
+        if (token == ETH) {
+            beneficiary.call{value: address(this).balance, gas: }(new bytes[](0));
+        } else {
+            ERC20(token).safeTransfer(beneficiary, ERC20(token).balanceOf(address(this)), "R!");
         }
     }
 
