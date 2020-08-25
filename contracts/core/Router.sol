@@ -34,7 +34,7 @@ interface GST2 {
 contract Router is SignatureVerifier("Zerion Router"), Ownable {
     using SafeERC20 for ERC20;
 
-    Core internal immutable core_;
+    address internal immutable core_;
 
     address internal constant GAS_TOKEN = 0x0000000000b3F879cb30FE243b4Dfee438691c04;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -43,7 +43,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
     constructor(address payable core) public {
         require(core != address(0), "R: empty core!");
-        core_ = Core(core);
+        core_ = core;
     }
 
     function returnLostTokens(
@@ -121,7 +121,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         view
         returns (address)
     {
-        return address(core_);
+        return core_;
     }
 
     function startExecution(
@@ -180,7 +180,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         transferTokens(inputs, fee, account);
         Output[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
         // call Core contract with all provided ETH, actions, expected outputs and account address
-        Output[] memory actualOutputs = core_.executeActions{value: address(this).balance}(
+        Output[] memory actualOutputs = Core(core_).executeActions(
             actions,
             modifiedOutputs,
             account

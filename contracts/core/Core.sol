@@ -33,7 +33,7 @@ import { ReentrancyGuard } from "./ReentrancyGuard.sol";
 contract Core is ReentrancyGuard {
     using SafeERC20 for ERC20;
 
-    AdapterRegistry internal immutable adapterRegistry_;
+    address internal immutable adapterRegistry_;
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
@@ -45,7 +45,7 @@ contract Core is ReentrancyGuard {
         public
     {
         require(adapterRegistry != address(0), "C: empty adapterRegistry!");
-        adapterRegistry_ = AdapterRegistry(adapterRegistry);
+        adapterRegistry_ = adapterRegistry;
     }
 
     // solhint-disable-next-line no-empty-blocks
@@ -103,7 +103,7 @@ contract Core is ReentrancyGuard {
         view
         returns (address)
     {
-        return address(adapterRegistry_);
+        return adapterRegistry_;
     }
 
     function executeAction(
@@ -112,7 +112,9 @@ contract Core is ReentrancyGuard {
         internal
         returns (address[] memory)
     {
-        address adapter = adapterRegistry_.getProtocolAdapterAddress(action.protocolAdapterName);
+        address adapter = AdapterRegistry(adapterRegistry_).getProtocolAdapterAddress(
+            action.protocolAdapterName
+        );
         require(adapter != address(0), "C: bad name!");
         require(
             action.actionType == ActionType.Deposit || action.actionType == ActionType.Withdraw,
