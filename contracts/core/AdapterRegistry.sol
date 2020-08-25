@@ -124,21 +124,25 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
         TokenBalance[] memory nonZeroTokenBalances;
         uint256 nonZeroAdaptersCounter;
         uint256[] memory nonZeroTokensCounters;
+        uint256 adapterBalancesLength;
+        uint256 currentTokenBalancesLength;
 
         // Reset counters
         nonZeroTokensCounters = new uint256[](adapterBalances.length);
         nonZeroAdaptersCounter = 0;
+        adapterBalancesLength = adapterBalances.length;
 
         // Iterate over all the adapters' balances
-        for (uint256 i = 0; i < adapterBalances.length; i++) {
+        for (uint256 i = 0; i < adapterBalancesLength; i++) {
             // Fill temp variable
             currentTokenBalances = adapterBalances[i].tokenBalances;
 
             // Reset counter
             nonZeroTokensCounters[i] = 0;
+            currentTokenBalancesLength = currentTokenBalances.length;
 
             // Increment if token balance is positive
-            for (uint256 j = 0; j < currentTokenBalances.length; j++) {
+            for (uint256 j = 0; j < currentTokenBalancesLength; j++) {
                 if (currentTokenBalances[j].amount > 0) {
                     nonZeroTokensCounters[i]++;
                 }
@@ -158,7 +162,7 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
         nonZeroAdaptersCounter = 0;
 
         // Iterate over all the adapters' balances
-        for (uint256 i = 0; i < adapterBalances.length; i++) {
+        for (uint256 i = 0; i < adapterBalancesLength; i++) {
             // Skip if no positive token balances
             if (nonZeroTokensCounters[i] == 0) {
                 continue;
@@ -176,8 +180,9 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
             // Reset temp variable and counter
             nonZeroTokenBalances = new TokenBalance[](nonZeroTokensCounters[i]);
             nonZeroTokensCounters[i] = 0;
+            currentTokenBalancesLength = currentTokenBalances.length;
 
-            for (uint256 j = 0; j < currentTokenBalances.length; j++) {
+            for (uint256 j = 0; j < currentTokenBalancesLength; j++) {
                 // Skip if balance is not positive
                 if (currentTokenBalances[j].amount == 0) {
                     continue;
@@ -245,9 +250,10 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
         address adapter = _protocolAdapterAddress[protocolAdapterName];
         require(adapter != address(0), "AR: bad protocolAdapterName!");
 
-        TokenBalance[] memory tokenBalances = new TokenBalance[](tokens.length);
+        uint256 length = tokens.length;
+        TokenBalance[] memory tokenBalances = new TokenBalance[](length);
 
-        for (uint256 i = 0; i < tokens.length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             try ProtocolAdapter(adapter).getBalance(
                 tokens[i],
                 account
@@ -285,11 +291,12 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
         view
         returns (FullTokenBalance memory)
     {
+        uint256 length = components.length;
         Component[] memory components = getComponents(tokenBalance);
         TokenBalanceMeta[] memory componentTokenBalances =
-            new TokenBalanceMeta[](components.length);
+            new TokenBalanceMeta[](length);
 
-        for (uint256 i = 0; i < components.length; i++) {
+        for (uint256 i = 0; i < length; i++) {
             componentTokenBalances[i] = getTokenBalanceMeta(
                 TokenBalance({
                     tokenAdapterName: "ERC20",
@@ -333,7 +340,8 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
             components = new Component[](0);
         }
 
-        for (uint256 i = 0; i < components.length; i++) {
+        uint256 length = components.length;
+        for (uint256 i = 0; i < length; i++) {
             components[i].rate = components[i].rate * tokenBalance.amount / 1e18;
         }
 
