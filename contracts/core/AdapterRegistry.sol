@@ -44,7 +44,7 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
-     * @dev Fullfills FullTokenBalance struct for an array of tokens.
+     * @dev Fills in FullTokenBalance struct for an array of tokens.
      * @param tokenBalances Array of TokenBalance structs consisting of
      * tokenAdapterName, token address, and amount.
      * @return Full token balances by token types and token addresses.
@@ -68,7 +68,7 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
     }
 
     /**
-     * @dev Fullfills FullTokenBalance struct for an array of tokens.
+     * @dev Fills in FullTokenBalance struct for an array of tokens.
      * @param tokenAdapterNames Array of tokens' types.
      * @param tokens Array of tokens' addresses.
      * @return Full token balances by token types and token addresses.
@@ -273,7 +273,7 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
     }
 
     /**
-     * @dev Fullfills FullTokenBalance struct for a single token.
+     * @dev Fills in FullTokenBalance struct for a single token.
      * @param tokenBalance Struct consisting of
      * tokenAdapterName, token address, and amount.
      * @return FullTokenBalance struct by the given components.
