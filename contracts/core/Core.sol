@@ -18,7 +18,7 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-import { Action, Output, ActionType, AmountType } from "../shared/Structs.sol";
+import { Action, AbsoluteTokenAmount, ActionType, AmountType } from "../shared/Structs.sol";
 import { InteractiveAdapter } from "../interactiveAdapters/InteractiveAdapter.sol";
 import { ERC20 } from "../shared/ERC20.sol";
 import { AdapterRegistry } from "./ProtocolAdapterRegistry.sol";
@@ -60,13 +60,13 @@ contract Core is ReentrancyGuard {
      */
     function executeActions(
         Action[] calldata actions,
-        Output[] calldata requiredOutputs,
+        AbsoluteTokenAmount[] calldata requiredOutputs,
         address payable account
     )
         external
         payable
         nonReentrant
-        returns (Output[] memory)
+        returns (AbsoluteTokenAmount[] memory)
     {
         require(account != address(0), "C: empty account!");
         address[][] memory tokensToBeWithdrawn = new address[][](actions.length);
@@ -120,7 +120,6 @@ contract Core is ReentrancyGuard {
             action.actionType == ActionType.Deposit || action.actionType == ActionType.Withdraw,
             "C: bad action type!"
         );
-        require(action.amounts.length == action.amountTypes.length, "C: inconsistent arrays!");
         bytes4 selector;
         if (action.actionType == ActionType.Deposit) {
             selector = InteractiveAdapter(adapter).deposit.selector;
@@ -132,9 +131,7 @@ contract Core is ReentrancyGuard {
         (bool success, bytes memory returnData) = adapter.delegatecall(
             abi.encodeWithSelector(
                 selector,
-                action.tokens,
-                action.amounts,
-                action.amountTypes,
+                action.tokenAmounts,
                 action.data
             )
         );
@@ -150,20 +147,22 @@ contract Core is ReentrancyGuard {
     }
 
     function returnTokens(
-        Output[] calldata requiredOutputs,
+        AbsoluteTokenAmount[] calldata requiredOutputs,
         address[][] memory tokensToBeWithdrawn,
         address payable account
     )
         internal
-        returns (Output[] memory)
+        returns (AbsoluteTokenAmount[] memory)
     {
-        uint256 length = requiredOutputs.length;
-        Output[] memory actualOutputs = new Output[](length);
-
+        uint256 length;
+        uint256 lengthNested;
         address token;
+        AbsoluteTokenAmount[] memory actualOutputs = new AbsoluteTokenAmount[](length);
+
+        length = requiredOutputs.length;
         for (uint256 i = 0; i < length; i++) {
             token = requiredOutputs[i].token;
-            actualOutputs[i] = Output({
+            actualOutputs[i] = AbsoluteTokenAmount({
                 token: token,
                 amount: checkRequirementAndTransfer(
                     token,
@@ -173,8 +172,10 @@ contract Core is ReentrancyGuard {
             });
         }
 
-        for (uint256 i = 0; i < tokensToBeWithdrawn.length; i++) {
-            for (uint256 j = 0; j < tokensToBeWithdrawn[i].length; j++) {
+        length = tokensToBeWithdrawn.length;
+        for (uint256 i = 0; i < length; i++) {
+            lengthNested = tokensToBeWithdrawn[i].length;
+            for (uint256 j = 0; j < lengthNested; j++) {
                 checkRequirementAndTransfer(tokensToBeWithdrawn[i][j], 0, account);
             }
         }

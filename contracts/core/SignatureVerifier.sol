@@ -18,7 +18,7 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-import { TransactionData, Action, Input, Fee, Output } from "../shared/Structs.sol";
+import { TransactionData, Action, TokenAmount, Fee, AbsoluteTokenAmount } from "../shared/Structs.sol";
 
 
 contract SignatureVerifier {
@@ -39,21 +39,21 @@ contract SignatureVerifier {
         abi.encodePacked(
             TX_DATA_ENCODED_TYPE,
             ACTION_ENCODED_TYPE,
-            INPUT_ENCODED_TYPE,
+            TOKEN_AMOUNT_ENCODED_TYPE,
             FEE_ENCODED_TYPE,
-            OUTPUT_ENCODED_TYPE
+            ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE
         )
     );
     bytes32 internal constant ACTION_TYPEHASH = keccak256(ACTION_ENCODED_TYPE);
-    bytes32 internal constant INPUT_TYPEHASH = keccak256(INPUT_ENCODED_TYPE);
+    bytes32 internal constant TOKEN_AMOUNT_TYPEHASH = keccak256(TOKEN_AMOUNT_ENCODED_TYPE);
     bytes32 internal constant FEE_TYPEHASH = keccak256(FEE_ENCODED_TYPE);
-    bytes32 internal constant OUTPUT_TYPEHASH = keccak256(OUTPUT_ENCODED_TYPE);
+    bytes32 internal constant ABSOLUTE_TOKEN_AMOUNT_TYPEHASH = keccak256(ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE);
 
     bytes internal constant TX_DATA_ENCODED_TYPE = abi.encodePacked(
         "TransactionData(",
         "Action[] actions,",
-        "Input[] inputs,",
-        "Output[] requiredOutputs,",
+        "TokenAmount[] inputs,",
+        "AbsoluteTokenAmount[] requiredOutputs,",
         "uint256 nonce",
         ")"
     );
@@ -61,14 +61,12 @@ contract SignatureVerifier {
         "Action(",
         "bytes32 protocolAdapterName,",
         "uint8 actionType,",
-        "address[] tokens,",
-        "uint256[] amounts,",
-        "uint8[] amountTypes,",
+        "TokenAmount[] tokenAmounts,",
         "bytes data",
         ")"
     );
-    bytes internal constant INPUT_ENCODED_TYPE = abi.encodePacked(
-        "Input(",
+    bytes internal constant TOKEN_AMOUNT_ENCODED_TYPE = abi.encodePacked(
+        "TokenAmount(",
         "address token,",
         "uint256 amount,",
         "uint8 amountType",
@@ -80,8 +78,8 @@ contract SignatureVerifier {
         "address beneficiary",
         ")"
     );
-    bytes internal constant OUTPUT_ENCODED_TYPE = abi.encodePacked(
-        "Output(",
+    bytes internal constant ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE = abi.encodePacked(
+        "AbsoluteTokenAmount(",
         "address token,",
         "uint256 amount",
         ")"
@@ -172,7 +170,9 @@ contract SignatureVerifier {
         returns (bytes32)
     {
         bytes memory actionsData = new bytes(0);
-        for (uint256 i = 0; i < actions.length; i++) {
+
+        uint256 length = actions.length;
+        for (uint256 i = 0; i < length; i++) {
             actionsData = abi.encodePacked(
                 actionsData,
                 keccak256(
@@ -193,22 +193,24 @@ contract SignatureVerifier {
     }
 
     function hash(
-        Input[] memory inputs
+        TokenAmount[] memory tokenAmounts
     )
         internal
         pure
         returns (bytes32)
     {
-        bytes memory inputsData = new bytes(0);
-        for (uint256 i = 0; i < inputs.length; i++) {
-            inputsData = abi.encodePacked(
-                inputsData,
+        bytes memory tokenAmountsData = new bytes(0);
+
+        uint256 length = tokenAmounts.length;
+        for (uint256 i = 0; i < length; i++) {
+            tokenAmountsData = abi.encodePacked(
+                tokenAmountsData,
                 keccak256(
                     abi.encode(
-                        INPUT_TYPEHASH,
-                        inputs[i].token,
-                        inputs[i].amount,
-                        inputs[i].amountType
+                        TOKEN_AMOUNT_TYPEHASH,
+                        tokenAmounts[i].token,
+                        tokenAmounts[i].amount,
+                        tokenAmounts[i].amountType
                     )
                 )
             );
@@ -234,21 +236,23 @@ contract SignatureVerifier {
     }
 
     function hash(
-        Output[] memory outputs
+        AbsoluteTokenAmount[] memory absoluteTokenAmounts
     )
         internal
         pure
         returns (bytes32)
     {
-        bytes memory outputsData = new bytes(0);
-        for (uint256 i = 0; i < outputs.length; i++) {
-            outputsData = abi.encodePacked(
-                outputsData,
+        bytes memory absoluteTokenAmountsData = new bytes(0);
+
+        uint256 length = absoluteTokenAmounts.length;
+        for (uint256 i = 0; i < length; i++) {
+            absoluteTokenAmountsData = abi.encodePacked(
+                absoluteTokenAmountsData,
                 keccak256(
                     abi.encode(
-                        OUTPUT_TYPEHASH,
-                        outputs[i].token,
-                        outputs[i].amount
+                        ABSOLUTE_TOKEN_AMOUNT_TYPEHASH,
+                        absoluteTokenAmounts[i].token,
+                        absoluteTokenAmounts[i].amount
                     )
                 )
             );

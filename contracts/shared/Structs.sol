@@ -19,20 +19,20 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 
-// The struct consists of TokenBalance structs for
-// (base) token and its underlying tokens (if exist).
-struct FullTokenBalance {
-    TokenBalanceMeta base;
-    TokenBalanceMeta[] underlying;
+// The struct consists of AbsoluteTokenAmount structs for
+// (base) token and its underlying tokens (if any).
+struct FullAbsoluteTokenAmount {
+    AbsoluteTokenAmountMeta base;
+    AbsoluteTokenAmountMeta[] underlying;
 }
 
 
-// The struct consists of token's address,
-// amount, and ERC20-style metadata.
+// The struct consists of AbsoluteTokenAmount struct
+// with token address and absolute amount
+// and ERC20Metadata struct with ERC20-style metadata.
 // NOTE: 0xEeee...EEeE address is used for ETH.
-struct TokenBalanceMeta {
-    address token;
-    uint256 amount;
+struct AbsoluteTokenAmountMeta {
+    AbsoluteTokenAmount absoluteTokenAmount;
     ERC20Metadata erc20metadata;
 }
 
@@ -46,17 +46,17 @@ struct ERC20Metadata {
 
 
 // The struct consists of protocol adapter's name
-// and array of TokenBalanceWithAdapter structs.
+// and array of AbsoluteTokenAmount structs
+// with token addresses and absolute amounts.
 struct AdapterBalance {
     bytes32 protocolAdapterName;
-    TokenBalance[] tokenBalances;
+    AbsoluteTokenAmount[] absoluteTokenAmounts;
 }
 
 
-// The struct consists of TokenBalance struct
-// and token adapter's name, which should be used
-// to retrieve underlying tokens and rates.
-struct TokenBalance {
+// The struct consists of token address
+// and its absolute amount.
+struct AbsoluteTokenAmount {
     address token;
     uint256 amount;
 }
@@ -75,9 +75,9 @@ struct Component {
 
 struct TransactionData {
     Action[] actions;
-    Input[] inputs;
+    TokenAmount[] inputs;
     Fee fee;
-    Output[] requiredOutputs;
+    AbsoluteTokenAmount[] requiredOutputs;
     uint256 nonce;
 }
 
@@ -85,14 +85,12 @@ struct TransactionData {
 struct Action {
     bytes32 protocolAdapterName;
     ActionType actionType;
-    address[] tokens;
-    uint256[] amounts;
-    AmountType[] amountTypes;
+    TokenAmount[] tokenAmounts;
     bytes data;
 }
 
 
-struct Input {
+struct TokenAmount {
     address token;
     uint256 amount;
     AmountType amountType;
@@ -102,12 +100,6 @@ struct Input {
 struct Fee {
     uint256 share;
     address beneficiary;
-}
-
-
-struct Output {
-    address token;
-    uint256 amount;
 }
 
 

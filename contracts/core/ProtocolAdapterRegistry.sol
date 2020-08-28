@@ -19,7 +19,7 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import {
-    FullTokenBalance,
+    FullAbsoluteTokenAmount,
     TokenBalanceMeta,
     ERC20Metadata,
     AdapterBalance,

@@ -18,7 +18,14 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-import { TransactionData, Action, Input, Fee, Output, AmountType } from "../shared/Structs.sol";
+import {
+    TransactionData,
+    Action,
+    TokenAmount,
+    Fee,
+    AbsoluteTokenAmount,
+    AmountType
+} from "../shared/Structs.sol";
 import { ERC20 } from "../shared/ERC20.sol";
 import { SafeERC20 } from "../shared/SafeERC20.sol";
 import { SignatureVerifier } from "./SignatureVerifier.sol";
@@ -61,15 +68,15 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function getRequiredAllowances(
-        Input[] calldata inputs,
+        TokenAmount[] calldata inputs,
         address account
     )
         external
         view
-        returns (Output[] memory)
+        returns (AbsoluteTokenAmount[] memory)
     {
         uint256 length = inputs.length;
-        Output[] memory requiredAllowances = new Output[](length);
+        AbsoluteTokenAmount[] memory requiredAllowances = new AbsoluteTokenAmount[](length);
         uint256 required;
         uint256 current;
 
@@ -77,7 +84,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
             required = getAbsoluteAmount(inputs[i], account);
             current = ERC20(inputs[i].token).allowance(account, address(this));
 
-            requiredAllowances[i] = Output({
+            requiredAllowances[i] = AbsoluteTokenAmount({
                 token: inputs[i].token,
                 amount: required > current ? required - current : 0
             });
@@ -87,15 +94,15 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function getRequiredBalances(
-        Input[] calldata inputs,
+        TokenAmount[] calldata inputs,
         address account
     )
         external
         view
-        returns (Output[] memory)
+        returns (AbsoluteTokenAmount[] memory)
     {
         uint256 length = inputs.length;
-        Output[] memory requiredBalances = new Output[](length);
+        AbsoluteTokenAmount[] memory requiredBalances = new AbsoluteTokenAmount[](length);
         uint256 required;
         uint256 current;
 
@@ -103,7 +110,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
             required = getAbsoluteAmount(inputs[i], account);
             current = ERC20(inputs[i].token).balanceOf(account);
 
-            requiredBalances[i] = Output({
+            requiredBalances[i] = AbsoluteTokenAmount({
                 token: inputs[i].token,
                 amount: required > current ? required - current : 0
             });
@@ -129,7 +136,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     )
         public
         payable
-        returns (Output[] memory)
+        returns (AbsoluteTokenAmount[] memory)
     {
         address payable account = getAccountFromSignature(data, signature);
 
@@ -146,13 +153,13 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
     function startExecution(
         Action[] memory actions,
-        Input[] memory inputs,
+        TokenAmount[] memory inputs,
         Fee memory fee,
-        Output[] memory requiredOutputs
+        AbsoluteTokenAmount[] memory requiredOutputs
     )
         public
         payable
-        returns (Output[] memory)
+        returns (AbsoluteTokenAmount[] memory)
     {
         return startExecution(
             actions,
@@ -165,33 +172,33 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
     function startExecution(
         Action[] memory actions,
-        Input[] memory inputs,
+        TokenAmount[] memory inputs,
         Fee memory fee,
-        Output[] memory requiredOutputs,
+        AbsoluteTokenAmount[] memory requiredOutputs,
         address payable account
     )
         internal
-        returns (Output[] memory)
+        returns (AbsoluteTokenAmount[] memory)
     {
         // save initial gas to burn gas token later
         uint256 gas = gasleft();
         // transfer tokens to core_, handle fees (if any), and add these tokens to outputs
         transferTokens(inputs, fee, account);
-        Output[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
+        AbsoluteTokenAmount[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
         // call Core contract with all provided ETH, actions, expected outputs and account address
-        Output[] memory actualOutputs = Core(core_).executeActions(
+        AbsoluteTokenAmount[] memory actualOutputs = Core(core_).executeActions(
             actions,
             modifiedOutputs,
             account
         );
         // try to burn gas token to save some gas
         freeGasToken(gas - gasleft());
-
+        // return tokens that were returned to the account address
         return actualOutputs;
     }
 
     function transferTokens(
-        Input[] memory inputs,
+        TokenAmount[] memory inputs,
         Fee memory fee,
         address account
     )
@@ -269,7 +276,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function getAbsoluteAmount(
-        Input memory input,
+        TokenAmount memory input,
         address account
     )
         internal
@@ -298,15 +305,15 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function modifyOutputs(
-        Output[] memory requiredOutputs,
-        Input[] memory inputs
+        AbsoluteTokenAmount[] memory requiredOutputs,
+        TokenAmount[] memory inputs
     )
         internal
         view
-        returns (Output[] memory)
+        returns (AbsoluteTokenAmount[] memory)
     {
         uint256 ethInput = msg.value > 0 ? 1 : 0;
-        Output[] memory modifiedOutputs = new Output[](
+        AbsoluteTokenAmount[] memory modifiedOutputs = new AbsoluteTokenAmount[](
             requiredOutputs.length + inputs.length + ethInput
         );
 
@@ -315,14 +322,14 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         }
 
         for (uint256 i = 0; i < inputs.length; i++) {
-            modifiedOutputs[requiredOutputs.length + i] = Output({
+            modifiedOutputs[requiredOutputs.length + i] = AbsoluteTokenAmount({
                 token: inputs[i].token,
                 amount: 0
             });
         }
 
         if (ethInput > 0) {
-            modifiedOutputs[requiredOutputs.length + inputs.length] = Output({
+            modifiedOutputs[requiredOutputs.length + inputs.length] = AbsoluteTokenAmount({
                 token: ETH,
                 amount: 0
             });
