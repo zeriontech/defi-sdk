@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { AmountType } from "../../shared/Structs.sol";
+import { TokenAmount } from "../../shared/Structs.sol";
 import { UniswapV2AssetAdapter } from "../../adapters/uniswap/UniswapV2AssetAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -61,9 +61,7 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory data
     )
         public
@@ -71,19 +69,18 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 2, "ULIA: should be 2 tokens!");
-        require(tokens.length == amounts.length, "ULIA: inconsistent arrays!");
+        require(tokenAmounts.length == 2, "ULIA: should be 2 tokenAmounts!");
 
         address pairAddress = abi.decode(data, (address));
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = pairAddress;
 
-        uint256 amount0 = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
-        uint256 amount1 = getAbsoluteAmountDeposit(tokens[1], amounts[1], amountTypes[1]);
+        uint256 amount0 = getAbsoluteAmountDeposit(tokenAmounts[0]);
+        uint256 amount1 = getAbsoluteAmountDeposit(tokenAmounts[1]);
 
         uint256 reserve0;
         uint256 reserve1;
-        if (tokens[0] == UniswapV2Pair(pairAddress).token0()) {
+        if (tokenAmounts[0].token == UniswapV2Pair(pairAddress).token0()) {
             (reserve0, reserve1) = UniswapV2Pair(pairAddress).getReserves();
         } else {
             (reserve1, reserve0) = UniswapV2Pair(pairAddress).getReserves();
@@ -96,8 +93,8 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
             amount0 = amount1 * reserve0 / reserve1;
         }
 
-        ERC20(tokens[0]).safeTransfer(pairAddress, amount0, "ULIA![1]");
-        ERC20(tokens[1]).safeTransfer(pairAddress, amount1, "ULIA![2]");
+        ERC20(tokenAmounts[0].token).safeTransfer(pairAddress, amount0, "ULIA![1]");
+        ERC20(tokenAmounts[1].token).safeTransfer(pairAddress, amount1, "ULIA![2]");
 
         try UniswapV2Pair(pairAddress).mint(
             address(this)
@@ -118,9 +115,7 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory
     )
         public
@@ -128,18 +123,18 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "ULIA: should be 1 token!");
-        require(tokens.length == amounts.length, "ULIA: inconsistent arrays!");
+        require(tokenAmounts.length == 1, "ULIA: should be 1 tokenAmount!");
 
-        uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
+        address token = tokenAmounts[0].token;
+        uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](2);
-        tokensToBeWithdrawn[0] = UniswapV2Pair(tokens[0]).token0();
-        tokensToBeWithdrawn[1] = UniswapV2Pair(tokens[0]).token1();
+        tokensToBeWithdrawn[0] = UniswapV2Pair(token).token0();
+        tokensToBeWithdrawn[1] = UniswapV2Pair(token).token1();
 
-        ERC20(tokens[0]).safeTransfer(tokens[0], amount, "ULIA![3]");
+        ERC20(token).safeTransfer(token, amount, "ULIA![3]");
 
-        try UniswapV2Pair(tokens[0]).burn(
+        try UniswapV2Pair(token).burn(
             address(this)
         ) returns (uint256, uint256) { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {

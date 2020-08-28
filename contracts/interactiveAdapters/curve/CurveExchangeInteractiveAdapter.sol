@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { AmountType } from "../../shared/Structs.sol";
+import { TokenAmount } from "../../shared/Structs.sol";
 import { CurveExchangeAdapter } from "../../adapters/curve/CurveExchangeAdapter.sol";
 import { CurveInteractiveAdapter } from "./CurveInteractiveAdapter.sol";
 
@@ -59,9 +59,7 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory data
     )
         public
@@ -69,10 +67,10 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "CEIA: should be 1 tokens!");
-        require(tokens.length == amounts.length, "CEIA: inconsistent arrays!");
+        require(tokenAmounts.length == 1, "CEIA: should be 1 tokens!");
 
-        uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
+        address token = tokenAmounts[0].token;
+        uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
         address toToken = abi.decode(data, (address));
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = toToken;

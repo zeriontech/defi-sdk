@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { AmountType } from "../../shared/Structs.sol";
+import { TokenAmount } from "../../shared/Structs.sol";
 import { OneSplitAdapter } from "../../adapters/oneInch/OneSplitAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -75,9 +75,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory data
     )
         public
@@ -85,10 +83,10 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "OSIA: should be 1 token!");
-        require(tokens.length == amounts.length, "OSIA: inconsistent arrays!");
+        require(tokenAmounts.length == 1, "OSIA: should be 1 tokenAmount!");
 
-        uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
+        address token = tokenAmounts[0].token;
+        uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         address fromToken = tokens[0];
         if (fromToken == ETH) {

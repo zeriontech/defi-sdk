@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { AmountType } from "../../shared/Structs.sol";
+import { TokenAmount } from "../../shared/Structs.sol";
 import { TokenSetsAdapter } from "../../adapters/tokenSets/TokenSetsAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -85,9 +85,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory data
     )
         public
@@ -95,12 +93,16 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        uint256 length = tokens.length;
-        require(length == amounts.length, "TSIA: inconsistent arrays![1]");
+        uint256 length = tokenAmounts.length;
         uint256[] memory absoluteAmounts = new uint256[](length);
+
         for (uint256 i = 0; i < length; i++) {
-            absoluteAmounts[i] = getAbsoluteAmountDeposit(tokens[i], amounts[i], amountTypes[i]);
-            ERC20(tokens[i]).safeApprove(TRANSFER_PROXY, absoluteAmounts[i], "TSIA![1]");
+            absoluteAmounts[i] = getAbsoluteAmountDeposit(tokenAmounts[i]);
+            ERC20(tokenAmounts[i].token).safeApprove(
+                TRANSFER_PROXY,
+                absoluteAmounts[i],
+                "TSIA![1]"
+            );
         }
 
         address setAddress = abi.decode(data, (address));
@@ -134,9 +136,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory
     )
         public
@@ -144,17 +144,17 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "TSIA: should be 1 token!");
-        require(tokens.length == amounts.length, "TSIA: inconsistent arrays![2]");
+        require(tokenAmounts.length == 1, "TSIA: should be 1 tokenAmount!");
 
-        uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
+        address token = tokenAmounts[0].token;
+        uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
         RebalancingSetIssuanceModule issuanceModule = RebalancingSetIssuanceModule(ISSUANCE_MODULE);
-        RebalancingSetToken rebalancingSetToken = RebalancingSetToken(tokens[0]);
+        RebalancingSetToken rebalancingSetToken = RebalancingSetToken(token);
         SetToken setToken = rebalancingSetToken.currentSet();
         tokensToBeWithdrawn = setToken.getComponents();
 
         try issuanceModule.redeemRebalancingSet(
-            tokens[0],
+            token,
             amount,
             false
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks

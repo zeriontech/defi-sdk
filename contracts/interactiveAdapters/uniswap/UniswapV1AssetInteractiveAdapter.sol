@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { AmountType } from "../../shared/Structs.sol";
+import { TokenAmount } from "../../shared/Structs.sol";
 import { UniswapV1AssetAdapter } from "../../adapters/uniswap/UniswapV1AssetAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -82,9 +82,7 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, UniswapV1AssetA
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory
     )
         public
@@ -92,20 +90,19 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, UniswapV1AssetA
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 2, "ULIA: should be 2 tokens!");
-        require(tokens.length == amounts.length, "ULIA: inconsistent arrays![1]");
-        require(tokens[0] == ETH, "ULIA: should be ETH!");
-        address exchange = Factory(FACTORY).getExchange(tokens[1]);
+        require(tokenAmounts.length == 2, "ULIA: should be 2 tokenAmounts!");
+        require(tokenAmounts[0].token == ETH, "ULIA: should be ETH!");
+        address exchange = Factory(FACTORY).getExchange(tokenAmounts[1].token);
         require(exchange != address(0), "ULIA: no exchange!");
 
-        uint256 ethAmount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
-        uint256 tokenAmount = getAbsoluteAmountDeposit(tokens[1], amounts[1], amountTypes[1]);
+        uint256 ethAmount = getAbsoluteAmountDeposit(tokenAmounts[0]);
+        uint256 tokenAmount = getAbsoluteAmountDeposit(tokenAmounts[1]);
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = exchange;
-//        tokensToBeWithdrawn[1] = tokens[1];
+        tokensToBeWithdrawn[1] = tokenAmounts[1].token;
 
-        ERC20(tokens[1]).safeApprove(exchange, tokenAmount, "ULIA![1]");
+        ERC20(tokenAmounts[1].token).safeApprove(exchange, tokenAmount, "ULIA![1]");
         try Exchange(exchange).addLiquidity{value: ethAmount}(
             uint256(1),
             tokenAmount,
@@ -119,7 +116,7 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, UniswapV1AssetA
             revert("ULIA: deposit fail![2]");
         }
 
-        ERC20(tokens[1]).safeApprove(exchange, 0, "ULIA![2]");
+        ERC20(tokenAmounts[1].token).safeApprove(exchange, 0, "ULIA![2]");
     }
 
     /**
@@ -131,9 +128,7 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, UniswapV1AssetA
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory
     )
         public
@@ -141,16 +136,16 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, UniswapV1AssetA
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "ULIA: should be 1 token!");
-        require(tokens.length == amounts.length, "ULIA: inconsistent arrays![2]");
+        require(tokenAmounts.length == 1, "ULIA: should be 1 tokenAmount!");
 
-        uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
+        token = tokenAmounts[0].token;
+        uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](2);
-        tokensToBeWithdrawn[0] = Factory(FACTORY).getToken(tokens[0]);
+        tokensToBeWithdrawn[0] = Factory(FACTORY).getToken(token);
         tokensToBeWithdrawn[1] = ETH;
 
-        try Exchange(tokens[0]).removeLiquidity(
+        try Exchange(token).removeLiquidity(
             amount,
             uint256(1),
             uint256(1),

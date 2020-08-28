@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { AmountType } from "../../shared/Structs.sol";
+import { TokenAmount } from "../../shared/Structs.sol";
 import { ChaiAdapter } from "../../adapters/maker/ChaiAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -55,9 +55,7 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] memory,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory
     )
         public
@@ -67,7 +65,8 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
     {
         require(amounts.length == 1, "CIA: should be 1 amount/type![1]");
 
-        uint256 amount = getAbsoluteAmountDeposit(DAI, amounts[0], amountTypes[0]);
+        address token = tokenAmounts[0].token;
+        uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
         ERC20(DAI).safeApprove(CHAI, amount, "CIA!");
 
         try Chai(CHAI).join(address(this), amount) { // solhint-disable-line no-empty-blocks

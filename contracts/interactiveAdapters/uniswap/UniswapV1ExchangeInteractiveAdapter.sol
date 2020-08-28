@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { AmountType } from "../../shared/Structs.sol";
+import { TokenAmount } from "../../shared/Structs.sol";
 import { UniswapExchangeAdapter } from "../../adapters/uniswap/UniswapExchangeAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -112,9 +112,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory data
     )
         public
@@ -122,16 +120,16 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "UEIA: should be 1 token!");
-        require(tokens.length == amounts.length, "UEIA: inconsistent arrays![1]");
+        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount!");
 
-        uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
+        address token = tokenAmounts[0].token;
+        uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
         address toToken = abi.decode(data, (address));
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = toToken;
 
-        if (tokens[0] == ETH) {
+        if (token == ETH) {
             address exchange = Factory(FACTORY).getExchange(toToken);
             require(exchange != address(0), "UEIA: no exchange![1]");
 
@@ -146,10 +144,10 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                 revert("UEIA: deposit fail![2]");
             }
         } else {
-            address exchange = Factory(FACTORY).getExchange(tokens[0]);
+            address exchange = Factory(FACTORY).getExchange(token);
             require(exchange != address(0), "UEIA: no exchange![2]");
 
-            ERC20(tokens[0]).safeApprove(exchange, amount, "UEIA![1]");
+            ERC20(token).safeApprove(exchange, amount, "UEIA![1]");
 
             if (toToken == ETH) {
                 try Exchange(exchange).tokenToEthSwapInput(
@@ -191,9 +189,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory data
     )
         public
@@ -201,20 +197,21 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "UEIA: should be 1 token!");
-        require(tokens.length == amounts.length, "UEIA: inconsistent arrays![2]");
-        require(amountTypes[0] == AmountType.Absolute, "UEIA: bad type!");
+        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount!");
+        require(tokenAmounts[0].amountType == AmountType.Absolute, "UEIA: bad type!");
+
+        address token = tokenAmounts[0].token;
         address fromToken = abi.decode(data, (address));
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = tokens[0];
+        tokensToBeWithdrawn[0] = token;
 
         if (fromToken == ETH) {
-            address exchange = Factory(FACTORY).getExchange(tokens[0]);
+            address exchange = Factory(FACTORY).getExchange(token);
             require(exchange != address(0), "UEIA: no exchange![1]");
 
             try Exchange(exchange).ethToTokenSwapOutput{value: address(this).balance}(
-                amounts[0],
+                tokenAmounts[0].amount,
                 // solhint-disable-next-line not-rely-on-time
                 now
             ) returns (uint256) { // solhint-disable-line no-empty-blocks
@@ -230,9 +227,9 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             uint256 balance = ERC20(fromToken).balanceOf(address(this));
             ERC20(fromToken).safeApprove(exchange, balance, "UEIA![2]");
 
-            if (tokens[0] == ETH) {
+            if (token == ETH) {
                 try Exchange(exchange).tokenToEthSwapOutput(
-                    amounts[0],
+                    tokenAmounts[0].amount,
                     balance,
                     // solhint-disable-next-line not-rely-on-time
                     now
@@ -244,12 +241,12 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                 }
             } else {
                 try Exchange(exchange).tokenToTokenSwapOutput(
-                    amounts[0],
+                    tokenAmounts[0].amount,
                     balance,
                     type(uint256).max,
                     // solhint-disable-next-line not-rely-on-time
                     now,
-                    tokens[0]
+                    token
                 ) returns (uint256) { // solhint-disable-line no-empty-blocks
                 } catch Error(string memory reason) {
                     revert(reason);

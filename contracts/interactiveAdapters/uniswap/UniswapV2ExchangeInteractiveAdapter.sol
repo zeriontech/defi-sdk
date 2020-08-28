@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { AmountType } from "../../shared/Structs.sol";
+import { TokenAmount } from "../../shared/Structs.sol";
 import { UniswapExchangeAdapter } from "../../adapters/uniswap/UniswapExchangeAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -67,9 +67,7 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] memory,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory data
     )
         public
@@ -77,15 +75,17 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(amounts.length == 1, "UEIA: should be 1 amount/amountType!");
+        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount!");
 
         address[] memory path = abi.decode(data, (address[]));
-        uint256 amount = getAbsoluteAmountDeposit(path[0], amounts[0], amountTypes[0]);
+        address token = tokenAmounts[0].token;
+        require(token == path[0], "UEIA: bad path[0]!");
+        uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = path[path.length - 1];
 
-        ERC20(path[0]).safeApprove(ROUTER, amount, "UEIA![1]");
+        ERC20(token).safeApprove(ROUTER, amount, "UEIA![1]");
 
         try UniswapV2Router01(ROUTER).swapExactTokensForTokens(
             amount,
@@ -111,9 +111,7 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] memory,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory data
     )
         public
@@ -121,14 +119,16 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(amounts.length == 1, "UEIA: should be 1 amount/amountType!");
-        require(amountTypes[0] == AmountType.Absolute, "UEIA: bad type!");
+        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount!");
+        require(tokenAmounts[0].amountType == AmountType.Absolute, "UEIA: bad type!");
 
         address[] memory path = abi.decode(data, (address[]));
-        uint256 amount = getAbsoluteAmountDeposit(path[path.length - 1], amounts[0], amountTypes[0]);
+        address token = tokenAmounts[0].token;
+        require(token == path[path.length - 1], "UEIA: bad path[path.length - 1]!");
+        uint256 amount = tokenAmounts[0].amount;
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = path[path.length - 1];
+        tokensToBeWithdrawn[0] = token;
 
         ERC20(path[0]).safeApprove(ROUTER, ERC20(path[0]).balanceOf(address(this)), "UEIA![2]");
 

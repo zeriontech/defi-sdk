@@ -86,7 +86,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "CAIA: should be 1 token![1]");
+        require(tokenAmounts.length == 1, "CAIA: should be 1 tokenAmount![1]");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
@@ -123,7 +123,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "CAIA: should be 1 token![2]");
+        require(tokenAmounts.length == 1, "CAIA: should be 1 tokenAmount![2]");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);

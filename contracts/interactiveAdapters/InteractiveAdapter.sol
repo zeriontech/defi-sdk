@@ -39,9 +39,7 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
      * @return MUST return assets to be sent back to the `msg.sender`.
      */
     function deposit(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory data
     )
         public
@@ -54,9 +52,7 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
      * @return MUST return assets to be sent back to the `msg.sender`.
      */
     function withdraw(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory data
     )
         public
@@ -65,15 +61,17 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         returns (address[] memory);
 
     function getAbsoluteAmountDeposit(
-        address token,
-        uint256 amount,
-        AmountType amountType
+        TokenAmount memory tokenAmount
     )
         internal
         view
         virtual
         returns (uint256)
     {
+        address token = tokenAmount.token;
+        uint256 amount = tokenAmount.amount;
+        AmountType amountType = tokenAmount.amountType;
+
         require(
             amountType == AmountType.Relative || amountType == AmountType.Absolute,
             "IA: bad amount type!"
@@ -99,15 +97,17 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
     }
 
     function getAbsoluteAmountWithdraw(
-        address token,
-        uint256 amount,
-        AmountType amountType
+        TokenAmount memory tokenAmount
     )
         internal
         view
         virtual
         returns (uint256)
     {
+        address token = tokenAmount.token;
+        uint256 amount = tokenAmount.amount;
+        AmountType amountType = tokenAmount.amountType;
+
         require(
             amountType == AmountType.Relative || amountType == AmountType.Absolute,
             "IA: bad amount type!"

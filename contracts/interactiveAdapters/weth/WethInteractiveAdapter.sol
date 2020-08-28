@@ -18,7 +18,7 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-import { AmountType } from "../../shared/Structs.sol";
+import { TokenAmount } from "../../shared/Structs.sol";
 import { WethAdapter } from "../../adapters/weth/WethAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -51,9 +51,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] memory,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory
     )
         public
@@ -61,7 +59,10 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        uint256 amount = getAbsoluteAmountDeposit(ETH, amounts[0], amountTypes[0]);
+        require(tokenAmounts.length == 1, "WIA: should be 1 tokenAmount!");
+        require(tokenAmounts[0].token == ETH, "WIA: should be ETH address!");
+
+        uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = WETH;
@@ -82,9 +83,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] memory,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory
     )
         public
@@ -92,7 +91,12 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        uint256 amount = getAbsoluteAmountWithdraw(WETH, amounts[0], amountTypes[0]);
+        require(tokenAmounts.length == 1, "WIA: should be 1 tokenAmount!");
+        require(tokenAmounts[0].token == WETH, "WIA: should be WETH address!");
+
+        address token = tokenAmounts[0].token;
+
+        uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = ETH;
