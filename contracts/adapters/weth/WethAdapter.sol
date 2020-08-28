@@ -40,8 +40,8 @@ contract WethAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
-        return (ERC20(token).balanceOf(account), "Weth");
+        return ERC20(token).balanceOf(account);
     }
 }

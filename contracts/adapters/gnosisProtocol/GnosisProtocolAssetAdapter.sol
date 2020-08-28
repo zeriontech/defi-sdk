@@ -52,8 +52,8 @@ contract GnosisProtocolAssetAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
-        return (EpochTokenLocker(BALANCE).getBalance(account, token), "ERC20");
+        return EpochTokenLocker(BALANCE).getBalance(account, token);
     }
 }

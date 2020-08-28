@@ -41,7 +41,7 @@ contract UniswapExchangeAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         revert("UEA: no balance!");
     }

@@ -41,8 +41,8 @@ contract BancorAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
-        return (ERC20(token).balanceOf(account), "SmartToken");
+        return ERC20(token).balanceOf(account);
     }
 }

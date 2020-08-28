@@ -73,13 +73,13 @@ contract DyDxDebtAdapter is ProtocolAdapter, DyDxAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         Wei memory accountWei = SoloMargin(SOLO).getAccountWei(
             Info(account, 0),
             getMarketId(token)
         );
 
-        return (accountWei.sign ? 0 : accountWei.value, "ERC20");
+        return accountWei.sign ? 0 : accountWei.value;
     }
 }

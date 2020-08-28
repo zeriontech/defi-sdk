@@ -65,29 +65,21 @@ contract SynthetixAssetAdapter is ProtocolAdapter {
     address internal immutable stakingContract_;
     address internal immutable stakingToken_;
     address internal immutable rewardsToken_;
-    bytes32 internal immutable stakingTokenAdapterName_;
-    bytes32 internal immutable rewardsTokenAdapterName_;
 
     constructor(
         address stakingContract,
         address stakingToken,
-        address rewardsToken,
-        bytes32 stakingTokenAdapterName,
-        bytes32 rewardsTokenAdapterName
+        address rewardsToken
     )
         public
     {
         require(stakingContract != address(0), "SSA: empty stakingContract!");
         require(stakingToken != address(0), "SSA: empty stakingToken!");
         require(rewardsToken != address(0), "SSA: empty rewardsToken!");
-        require(stakingTokenAdapterName != bytes32(0), "SSA: empty stakingTokenAdapterName!");
-        require(rewardsTokenAdapterName != bytes32(0), "SSA: empty rewardsTokenAdapterName!");
 
         stakingContract_ = stakingContract;
         stakingToken_ = stakingToken;
         rewardsToken_ = rewardsToken;
-        stakingTokenAdapterName_ = stakingTokenAdapterName;
-        rewardsTokenAdapterName_ = rewardsTokenAdapterName;
     }
 
     /**
@@ -101,14 +93,14 @@ contract SynthetixAssetAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         if (token == stakingToken_) {
-            return (ERC20(stakingContract_).balanceOf(account), stakingTokenAdapterName_);
+            return ERC20(stakingContract_).balanceOf(account);
         } else if (token == rewardsToken_) {
-            return (StakingRewards(stakingContract_).earned(account), rewardsTokenAdapterName_);
+            return StakingRewards(stakingContract_).earned(account);
         } else {
-            return (0, bytes32(0));
+            return 0;
         }
     }
 }

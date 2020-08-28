@@ -63,10 +63,10 @@ contract CompoundDebtAdapter is ProtocolAdapter {
         public
         view
         override
-        returns (uint256, bytes32)
+        returns (uint256)
     {
         CToken cToken = CToken(CompoundRegistry(REGISTRY).getCToken(token));
 
-        return (cToken.borrowBalanceStored(account), "ERC20");
+        return cToken.borrowBalanceStored(account);
     }
 }

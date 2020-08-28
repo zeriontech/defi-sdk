@@ -19,12 +19,11 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import { Ownable } from "./Ownable.sol";
-import { TokenAdapter } from "../adapters/TokenAdapter.sol";
 
 
 /**
- * @title AdapterRegistry part responsible for token adapters management.
- * @dev Base contract for AdapterRegistry.
+ * @title TokenAdapterRegistry part responsible for token adapters management.
+ * @dev Base contract for TokenAdapterRegistry.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract TokenAdapterManager is Ownable {

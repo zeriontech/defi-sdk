@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 import { Action, Output, ActionType, AmountType } from "../shared/Structs.sol";
 import { InteractiveAdapter } from "../interactiveAdapters/InteractiveAdapter.sol";
 import { ERC20 } from "../shared/ERC20.sol";
-import { AdapterRegistry } from "./AdapterRegistry.sol";
+import { AdapterRegistry } from "./ProtocolAdapterRegistry.sol";
 import { SafeERC20 } from "../shared/SafeERC20.sol";
 import { Helpers } from "../shared/Helpers.sol";
 import { ReentrancyGuard } from "./ReentrancyGuard.sol";

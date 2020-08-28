@@ -37,5 +37,5 @@ abstract contract ProtocolAdapter {
         public
         view
         virtual
-        returns (uint256, bytes32);
+        returns (uint256);
 }
