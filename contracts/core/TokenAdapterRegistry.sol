@@ -116,10 +116,10 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
         returns (FullAbsoluteTokenAmount memory)
     {
         Component[] memory components = getComponents(absoluteTokenAmount);
-        AbsoluteTokenAmountMeta[] memory componentAbsoluteTokenAmounts =
-            new AbsoluteTokenAmountMeta[](components.length);
-
         uint256 length = components.length;
+        AbsoluteTokenAmountMeta[] memory componentAbsoluteTokenAmounts =
+            new AbsoluteTokenAmountMeta[](length);
+
         for (uint256 i = 0; i < length; i++) {
             componentAbsoluteTokenAmounts[i] = getAbsoluteTokenAmountMeta(
                 AbsoluteTokenAmount({
@@ -164,7 +164,8 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
             }
         }
 
-        for (uint256 i = 0; i < components.length; i++) {
+        uint256 length = components.length;
+        for (uint256 i = 0; i < length; i++) {
             components[i].rate = components[i].rate * absoluteTokenAmount.amount / 1e18;
         }
 
