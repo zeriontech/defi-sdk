@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { AmountType } from "../../shared/Structs.sol";
+import { TokenAmount } from "../../shared/Structs.sol";
 import { AaveAssetAdapter } from "../../adapters/aave/AaveAssetAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -83,16 +83,13 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
 
     /**
      * @notice Deposits tokens to the Aave protocol.
-     * @param tokens Array with one element - underlying token address.
-     * @param amounts Array with one element - underlying token amount to be deposited.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * underlying token address, underlying token amount to be deposited, and amount type.
      * @return tokensToBeWithdrawn Array with ane element - aToken.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory
     )
         public
@@ -100,18 +97,18 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "AAIA: should be 1 token![1]");
-        require(tokens.length == amounts.length, "AAIA: inconsistent arrays![1]");
+        require(tokenAmounts.length == 1, "AAIA: should be 1 tokenAmount![1]");
 
         address pool = LendingPoolAddressesProvider(PROVIDER).getLendingPool();
         address core = LendingPoolAddressesProvider(PROVIDER).getLendingPoolCore();
 
-        uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
+        address token = tokenAmounts[0].token;
+        uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = LendingPoolCore(core).getReserveATokenAddress(tokens[0]);
+        tokensToBeWithdrawn[0] = LendingPoolCore(core).getReserveATokenAddress(token);
 
-        if (tokens[0] == ETH) {
+        if (token == ETH) {
             // solhint-disable-next-line no-empty-blocks
             try LendingPool(pool).deposit{value: amount}(ETH, amount, 0) {
             } catch Error(string memory reason) {
@@ -120,9 +117,9 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
                 revert("AAIA: deposit fail![1]");
             }
         } else {
-            ERC20(tokens[0]).safeApprove(core, amount, "AAIA!");
+            ERC20(token).safeApprove(core, amount, "AAIA!");
             // solhint-disable-next-line no-empty-blocks
-            try LendingPool(pool).deposit(tokens[0], amount, 0) {
+            try LendingPool(pool).deposit(token, amount, 0) {
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {
@@ -133,16 +130,13 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
 
     /**
      * @notice Withdraws tokens from the Aave protocol.
-     * @param tokens Array with one element - aToken address.
-     * @param amounts Array with one element - aToken amount to be withdrawn.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * aToken address, aToken amount to be redeemed, and amount type.
      * @return tokensToBeWithdrawn Array with one element - underlying token.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory
     )
         public
@@ -150,16 +144,16 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "AAIA: should be 1 token![2]");
-        require(tokens.length == amounts.length, "AAIA: inconsistent arrays![2]");
+        require(tokenAmounts.length == 1, "AAIA: should be 1 tokenAmount![2]");
 
-        uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
+        address token = tokenAmounts[0].token;
+        uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = AToken(tokens[0]).underlyingAssetAddress();
+        tokensToBeWithdrawn[0] = AToken(token).underlyingAssetAddress();
 
         // solhint-disable-next-line no-empty-blocks
-        try AToken(tokens[0]).redeem(amount) {
+        try AToken(token).redeem(amount) {
         } catch Error(string memory reason) {
             revert(reason);
         } catch {

@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { AmountType } from "../../shared/Structs.sol";
+import { TokenAmount } from "../../shared/Structs.sol";
 import { CompoundAssetAdapter } from "../../adapters/compound/CompoundAssetAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -72,16 +72,13 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
 
     /**
      * @notice Deposits tokens to the Compound protocol.
-     * @param tokens Array with one element - underlying token address.
-     * @param amounts Array with one element - underlying token amount to be deposited.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * underlying token address, underlying token amount to be deposited, and amount type.
      * @return tokensToBeWithdrawn Array with two elements - cToken and COMP addresses.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory
     )
         public
@@ -89,39 +86,36 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "CAIA: should be 1 token![1]");
-        require(tokens.length == amounts.length, "CAIA: inconsistent arrays![1]");
+        require(tokenAmounts.length == 1, "CAIA: should be 1 token![1]");
 
-        uint256 amount = getAbsoluteAmountDeposit(tokens[0], amounts[0], amountTypes[0]);
+        address token = tokenAmounts[0].token;
+        uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](2);
         tokensToBeWithdrawn[0] = COMP;
 
-        if (tokens[0] == ETH) {
+        if (token == ETH) {
             tokensToBeWithdrawn[1] = CETH;
 
             CEther(CETH).mint{value: amount}();
         } else {
-            address cToken = CompoundRegistry(REGISTRY).getCToken(tokens[0]);
+            address cToken = CompoundRegistry(REGISTRY).getCToken(token);
             tokensToBeWithdrawn[1] = cToken;
 
-            ERC20(tokens[0]).safeApprove(cToken, amount, "CAIA!");
+            ERC20(token).safeApprove(cToken, amount, "CAIA!");
             require(CToken(cToken).mint(amount) == 0, "CAIA: deposit failed!");
         }
     }
 
     /**
      * @notice Withdraws tokens from the Compound protocol.
-     * @param tokens Array with one element - cToken address.
-     * @param amounts Array with one element - cToken amount to be withdrawn.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokens Array with one element - TokenAmount struct with
+     * cToken address, cToken amount to be redeemed, and amount type.
      * @return tokensToBeWithdrawn Array with two elements - underlying token and COMP addresses.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] memory tokens,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory
     )
         public
@@ -129,20 +123,20 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokens.length == 1, "CAIA: should be 1 token![2]");
-        require(tokens.length == amounts.length, "CAIA: inconsistent arrays![2]");
+        require(tokenAmounts.length == 1, "CAIA: should be 1 token![2]");
 
-        uint256 amount = getAbsoluteAmountWithdraw(tokens[0], amounts[0], amountTypes[0]);
+        address token = tokenAmounts[0].token;
+        uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](2);
         tokensToBeWithdrawn[0] = COMP;
 
-        if (tokens[0] == CETH) {
+        if (token == CETH) {
             tokensToBeWithdrawn[1] = ETH;
         } else {
-            tokensToBeWithdrawn[1] = CToken(tokens[0]).underlying();
+            tokensToBeWithdrawn[1] = CToken(token).underlying();
         }
 
-        require(CToken(tokens[0]).redeem(amount) == 0, "CAIA: withdraw failed!");
+        require(CToken(token).redeem(amount) == 0, "CAIA: withdraw failed!");
     }
 }
