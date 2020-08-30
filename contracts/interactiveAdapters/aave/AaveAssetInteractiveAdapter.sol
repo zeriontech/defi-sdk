@@ -97,7 +97,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "AAIA: should be 1 tokenAmount![1]");
+        require(tokenAmounts.length == 1, "AAIA: should be 1 tokenAmount[1]");
 
         address pool = LendingPoolAddressesProvider(PROVIDER).getLendingPool();
         address core = LendingPoolAddressesProvider(PROVIDER).getLendingPoolCore();
@@ -114,16 +114,16 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {
-                revert("AAIA: deposit fail![1]");
+                revert("AAIA: deposit fail[1]");
             }
         } else {
-            ERC20(token).safeApprove(core, amount, "AAIA!");
+            ERC20(token).safeApprove(core, amount, "AAIA");
             // solhint-disable-next-line no-empty-blocks
             try LendingPool(pool).deposit(token, amount, 0) {
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {
-                revert("AAIA: deposit fail![2]");
+                revert("AAIA: deposit fail[2]");
             }
         }
     }
@@ -144,7 +144,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "AAIA: should be 1 tokenAmount![2]");
+        require(tokenAmounts.length == 1, "AAIA: should be 1 tokenAmount[2]");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
@@ -157,7 +157,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("AAIA: withdraw fail!");
+            revert("AAIA: withdraw fail");
         }
     }
 }

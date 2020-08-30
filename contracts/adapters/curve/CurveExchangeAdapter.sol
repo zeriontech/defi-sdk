@@ -42,6 +42,6 @@ contract CurveExchangeAdapter is ProtocolAdapter {
         override
         returns (uint256)
     {
-        revert("CEA: no balance!");
+        revert("CEA: no balance");
     }
 }

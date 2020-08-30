@@ -136,8 +136,8 @@ contract SignatureVerifier {
             splitSignature(signature)
         );
 
-        require(signer != address(0), "SV: bad signature!");
-        require(nonce_[signer] == data.nonce, "SV: bad nonce!");
+        require(signer != address(0), "SV: bad signature");
+        require(nonce_[signer] == data.nonce, "SV: bad nonce");
 
         return payable(signer);
     }
@@ -180,9 +180,7 @@ contract SignatureVerifier {
                         ACTION_TYPEHASH,
                         actions[i].protocolAdapterName,
                         actions[i].actionType,
-                        keccak256(abi.encodePacked(actions[i].tokens)),
-                        keccak256(abi.encodePacked(actions[i].amounts)),
-                        keccak256(abi.encodePacked(actions[i].amountTypes)),
+                        keccak256(abi.encodePacked(actions[i].tokenAmounts)),
                         keccak256(actions[i].data)
                     )
                 )
@@ -216,7 +214,7 @@ contract SignatureVerifier {
             );
         }
 
-        return keccak256(inputsData);
+        return keccak256(tokenAmountsData);
     }
 
     function hash(
@@ -258,7 +256,7 @@ contract SignatureVerifier {
             );
         }
 
-        return keccak256(outputsData);
+        return keccak256(absoluteTokenAmountsData);
     }
 
     function splitSignature(
@@ -268,7 +266,7 @@ contract SignatureVerifier {
         pure
         returns (uint8 v, bytes32 r, bytes32 s)
     {
-        require(signature.length == 65, "SV: bad signature!");
+        require(signature.length == 65, "SV: bad signature");
 
         assembly {
             // first 32 bytes, after the length prefix.
@@ -290,11 +288,11 @@ contract SignatureVerifier {
         // these malleable signatures as well.
         // Reference: github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/cryptography/ECDSA.sol
         if (uint256(s) > 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0) {
-            revert("SV: bad 's'!");
+            revert("SV: bad 's'");
         }
 
         if (v != 27 && v != 28) {
-            revert("SV: bad 'v'!");
+            revert("SV: bad 'v'");
         }
 
         return (v, r, s);

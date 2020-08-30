@@ -101,7 +101,7 @@ contract CompoundGovernanceAdapter is ProtocolAdapter {
 
         if (borrowerIndex > 0) {
             uint256 borrowIndex = uint256(Comptroller(COMPTROLLER).compBorrowState(cToken).index);
-            require(borrowIndex >= borrowerIndex, "CGA: underflow!");
+            require(borrowIndex >= borrowerIndex, "CGA: underflow");
             uint256 deltaIndex = borrowIndex - borrowerIndex;
             uint256 borrowerAmount = mul(
                 CToken(cToken).borrowBalanceStored(account),
@@ -120,7 +120,7 @@ contract CompoundGovernanceAdapter is ProtocolAdapter {
         if (supplierIndex == 0 && supplyIndex > 0) {
             supplierIndex = 1e36;
         }
-        require(supplyIndex >= supplierIndex, "CGA: underflow!");
+        require(supplyIndex >= supplierIndex, "CGA: underflow");
         uint256 deltaIndex = supplyIndex - supplierIndex;
         uint256 supplierAmount = CToken(cToken).balanceOf(account);
         uint256 supplierDelta = mul(supplierAmount, deltaIndex) / 1e36;

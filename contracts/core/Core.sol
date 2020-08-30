@@ -44,7 +44,7 @@ contract Core is ReentrancyGuard {
     )
         public
     {
-        require(adapterRegistry != address(0), "C: empty adapterRegistry!");
+        require(adapterRegistry != address(0), "C: empty adapterRegistry");
         adapterRegistry_ = adapterRegistry;
     }
 
@@ -68,7 +68,7 @@ contract Core is ReentrancyGuard {
         nonReentrant
         returns (AbsoluteTokenAmount[] memory)
     {
-        require(account != address(0), "C: empty account!");
+        require(account != address(0), "C: empty account");
         address[][] memory tokensToBeWithdrawn = new address[][](actions.length);
 
         for (uint256 i = 0; i < actions.length; i++) {
@@ -91,7 +91,7 @@ contract Core is ReentrancyGuard {
         external
         returns (address[] memory)
     {
-        require(msg.sender == address(this), "C: only address(this)!");
+        require(msg.sender == address(this), "C: only address(this)");
         return executeAction(action);
     }
 
@@ -115,10 +115,10 @@ contract Core is ReentrancyGuard {
         address adapter = AdapterRegistry(adapterRegistry_).getProtocolAdapterAddress(
             action.protocolAdapterName
         );
-        require(adapter != address(0), "C: bad name!");
+        require(adapter != address(0), "C: bad name");
         require(
             action.actionType == ActionType.Deposit || action.actionType == ActionType.Withdraw,
-            "C: bad action type!"
+            "C: bad action type"
         );
         bytes4 selector;
         if (action.actionType == ActionType.Deposit) {
@@ -216,9 +216,9 @@ contract Core is ReentrancyGuard {
             if (token == ETH) {
                 // solhint-disable-next-line avoid-low-level-calls
                 (bool success, ) = account.call{value: actualAmount}(new bytes(0));
-                require(success, "ETH transfer to account failed!");
+                require(success, "ETH transfer to account failed");
             } else {
-                ERC20(token).safeTransfer(account, actualAmount, "C!");
+                ERC20(token).safeTransfer(account, actualAmount, "C");
             }
         }
 

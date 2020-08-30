@@ -64,7 +64,7 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
         uint256 nonZeroAdaptersCounter;
         uint256[] memory nonZeroTokensCounters;
         uint256 adapterBalancesLength;
-        uint256 currentTokenBalancesLength;
+        uint256 currentAbsoluteTokenAmountsLength;
 
         // Reset counters
         nonZeroTokensCounters = new uint256[](adapterBalances.length);
@@ -78,10 +78,10 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
 
             // Reset counter
             nonZeroTokensCounters[i] = 0;
-            currentTokenBalancesLength = currentTokenBalances.length;
+            currentAbsoluteTokenAmountsLength = currentAbsoluteTokenAmounts.length;
 
             // Increment if token balance is positive
-            for (uint256 j = 0; j < currentTokenBalancesLength; j++) {
+            for (uint256 j = 0; j < currentAbsoluteTokenAmountsLength; j++) {
                 if (currentAbsoluteTokenAmounts[j].amount > 0) {
                     nonZeroTokensCounters[i]++;
                 }
@@ -113,9 +113,9 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
             // Reset temp variable and counter
             nonZeroAbsoluteTokenAmounts = new AbsoluteTokenAmount[](nonZeroTokensCounters[i]);
             nonZeroTokensCounters[i] = 0;
-            currentTokenBalancesLength = currentTokenBalances.length;
+            currentAbsoluteTokenAmountsLength = currentAbsoluteTokenAmounts.length;
 
-            for (uint256 j = 0; j < currentTokenBalancesLength; j++) {
+            for (uint256 j = 0; j < currentAbsoluteTokenAmountsLength; j++) {
                 // Skip if balance is not positive
                 if (currentAbsoluteTokenAmounts[j].amount == 0) {
                     continue;
@@ -184,7 +184,7 @@ contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager
         returns (AdapterBalance memory)
     {
         address adapter = _protocolAdapterAddress[protocolAdapterName];
-        require(adapter != address(0), "AR: bad protocolAdapterName!");
+        require(adapter != address(0), "AR: bad protocolAdapterName");
 
         uint256 length = tokens.length;
         AbsoluteTokenAmount[] memory absoluteTokenAmounts = new AbsoluteTokenAmount[](tokens.length);

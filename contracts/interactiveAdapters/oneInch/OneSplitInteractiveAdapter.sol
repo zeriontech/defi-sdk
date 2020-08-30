@@ -83,16 +83,15 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "OSIA: should be 1 tokenAmount!");
+        require(tokenAmounts.length == 1, "OSIA: should be 1 tokenAmount");
 
-        address token = tokenAmounts[0].token;
+        address fromToken = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
-        address fromToken = tokens[0];
         if (fromToken == ETH) {
             fromToken = address(0);
         } else {
-            ERC20(fromToken).safeApprove(ONE_SPLIT, amount, "OSIA!");
+            ERC20(fromToken).safeApprove(ONE_SPLIT, amount, "OSIA");
         }
 
         address toToken = abi.decode(data, (address));
@@ -112,9 +111,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] memory,
-        uint256[] memory,
-        AmountType[] memory,
+        TokenAmount[] memory,
         bytes memory
     )
         public
@@ -122,7 +119,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
         override
         returns (address[] memory)
     {
-        revert("OSIA: no withdraw!");
+        revert("OSIA: no withdraw");
     }
 
     function swap(address fromToken, address toToken, uint256 amount) internal {
@@ -139,7 +136,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("OSIA: 1split fail![1]");
+            revert("OSIA: 1split fail[1]");
         }
 
         uint256 ethAmount = fromToken == address(0) ? amount : 0;
@@ -153,7 +150,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
         ) {} catch Error(string memory reason) { //solhint-disable-line no-empty-blocks
             revert(reason);
         } catch {
-            revert("OSIA: 1split fail![2]");
+            revert("OSIA: 1split fail[2]");
         }
     }
 }

@@ -47,8 +47,8 @@ abstract contract TokenAdapterManager is Ownable {
         onlyOwner
     {
         uint256 length = newTokenAdapterNames.length;
-        require(length != 0, "TAM: empty![1]");
-        require(length == newTokenAdapterAddresses.length, "TAM: lengths differ![1]");
+        require(length != 0, "TAM: empty[1]");
+        require(length == newTokenAdapterAddresses.length, "TAM: lengths differ[1]");
 
         for (uint256 i = 0; i < length; i++) {
             addTokenAdapter(newTokenAdapterNames[i], newTokenAdapterAddresses[i]);
@@ -67,7 +67,7 @@ abstract contract TokenAdapterManager is Ownable {
         onlyOwner
     {
         uint256 length = names.length;
-        require(length != 0, "TAM: empty![2]");
+        require(length != 0, "TAM: empty[2]");
 
         for (uint256 i = 0; i < length; i++) {
             removeTokenAdapter(names[i]);
@@ -88,8 +88,8 @@ abstract contract TokenAdapterManager is Ownable {
         onlyOwner
     {
         uint256 length = names.length;
-        require(length != 0, "TAM: empty![3]");
-        require(length == newTokenAdapterAddresses.length, "TAM: lengths differ![2]");
+        require(length != 0, "TAM: empty[3]");
+        require(length == newTokenAdapterAddresses.length, "TAM: lengths differ[2]");
 
         for (uint256 i = 0; i < length; i++) {
             updateTokenAdapter(names[i], newTokenAdapterAddresses[i]);
@@ -132,9 +132,9 @@ abstract contract TokenAdapterManager is Ownable {
     )
         internal
     {
-        require(newTokenAdapterName != bytes32(0), "TAM: zero![1]");
-        require(newTokenAdapterAddress != address(0), "TAM: zero![2]");
-        require(_tokenAdapterAddress[newTokenAdapterName] == address(0), "TAM: exists!");
+        require(newTokenAdapterName != bytes32(0), "TAM: zero[1]");
+        require(newTokenAdapterAddress != address(0), "TAM: zero[2]");
+        require(_tokenAdapterAddress[newTokenAdapterName] == address(0), "TAM: exists");
 
         _tokenAdapterNames.push(newTokenAdapterName);
         _tokenAdapterAddress[newTokenAdapterName] = newTokenAdapterAddress;
@@ -149,7 +149,7 @@ abstract contract TokenAdapterManager is Ownable {
     )
         internal
     {
-        require(_tokenAdapterAddress[name] != address(0), "TAM: does not exist![1]");
+        require(_tokenAdapterAddress[name] != address(0), "TAM: does not exist[1]");
 
         uint256 length = _tokenAdapterNames.length;
         uint256 index = 0;
@@ -177,9 +177,9 @@ abstract contract TokenAdapterManager is Ownable {
         internal
     {
         address oldAddress = _tokenAdapterAddress[name];
-        require(oldAddress != address(0), "TAM: does not exist![2]");
-        require(newTokenAdapterAddress != address(0), "TAM: zero![3]");
-        require(oldAddress != newTokenAdapterAddress, "TAM: same addresses!");
+        require(oldAddress != address(0), "TAM: does not exist[2]");
+        require(newTokenAdapterAddress != address(0), "TAM: zero[3]");
+        require(oldAddress != newTokenAdapterAddress, "TAM: same addresses");
 
         _tokenAdapterAddress[name] = newTokenAdapterAddress;
     }

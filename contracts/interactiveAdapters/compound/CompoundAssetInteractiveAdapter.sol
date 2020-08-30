@@ -86,7 +86,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "CAIA: should be 1 tokenAmount![1]");
+        require(tokenAmounts.length == 1, "CAIA: should be 1 tokenAmount[1]");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
@@ -102,8 +102,8 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
             address cToken = CompoundRegistry(REGISTRY).getCToken(token);
             tokensToBeWithdrawn[1] = cToken;
 
-            ERC20(token).safeApprove(cToken, amount, "CAIA!");
-            require(CToken(cToken).mint(amount) == 0, "CAIA: deposit failed!");
+            ERC20(token).safeApprove(cToken, amount, "CAIA");
+            require(CToken(cToken).mint(amount) == 0, "CAIA: deposit failed");
         }
     }
 
@@ -123,7 +123,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "CAIA: should be 1 tokenAmount![2]");
+        require(tokenAmounts.length == 1, "CAIA: should be 1 tokenAmount[2]");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
@@ -137,6 +137,6 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
             tokensToBeWithdrawn[1] = CToken(token).underlying();
         }
 
-        require(CToken(token).redeem(amount) == 0, "CAIA: withdraw failed!");
+        require(CToken(token).redeem(amount) == 0, "CAIA: withdraw failed");
     }
 }

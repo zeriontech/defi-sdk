@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { TokenAmount } from "../../shared/Structs.sol";
+import { TokenAmount, AmountType } from "../../shared/Structs.sol";
 import { UniswapExchangeAdapter } from "../../adapters/uniswap/UniswapExchangeAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -75,17 +75,17 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount!");
+        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount");
 
         address[] memory path = abi.decode(data, (address[]));
         address token = tokenAmounts[0].token;
-        require(token == path[0], "UEIA: bad path[0]!");
+        require(token == path[0], "UEIA: bad path[0]");
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = path[path.length - 1];
 
-        ERC20(token).safeApprove(ROUTER, amount, "UEIA![1]");
+        ERC20(token).safeApprove(ROUTER, amount, "UEIA[1]");
 
         try UniswapV2Router01(ROUTER).swapExactTokensForTokens(
             amount,
@@ -98,7 +98,7 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("UEIA: deposit fail!");
+            revert("UEIA: deposit fail");
         }
     }
 
@@ -119,18 +119,18 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount!");
-        require(tokenAmounts[0].amountType == AmountType.Absolute, "UEIA: bad type!");
+        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount");
+        require(tokenAmounts[0].amountType == AmountType.Absolute, "UEIA: bad type");
 
         address[] memory path = abi.decode(data, (address[]));
         address token = tokenAmounts[0].token;
-        require(token == path[path.length - 1], "UEIA: bad path[path.length - 1]!");
+        require(token == path[path.length - 1], "UEIA: bad path[path.length - 1]");
         uint256 amount = tokenAmounts[0].amount;
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = token;
 
-        ERC20(path[0]).safeApprove(ROUTER, ERC20(path[0]).balanceOf(address(this)), "UEIA![2]");
+        ERC20(path[0]).safeApprove(ROUTER, ERC20(path[0]).balanceOf(address(this)), "UEIA[2]");
 
         try UniswapV2Router01(ROUTER).swapTokensForExactTokens(
             amount,
@@ -143,9 +143,9 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("UEIA: withdraw fail!");
+            revert("UEIA: withdraw fail");
         }
 
-        ERC20(path[0]).safeApprove(ROUTER, 0, "UEIA![3]");
+        ERC20(path[0]).safeApprove(ROUTER, 0, "UEIA[3]");
     }
 }

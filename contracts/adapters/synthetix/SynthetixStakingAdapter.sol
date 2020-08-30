@@ -73,9 +73,9 @@ contract SynthetixAssetAdapter is ProtocolAdapter {
     )
         public
     {
-        require(stakingContract != address(0), "SSA: empty stakingContract!");
-        require(stakingToken != address(0), "SSA: empty stakingToken!");
-        require(rewardsToken != address(0), "SSA: empty rewardsToken!");
+        require(stakingContract != address(0), "SSA: empty stakingContract");
+        require(stakingToken != address(0), "SSA: empty stakingToken");
+        require(rewardsToken != address(0), "SSA: empty rewardsToken");
 
         stakingContract_ = stakingContract;
         stakingToken_ = stakingToken;

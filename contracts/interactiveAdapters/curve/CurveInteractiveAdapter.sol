@@ -83,7 +83,7 @@ abstract contract CurveInteractiveAdapter is InteractiveAdapter {
         } else if (token == TUSD || token == BUSD || token == SUSD || token == PAX) {
             return 3;
         } else {
-            revert("CIA: bad token!");
+            revert("CIA: bad token");
         }
     }
 
@@ -105,7 +105,7 @@ abstract contract CurveInteractiveAdapter is InteractiveAdapter {
         } else if (token == SBTC_CRV) {
             return SBTC_SWAP;
         } else {
-            revert("CIA: bad token!");
+            revert("CIA: bad token");
         }
     }
 
@@ -127,7 +127,7 @@ abstract contract CurveInteractiveAdapter is InteractiveAdapter {
         } else if (token == SBTC_CRV) {
             return SBTC_SWAP;
         } else {
-            revert("CIA: bad token!");
+            revert("CIA: bad token");
         }
     }
 
@@ -149,7 +149,7 @@ abstract contract CurveInteractiveAdapter is InteractiveAdapter {
         } else if (token == SBTC_CRV) {
             return SBTC_COINS;
         } else {
-            revert("CIA: bad token!");
+            revert("CIA: bad token");
         }
     }
 }

@@ -67,7 +67,7 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "CEIA: should be 1 tokens!");
+        require(tokenAmounts.length == 1, "CEIA: should be 1 tokens");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
@@ -75,8 +75,8 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = toToken;
 
-        address[POOLS_NUMBER] memory pools = getCurvePools(tokens[0], toToken);
-        int128 i = getTokenIndex(tokens[0]);
+        address[POOLS_NUMBER] memory pools = getCurvePools(token, toToken);
+        int128 i = getTokenIndex(token);
         int128 j = getTokenIndex(toToken);
 
         uint256 rate = 0;
@@ -91,18 +91,18 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
                 } catch Error(string memory reason) {
                     revert(reason);
                 } catch {
-                    revert("CEIA: get rate fail![1]");
+                    revert("CEIA: get rate fail[1]");
                 }
             }
         }
 
-        ERC20(tokens[0]).safeApprove(pools[index], amount, "CEIA!");
+        ERC20(token).safeApprove(pools[index], amount, "CEIA");
         // solhint-disable-next-line no-empty-blocks
         try Stableswap(pools[index]).exchange_underlying(i, j, amount, 0) {
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("CEIA: deposit fail!");
+            revert("CEIA: deposit fail");
         }
     }
 
@@ -111,9 +111,7 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] memory,
-        uint256[] memory,
-        AmountType[] memory,
+        TokenAmount[] memory,
         bytes memory
     )
         public
@@ -121,7 +119,7 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
         override
         returns (address[] memory)
     {
-        revert("CEIA: no withdraw!");
+        revert("CEIA: no withdraw");
     }
 
     function getCurvePools(
@@ -162,7 +160,7 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
             poolsMask &= 64; // renBTC Pool only
         }
 
-        require(poolsMask != 0, "CEIA: bad pools!");
+        require(poolsMask != 0, "CEIA: bad pools");
 
         return [
             poolsMask & 1 == 0 ? address(0) : C_SWAP,

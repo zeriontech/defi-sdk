@@ -63,17 +63,18 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(amounts.length == 1, "CIA: should be 1 amount/type![1]");
+        require(tokenAmounts.length == 1, "CIA: should be 1 tokenAmount[1]");
+        require(tokenAmounts[0].token == CHAI, "CIA: should be DAI");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
-        ERC20(DAI).safeApprove(CHAI, amount, "CIA!");
+        ERC20(DAI).safeApprove(CHAI, amount, "CIA");
 
         try Chai(CHAI).join(address(this), amount) { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("CIA: deposit fail!");
+            revert("CIA: deposit fail");
         }
 
         tokensToBeWithdrawn = new address[](1);
@@ -88,9 +89,7 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        address[] memory,
-        uint256[] memory amounts,
-        AmountType[] memory amountTypes,
+        TokenAmount[] memory tokenAmounts,
         bytes memory
     )
         public
@@ -98,14 +97,15 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(amounts.length == 1, "CIA: should be 1 amount/type![2]");
+        require(tokenAmounts.length == 1, "CIA: should be 1 tokenAmount[2]");
+        require(tokenAmounts[0].token == CHAI, "CIA: should be CHAI");
 
-        uint256 amount = getAbsoluteAmountWithdraw(CHAI, amounts[0], amountTypes[0]);
+        uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
         try Chai(CHAI).exit(address(this), amount) { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("CIA: deposit fail!");
+            revert("CIA: deposit fail");
         }
 
         tokensToBeWithdrawn = new address[](1);

@@ -59,8 +59,8 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "WIA: should be 1 tokenAmount!");
-        require(tokenAmounts[0].token == ETH, "WIA: should be ETH address!");
+        require(tokenAmounts.length == 1, "WIA: should be 1 tokenAmount");
+        require(tokenAmounts[0].token == ETH, "WIA: should be ETH");
 
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
@@ -71,7 +71,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("WIA: deposit fail!");
+            revert("WIA: deposit fail");
         }
     }
 
@@ -91,8 +91,8 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "WIA: should be 1 tokenAmount!");
-        require(tokenAmounts[0].token == WETH, "WIA: should be WETH address!");
+        require(tokenAmounts.length == 1, "WIA: should be 1 tokenAmount");
+        require(tokenAmounts[0].token == WETH, "WIA: should be WETH");
 
         address token = tokenAmounts[0].token;
 
@@ -105,7 +105,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("WIA: withdraw fail!");
+            revert("WIA: withdraw fail");
         }
     }
 }

@@ -57,7 +57,7 @@ contract AaveDebtAdapter is ProtocolAdapter {
     )
         public
     {
-        require(provider != address(0), "ADA: empty provider!");
+        require(provider != address(0), "ADA: empty provider");
 
         provider_ = provider;
     }

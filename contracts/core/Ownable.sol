@@ -22,12 +22,12 @@ pragma experimental ABIEncoderV2;
 abstract contract Ownable {
 
     modifier onlyOwner {
-        require(msg.sender == owner_, "O: only owner!");
+        require(msg.sender == owner_, "O: only owner");
         _;
     }
 
     modifier onlyPendingOwner {
-        require(msg.sender == pendingOwner_, "O: only pending owner!");
+        require(msg.sender == pendingOwner_, "O: only pending owner");
         _;
     }
 
@@ -49,9 +49,9 @@ abstract contract Ownable {
      * The function is callable only by the owner.
      */
     function proposeOwnership(address newOwner) external onlyOwner {
-        require(newOwner != address(0), "O: empty newOwner!");
-        require(newOwner != owner_, "O: equal to owner_!");
-        require(newOwner != pendingOwner_, "O: equal to pendingOwner_!");
+        require(newOwner != address(0), "O: empty newOwner");
+        require(newOwner != owner_, "O: equal to owner_");
+        require(newOwner != pendingOwner_, "O: equal to pendingOwner_");
         pendingOwner_ = newOwner;
     }
 

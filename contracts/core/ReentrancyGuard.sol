@@ -30,7 +30,7 @@ contract ReentrancyGuard {
     }
 
     modifier nonReentrant() {
-        require(guard_ == UNLOCKED, "RG: locked!");
+        require(guard_ == UNLOCKED, "RG: locked");
 
         guard_ = LOCKED;
 

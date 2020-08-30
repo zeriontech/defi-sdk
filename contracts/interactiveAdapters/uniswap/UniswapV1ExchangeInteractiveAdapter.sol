@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { TokenAmount } from "../../shared/Structs.sol";
+import { TokenAmount, AmountType } from "../../shared/Structs.sol";
 import { UniswapExchangeAdapter } from "../../adapters/uniswap/UniswapExchangeAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
@@ -120,7 +120,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount!");
+        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
@@ -131,7 +131,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
 
         if (token == ETH) {
             address exchange = Factory(FACTORY).getExchange(toToken);
-            require(exchange != address(0), "UEIA: no exchange![1]");
+            require(exchange != address(0), "UEIA: no exchange[1]");
 
             try Exchange(exchange).ethToTokenSwapInput{value: amount}(
                 uint256(1),
@@ -141,13 +141,13 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {
-                revert("UEIA: deposit fail![2]");
+                revert("UEIA: deposit fail[2]");
             }
         } else {
             address exchange = Factory(FACTORY).getExchange(token);
-            require(exchange != address(0), "UEIA: no exchange![2]");
+            require(exchange != address(0), "UEIA: no exchange[2]");
 
-            ERC20(token).safeApprove(exchange, amount, "UEIA![1]");
+            ERC20(token).safeApprove(exchange, amount, "UEIA[1]");
 
             if (toToken == ETH) {
                 try Exchange(exchange).tokenToEthSwapInput(
@@ -159,7 +159,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                 } catch Error(string memory reason) {
                     revert(reason);
                 } catch {
-                    revert("UEIA: deposit fail![3]");
+                    revert("UEIA: deposit fail[3]");
                 }
             } else {
                 try Exchange(exchange).tokenToTokenSwapInput(
@@ -173,7 +173,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                 } catch Error(string memory reason) {
                     revert(reason);
                 } catch {
-                    revert("UEIA: deposit fail![4]");
+                    revert("UEIA: deposit fail[4]");
                 }
             }
         }
@@ -197,8 +197,8 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount!");
-        require(tokenAmounts[0].amountType == AmountType.Absolute, "UEIA: bad type!");
+        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount");
+        require(tokenAmounts[0].amountType == AmountType.Absolute, "UEIA: bad type");
 
         address token = tokenAmounts[0].token;
         address fromToken = abi.decode(data, (address));
@@ -208,7 +208,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
 
         if (fromToken == ETH) {
             address exchange = Factory(FACTORY).getExchange(token);
-            require(exchange != address(0), "UEIA: no exchange![1]");
+            require(exchange != address(0), "UEIA: no exchange[1]");
 
             try Exchange(exchange).ethToTokenSwapOutput{value: address(this).balance}(
                 tokenAmounts[0].amount,
@@ -218,14 +218,14 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {
-                revert("UEIA: withdraw fail![1]");
+                revert("UEIA: withdraw fail[1]");
             }
         } else {
             address exchange = Factory(FACTORY).getExchange(fromToken);
-            require(exchange != address(0), "UEIA: no exchange![2]");
+            require(exchange != address(0), "UEIA: no exchange[2]");
 
             uint256 balance = ERC20(fromToken).balanceOf(address(this));
-            ERC20(fromToken).safeApprove(exchange, balance, "UEIA![2]");
+            ERC20(fromToken).safeApprove(exchange, balance, "UEIA[2]");
 
             if (token == ETH) {
                 try Exchange(exchange).tokenToEthSwapOutput(
@@ -237,7 +237,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                 } catch Error(string memory reason) {
                     revert(reason);
                 } catch {
-                    revert("UEIA: withdraw fail![2]");
+                    revert("UEIA: withdraw fail[2]");
                 }
             } else {
                 try Exchange(exchange).tokenToTokenSwapOutput(
@@ -251,10 +251,10 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                 } catch Error(string memory reason) {
                     revert(reason);
                 } catch {
-                    revert("UEIA: withdraw fail![3]");
+                    revert("UEIA: withdraw fail[3]");
                 }
             }
-            ERC20(fromToken).safeApprove(exchange, 0, "UEIA![3]");
+            ERC20(fromToken).safeApprove(exchange, 0, "UEIA[3]");
         }
     }
 }

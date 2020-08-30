@@ -64,7 +64,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, BalancerAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "BIA: should be 1 tokenAmount![1]");
+        require(tokenAmounts.length == 1, "BIA: should be 1 tokenAmount[1]");
 
         address poolAddress = abi.decode(data, (address));
 
@@ -73,7 +73,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, BalancerAdapter {
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
-        ERC20(token).safeApprove(poolAddress, amount, "BIA!");
+        ERC20(token).safeApprove(poolAddress, amount, "BIA");
 
         try BPool(poolAddress).joinswapExternAmountIn(
             token,
@@ -82,7 +82,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, BalancerAdapter {
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
         } catch {
-            revert("BIA: deposit fail!");
+            revert("BIA: deposit fail");
         }
     }
 
@@ -104,7 +104,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, BalancerAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "BIA: should be 1 tokenAmount![2]");
+        require(tokenAmounts.length == 1, "BIA: should be 1 tokenAmount[2]");
 
         address toTokenAddress = abi.decode(data, (address));
 
@@ -121,7 +121,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, BalancerAdapter {
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
         } catch {
-            revert("BIA: withdraw fail!");
+            revert("BIA: withdraw fail");
         }
     }
 }

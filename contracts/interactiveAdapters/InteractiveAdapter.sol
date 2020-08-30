@@ -19,7 +19,7 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
-import { AmountType } from "../shared/Structs.sol";
+import { TokenAmount, AmountType } from "../shared/Structs.sol";
 import { ERC20 } from "../shared/ERC20.sol";
 
 
@@ -74,10 +74,10 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
 
         require(
             amountType == AmountType.Relative || amountType == AmountType.Absolute,
-            "IA: bad amount type!"
+            "IA: bad amount type"
         );
         if (amountType == AmountType.Relative) {
-            require(amount <= DELIMITER, "IA: bad amount!");
+            require(amount <= DELIMITER, "IA: bad amount");
 
             uint256 balance;
             if (token == ETH) {
@@ -110,10 +110,10 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
 
         require(
             amountType == AmountType.Relative || amountType == AmountType.Absolute,
-            "IA: bad amount type!"
+            "IA: bad amount type"
         );
         if (amountType == AmountType.Relative) {
-            require(amount <= DELIMITER, "IA: bad amount!");
+            require(amount <= DELIMITER, "IA: bad amount");
 
             uint256 balance = getBalance(token, address(this));
             if (amount == DELIMITER) {

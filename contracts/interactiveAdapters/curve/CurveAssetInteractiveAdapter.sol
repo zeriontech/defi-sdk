@@ -81,7 +81,7 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "CLIA: should be 1 tokens!");
+        require(tokenAmounts.length == 1, "CLIA: should be 1 tokens");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
@@ -93,7 +93,7 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
         int128 tokenIndex = getTokenIndex(token);
         require(
             Stableswap(getSwap(crvToken)).underlying_coins(tokenIndex) == token,
-            "CLIA: bad crvToken/token!"
+            "CLIA: bad crvToken/token"
         );
 
         uint256 totalCoins = getTotalCoins(crvToken);
@@ -102,12 +102,12 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
             inputAmounts[i] = i == uint256(tokenIndex) ? amount : 0;
         }
 
-        address callee = crvToken == S_CRV ? getSwap(crvToken) : getDeposit(crvToken);
+        address callee = getDeposit(crvToken);
 
         ERC20(token).safeApprove(
             callee,
             amount,
-            "CLIA![1]"
+            "CLIA[1]"
         );
 
         if (totalCoins == 2) {
@@ -116,7 +116,7 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
                 0
             ) { // solhint-disable-line no-empty-blocks
             } catch {
-                revert("CLIA: deposit fail![1]");
+                revert("CLIA: deposit fail[1]");
             }
         } else if (totalCoins == 3) {
             try Deposit(callee).add_liquidity(
@@ -124,7 +124,7 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
                 0
             ) { // solhint-disable-line no-empty-blocks
             } catch {
-                revert("CLIA: deposit fail![2]");
+                revert("CLIA: deposit fail[2]");
             }
         } else if (totalCoins == 4) {
             try Deposit(callee).add_liquidity(
@@ -132,7 +132,7 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
                 0
             ) { // solhint-disable-line no-empty-blocks
             } catch {
-                revert("CLIA: deposit fail![3]");
+                revert("CLIA: deposit fail[3]");
             }
         }
     }
@@ -156,7 +156,7 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "CLIA: should be 1 tokenAmount!");
+        require(tokenAmounts.length == 1, "CLIA: should be 1 tokenAmount");
         
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
@@ -167,7 +167,7 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
         int128 tokenIndex = getTokenIndex(toToken);
         require(
             Stableswap(getSwap(token)).underlying_coins(tokenIndex) == toToken,
-            "CLIA: bad toToken/token!"
+            "CLIA: bad toToken/token"
         );
 
         address callee = getDeposit(token);
@@ -175,7 +175,7 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
         ERC20(token).safeApprove(
             callee,
             amount,
-            "CLIA![2]"
+            "CLIA[2]"
         );
 
         try Deposit(callee).remove_liquidity_one_coin(
@@ -185,7 +185,7 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
             true
         ) { // solhint-disable-line no-empty-blocks
         } catch {
-            revert("CLIA: withdraw fail!");
+            revert("CLIA: withdraw fail");
         }
     }
 }

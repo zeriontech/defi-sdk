@@ -90,33 +90,35 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, UniswapV1AssetA
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 2, "ULIA: should be 2 tokenAmounts!");
-        require(tokenAmounts[0].token == ETH, "ULIA: should be ETH!");
+        require(tokenAmounts.length == 2, "ULIA: should be 2 tokenAmounts");
+        require(tokenAmounts[0].token == ETH, "ULIA: should be ETH");
         address exchange = Factory(FACTORY).getExchange(tokenAmounts[1].token);
-        require(exchange != address(0), "ULIA: no exchange!");
+        require(exchange != address(0), "ULIA: no exchange");
 
+        address token = tokenAmounts[1].token;
         uint256 ethAmount = getAbsoluteAmountDeposit(tokenAmounts[0]);
         uint256 tokenAmount = getAbsoluteAmountDeposit(tokenAmounts[1]);
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = exchange;
-        tokensToBeWithdrawn[1] = tokenAmounts[1].token;
+        tokensToBeWithdrawn[1] = token;
 
-        ERC20(tokenAmounts[1].token).safeApprove(exchange, tokenAmount, "ULIA![1]");
+        ERC20(token).safeApprove(exchange, tokenAmount, "ULIA[1]");
+
         try Exchange(exchange).addLiquidity{value: ethAmount}(
             uint256(1),
             tokenAmount,
             // solhint-disable-next-line not-rely-on-time
             now + 1
         ) returns (uint256 addedLiquidity) {
-            require(addedLiquidity > 0, "ULIA: deposit fail![1]");
+            require(addedLiquidity > 0, "ULIA: deposit fail[1]");
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("ULIA: deposit fail![2]");
+            revert("ULIA: deposit fail[2]");
         }
 
-        ERC20(tokenAmounts[1].token).safeApprove(exchange, 0, "ULIA![2]");
+        ERC20(token).safeApprove(exchange, 0, "ULIA[2]");
     }
 
     /**
@@ -136,9 +138,9 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, UniswapV1AssetA
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "ULIA: should be 1 tokenAmount!");
+        require(tokenAmounts.length == 1, "ULIA: should be 1 tokenAmount");
 
-        token = tokenAmounts[0].token;
+        address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](2);
@@ -154,7 +156,7 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, UniswapV1AssetA
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
         } catch {
-            revert("ULIA: withdraw fail!");
+            revert("ULIA: withdraw fail");
         }
     }
 }

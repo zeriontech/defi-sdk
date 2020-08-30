@@ -42,6 +42,6 @@ contract OneSplitAdapter is ProtocolAdapter {
         override
         returns (uint256)
     {
-        revert("OSA: no balance!");
+        revert("OSA: no balance");
     }
 }

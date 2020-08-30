@@ -46,7 +46,7 @@ contract AmpleforthStakingAdapter is ProtocolAdapter {
     )
         public
     {
-        require(geyser != address(0), "ASA: empty geyser!");
+        require(geyser != address(0), "ASA: empty geyser");
         geyser_ = geyser;
     }
 

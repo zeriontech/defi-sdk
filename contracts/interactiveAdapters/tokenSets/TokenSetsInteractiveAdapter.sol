@@ -93,24 +93,12 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        uint256 length = tokenAmounts.length;
-        uint256[] memory absoluteAmounts = new uint256[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            absoluteAmounts[i] = getAbsoluteAmountDeposit(tokenAmounts[i]);
-            ERC20(tokenAmounts[i].token).safeApprove(
-                TRANSFER_PROXY,
-                absoluteAmounts[i],
-                "TSIA![1]"
-            );
-        }
-
         address setAddress = abi.decode(data, (address));
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = setAddress;
 
-        uint256 setAmount = getSetAmount(setAddress, tokens, absoluteAmounts);
+        uint256 setAmount = getSetAmountAndApprove(setAddress, tokenAmounts);
 
         try RebalancingSetIssuanceModule(ISSUANCE_MODULE).issueRebalancingSet(
             setAddress,
@@ -119,11 +107,12 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
         } catch {
-            revert("TSIA: tokenSet fail![1]");
+            revert("TSIA: issue fail");
         }
 
+        uint256 length = tokenAmounts.length;
         for (uint256 i = 0; i < length; i++) {
-            ERC20(tokens[i]).safeApprove(TRANSFER_PROXY, 0, "TSIA![2]");
+            ERC20(tokenAmounts[i].token).safeApprove(TRANSFER_PROXY, 0, "TSIA[2]");
         }
     }
 
@@ -144,7 +133,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "TSIA: should be 1 tokenAmount!");
+        require(tokenAmounts.length == 1, "TSIA: should be 1 tokenAmount");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
@@ -160,19 +149,29 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
         } catch {
-            revert("TSIA: tokenSet fail![2]");
+            revert("TSIA: redeem fail");
         }
     }
 
-    function getSetAmount(
+    function getSetAmountAndApprove(
         address setAddress,
-        address[] memory tokens,
-        uint256[] memory absoluteAmounts
+        TokenAmount[] memory tokenAmounts
     )
         internal
-        view
-        returns (uint256 setAmount)
+        returns (uint256 setAmount, uint256[] memory absoluteAmounts)
     {
+        uint256 length = tokenAmounts.length;
+        absoluteAmounts = new uint256[](length);
+
+        for (uint256 i = 0; i < length; i++) {
+            absoluteAmounts[i] = getAbsoluteAmountDeposit(tokenAmounts[i]);
+            ERC20(tokenAmounts[i].token).safeApprove(
+                TRANSFER_PROXY,
+                absoluteAmounts[i],
+                "TSIA![1]"
+            );
+        }
+
         RebalancingSetToken rebalancingSetToken = RebalancingSetToken(setAddress);
         uint256 rUnit = rebalancingSetToken.getUnits()[0];
         uint256 rNaturalUnit = rebalancingSetToken.naturalUnit();
@@ -181,19 +180,19 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         uint256[] memory bUnits = baseSetToken.getUnits();
         uint256 bNaturalUnit = baseSetToken.naturalUnit();
         address[] memory components = baseSetToken.getComponents();
-        require(components.length == tokens.length, "TSIA: bad tokens!");
+        require(components.length == length, "TSIA: bad tokens");
 
         setAmount = type(uint256).max;
         uint256 amount;
         uint256 tempAmount;
-        for (uint256 i = 0; i < tokens.length; i++) {
-            for(uint256 j = 0; j < components.length; j++) {
-                if (tokens[i] == components[j]) {
+        for (uint256 i = 0; i < length; i++) {
+            for(uint256 j = 0; j < length; j++) {
+                if (tokenAmounts[i].token == components[j]) {
                     tempAmount = absoluteAmounts[i] * bNaturalUnit;
-                    require(tempAmount / bNaturalUnit == absoluteAmounts[i], "TSIA: overflow![1]");
+                    require(tempAmount / bNaturalUnit == absoluteAmounts[i], "TSIA: overflow[1]");
                     amount = tempAmount / bUnits[j] / rUnit;
                     tempAmount = amount * rNaturalUnit;
-                    require(tempAmount / rNaturalUnit == amount, "TSIA: overflow![2]");
+                    require(tempAmount / rNaturalUnit == amount, "TSIA: overflow[2]");
                     amount = tempAmount;
                     if (amount < setAmount) {
                         setAmount = amount;

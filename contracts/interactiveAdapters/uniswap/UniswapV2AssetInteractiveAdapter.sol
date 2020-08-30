@@ -69,7 +69,7 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 2, "ULIA: should be 2 tokenAmounts!");
+        require(tokenAmounts.length == 2, "ULIA: should be 2 tokenAmounts");
 
         address pairAddress = abi.decode(data, (address));
         tokensToBeWithdrawn = new address[](1);
@@ -93,8 +93,8 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
             amount0 = amount1 * reserve0 / reserve1;
         }
 
-        ERC20(tokenAmounts[0].token).safeTransfer(pairAddress, amount0, "ULIA![1]");
-        ERC20(tokenAmounts[1].token).safeTransfer(pairAddress, amount1, "ULIA![2]");
+        ERC20(tokenAmounts[0].token).safeTransfer(pairAddress, amount0, "ULIA[1]");
+        ERC20(tokenAmounts[1].token).safeTransfer(pairAddress, amount1, "ULIA[2]");
 
         try UniswapV2Pair(pairAddress).mint(
             address(this)
@@ -102,7 +102,7 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("ULIA: deposit fail!");
+            revert("ULIA: deposit fail");
         }
     }
 
@@ -123,7 +123,7 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "ULIA: should be 1 tokenAmount!");
+        require(tokenAmounts.length == 1, "ULIA: should be 1 tokenAmount");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
@@ -132,7 +132,7 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
         tokensToBeWithdrawn[0] = UniswapV2Pair(token).token0();
         tokensToBeWithdrawn[1] = UniswapV2Pair(token).token1();
 
-        ERC20(token).safeTransfer(token, amount, "ULIA![3]");
+        ERC20(token).safeTransfer(token, amount, "ULIA[3]");
 
         try UniswapV2Pair(token).burn(
             address(this)
@@ -140,7 +140,7 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("ULIA: withdraw fail!");
+            revert("ULIA: withdraw fail");
         }
     }
 }
