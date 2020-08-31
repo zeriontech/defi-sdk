@@ -67,9 +67,8 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
 
     /**
      * @notice Exchanges tokens using OneSplit contract.
-     * @param tokens Array with one element - `fromToken` address.
-     * @param amounts Array with one element - token amount to be exchanged.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * "from" token address, "from" token amount to be deposited, and amount type.
      * @param data Bytes array with ABI-encoded `toToken` address.
      * @return tokensToBeWithdrawn Array with one element - `toToken` address.
      * @dev Implementation of InteractiveAdapter function.

@@ -49,9 +49,8 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
 
     /**
      * @notice Deposits tokens to the Chai contract.
-     * @param amounts Array with one element - DAI amount to be deposited.
-     * @param amountTypes Array with one element - amount type.
-     * @return tokensToBeWithdrawn Array with one element - CHAI address.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * DAI token address, DAI token amount to be deposited, and amount type.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -66,7 +65,6 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
         require(tokenAmounts.length == 1, "CIA: should be 1 tokenAmount[1]");
         require(tokenAmounts[0].token == CHAI, "CIA: should be DAI");
 
-        address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
         ERC20(DAI).safeApprove(CHAI, amount, "CIA");
 
@@ -83,8 +81,8 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
 
     /**
      * @notice Withdraws tokens from the Chai contract.
-     * @param amounts Array with one element - CHAI amount to be withdrawn.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * CHAI token address, CHAI token amount to be redeemed, and amount type.
      * @return tokensToBeWithdrawn Array with one element - DAI address.
      * @dev Implementation of InteractiveAdapter function.
      */

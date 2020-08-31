@@ -64,9 +64,8 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
 
     /**
      * @notice Deposits tokens to the Curve pool (pair).
-     * @param tokens Array with one element - token address to be deposited.
-     * @param amounts Array with one element - token amount to be deposited.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * underlying token address, underlying token amount to be deposited, and amount type.
      * @param data ABI-encoded additional parameters:
      *     - crvToken - curve token address.
      * @return tokensToBeWithdrawn Array with tokens sent back.
@@ -81,7 +80,7 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "CLIA: should be 1 tokens");
+        require(tokenAmounts.length == 1, "CLIA: should be 1 tokenAmount[1]");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
@@ -139,9 +138,8 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
 
     /**
      * @notice Withdraws tokens from the Curve pool.
-     * @param tokens Array with one element - Curve token address.
-     * @param amounts Array with one element - Curve token amount.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * Curve token address, Curve token amount to be redeemed, and amount type.
      * @param data ABI-encoded additional parameters:
      *     - toToken - destination token address (one of those used in pool).
      * @return tokensToBeWithdrawn Array with one element - destination token address.
@@ -156,7 +154,7 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "CLIA: should be 1 tokenAmount");
+        require(tokenAmounts.length == 1, "CLIA: should be 1 tokenAmount[2]");
         
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);

@@ -60,8 +60,8 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
 
     /**
      * @notice Exchange tokens using Uniswap pool.
-     * @param amounts Array with one element - token amount to be exchanged from.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * "from" token address, "from" token amount, and amount type.
      * @param data Uniswap exchange path starting from tokens[0] (ABI-encoded).
      * @return tokensToBeWithdrawn Array with one element - token address to be exchanged to.
      * @dev Implementation of InteractiveAdapter function.
@@ -104,8 +104,8 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
 
     /**
      * @notice Exchange tokens using Uniswap pool.
-     * @param amounts Array with one element - token amount to be exchanged to.
-     * @param amountTypes Array with one element - amount type (can be `AmountType.Absolute` only).
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * "to" token address, "to" token amount, and amount type (must be absolute).
      * @param data Uniswap exchange path ending with tokens[0] (ABI-encoded).
      * @return tokensToBeWithdrawn Array with one element - token address to be changed to.
      * @dev Implementation of InteractiveAdapter function.

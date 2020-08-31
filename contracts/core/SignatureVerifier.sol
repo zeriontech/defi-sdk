@@ -124,17 +124,17 @@ contract SignatureVerifier {
         view
         returns (address payable)
     {
-        address signer = ecrecover(
-            keccak256(
-                abi.encodePacked(
-                    bytes1(0x19),
-                    bytes1(0x01),
-                    domainSeparator_,
-                    hash(data)
-                )
-            ),
-            splitSignature(signature)
+        (uint8 v, bytes32 r, bytes32 s) = splitSignature(signature);
+        bytes32 hashedData = keccak256(
+            abi.encodePacked(
+                bytes1(0x19),
+                bytes1(0x01),
+                domainSeparator_,
+                hash(data)
+            )
         );
+
+        address signer = ecrecover(hashedData, v, r, s);
 
         require(signer != address(0), "SV: bad signature");
         require(nonce_[signer] == data.nonce, "SV: bad nonce");
@@ -180,7 +180,7 @@ contract SignatureVerifier {
                         ACTION_TYPEHASH,
                         actions[i].protocolAdapterName,
                         actions[i].actionType,
-                        keccak256(abi.encodePacked(actions[i].tokenAmounts)),
+                        hash(actions[i].tokenAmounts),
                         keccak256(actions[i].data)
                     )
                 )
@@ -270,11 +270,11 @@ contract SignatureVerifier {
 
         assembly {
             // first 32 bytes, after the length prefix.
-            r := mload(add(sig, 32))
+            r := mload(add(signature, 32))
             // second 32 bytes.
-            s := mload(add(sig, 64))
+            s := mload(add(signature, 64))
             // final byte (first byte of the next 32 bytes).
-            v := byte(0, mload(add(sig, 96)))
+            v := byte(0, mload(add(signature, 96)))
         }
 
         // EIP-2 still allows signature malleability for ecrecover(). Remove this possibility and make the signature

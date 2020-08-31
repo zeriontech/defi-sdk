@@ -109,7 +109,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAda
 
     /**
      * @notice Withdraws tokens from the Compound protocol.
-     * @param tokens Array with one element - TokenAmount struct with
+     * @param tokenAmounts Array with one element - TokenAmount struct with
      * cToken address, cToken amount to be redeemed, and amount type.
      * @return tokensToBeWithdrawn Array with two elements - underlying token and COMP addresses.
      * @dev Implementation of InteractiveAdapter function.

@@ -52,9 +52,8 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
 
     /**
      * @notice Deposits tokens to the Uniswap pool (pair).
-     * @param tokens Array with two elements - token addresses to be deposited.
-     * @param amounts Array with two elements - token amounts to be deposited.
-     * @param amountTypes Array with two elements - amount types.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * underlying tokens addresses, underlying tokens amounts to be deposited, and amount types.
      * @param data ABI-encoded additional parameters:
      *     - pairAddress - pair address.
      * @return tokensToBeWithdrawn Array with one element - UNI-token (pair) address.
@@ -108,9 +107,8 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
 
     /**
      * @notice Withdraws tokens from the Uniswap pool.
-     * @param tokens Array with one element - UNI-token (pair) address.
-     * @param amounts Array with one element - UNI-token (pair) amount.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * UNI token address, UNI token amount to be redeemed, and amount type.
      * @return tokensToBeWithdrawn Array with two elements - underlying tokens.
      * @dev Implementation of InteractiveAdapter function.
      */

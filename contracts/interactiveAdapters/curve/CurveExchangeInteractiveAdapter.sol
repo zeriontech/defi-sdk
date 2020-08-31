@@ -51,9 +51,8 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
 
     /**
      * @notice Exchanges tokens using pool with the best rate.
-     * @param tokens Array with one element - token address to be exchanged from.
-     * @param amounts Array with one element - token amount to be exchanged from.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * "from" token address, "from" token amount to be deposited, and amount type.
      * @param data Token address to be exchanged to (ABI-encoded).
      * @return tokensToBeWithdrawn Array with one element - token address to be exchanged to.
      * @dev Implementation of InteractiveAdapter function.

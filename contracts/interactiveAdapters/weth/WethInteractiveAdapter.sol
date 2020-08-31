@@ -45,9 +45,9 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
 
     /**
      * @notice Wraps Ether in Wrapped Ether.
-     * @param amounts Array with one element - ETH amount to be converted to WETH.
-     * @param amountTypes Array with one element - amount type.
-     * @return tokensToBeWithdrawn Array with one element - WETH address.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * ETH address (0xEeee...EEeE), ETH amount to be deposited, and amount type.
+     * @return tokensToBeWithdrawn Array with one element - WETH token address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -77,9 +77,9 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
 
     /**
      * @notice Unwraps Ether from Wrapped Ether.
-     * @param amounts Array with one element - WETH amount to be converted to ETH.
-     * @param amountTypes Array with one element - amount type.
-     * @return tokensToBeWithdrawn Array with one element - 0xEeee...EEeE constant.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * WETH token address, WETH token amount to be redeemed, and amount type.
+     * @return tokensToBeWithdrawn Array with one element - ETH address (0xEeee...EEeE).
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
@@ -93,8 +93,6 @@ contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
     {
         require(tokenAmounts.length == 1, "WIA: should be 1 tokenAmount");
         require(tokenAmounts[0].token == WETH, "WIA: should be WETH");
-
-        address token = tokenAmounts[0].token;
 
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 

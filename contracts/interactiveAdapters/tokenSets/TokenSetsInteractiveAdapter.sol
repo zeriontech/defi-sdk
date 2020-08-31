@@ -76,9 +76,8 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
 
     /**
      * @notice Deposits tokens to the TokenSet.
-     * @param tokens Array with token addresses to be deposited.
-     * @param amounts Array with token amounts to be deposited.
-     * @param amountTypes Array with amounts types.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * underlying tokens addresses, underlying tokens amounts to be deposited, and amount types.
      * @param data ABI-encoded additional parameters:
      *     - setAddress - rebalancing set address.
      * @return tokensToBeWithdrawn Array with one element - rebalancing set address.
@@ -118,9 +117,8 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
 
     /**
      * @notice Withdraws tokens from the TokenSet.
-     * @param tokens Array with one element - rebalancing set address.
-     * @param amounts Array with one element - rebalancing set amount.
-     * @param amountTypes Array with one element - amount type.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * rebalancing set address, rebalancing set amount to be redeemed, and amount type.
      * @return tokensToBeWithdrawn Array with set token components.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -158,10 +156,10 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         TokenAmount[] memory tokenAmounts
     )
         internal
-        returns (uint256 setAmount, uint256[] memory absoluteAmounts)
+        returns (uint256 setAmount)
     {
         uint256 length = tokenAmounts.length;
-        absoluteAmounts = new uint256[](length);
+        uint256[] memory absoluteAmounts = new uint256[](length);
 
         for (uint256 i = 0; i < length; i++) {
             absoluteAmounts[i] = getAbsoluteAmountDeposit(tokenAmounts[i]);

@@ -88,8 +88,8 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, BalancerAdapter {
 
     /**
      * @notice Withdraws tokens from the Balancer pool.
-     * @param tokens Array with one element - TokenAmount struct with
-     * pool address, pool amount to be redeemed, and amount type.
+     * @param tokenAmounts Array with one element - TokenAmount struct with
+     * Balancer token address, Balancer token amount to be redeemed, and amount type.
      * @param data ABI-encoded additional parameters:
      *     - toTokenAddress - destination token address.
      * @return tokensToBeWithdrawn Array with one element - destination token address.

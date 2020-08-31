@@ -61,7 +61,8 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         onlyOwner
     {
         if (token == ETH) {
-            beneficiary.call{value: address(this).balance}(new bytes[](0));
+            (bool success, ) = beneficiary.call{value: address(this).balance}(new bytes(0));
+            require(success, "R: bad beneficiary");
         } else {
             ERC20(token).safeTransfer(beneficiary, ERC20(token).balanceOf(address(this)), "R");
         }
@@ -186,7 +187,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         transferTokens(inputs, fee, account);
         AbsoluteTokenAmount[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
         // call Core contract with all provided ETH, actions, expected outputs and account address
-        AbsoluteTokenAmount[] memory actualOutputs = Core(core_).executeActions(
+        AbsoluteTokenAmount[] memory actualOutputs = Core(payable(core_)).executeActions(
             actions,
             modifiedOutputs,
             account
@@ -204,7 +205,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     )
         internal
     {
-        address input;
+        address token;
         uint256 absoluteAmount;
         uint256 feeAmount;
         uint256 length = inputs.length;
@@ -215,14 +216,14 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         }
 
         for (uint256 i = 0; i < length; i++) {
-            input = inputs[i];
-            absoluteAmount = getAbsoluteAmount(input, account);
+            token = inputs[i].token;
+            absoluteAmount = getAbsoluteAmount(inputs[i], account);
             require(absoluteAmount > 0, "R: zero amount");
 
             feeAmount = mul(absoluteAmount, fee.share) / DELIMITER;
 
             if (feeAmount > 0) {
-                ERC20(input.token).safeTransferFrom(
+                ERC20(token).safeTransferFrom(
                     account,
                     fee.beneficiary,
                     feeAmount,
@@ -230,7 +231,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
                 );
             }
 
-            ERC20(input.token).safeTransferFrom(
+            ERC20(token).safeTransferFrom(
                 account,
                 core_,
                 absoluteAmount - feeAmount,
@@ -249,7 +250,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
             // solhint-disable-next-line avoid-low-level-calls
             (bool success, ) = core_.call{value: msg.value - feeAmount}(new bytes(0));
-            // This call cannot fail
+            require(success, "ETH transfer to Core failed");
         }
     }
 
@@ -275,16 +276,16 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     }
 
     function getAbsoluteAmount(
-        TokenAmount memory input,
+        TokenAmount memory tokenAmount,
         address account
     )
         internal
         view
         returns (uint256)
     {
-        address token = input.token;
-        AmountType amountType = input.amountType;
-        uint256 amount = input.amount;
+        address token = tokenAmount.token;
+        AmountType amountType = tokenAmount.amountType;
+        uint256 amount = tokenAmount.amount;
 
         require(
             amountType == AmountType.Relative || amountType == AmountType.Absolute,
