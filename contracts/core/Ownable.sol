@@ -62,6 +62,7 @@ abstract contract Ownable {
     function acceptOwnership() external onlyPendingOwner {
         emit OwnershipTransferred(owner_, msg.sender);
         owner_ = msg.sender;
+        delete pendingOwner_;
     }
 
     /**
