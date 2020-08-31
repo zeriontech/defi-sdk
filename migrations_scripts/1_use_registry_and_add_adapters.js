@@ -35,6 +35,7 @@ const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
+const SushiStakingAdapter = artifacts.require('SushiStakingAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
@@ -206,6 +207,21 @@ const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
 const maticAddress = '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0';
 
 const nxmAddress = '0xd7c49CEE7E9188cCa6AD8FF264C1DA2e69D4Cf3B';
+
+const sushiAddress = '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2';
+const uniSushiWethAddress = '0xCE84867c3c02B05dc570d0135103d3fB9CC19433';
+const uniUsdtWethAddress = '0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852';
+const uniUsdcWethAddress = '0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc';
+const uniDaiWethAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
+const uniSusdWethAddress = '0xf80758aB42C3B07dA84053Fd88804bCB6BAA4b5c';
+const uniUmaWethAddress = '0x88d97d199b9ed37c29d846d00d443de980832a22';
+const uniBandWethAddress = '0xf421c3f2e695c2d4c0765379ccace8ade4a480d9';
+const uniLinkWethAddress = '0xa2107FA5B38d9bbd2C461D6EDf11B11A50F6b974';
+const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
+const uniCompWethAddress = '0xCFfDdeD873554F362Ac02f8Fb1f02E5ada10516f';
+const uniLendWethAddress = '0xaB3F9bF1D81ddb224a2014e98B238638824bCf20';
+const uniSnxWethAddress = '0x43AE24960e5534731Fc831386c07755A2dc33D47';
+const uniYfiWethAddress = '0x2fDbAdf3C4D5A8666Bc06645B8358ab803996E28';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -418,6 +434,21 @@ const poolTogetherAdapterTokens = [
   saiPoolAddress,
   daiPoolAddress,
   usdcPoolAddress,
+];
+const sushiStakingAdapterTokens = [
+  uniSushiWethAddress,
+  uniUsdtWethAddress,
+  uniUsdcWethAddress,
+  uniDaiWethAddress,
+  uniSusdWethAddress,
+  uniUmaWethAddress,
+  uniBandWethAddress,
+  uniLinkWethAddress,
+  uniAmplWethAddress,
+  uniCompWethAddress,
+  uniLendWethAddress,
+  uniSnxWethAddress,
+  uniYfiWethAddress,
 ];
 const synthetixAssetAdapterTokens = [
   snxAddress,
@@ -831,6 +862,18 @@ module.exports = async (deployer, network, accounts) => {
     'Decentralized no-loss lottery',
     'pooltogether.com',
     'protocol-icons.s3.amazonaws.com/pooltogether.png',
+    '0',
+  ]);
+
+  await deployer.deploy(SushiStakingAdapter, { from: accounts[0] });
+  adapters.push([SushiStakingAdapter.address]);
+  tokens.push([[sushiStakingAdapterTokens]]);
+  protocolNames.push('SushiSwap');
+  metadata.push([
+    'SushiSwap',
+    'Stake Uniswap LP tokens to claim your very own yummy SUSHI!',
+    'sushiswap.org',
+    'protocol-icons.s3.amazonaws.com/sushi.png',
     '0',
   ]);
 

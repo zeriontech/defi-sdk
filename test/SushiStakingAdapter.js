@@ -1,12 +1,14 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('CurveVestingAdapter');
+const ProtocolAdapter = artifacts.require('SushiStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('CurveVestingAdapter', () => {
-  const crvAddress = '0xD533a949740bb3306d119CC777fa900bA034cd52';
-  const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
+contract.only('SushiStakingAdapter', () => {
+  const sushiAddress = '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2';
+  const uniSushiWethAddress = '0xCE84867c3c02B05dc570d0135103d3fB9CC19433';
+  // Random address with positive balances
+  const testAddress = '0x1ec594a869dc67d78fabc33963d3c6a0ab017dd6';
 
   let accounts;
   let adapterRegistry;
@@ -28,7 +30,7 @@ contract('CurveVestingAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Curve Vesting'],
+      ['SushiSwap'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -40,7 +42,8 @@ contract('CurveVestingAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        crvAddress,
+        sushiAddress,
+        uniSushiWethAddress,
       ]]],
     )
       .send({
@@ -62,6 +65,7 @@ contract('CurveVestingAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
+        displayToken(result[0].adapterBalances[0].balances[1].base);
       });
   });
 });
