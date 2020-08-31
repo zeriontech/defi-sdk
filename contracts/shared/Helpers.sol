@@ -29,20 +29,19 @@ library Helpers {
      * @dev Internal function to convert bytes32 to string and trim zeroes.
      */
     function toString(bytes32 data) internal pure returns (string memory) {
-        uint256 length = 0;
-        bytes memory result;
-
+        uint256 counter = 0;
         for (uint256 i = 0; i < 32; i++) {
             if (data[i] != bytes1(0)) {
-                length++;
+                counter++;
             }
         }
 
-        result = new bytes(length);
-
-        for (uint256 i = 0; i < length; i++) {
+        bytes memory result = new bytes(length);
+        counter = 0;
+        for (uint256 i = 0; i < 32; i++) {
             if (data[i] != bytes1(0)) {
-                result[i] = data[i];
+                result[counter] = data[i];
+                counter++;
             }
         }
 
