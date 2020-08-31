@@ -35,7 +35,6 @@ abstract contract TokenAdapter {
      * @dev MUST return array of Component structs with underlying tokens rates for the given token.
      * struct Component {
      *     address token;    // Address of token contract
-     *     bytes32 tokenType; // Token type ("ERC20" by default)
      *     uint256 rate;     // Price per share (1e18)
      * }
      */
