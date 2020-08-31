@@ -16,6 +16,7 @@
 pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
+import { ERC20 } from "../../ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
@@ -24,7 +25,6 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * Only the functions required for MaticStakingAdapter contract are added.
  */
 interface ValidatorShare {
-    function amountStaked(address) external view returns (uint256);
     function getLiquidRewards(address) external view returns (uint256);
 }
 
@@ -48,7 +48,7 @@ contract MaticStakingAdapter is ProtocolAdapter {
      */
     function getBalance(address, address account) external view override returns (uint256) {
         uint256 totalBalance = 0;
-        totalBalance += ValidatorShare(VALIDATOR_SHARE).amountStaked(account);
+        totalBalance += ERC20(VALIDATOR_SHARE).balanceOf(account);
         totalBalance += ValidatorShare(VALIDATOR_SHARE).getLiquidRewards(account);
         return totalBalance;
     }
