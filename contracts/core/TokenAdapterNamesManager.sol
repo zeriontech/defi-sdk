@@ -59,22 +59,22 @@ abstract contract TokenAdapterNamesManager is Ownable {
     /**
      * @notice Adds token adapters' names by tokens.
      * The function is callable only by the owner.
-     * @param newToken Array of new tokens.
+     * @param newTokens Array of new tokens.
      * @param newTokenAdapterNames Array of new token adapters' names.
      */
     function addTokenAdapterNamesByTokens(
-        address[] calldata newToken,
+        address[] calldata newTokens,
         bytes32[] calldata newTokenAdapterNames
     )
         external
         onlyOwner
     {
-        uint256 length = newToken.length;
+        uint256 length = newTokens.length;
         require(length != 0, "PM: empty[2]");
         require(length == newTokenAdapterNames.length, "PM: lengths differ[2]");
 
         for (uint256 i = 0; i < length; i++) {
-            addTokenAdapterNameByToken(newToken[i], newTokenAdapterNames[i]);
+            addTokenAdapterNameByToken(newTokens[i], newTokenAdapterNames[i]);
         }
     }
 
@@ -186,10 +186,12 @@ abstract contract TokenAdapterNamesManager is Ownable {
         returns (bytes32)
     {
         bytes32 tokenAdapterName = _tokenAdapterNameByToken[token];
+
         if (tokenAdapterName == bytes32(0)) {
             bytes32 hash = getTokenHash(token);
             tokenAdapterName = _tokenAdapterNameByHash[hash];
         }
+
         return tokenAdapterName;
     }
 
