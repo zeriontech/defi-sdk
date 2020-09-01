@@ -36,7 +36,7 @@ library Helpers {
             }
         }
 
-        bytes memory result = new bytes(length);
+        bytes memory result = new bytes(counter);
         counter = 0;
         for (uint256 i = 0; i < 32; i++) {
             if (data[i] != bytes1(0)) {
