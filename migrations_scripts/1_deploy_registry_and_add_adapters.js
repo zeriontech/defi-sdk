@@ -21,6 +21,7 @@ const GnosisProtocolAdapter = artifacts.require('GnosisProtocolAdapter');
 const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
 const KeeperDaoAssetAdapter = artifacts.require('KeeperDaoAssetAdapter');
+const KimchiStakingAdapter = artifacts.require('KimchiStakingAdapter');
 const KyberAdapter = artifacts.require('KyberAdapter');
 const ChaiAdapter = artifacts.require('ChaiAdapter');
 const DSRAdapter = artifacts.require('DSRAdapter');
@@ -223,6 +224,12 @@ const uniLendWethAddress = '0xaB3F9bF1D81ddb224a2014e98B238638824bCf20';
 const uniSnxWethAddress = '0x43AE24960e5534731Fc831386c07755A2dc33D47';
 const uniYfiWethAddress = '0x2fDbAdf3C4D5A8666Bc06645B8358ab803996E28';
 
+const kimchiAddress = '0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0';
+const uniKimchiWeth = '0xC4da39E646e7F5D233B89CA0F7B75344e7ddB2cc';
+const uniKimchiSushi = '0xC8d02f2669eF9aABE6B3b75E2813695AeD63748d';
+const uniKimchiTend = '0x1F4e87F70002867ab5df276d6A09A94E3eDa4f9A';
+const uniKimchiTend = '0x1F4e87F70002867ab5df276d6A09A94E3eDa4f9A';
+
 const aaveAssetAdapterTokens = [
   aDaiAddress,
   aTusdAddress,
@@ -384,6 +391,17 @@ const iearn3AdapterTokens = [
 const keeperDaoAdapterTokens = [
   kETHAddress,
   kWETHAddress,
+];
+const kimchiStakingAdapterTokens = [
+  kimchiAddress,
+  uniKimchiWeth,
+  uniKimchiSushi,
+  uniKimchiTend,
+  uniKimchiTend,
+  uniUsdtWethAddress,
+  uniUsdcWethAddress,
+  uniSnxWethAddress,
+  uniYfiWethAddress,
 ];
 const kyberAdapterTokens = [
   kncAddress,
@@ -716,6 +734,18 @@ module.exports = async (deployer, network, accounts) => {
     'An on-chain liquidity underwriter for DeFi',
     'keeperdao.com',
     'protocol-icons.s3.amazonaws.com/keeperDAO.png',
+    '0',
+  ]);
+
+  await deployer.deploy(KimchiStakingAdapter, { from: accounts[0] });
+  adapters.push([KimchiStakingAdapter.address]);
+  tokens.push([[kimchiStakingAdapterTokens]]);
+  protocolNames.push('KIMCHI');
+  metadata.push([
+    'KIMCHI',
+    'Farm KIMCHI by staking LP tokens',
+    'kimchi.finance',
+    'protocol-icons.s3.amazonaws.com/kimchi.png',
     '0',
   ]);
 

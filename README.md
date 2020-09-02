@@ -206,6 +206,7 @@ All the deployed contracts' addresses are available [here](../../wiki/Addresses)
 | [Idle](./contracts/adapters/idle) | Yield aggregator for lending platforms. | [Asset adapter](./contracts/adapters/idle/IdleAdapter.sol) | ["IdleToken"](./contracts/adapters/idle/IdleTokenAdapter.sol) |
 | [iearn.finance (v2/v3)](./contracts/adapters/iearn) | Yield aggregator for lending platforms. Protocol adapter is duplicated for v2 and v3 versions of protocol. | [Asset adapter](./contracts/adapters/iearn/IearnAdapter.sol) | ["YToken"](./contracts/adapters/iearn/IearnTokenAdapter.sol) |
 | [KeeperDAO](./contracts/adapters/keeperDao) | An on-chain liquidity underwriter for DeFi. | [Asset adapter](./contracts/adapters/keeperDao/KeeperDaoAssetAdapter.sol) | ["KToken"](contracts/adapters/keeperDao/KeeperDaoTokenAdapter.sol) |
+| [KIMCHI](contracts/adapters/kimchi) | Farm KIMCHI by staking LP tokens. | [Staking adapter](contracts/adapters/kimchi/KimchiStakingAdapter.sol) | — |
 | [KyberDAO](./contracts/adapters/kyber) | Platform that allows KNC token holders to participate in governance. | [Asset adapter](./contracts/adapters/kyber/KyberAssetAdapter.sol) | — |
 | [Chai](./contracts/adapters/maker) | A simple ERC20 wrapper over the Dai Savings Protocol. | [Asset adapter](./contracts/adapters/maker/ChaiAdapter.sol) | ["Chai token"](./contracts/adapters/maker/ChaiTokenAdapter.sol) |
 | [Dai Savings Protocol](./contracts/adapters/maker) | Decentralized lending protocol. | [Asset adapter](./contracts/adapters/maker/DSRAdapter.sol) | — |
