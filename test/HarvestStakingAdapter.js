@@ -1,14 +1,14 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('KimchiStakingAdapter');
+const ProtocolAdapter = artifacts.require('HarvestStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('KimchiStakingAdapter', () => {
-const kimchiAddress = '0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0';
-  const uniYfiWethAddress = '0x2fDbAdf3C4D5A8666Bc06645B8358ab803996E28';
+contract.only('HarvestStakingAdapter', () => {
+  const fusdcAddress = '0xc3F7ffb5d5869B3ade9448D094d81B0521e8326f';
+  const farmAddress = '0xa0246c9032bC3A600820415aE600c6388619A14D';
   // Random address with positive balances
-  const testAddress = '0x75c8e2dd57927eb0373e8e201ebf582406adcf45';
+  const testAddress = '0x1e2b3e14148487d26923beecb94b251c0a09ba5d';
 
   let accounts;
   let adapterRegistry;
@@ -30,7 +30,7 @@ const kimchiAddress = '0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0';
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['KIMCHI'],
+      ['Harvest'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -42,8 +42,8 @@ const kimchiAddress = '0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0';
         protocolAdapterAddress,
       ]],
       [[[
-        kimchiAddress,
-        uniYfiWethAddress,
+        fusdcAddress,
+        farmAddress,
       ]]],
     )
       .send({
