@@ -236,10 +236,6 @@ const fUsdcAddress = '0xc3F7ffb5d5869B3ade9448D094d81B0521e8326f';
 const fUsdtAddress = '0x5bd997039FFF16F653EF15D1428F2C791519f58d';
 const balancerUsdc95Farm5Address = '0x0395e4A17fF11D36DaC9959f2D7c8Eca10Fe89c9';
 const uniUsdcFarmAddress = '0x514906FC121c7878424a5C928cad1852CC545892';
-const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
-const linkAddress = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
-const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
-const sushiAddress = '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2';
 const yfvAddress = '0x45f24BaEef268BB6d63AEe5129015d69702BCDfa';
 const yfiiAddress = '0xa1d0E215a23d7030842FC67cE582a6aFa3CCaB83';
 const ognAddress = '0x8207c1FfC5B6804F6024322CcF34F29c3541Ae26';
@@ -1135,7 +1131,7 @@ module.exports = async (deployer, network, accounts) => {
         UniswapV2TokenAdapter.address,
       );
     });
-  await deployer.deploy(AdapterRegistry, { from: accounts[0] })
+  await AdapterRegistry.at('0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672')
     .then(async (registry) => {
       await registry.contract.methods.addProtocols(
         protocolNames,
