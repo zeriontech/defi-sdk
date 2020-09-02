@@ -18,6 +18,7 @@ const DmmAssetAdapter = artifacts.require('DmmAssetAdapter');
 const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
 const GnosisProtocolAdapter = artifacts.require('GnosisProtocolAdapter');
+const HarvestStakingAdapter = artifacts.require('HarvestStakingAdapter');
 const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
 const KeeperDaoAssetAdapter = artifacts.require('KeeperDaoAssetAdapter');
@@ -230,6 +231,23 @@ const uniKimchiSushi = '0xC8d02f2669eF9aABE6B3b75E2813695AeD63748d';
 const uniKimchiTend = '0x1F4e87F70002867ab5df276d6A09A94E3eDa4f9A';
 const uniKimchiTend = '0x1F4e87F70002867ab5df276d6A09A94E3eDa4f9A';
 
+const farmAddress = '0xa0246c9032bC3A600820415aE600c6388619A14D';
+const fDaiAddress = '0xe85C8581e60D7Cd32Bbfd86303d2A4FA6a951Dac';
+const fUsdcAddress = '0xc3F7ffb5d5869B3ade9448D094d81B0521e8326f';
+const fUsdtAddress = '0x5bd997039FFF16F653EF15D1428F2C791519f58d';
+const balancerUsdc95Farm5Address = '0x0395e4A17fF11D36DaC9959f2D7c8Eca10Fe89c9';
+const uniUsdcFarmAddress = '0x514906FC121c7878424a5C928cad1852CC545892';
+const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+const linkAddress = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
+const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
+const sushiAddress = '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2';
+const yfvAddress = '0x45f24BaEef268BB6d63AEe5129015d69702BCDfa';
+const yfiiAddress = '0xa1d0E215a23d7030842FC67cE582a6aFa3CCaB83';
+const ognAddress = '0x8207c1FfC5B6804F6024322CcF34F29c3541Ae26';
+const uniBasedSusdAddress = '0xaAD22f5543FCDaA694B68f94Be177B561836AE57';
+const uniPastaWethAddress = '0xE92346d9369Fe03b735Ed9bDeB6bdC2591b8227E';
+
+
 const aaveAssetAdapterTokens = [
   aDaiAddress,
   aTusdAddress,
@@ -387,6 +405,24 @@ const iearn3AdapterTokens = [
   yUSDCv3,
   yUSDTv3,
   yBUSDv3,
+];
+const harvestStakingAdapterTokens = [
+  farmAddress,
+  fDaiAddress,
+  fUsdcAddress,
+  fUsdtAddress,
+  balancerUsdc95Farm5Address,
+  uniUsdcFarmAddress,
+  daiAddress,
+  wethAddress,
+  linkAddress,
+  yfiAddress,
+  sushiAddress,
+  yfvAddress,
+  yfiiAddress,
+  ognAddress,
+  uniBasedSusdAddress,
+  uniPastaWethAddress,
 ];
 const keeperDaoAdapterTokens = [
   kETHAddress,
@@ -722,6 +758,18 @@ module.exports = async (deployer, network, accounts) => {
     'Yield aggregator for lending platforms',
     'iearn.finance',
     'protocol-icons.s3.amazonaws.com/iearn.png',
+    '0',
+  ]);
+
+  await deployer.deploy(HarvestStakingAdapter, { from: accounts[0] });
+  adapters.push([HarvestStakingAdapter.address]);
+  tokens.push([harvestStakingAdapterTokens]);
+  protocolNames.push('Harvest');
+  metadata.push([
+    'Harvest',
+    'Your hard work is about to become easier with Harvest',
+    'harvest.finance',
+    'protocol-icons.s3.amazonaws.com/harvest.png',
     '0',
   ]);
 
