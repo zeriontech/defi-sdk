@@ -21,17 +21,6 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @dev Vesting contract interface.
- * Only the functions required for CurveVestingAdapter contract are added.
- * The Vesting contract is available here
- * 
- */
-interface Vesting {
-    
-}
-
-
-/**
  * @title Adapter for Curve protocol (vesting).
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>

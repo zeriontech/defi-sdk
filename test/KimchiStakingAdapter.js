@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('KimchiStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('KimchiStakingAdapter', () => {
-const kimchiAddress = '0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0';
+  const kimchiAddress = '0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0';
   const uniYfiWethAddress = '0x2fDbAdf3C4D5A8666Bc06645B8358ab803996E28';
   // Random address with positive balances
   const testAddress = '0x75c8e2dd57927eb0373e8e201ebf582406adcf45';

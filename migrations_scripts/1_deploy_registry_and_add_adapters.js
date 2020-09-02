@@ -219,7 +219,6 @@ const uniSusdWethAddress = '0xf80758aB42C3B07dA84053Fd88804bCB6BAA4b5c';
 const uniUmaWethAddress = '0x88d97d199b9ed37c29d846d00d443de980832a22';
 const uniBandWethAddress = '0xf421c3f2e695c2d4c0765379ccace8ade4a480d9';
 const uniLinkWethAddress = '0xa2107FA5B38d9bbd2C461D6EDf11B11A50F6b974';
-const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
 const uniCompWethAddress = '0xCFfDdeD873554F362Ac02f8Fb1f02E5ada10516f';
 const uniLendWethAddress = '0xaB3F9bF1D81ddb224a2014e98B238638824bCf20';
 const uniSnxWethAddress = '0x43AE24960e5534731Fc831386c07755A2dc33D47';
