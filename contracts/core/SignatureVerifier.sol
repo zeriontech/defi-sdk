@@ -38,21 +38,22 @@ contract SignatureVerifier {
     bytes32 internal constant TX_DATA_TYPEHASH = keccak256(
         abi.encodePacked(
             TX_DATA_ENCODED_TYPE,
+            ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE,
             ACTION_ENCODED_TYPE,
-            TOKEN_AMOUNT_ENCODED_TYPE,
             FEE_ENCODED_TYPE,
-            ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE
+            TOKEN_AMOUNT_ENCODED_TYPE
         )
     );
+    bytes32 internal constant ABSOLUTE_TOKEN_AMOUNT_TYPEHASH = keccak256(ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE);
     bytes32 internal constant ACTION_TYPEHASH = keccak256(ACTION_ENCODED_TYPE);
     bytes32 internal constant TOKEN_AMOUNT_TYPEHASH = keccak256(TOKEN_AMOUNT_ENCODED_TYPE);
     bytes32 internal constant FEE_TYPEHASH = keccak256(FEE_ENCODED_TYPE);
-    bytes32 internal constant ABSOLUTE_TOKEN_AMOUNT_TYPEHASH = keccak256(ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE);
 
     bytes internal constant TX_DATA_ENCODED_TYPE = abi.encodePacked(
         "TransactionData(",
         "Action[] actions,",
         "TokenAmount[] inputs,",
+        "Fee fee,",
         "AbsoluteTokenAmount[] requiredOutputs,",
         "uint256 nonce",
         ")"
@@ -120,7 +121,7 @@ contract SignatureVerifier {
         TransactionData memory data,
         bytes memory signature
     )
-        internal
+        public
         view
         returns (address payable)
     {

@@ -20,15 +20,12 @@ pragma experimental ABIEncoderV2;
 
 import {
     AdapterBalance,
-    AbsoluteTokenAmount,
-    Component
+    AbsoluteTokenAmount
 } from "../shared/Structs.sol";
 import { ERC20 } from "../shared/ERC20.sol";
 import { Ownable } from "./Ownable.sol";
 import { ProtocolAdapterManager } from "./ProtocolAdapterManager.sol";
-import { TokenAdapterManager } from "./TokenAdapterManager.sol";
 import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
-import { TokenAdapter } from "../adapters/TokenAdapter.sol";
 
 
 /**
@@ -36,7 +33,7 @@ import { TokenAdapter } from "../adapters/TokenAdapter.sol";
  * @notice getBalances() function implements the main functionality.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract AdapterRegistry is Ownable, ProtocolAdapterManager, TokenAdapterManager {
+contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 

@@ -13,7 +13,7 @@ const EMPTY_BYTES = '0x';
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const InteractiveAdapter = artifacts.require('./WethInteractiveAdapter');
 const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
@@ -26,7 +26,7 @@ contract.only('Core + Router', () => {
   let accounts;
   let core;
   let router;
-  let adapterRegistry;
+  let protocolAdapterRegistry;
   let protocolAdapterAddress;
   let WETH;
   let wethAmount;
@@ -38,11 +38,11 @@ contract.only('Core + Router', () => {
         .then((result) => {
           protocolAdapterAddress = result.address;
         });
-      await AdapterRegistry.new({ from: accounts[0] })
+      await ProtocolAdapterRegistry.new({ from: accounts[0] })
         .then((result) => {
-          adapterRegistry = result.contract;
+          protocolAdapterRegistry = result.contract;
         });
-      await adapterRegistry.methods.addProtocolAdapters(
+      await protocolAdapterRegistry.methods.addProtocolAdapters(
         [web3.utils.toHex('Weth')],
         [
           protocolAdapterAddress,
@@ -54,7 +54,7 @@ contract.only('Core + Router', () => {
           gas: '1000000',
         });
       await Core.new(
-        adapterRegistry.options.address,
+        protocolAdapterRegistry.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
@@ -89,10 +89,10 @@ contract.only('Core + Router', () => {
     });
 
     it('should be correct adapter registry', async () => {
-      await core.methods.adapterRegistry()
+      await core.methods.protocolAdapterRegistry()
         .call()
         .then((result) => {
-          assert.equal(result, adapterRegistry.options.address);
+          assert.equal(result, protocolAdapterRegistry.options.address);
         });
     });
 
@@ -110,9 +110,9 @@ contract.only('Core + Router', () => {
           [
             web3.utils.toHex('Weth'),
             ACTION_DEPOSIT,
-            [],
-            [web3.utils.toWei('1', 'ether')],
-            [0],
+            [
+              [ethAddress, web3.utils.toWei('1', 'ether'), 0],
+            ],
             EMPTY_BYTES,
           ],
         ],
@@ -140,9 +140,9 @@ contract.only('Core + Router', () => {
           [
             web3.utils.toHex('Weth'),
             ACTION_DEPOSIT,
-            [],
-            [web3.utils.toWei('1.1', 'ether')],
-            [AMOUNT_RELATIVE],
+            [
+              [ethAddress, web3.utils.toWei('1.1', 'ether'), AMOUNT_RELATIVE],
+            ],
             EMPTY_BYTES,
           ],
         ],
@@ -170,9 +170,9 @@ contract.only('Core + Router', () => {
           [
             web3.utils.toHex('Weth'),
             ACTION_DEPOSIT,
-            [],
-            [web3.utils.toWei('1', 'ether')],
-            [AMOUNT_ABSOLUTE],
+            [
+              [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             EMPTY_BYTES,
           ],
         ],
@@ -202,9 +202,9 @@ contract.only('Core + Router', () => {
           [
             web3.utils.toHex('Weth'),
             ACTION_WITHDRAW,
-            [],
-            [web3.utils.toWei('1', 'ether')],
-            [AMOUNT_RELATIVE],
+            [
+              [wethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_RELATIVE],
+            ],
             EMPTY_BYTES,
           ],
         ],
@@ -235,39 +235,9 @@ contract.only('Core + Router', () => {
           [
             web3.utils.toHex('Weth1'),
             ACTION_DEPOSIT,
-            [],
-            [web3.utils.toWei('1', 'ether')],
-            [AMOUNT_ABSOLUTE],
-            EMPTY_BYTES,
-          ],
-        ],
-        // inputs
-        [],
-        // fee
-        [
-          0,
-          ZERO,
-        ],
-        // outputs
-        [],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-          value: web3.utils.toWei('1', 'ether'),
-        }));
-    });
-
-    it('should not execute action with wrong amountType length', async () => {
-      await expectRevert(router.methods.startExecution(
-        // actions
-        [
-          [
-            web3.utils.toHex('Weth'),
-            ACTION_DEPOSIT,
-            [],
-            [web3.utils.toWei('1', 'ether')],
-            [AMOUNT_ABSOLUTE, AMOUNT_ABSOLUTE],
+            [
+              [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             EMPTY_BYTES,
           ],
         ],
@@ -390,9 +360,12 @@ contract.only('Core + Router', () => {
             wethAddress,
             web3.utils.toWei('1', 'ether'),
             AMOUNT_ABSOLUTE,
+          ],
+        ],
+        // fee
+        [
             web3.utils.toWei('0.011', 'ether'),
             accounts[1],
-          ],
         ],
         // outputs
         [],
@@ -418,9 +391,12 @@ contract.only('Core + Router', () => {
             wethAddress,
             web3.utils.toWei('1', 'ether'),
             AMOUNT_ABSOLUTE,
+          ],
+        ],
+        // fee
+        [
             web3.utils.toWei('0.01', 'ether'),
             ZERO,
-          ],
         ],
         // outputs
         [],
@@ -446,9 +422,12 @@ contract.only('Core + Router', () => {
             wethAddress,
             web3.utils.toWei('0.1', 'ether'),
             AMOUNT_ABSOLUTE,
+          ],
+        ],
+        // fee
+        [
             web3.utils.toWei('0.01', 'ether'),
             accounts[1],
-          ],
         ],
         // outputs
         [],
@@ -460,12 +439,7 @@ contract.only('Core + Router', () => {
       await WETH.methods.balanceOf(accounts[1])
         .call()
         .then((result) => {
-          assert.equal(result, web3.utils.toWei('0.0008', 'ether'));
-        });
-      await WETH.methods.balanceOf(router.options.address)
-        .call()
-        .then((result) => {
-          assert.equal(result, web3.utils.toWei('0.0002', 'ether'));
+          assert.equal(result, web3.utils.toWei('0.001', 'ether'));
         });
     });
   });

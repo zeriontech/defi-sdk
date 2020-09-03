@@ -1,17 +1,17 @@
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 
-contract.skip('AdapterRegistry deployed', () => {
-  let adapterRegistry;
+contract.skip('ProtocolAdapterRegistry deployed', () => {
+  let protocolAdapterRegistry;
 
   beforeEach(async () => {
-    await AdapterRegistry.deployed()
+    await ProtocolAdapterRegistry.deployed()
       .then((result) => {
-        adapterRegistry = result.contract;
+        protocolAdapterRegistry = result.contract;
       });
   });
 
   it('should be correct return values from getters', async () => {
-    await adapterRegistry.methods.getProtocolAdapterNames()
+    await protocolAdapterRegistry.methods.getProtocolAdapterNames()
       .call()
       .then((result) => {
         assert.deepEqual(
@@ -39,7 +39,7 @@ contract.skip('AdapterRegistry deployed', () => {
           ],
         );
       });
-    await adapterRegistry.methods.getTokenAdapterNames()
+    await protocolAdapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.deepEqual(
@@ -62,7 +62,7 @@ contract.skip('AdapterRegistry deployed', () => {
           ],
         );
       });
-    await adapterRegistry.methods.getBalances('0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990')
+    await protocolAdapterRegistry.methods.getBalances('0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990')
       .estimateGas()
       .then((estimatedGas) => {
         console.log(`Estimated gas for getBalances() call is ${estimatedGas}`);

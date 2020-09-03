@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 import { Action, AbsoluteTokenAmount, ActionType, AmountType } from "../shared/Structs.sol";
 import { InteractiveAdapter } from "../interactiveAdapters/InteractiveAdapter.sol";
 import { ERC20 } from "../shared/ERC20.sol";
-import { AdapterRegistry } from "./ProtocolAdapterRegistry.sol";
+import { ProtocolAdapterRegistry } from "./ProtocolAdapterRegistry.sol";
 import { SafeERC20 } from "../shared/SafeERC20.sol";
 import { Helpers } from "../shared/Helpers.sol";
 import { ReentrancyGuard } from "./ReentrancyGuard.sol";
@@ -33,19 +33,19 @@ import { ReentrancyGuard } from "./ReentrancyGuard.sol";
 contract Core is ReentrancyGuard {
     using SafeERC20 for ERC20;
 
-    address internal immutable adapterRegistry_;
+    address internal immutable protocolAdapterRegistry_;
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     event ExecutedAction(Action action);
 
     constructor(
-        address adapterRegistry
+        address protocolAdapterRegistry
     )
         public
     {
-        require(adapterRegistry != address(0), "C: empty adapterRegistry");
-        adapterRegistry_ = adapterRegistry;
+        require(protocolAdapterRegistry != address(0), "C: empty protocolAdapterRegistry");
+        protocolAdapterRegistry_ = protocolAdapterRegistry;
     }
 
     // solhint-disable-next-line no-empty-blocks
@@ -96,14 +96,14 @@ contract Core is ReentrancyGuard {
     }
 
     /**
-     * @return Address of the AdapterRegistry contract used.
+     * @return Address of the ProtocolAdapterRegistry contract used.
      */
-    function adapterRegistry()
+    function protocolAdapterRegistry()
         external
         view
         returns (address)
     {
-        return adapterRegistry_;
+        return protocolAdapterRegistry_;
     }
 
     function executeAction(
@@ -112,7 +112,7 @@ contract Core is ReentrancyGuard {
         internal
         returns (address[] memory)
     {
-        address adapter = AdapterRegistry(adapterRegistry_).getProtocolAdapterAddress(
+        address adapter = ProtocolAdapterRegistry(protocolAdapterRegistry_).getProtocolAdapterAddress(
             action.protocolAdapterName
         );
         require(adapter != address(0), "C: bad name");
@@ -154,12 +154,11 @@ contract Core is ReentrancyGuard {
         internal
         returns (AbsoluteTokenAmount[] memory)
     {
-        uint256 length;
+        uint256 length = requiredOutputs.length;
         uint256 lengthNested;
         address token;
         AbsoluteTokenAmount[] memory actualOutputs = new AbsoluteTokenAmount[](length);
 
-        length = requiredOutputs.length;
         for (uint256 i = 0; i < length; i++) {
             token = requiredOutputs[i].token;
             actualOutputs[i] = AbsoluteTokenAmount({

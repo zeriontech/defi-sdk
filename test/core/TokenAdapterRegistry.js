@@ -1,6 +1,6 @@
 import expectRevert from '../helpers/expectRevert';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const TokenAdapterRegistry = artifacts.require('./TokenAdapterRegistry');
 const ProtocolAdapter = artifacts.require('./MockAdapter');
 const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const CompoundTokenAdapter = artifacts.require('./CompoundTokenAdapter');
@@ -11,7 +11,7 @@ const TWO = '0x2222222222222222222222222222222222222222';
 
 contract.only('AdapterRegistry', () => {
   let accounts;
-  let adapterRegistry;
+  let tokenAdapterRegistry;
   let protocolAdapterAddress;
   let tokenAdapterAddress;
   let compoundTokenAdapterAddress;
@@ -30,24 +30,11 @@ contract.only('AdapterRegistry', () => {
       .then((result) => {
         compoundTokenAdapterAddress = result.address;
       });
-    await AdapterRegistry.new({ from: accounts[0] })
+    await TokenAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
-        adapterRegistry = result.contract;
+        tokenAdapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocolAdapters(
-      [web3.utils.toHex('Mock')],
-      [
-        protocolAdapterAddress,
-      ],
-      [
-        [protocolAdapterAddress],
-      ],
-    )
-      .send({
-        from: accounts[0],
-        gas: '1000000',
-      });
-    await adapterRegistry.methods.addTokenAdapters(
+    await tokenAdapterRegistry.methods.addTokenAdapters(
       [web3.utils.toHex('ERC20')],
       [tokenAdapterAddress],
     )
@@ -58,7 +45,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should be correct owner', async () => {
-    await adapterRegistry.methods.owner()
+    await tokenAdapterRegistry.methods.owner()
       .call()
       .then((result) => {
         assert.equal(result, accounts[0]);
@@ -66,7 +53,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should be correct token adapters names', async () => {
-    await adapterRegistry.methods.getTokenAdapterNames()
+    await tokenAdapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.equal(result.length, 1);
@@ -75,7 +62,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should be correct token adapter', async () => {
-    await adapterRegistry.methods.getTokenAdapterAddress(web3.utils.toHex('ERC20'))
+    await tokenAdapterRegistry.methods.getTokenAdapterAddress(web3.utils.toHex('ERC20'))
       .call()
       .then((result) => {
         assert.equal(result, tokenAdapterAddress);
@@ -83,7 +70,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not add token adapter not by the owner', async () => {
-    await expectRevert(adapterRegistry.methods.addTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapters(
       [web3.utils.toHex('ONE')],
       [ONE],
     )
@@ -94,7 +81,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not add token adapter with different lengths', async () => {
-    await expectRevert(adapterRegistry.methods.addTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapters(
       [web3.utils.toHex('ONE')],
       [ONE, TWO],
     )
@@ -105,7 +92,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not add token adapter with zero address', async () => {
-    await expectRevert(adapterRegistry.methods.addTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapters(
       [web3.utils.toHex('ONE')],
       [ZERO],
     )
@@ -116,7 +103,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not add token adapter with empty name', async () => {
-    await expectRevert(adapterRegistry.methods.addTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapters(
       ['0x'],
       [ONE],
     )
@@ -127,7 +114,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not add token adapter with existing name', async () => {
-    await expectRevert(adapterRegistry.methods.addTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapters(
       [web3.utils.toHex('ERC20')],
       [ONE],
     )
@@ -138,7 +125,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not add token adapter with empty input', async () => {
-    await expectRevert(adapterRegistry.methods.addTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapters(
       [],
       [],
     )
@@ -149,14 +136,14 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should add token adapter by the owner', async () => {
-    await adapterRegistry.methods.removeTokenAdapters(
+    await tokenAdapterRegistry.methods.removeTokenAdapters(
       [web3.utils.toHex('ERC20')],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.addTokenAdapters(
+    await tokenAdapterRegistry.methods.addTokenAdapters(
       [web3.utils.toHex('ERC20')],
       [tokenAdapterAddress],
     )
@@ -164,7 +151,7 @@ contract.only('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.getTokenAdapterNames()
+    await tokenAdapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.equal(result.length, 1);
@@ -173,7 +160,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not remove token adapter not by the owner', async () => {
-    await expectRevert(adapterRegistry.methods.removeTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.removeTokenAdapters(
       [web3.utils.toHex('ERC20')],
     )
       .send({
@@ -183,7 +170,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not remove token adapter with no names', async () => {
-    await expectRevert(adapterRegistry.methods.removeTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.removeTokenAdapters(
       [],
     )
       .send({
@@ -193,7 +180,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not remove token adapter with bad name', async () => {
-    await expectRevert(adapterRegistry.methods.removeTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.removeTokenAdapters(
       [web3.utils.toHex('ERC220')],
     )
       .send({
@@ -203,19 +190,19 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should remove token adapter by the owner', async () => {
-    await adapterRegistry.methods.removeTokenAdapters(
+    await tokenAdapterRegistry.methods.removeTokenAdapters(
       [web3.utils.toHex('ERC20')],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.getTokenAdapterNames()
+    await tokenAdapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.equal(result.length, 0);
       });
-    await adapterRegistry.methods.addTokenAdapters(
+    await tokenAdapterRegistry.methods.addTokenAdapters(
       [web3.utils.toHex('ERC20')],
       [tokenAdapterAddress],
     )
@@ -223,7 +210,7 @@ contract.only('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.addTokenAdapters(
+    await tokenAdapterRegistry.methods.addTokenAdapters(
       [web3.utils.toHex('CToken')],
       [compoundTokenAdapterAddress],
     )
@@ -231,24 +218,24 @@ contract.only('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.getTokenAdapterNames()
+    await tokenAdapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.deepEqual(result.map(web3.utils.hexToUtf8), ['ERC20', 'CToken']);
       });
-    await adapterRegistry.methods.removeTokenAdapters(
+    await tokenAdapterRegistry.methods.removeTokenAdapters(
       [web3.utils.toHex('ERC20')],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.getTokenAdapterNames()
+    await tokenAdapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.deepEqual(result.map(web3.utils.hexToUtf8), ['CToken']);
       });
-    await adapterRegistry.methods.addTokenAdapters(
+    await tokenAdapterRegistry.methods.addTokenAdapters(
       [web3.utils.toHex('ERC20')],
       [tokenAdapterAddress],
     )
@@ -256,19 +243,19 @@ contract.only('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.getTokenAdapterNames()
+    await tokenAdapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.deepEqual(result.map(web3.utils.hexToUtf8), ['CToken', 'ERC20']);
       });
-    await adapterRegistry.methods.removeTokenAdapters(
+    await tokenAdapterRegistry.methods.removeTokenAdapters(
       [web3.utils.toHex('ERC20')],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.getTokenAdapterNames()
+    await tokenAdapterRegistry.methods.getTokenAdapterNames()
       .call()
       .then((result) => {
         assert.deepEqual(result.map(web3.utils.hexToUtf8), ['CToken']);
@@ -276,7 +263,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not update token adapter not by the owner', async () => {
-    await expectRevert(adapterRegistry.methods.updateTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapters(
       [web3.utils.toHex('ERC20')],
       [ONE],
     )
@@ -287,7 +274,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not update token adapter with zero address', async () => {
-    await expectRevert(adapterRegistry.methods.updateTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapters(
       [web3.utils.toHex('ERC20')],
       [ZERO],
     )
@@ -298,7 +285,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not update token adapter with same address', async () => {
-    await expectRevert(adapterRegistry.methods.updateTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapters(
       [web3.utils.toHex('ERC20')],
       [tokenAdapterAddress],
     )
@@ -309,7 +296,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not update token adapter with different lengths', async () => {
-    await expectRevert(adapterRegistry.methods.updateTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapters(
       [web3.utils.toHex('ERC20')],
       [ZERO, ZERO],
     )
@@ -320,7 +307,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not update token adapter with empty input', async () => {
-    await expectRevert(adapterRegistry.methods.updateTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapters(
       [],
       [],
     )
@@ -331,7 +318,7 @@ contract.only('AdapterRegistry', () => {
   });
 
   it('should not update token adapter with bad name', async () => {
-    await expectRevert(adapterRegistry.methods.updateTokenAdapters(
+    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapters(
       [web3.utils.toHex('ERC220')],
       [ONE],
     )
@@ -347,7 +334,7 @@ contract.only('AdapterRegistry', () => {
       .then((result) => {
         newTokenAdapterAddress = result.address;
       });
-    await adapterRegistry.methods.updateTokenAdapters(
+    await tokenAdapterRegistry.methods.updateTokenAdapters(
       [web3.utils.toHex('ERC20')],
       [newTokenAdapterAddress],
     )
@@ -355,23 +342,23 @@ contract.only('AdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.getTokenAdapterAddress(web3.utils.toHex('ERC20'))
+    await tokenAdapterRegistry.methods.getTokenAdapterAddress(web3.utils.toHex('ERC20'))
       .call()
       .then((result) => {
         assert.equal(result, newTokenAdapterAddress);
       });
   });
 
-  it('should not transfer ownership not by the owner', async () => {
+  it('should not propose ownership not by the owner', async () => {
     await expectRevert(
-      adapterRegistry.methods.transferOwnership(accounts[1])
+      protocolAdapterRegistry.methods.proposeOwnership(accounts[1])
         .send({ from: accounts[1] }),
     );
   });
 
-  it('should not transfer ownership to the zero address', async () => {
+  it('should not propose ownership to the zero address', async () => {
     await expectRevert(
-      adapterRegistry.methods.transferOwnership(ZERO)
+      protocolAdapterRegistry.methods.proposeOwnership(ZERO)
         .send({
           from: accounts[0],
           gas: '300000',
@@ -379,13 +366,30 @@ contract.only('AdapterRegistry', () => {
     );
   });
 
-  it('should transfer ownership by the owner', async () => {
-    await adapterRegistry.methods.transferOwnership(accounts[1])
+  it('should propose ownership by the owner', async () => {
+    await protocolAdapterRegistry.methods.proposeOwnership(accounts[1])
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await adapterRegistry.methods.owner()
+    await protocolAdapterRegistry.methods.pendingOwner()
+      .call()
+      .then((result) => {
+        assert.equal(result, accounts[1]);
+      });
+    await expectRevert(
+      protocolAdapterRegistry.methods.acceptOwnership()
+        .send({
+          from: accounts[0],
+          gas: '300000',
+        }),
+    );
+    await protocolAdapterRegistry.methods.acceptOwnership()
+      .send({
+        from: accounts[1],
+        gas: '300000',
+      });
+    await protocolAdapterRegistry.methods.owner()
       .call()
       .then((result) => {
         assert.equal(result, accounts[1]);
