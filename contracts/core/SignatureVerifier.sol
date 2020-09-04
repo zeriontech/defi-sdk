@@ -18,7 +18,7 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-import { TransactionData, Action, TokenAmount, Fee, AbsoluteTokenAmount } from "../shared/Structs.sol";
+import { TransactionData, Action, AbsoluteTokenAmount, Fee, TokenAmount } from "../shared/Structs.sol";
 
 
 contract SignatureVerifier {
@@ -44,10 +44,16 @@ contract SignatureVerifier {
             TOKEN_AMOUNT_ENCODED_TYPE
         )
     );
-    bytes32 internal constant ABSOLUTE_TOKEN_AMOUNT_TYPEHASH = keccak256(ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE);
-    bytes32 internal constant ACTION_TYPEHASH = keccak256(ACTION_ENCODED_TYPE);
-    bytes32 internal constant TOKEN_AMOUNT_TYPEHASH = keccak256(TOKEN_AMOUNT_ENCODED_TYPE);
+    bytes32 internal constant ABSOLUTE_TOKEN_AMOUNT_TYPEHASH =
+        keccak256(ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE);
+    bytes32 internal constant ACTION_TYPEHASH = keccak256(
+        abi.encodePacked(
+            ACTION_ENCODED_TYPE,
+            TOKEN_AMOUNT_ENCODED_TYPE
+        )
+    );
     bytes32 internal constant FEE_TYPEHASH = keccak256(FEE_ENCODED_TYPE);
+    bytes32 internal constant TOKEN_AMOUNT_TYPEHASH = keccak256(TOKEN_AMOUNT_ENCODED_TYPE);
 
     bytes internal constant TX_DATA_ENCODED_TYPE = abi.encodePacked(
         "TransactionData(",
@@ -58,6 +64,12 @@ contract SignatureVerifier {
         "uint256 nonce",
         ")"
     );
+    bytes internal constant ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE = abi.encodePacked(
+        "AbsoluteTokenAmount(",
+        "address token,",
+        "uint256 amount",
+        ")"
+    );
     bytes internal constant ACTION_ENCODED_TYPE = abi.encodePacked(
         "Action(",
         "bytes32 protocolAdapterName,",
@@ -66,23 +78,17 @@ contract SignatureVerifier {
         "bytes data",
         ")"
     );
-    bytes internal constant TOKEN_AMOUNT_ENCODED_TYPE = abi.encodePacked(
-        "TokenAmount(",
-        "address token,",
-        "uint256 amount,",
-        "uint8 amountType",
-        ")"
-    );
     bytes internal constant FEE_ENCODED_TYPE = abi.encodePacked(
         "Fee(",
         "uint256 share,",
         "address beneficiary",
         ")"
     );
-    bytes internal constant ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE = abi.encodePacked(
-        "AbsoluteTokenAmount(",
+    bytes internal constant TOKEN_AMOUNT_ENCODED_TYPE = abi.encodePacked(
+        "TokenAmount(",
         "address token,",
-        "uint256 amount",
+        "uint256 amount,",
+        "uint8 amountType",
         ")"
     );
 
@@ -126,6 +132,7 @@ contract SignatureVerifier {
         returns (address payable)
     {
         (uint8 v, bytes32 r, bytes32 s) = splitSignature(signature);
+
         bytes32 hashedData = keccak256(
             abi.encodePacked(
                 bytes1(0x19),
@@ -298,5 +305,4 @@ contract SignatureVerifier {
 
         return (v, r, s);
     }
-
 }

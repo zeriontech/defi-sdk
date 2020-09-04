@@ -129,7 +129,7 @@ contract.only('SignatureVerifier', () => {
       },
     );
 
-    console.log(signature);
+    console.log(`signature: ${signature}`);
 
     // decode signature
     await signatureVerifier.methods.getAccountFromSignature(
@@ -138,15 +138,16 @@ contract.only('SignatureVerifier', () => {
           [
             UNISWAP_EXCHANGE_ADAPTER,
             1,
-            [daiAddress],
-            [web3.utils.toWei('1', 'ether')],
-            [2],
+            [
+              [daiAddress, web3.utils.toWei('1', 'ether'), 2],
+            ],
             web3.eth.abi.encodeParameter('address[]', [daiAddress, wethAddress]),
           ],
         ],
         [
-          [daiAddress, web3.utils.toWei('1', 'ether'), 2, 0, ZERO],
+          [daiAddress, web3.utils.toWei('1', 'ether'), 2],
         ],
+        [0, ZERO],
         [
           [wethAddress, web3.utils.toWei('1', 'ether')],
         ],
