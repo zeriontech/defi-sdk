@@ -17,6 +17,7 @@ const DdexSpotAssetAdapter = artifacts.require('DdexSpotAssetAdapter');
 const DmmAssetAdapter = artifacts.require('DmmAssetAdapter');
 const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
+const FiscusfyiAdapter = artifacts.require('FiscusfyiAdapter');
 const GnosisProtocolAdapter = artifacts.require('GnosisProtocolAdapter');
 const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
@@ -207,6 +208,9 @@ const maticAddress = '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0';
 
 const nxmAddress = '0xd7c49CEE7E9188cCa6AD8FF264C1DA2e69D4Cf3B';
 
+const ffyiAddress = '0xca76BAa777d749De63Ca044853D22D56bC70bb47';
+const uffyiAddress = '0x021576770CB3729716CCfb687afdB4c6bF720CB6';
+
 const aaveAssetAdapterTokens = [
   aDaiAddress,
   aTusdAddress,
@@ -335,6 +339,10 @@ const dydxAdapterTokens = [
   saiAddress,
   usdcAddress,
   daiAddress,
+];
+const FiscusfyiAdapterTokens = [
+  ffyiAddress,
+  uffyiAddress,
 ];
 const gnosisProtocolAdapterTokens = [
 ];
@@ -609,6 +617,18 @@ module.exports = async (deployer, network, accounts) => {
     'Decentralized trading platform',
     'dydx.exchange',
     'protocol-icons.s3.amazonaws.com/dYdX.png',
+    '0',
+  ]);
+
+  await deployer.deploy(FiscusfyiAdapter, { from: accounts[0] });
+  adapters.push([FiscusfyiAdapter.address]);
+  tokens.push([FiscusfyiAdapterTokens]);
+  protocolNames.push('FiscusFyi');
+  metadata.push([
+    'FiscusFyi',
+    'Decentralized Yield aggregator for lending platforms',
+    'fiscus.fyi',
+    'https://fiscus.fyi/icon/FFYI.png',
     '0',
   ]);
 
