@@ -33,7 +33,7 @@ import { Ownable } from "./Ownable.sol";
 import { Core } from "./Core.sol";
 
 
-interface GST2 {
+interface Chi {
     function freeUpTo(uint256) external;
 }
 
@@ -43,7 +43,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
     address internal immutable core_;
 
-    address internal constant GAS_TOKEN = 0x0000000000b3F879cb30FE243b4Dfee438691c04;
+    address internal constant CHI = 0x0000000000004946c0e9F43F4Dee607b0eF1fA1c;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     uint256 internal constant DELIMITER = 1e18; // 100%
     uint256 internal constant FEE_LIMIT = 1e16; // 1%
@@ -193,7 +193,8 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
             account
         );
         // try to burn gas token to save some gas
-        freeGasToken(gas - gasleft());
+        uint256 gasSpent = 21000 + gas - gasleft() + 16 * msg.data.length;
+        Chi(CHI).freeUpTo((gasSpent + 14154) / 41130);
         // return tokens that were returned to the account address
         return actualOutputs;
     }
@@ -251,27 +252,6 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
             // solhint-disable-next-line avoid-low-level-calls
             (bool success, ) = core_.call{value: msg.value - feeAmount}(new bytes(0));
             require(success, "ETH transfer to Core failed");
-        }
-    }
-
-    function freeGasToken(
-        uint256 desiredAmount
-    )
-        internal
-    {
-        uint256 safeAmount = 0;
-        uint256 gas = gasleft();
-
-        if (gas >= 27710) {
-            safeAmount = (gas - 27710) / 7020; // 1148 + 5722 + 150
-        }
-
-        if (desiredAmount > safeAmount) {
-            desiredAmount = safeAmount;
-        }
-
-        if (desiredAmount > 0) {
-            GST2(GAS_TOKEN).freeUpTo(desiredAmount);
         }
     }
 
