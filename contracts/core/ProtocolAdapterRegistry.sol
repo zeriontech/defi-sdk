@@ -18,10 +18,7 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-import {
-    AdapterBalance,
-    AbsoluteTokenAmount
-} from "../shared/Structs.sol";
+import { AdapterBalance, AbsoluteTokenAmount } from "../shared/Structs.sol";
 import { ERC20 } from "../shared/ERC20.sol";
 import { Ownable } from "./Ownable.sol";
 import { ProtocolAdapterManager } from "./ProtocolAdapterManager.sol";
