@@ -23,7 +23,7 @@ const RELATIVE_AMOUNT_BASE = '1000000000000000000';
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const InteractiveAdapter = artifacts.require('./CurveExchangeInteractiveAdapter');
 const UniswapV1ExchangeAdapter = artifacts.require('./UniswapV1ExchangeInteractiveAdapter');
 const Core = artifacts.require('./Core');
@@ -43,7 +43,7 @@ contract('Curve exchange interactive adapter', () => {
   let accounts;
   let core;
   let router;
-  let adapterRegistry;
+  let protocolAdapterRegistry;
   let protocolAdapterAddress;
   let uniswapAdapterAddress;
   let DAI;
@@ -64,11 +64,11 @@ contract('Curve exchange interactive adapter', () => {
       .then((result) => {
         uniswapAdapterAddress = result.address;
       });
-    await AdapterRegistry.new({ from: accounts[0] })
+    await ProtocolAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
-        adapterRegistry = result.contract;
+        protocolAdapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocolAdapters(
+    await protocolAdapterRegistry.methods.addProtocolAdapters(
       [
         CURVE_EXCHANGE_ADAPTER,
         UNISWAP_V1_EXCHANGE_ADAPTER,
@@ -87,7 +87,7 @@ contract('Curve exchange interactive adapter', () => {
         gas: '1000000',
       });
     await Core.new(
-      adapterRegistry.options.address,
+      protocolAdapterRegistry.options.address,
       { from: accounts[0] },
     )
       .then((result) => {

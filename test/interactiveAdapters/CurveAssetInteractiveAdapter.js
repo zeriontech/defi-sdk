@@ -27,7 +27,7 @@ const EMPTY_BYTES = '0x';
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const CurveAdapter = artifacts.require('./CurveAssetInteractiveAdapter');
 const UniswapV2ExchangeAdapter = artifacts.require('./UniswapV2ExchangeInteractiveAdapter');
 const WethAdapter = artifacts.require('./WethInteractiveAdapter');
@@ -55,7 +55,7 @@ contract('CurveAssetInteractiveAdapter', () => {
   let accounts;
   let core;
   let router;
-  let adapterRegistry;
+  let protocolAdapterRegistry;
   let erc20TokenAdapterAddress;
   let protocolAdapterAddress;
   let uniswapAdapterAddress;
@@ -92,11 +92,11 @@ contract('CurveAssetInteractiveAdapter', () => {
       .then((result) => {
         cTokenAdapterAddress = result.address;
       });
-    await AdapterRegistry.new({ from: accounts[0] })
+    await ProtocolAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
-        adapterRegistry = result.contract;
+        protocolAdapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocolAdapters(
+    await protocolAdapterRegistry.methods.addProtocolAdapters(
       [
         UNISWAP_V2_EXCHANGE_ADAPTER,
         WETH_ASSET_ADAPTER,
@@ -125,7 +125,7 @@ contract('CurveAssetInteractiveAdapter', () => {
         from: accounts[0],
         gas: '1000000',
       });
-    await adapterRegistry.methods.addTokenAdapters(
+    await protocolAdapterRegistry.methods.addTokenAdapters(
       [
         web3.utils.toHex('ERC20'),
         web3.utils.toHex('Curve Pool Token'),
@@ -142,7 +142,7 @@ contract('CurveAssetInteractiveAdapter', () => {
         gas: '1000000',
       });
     await Core.new(
-      adapterRegistry.options.address,
+      protocolAdapterRegistry.options.address,
       { from: accounts[0] },
     )
       .then((result) => {

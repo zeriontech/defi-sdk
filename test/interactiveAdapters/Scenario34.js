@@ -15,7 +15,7 @@ const ADAPTER_EXCHANGE = 2;
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const ChaiAdapter = artifacts.require('./ChaiInteractiveAdapter');
 const CompoundAssetAdapter = artifacts.require('./CompoundAssetInteractiveAdapter');
 const OneSplitAdapter = artifacts.require('./OneSplitInteractiveAdapter');
@@ -36,7 +36,7 @@ contract('Core', () => {
   let accounts;
   let core;
   let tokenSpender;
-  let adapterRegistry;
+  let protocolAdapterRegistry;
   let compoundAssetAdapterAddress;
   let chaiAdapterAddress;
   let chaiTokenAdapterAddress;
@@ -59,11 +59,11 @@ contract('Core', () => {
         .then((result) => {
           erc20TokenAdapterAddress = result.address;
         });
-      await AdapterRegistry.new({ from: accounts[0] })
+      await ProtocolAdapterRegistry.new({ from: accounts[0] })
         .then((result) => {
-          adapterRegistry = result.contract;
+          protocolAdapterRegistry = result.contract;
         });
-      await adapterRegistry.methods.addProtocolAdapters(
+      await protocolAdapterRegistry.methods.addProtocolAdapters(
         [web3.utils.toHex('Chai')],
         [[
           chaiAdapterAddress,
@@ -74,7 +74,7 @@ contract('Core', () => {
           from: accounts[0],
           gas: '1000000',
         });
-      await adapterRegistry.methods.addTokenAdapters(
+      await protocolAdapterRegistry.methods.addTokenAdapters(
         [web3.utils.toHex('ERC20'), web3.utils.toHex('Chai Token')],
         [erc20TokenAdapterAddress, chaiTokenAdapterAddress],
       )
@@ -90,7 +90,7 @@ contract('Core', () => {
         .then((result) => {
           compoundTokenAdapterAddress = result.address;
         });
-      await adapterRegistry.methods.addProtocolAdapters(
+      await protocolAdapterRegistry.methods.addProtocolAdapters(
         [web3.utils.toHex('Compound')],
         [[
           compoundAssetAdapterAddress,
@@ -103,7 +103,7 @@ contract('Core', () => {
           from: accounts[0],
           gas: '1000000',
         });
-      await adapterRegistry.methods.addTokenAdapters(
+      await protocolAdapterRegistry.methods.addTokenAdapters(
         [web3.utils.toHex('CToken')],
         [compoundTokenAdapterAddress],
       )
@@ -112,7 +112,7 @@ contract('Core', () => {
           gas: '300000',
         });
       await Core.new(
-        adapterRegistry.options.address,
+        protocolAdapterRegistry.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
@@ -130,11 +130,11 @@ contract('Core', () => {
     it('should be correct Chai -> Compound transfer', async () => {
       let chaiAmount;
       console.log('Compound and Chai balances before:');
-      await adapterRegistry.methods.getBalances(accounts[0])
+      await protocolAdapterRegistry.methods.getBalances(accounts[0])
         .call()
         .then(async (result) => {
-          await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
-          await displayToken(adapterRegistry, result[1].adapterBalances[0].balances[0]);
+          await displayToken(protocolAdapterRegistry, result[0].adapterBalances[0].balances[0]);
+          await displayToken(protocolAdapterRegistry, result[1].adapterBalances[0].balances[0]);
         });
       // approve CHAI to tokenSpender contract
       let CHAI;
@@ -189,20 +189,20 @@ contract('Core', () => {
           console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
         });
       console.log('Compound and Chai balances after:');
-      await adapterRegistry.methods.getBalances(accounts[0])
+      await protocolAdapterRegistry.methods.getBalances(accounts[0])
         .call()
         .then(async (result) => {
-          await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
+          await displayToken(protocolAdapterRegistry, result[0].adapterBalances[0].balances[0]);
         });
     });
 
     it.skip('should be correct Compound -> Chai transfer', async () => {
       let cdaiAmount;
       console.log('Compound and Chai balances before:');
-      await adapterRegistry.methods.getBalances(accounts[0])
+      await protocolAdapterRegistry.methods.getBalances(accounts[0])
         .call()
         .then(async (result) => {
-          await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
+          await displayToken(protocolAdapterRegistry, result[0].adapterBalances[0].balances[0]);
         });
       // approve cDAI to tokenSpender contract
       let cDAI;
@@ -257,10 +257,10 @@ contract('Core', () => {
           console.log(`called tokenSpender for ${receipt.cumulativeGasUsed} gas`);
         });
       console.log('Compound and Chai balances after:');
-      await adapterRegistry.methods.getBalances(accounts[0])
+      await protocolAdapterRegistry.methods.getBalances(accounts[0])
         .call()
         .then(async (result) => {
-          await displayToken(adapterRegistry, result[0].adapterBalances[0].balances[0]);
+          await displayToken(protocolAdapterRegistry, result[0].adapterBalances[0].balances[0]);
         });
     });
   });
@@ -272,11 +272,11 @@ contract('Core', () => {
         .then((result) => {
           protocolAdapterAddress = result.address;
         });
-      await AdapterRegistry.new({ from: accounts[0] })
+      await ProtocolAdapterRegistry.new({ from: accounts[0] })
         .then((result) => {
-          adapterRegistry = result.contract;
+          protocolAdapterRegistry = result.contract;
         });
-      await adapterRegistry.methods.addProtocolAdapters(
+      await protocolAdapterRegistry.methods.addProtocolAdapters(
         [web3.utils.toHex('OneSplit')],
         [[
           ZERO, ZERO, protocolAdapterAddress,
@@ -288,7 +288,7 @@ contract('Core', () => {
           gas: '1000000',
         });
       await Core.new(
-        adapterRegistry.options.address,
+        protocolAdapterRegistry.options.address,
         { from: accounts[0] },
       )
         .then((result) => {

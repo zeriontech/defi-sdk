@@ -17,7 +17,7 @@ const EMPTY_BYTES = '0x';
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const InteractiveAdapter = artifacts.require('./WethInteractiveAdapter');
 const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
@@ -30,7 +30,7 @@ contract('Weth interactive adapter', () => {
   let accounts;
   let core;
   let router;
-  let adapterRegistry;
+  let protocolAdapterRegistry;
   let protocolAdapterAddress;
   let WETH;
 
@@ -41,11 +41,11 @@ contract('Weth interactive adapter', () => {
         .then((result) => {
           protocolAdapterAddress = result.address;
         });
-      await AdapterRegistry.new({ from: accounts[0] })
+      await ProtocolAdapterRegistry.new({ from: accounts[0] })
         .then((result) => {
-          adapterRegistry = result.contract;
+          protocolAdapterRegistry = result.contract;
         });
-      await adapterRegistry.methods.addProtocolAdapters(
+      await protocolAdapterRegistry.methods.addProtocolAdapters(
         [
           WETH_ASSET_ADAPTER,
         ],
@@ -61,7 +61,7 @@ contract('Weth interactive adapter', () => {
           gas: '1000000',
         });
       await Core.new(
-        adapterRegistry.options.address,
+        protocolAdapterRegistry.options.address,
         { from: accounts[0] },
       )
         .then((result) => {

@@ -23,21 +23,22 @@ const EMPTY_BYTES = '0x';
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const InteractiveAdapter = artifacts.require('./UniswapV2ExchangeInteractiveAdapter');
 const WethAdapter = artifacts.require('./WethInteractiveAdapter');
 const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('UniswapV2ExchangeAdapter', () => {
+contract('UniswapV2ExchangeInteractiveAdapter', () => {
+  const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
   let accounts;
   let core;
   let router;
-  let adapterRegistry;
+  let protocolAdapterRegistry;
   let protocolAdapterAddress;
   let wethAdapterAddress;
   let DAI;
@@ -53,11 +54,11 @@ contract('UniswapV2ExchangeAdapter', () => {
       .then((result) => {
         wethAdapterAddress = result.address;
       });
-    await AdapterRegistry.new({ from: accounts[0] })
+    await ProtocolAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
-        adapterRegistry = result.contract;
+        protocolAdapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocolAdapters(
+    await protocolAdapterRegistry.methods.addProtocolAdapters(
       [
         UNISWAP_V2_EXCHANGE_ADAPTER,
         WETH_ASSET_ADAPTER,
@@ -76,7 +77,7 @@ contract('UniswapV2ExchangeAdapter', () => {
         gas: '1000000',
       });
     await Core.new(
-      adapterRegistry.options.address,
+      protocolAdapterRegistry.options.address,
       { from: accounts[0] },
     )
       .then((result) => {
@@ -108,14 +109,16 @@ contract('UniswapV2ExchangeAdapter', () => {
           [
             WETH_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            [],
-            [web3.utils.toWei('1', 'ether')],
-            [AMOUNT_RELATIVE],
+            [
+              [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_RELATIVE],
+            ],
             EMPTY_BYTES,
           ],
         ],
         // inputs
         [],
+        // fee
+        [0, ZERO],
         // outputs
         [],
       )
@@ -124,45 +127,6 @@ contract('UniswapV2ExchangeAdapter', () => {
           gas: 10000000,
           value: web3.utils.toWei('1', 'ether'),
         });
-    });
-
-    it('should not be correct one-side exchange deposit-like if bad amounts', async () => {
-      let wethAmount;
-      await WETH.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          wethAmount = result;
-        });
-      await WETH.methods.approve(router.options.address, wethAmount.toString())
-        .send({
-          from: accounts[0],
-          gas: 1000000,
-        });
-      await expectRevert(router.methods.startExecution(
-        // actions
-        [
-          [
-            UNISWAP_V2_EXCHANGE_ADAPTER,
-            ACTION_DEPOSIT,
-            [],
-            [web3.utils.toWei('0.5', 'ether'), web3.utils.toWei('0.5', 'ether')],
-            [AMOUNT_ABSOLUTE, AMOUNT_ABSOLUTE],
-            web3.eth.abi.encodeParameter('address[]', [wethAddress, daiAddress]),
-          ],
-        ],
-        // inputs
-        [
-          [wethAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-        ],
-        // outputs
-        [
-          [daiAddress, web3.utils.toWei('90', 'ether')],
-        ],
-      )
-        .send({
-          gas: 10000000,
-          from: accounts[0],
-        }));
     });
 
     it('should be correct one-side exchange deposit-like', async () => {
@@ -189,16 +153,18 @@ contract('UniswapV2ExchangeAdapter', () => {
           [
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [],
-            [web3.utils.toWei('0.5', 'ether')],
-            [AMOUNT_ABSOLUTE],
+            [
+              [wethAddress, web3.utils.toWei('0.5', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             web3.eth.abi.encodeParameter('address[]', [wethAddress, daiAddress]),
           ],
         ],
         // inputs
         [
-          [wethAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+          [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
         ],
+        // fee
+        [0, ZERO],
         // outputs
         [
           [daiAddress, web3.utils.toWei('90', 'ether')],
@@ -233,42 +199,6 @@ contract('UniswapV2ExchangeAdapter', () => {
         });
     });
 
-    it('should not be correct reverse exchange withdraw-like if bad amounts', async () => {
-      let daiAmount;
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          daiAmount = result;
-        });
-      await DAI.methods.approve(router.options.address, daiAmount.toString())
-        .send({
-          from: accounts[0],
-          gas: 1000000,
-        });
-      await expectRevert(router.methods.startExecution(
-        [
-          [
-            UNISWAP_V2_EXCHANGE_ADAPTER,
-            ACTION_WITHDRAW,
-            [],
-            [web3.utils.toWei('0.3', 'ether'), web3.utils.toWei('0.3', 'ether')],
-            [AMOUNT_ABSOLUTE, AMOUNT_ABSOLUTE],
-            web3.eth.abi.encodeParameter('address[]', [daiAddress, wethAddress]),
-          ],
-        ],
-        [
-          [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-        ],
-        [
-          [wethAddress, web3.utils.toWei('0.3', 'ether')],
-        ],
-      )
-        .send({
-          gas: 10000000,
-          from: accounts[0],
-        }));
-    });
-
     it('should not be correct reverse exchange withdraw-like if amount is relative', async () => {
       let daiAmount;
       await DAI.methods['balanceOf(address)'](accounts[0])
@@ -286,15 +216,16 @@ contract('UniswapV2ExchangeAdapter', () => {
           [
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_WITHDRAW,
-            [],
-            [web3.utils.toWei('0.3', 'ether')],
-            [AMOUNT_RELATIVE],
+            [
+              [wethAddress, web3.utils.toWei('0.3', 'ether'), AMOUNT_RELATIVE],
+            ],
             web3.eth.abi.encodeParameter('address[]', [daiAddress, wethAddress]),
           ],
         ],
         [
-          [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+          [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
         ],
+        [0, ZERO],
         [
           [wethAddress, web3.utils.toWei('0.3', 'ether')],
         ],
@@ -332,15 +263,16 @@ contract('UniswapV2ExchangeAdapter', () => {
           [
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_WITHDRAW,
-            [],
-            [web3.utils.toWei('0.3', 'ether')],
-            [AMOUNT_ABSOLUTE],
+            [
+              [wethAddress, web3.utils.toWei('0.3', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             web3.eth.abi.encodeParameter('address[]', [daiAddress, wethAddress]),
           ],
         ],
         [
-          [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+          [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
         ],
+        [0, ZERO],
         [
           [wethAddress, web3.utils.toWei('0.3', 'ether')],
         ],

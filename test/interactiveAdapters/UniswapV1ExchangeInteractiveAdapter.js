@@ -17,7 +17,7 @@ const AMOUNT_ABSOLUTE = 2;
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const InteractiveAdapter = artifacts.require('./UniswapV1ExchangeInteractiveAdapter');
 const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
@@ -31,7 +31,7 @@ contract('UniswapV1ExchangeAdapter', () => {
   let accounts;
   let core;
   let router;
-  let adapterRegistry;
+  let protocolAdapterRegistry;
   let protocolAdapterAddress;
   let DAI;
   let MKR;
@@ -43,11 +43,11 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           protocolAdapterAddress = result.address;
         });
-      await AdapterRegistry.new({ from: accounts[0] })
+      await ProtocolAdapterRegistry.new({ from: accounts[0] })
         .then((result) => {
-          adapterRegistry = result.contract;
+          protocolAdapterRegistry = result.contract;
         });
-      await adapterRegistry.methods.addProtocolAdapters(
+      await protocolAdapterRegistry.methods.addProtocolAdapters(
         [
           UNISWAP_V1_EXCHANGE_ADAPTER,
         ],
@@ -63,7 +63,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           gas: '1000000',
         });
       await Core.new(
-        adapterRegistry.options.address,
+        protocolAdapterRegistry.options.address,
         { from: accounts[0] },
       )
         .then((result) => {
@@ -324,11 +324,11 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           protocolAdapterAddress = result.address;
         });
-      await AdapterRegistry.new({ from: accounts[0] })
+      await ProtocolAdapterRegistry.new({ from: accounts[0] })
         .then((result) => {
-          adapterRegistry = result.contract;
+          protocolAdapterRegistry = result.contract;
         });
-      await adapterRegistry.methods.addProtocolAdapters(
+      await protocolAdapterRegistry.methods.addProtocolAdapters(
         [
           UNISWAP_V1_EXCHANGE_ADAPTER,
         ],
@@ -344,7 +344,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           gas: '1000000',
         });
       await Core.new(
-        adapterRegistry.options.address,
+        protocolAdapterRegistry.options.address,
         { from: accounts[0] },
       )
         .then((result) => {

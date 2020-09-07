@@ -27,7 +27,7 @@ const EMPTY_BYTES = '0x';
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const TokenSetsAdapter = artifacts.require('./TokenSetsInteractiveAdapter');
 const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const WethInteractiveAdapter = artifacts.require('./WethInteractiveAdapter');
@@ -45,7 +45,7 @@ contract('TokenSetsInteractiveAdapter', () => {
 
   let accounts;
   let core;
-  let adapterRegistry;
+  let protocolAdapterRegistry;
   let router;
   let tokenSetsAdapterAddress;
   let wethAdapterAddress;
@@ -74,11 +74,11 @@ contract('TokenSetsInteractiveAdapter', () => {
       .then((result) => {
         erc20TokenAdapterAddress = result.address;
       });
-    await AdapterRegistry.new({ from: accounts[0] })
+    await ProtocolAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
-        adapterRegistry = result.contract;
+        protocolAdapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocolAdapters(
+    await protocolAdapterRegistry.methods.addProtocolAdapters(
       [
         TOKENSETS_ASSET_ADAPTER,
         WETH_ASSET_ADAPTER,
@@ -99,7 +99,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         from: accounts[0],
         gas: '1000000',
       });
-    await adapterRegistry.methods.addTokenAdapters(
+    await protocolAdapterRegistry.methods.addTokenAdapters(
       [web3.utils.toHex('ERC20')],
       [erc20TokenAdapterAddress],
     )
@@ -108,7 +108,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         gas: '1000000',
       });
     await Core.new(
-      adapterRegistry.options.address,
+      protocolAdapterRegistry.options.address,
       { from: accounts[0] },
     )
       .then((result) => {

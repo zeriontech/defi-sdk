@@ -22,7 +22,7 @@ const AMOUNT_ABSOLUTE = 2;
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const UniswapV1Adapter = artifacts.require('./UniswapV1ExchangeInteractiveAdapter');
 const BalancerAdapter = artifacts.require('./BalancerInteractiveAdapter');
 const BalancerTokenAdapter = artifacts.require('./BalancerTokenAdapter');
@@ -41,7 +41,7 @@ contract('BalancerAssetInteractiveAdapter', () => {
   let accounts;
   let core;
   let router;
-  let adapterRegistry;
+  let protocolAdapterRegistry;
   let uniswapAdapterAddress;
   let balancerAdapterAddress;
   let balancerTokenAdapterAddress;
@@ -69,11 +69,11 @@ contract('BalancerAssetInteractiveAdapter', () => {
       .then((result) => {
         erc20TokenAdapterAddress = result.address;
       });
-    await AdapterRegistry.new({ from: accounts[0] })
+    await ProtocolAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
-        adapterRegistry = result.contract;
+        protocolAdapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocolAdapters(
+    await protocolAdapterRegistry.methods.addProtocolAdapters(
       [
         UNISWAP_V1_EXCHANGE_ADAPTER,
         BALANCER_ASSET_ADAPTER,
@@ -91,7 +91,7 @@ contract('BalancerAssetInteractiveAdapter', () => {
         from: accounts[0],
         gas: '1000000',
       });
-    await adapterRegistry.methods.addTokenAdapters(
+    await protocolAdapterRegistry.methods.addTokenAdapters(
       [web3.utils.toHex('ERC20'), web3.utils.toHex('Balancer Pool Token')],
       [erc20TokenAdapterAddress, balancerTokenAdapterAddress],
     )
@@ -100,7 +100,7 @@ contract('BalancerAssetInteractiveAdapter', () => {
         gas: '1000000',
       });
     await Core.new(
-      adapterRegistry.options.address,
+      protocolAdapterRegistry.options.address,
       { from: accounts[0] },
     )
       .then((result) => {

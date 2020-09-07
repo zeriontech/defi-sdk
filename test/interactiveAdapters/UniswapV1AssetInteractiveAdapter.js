@@ -19,7 +19,7 @@ const EMPTY_BYTES = '0x';
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const UniswapV1Adapter = artifacts.require('./UniswapV1AssetInteractiveAdapter');
 const UniswapV1ExchangeAdapter = artifacts.require('./UniswapV1ExchangeInteractiveAdapter');
 const UniswapV1TokenAdapter = artifacts.require('./UniswapV1TokenAdapter');
@@ -36,7 +36,7 @@ contract('UniswapV1AssetAdapter', () => {
   let accounts;
   let core;
   let router;
-  let adapterRegistry;
+  let protocolAdapterRegistry;
   let erc20TokenAdapterAddress;
   let protocolAdapterAddress;
   let uniswapAdapterAddress;
@@ -61,11 +61,11 @@ contract('UniswapV1AssetAdapter', () => {
       .then((result) => {
         erc20TokenAdapterAddress = result.address;
       });
-    await AdapterRegistry.new({ from: accounts[0] })
+    await ProtocolAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
-        adapterRegistry = result.contract;
+        protocolAdapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocolAdapters(
+    await protocolAdapterRegistry.methods.addProtocolAdapters(
       [
         UNISWAP_V1_ASSET_ADAPTER,
         UNISWAP_V1_EXCHANGE_ADAPTER,
@@ -85,7 +85,7 @@ contract('UniswapV1AssetAdapter', () => {
         from: accounts[0],
         gas: '1000000',
       });
-    await adapterRegistry.methods.addTokenAdapters(
+    await protocolAdapterRegistry.methods.addTokenAdapters(
       [web3.utils.toHex('ERC20'), web3.utils.toHex('Uniswap V1 Pool Token')],
       [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
@@ -94,7 +94,7 @@ contract('UniswapV1AssetAdapter', () => {
         gas: '1000000',
       });
     await Core.new(
-      adapterRegistry.options.address,
+      protocolAdapterRegistry.options.address,
       { from: accounts[0] },
     )
       .then((result) => {
@@ -236,7 +236,7 @@ contract('UniswapV1AssetAdapter', () => {
       .then((receipt) => {
         console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
       });
-    await adapterRegistry.methods.getBalances(accounts[0])
+    await protocolAdapterRegistry.methods.getBalances(accounts[0])
       .call()
       .then(async (result) => {
         assert.equal(result.length, 0);

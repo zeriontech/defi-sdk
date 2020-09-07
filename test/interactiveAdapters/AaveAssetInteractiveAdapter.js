@@ -14,7 +14,7 @@ const EMPTY_BYTES = '0x';
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const InteractiveAdapter = artifacts.require('./AaveAssetInteractiveAdapter');
 const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
@@ -29,7 +29,7 @@ contract('AaveAssetInteractiveAdapter', () => {
   let accounts;
   let core;
   let router;
-  let adapterRegistry;
+  let protocolAdapterRegistry;
   let protocolAdapterAddress;
   let AETH;
   let DAI;
@@ -41,11 +41,11 @@ contract('AaveAssetInteractiveAdapter', () => {
       .then((result) => {
         protocolAdapterAddress = result.address;
       });
-    await AdapterRegistry.new({ from: accounts[0] })
+    await ProtocolAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
-        adapterRegistry = result.contract;
+        protocolAdapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocolAdapters(
+    await protocolAdapterRegistry.methods.addProtocolAdapters(
       [
         AAVE_ASSET_ADAPTER,
       ],
@@ -59,7 +59,7 @@ contract('AaveAssetInteractiveAdapter', () => {
         gas: '1000000',
       });
     await Core.new(
-      adapterRegistry.options.address,
+      protocolAdapterRegistry.options.address,
       { from: accounts[0] },
     )
       .then((result) => {
