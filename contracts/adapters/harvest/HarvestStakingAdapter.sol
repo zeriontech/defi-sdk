@@ -45,7 +45,7 @@ contract HarvestStakingAdapter is ProtocolAdapter {
     address internal constant FARM = 0xa0246c9032bC3A600820415aE600c6388619A14D;
     address internal constant FDAI = 0xe85C8581e60D7Cd32Bbfd86303d2A4FA6a951Dac;
     address internal constant FUSDC = 0xc3F7ffb5d5869B3ade9448D094d81B0521e8326f;
-    address internal constant FUSDT = 0x5bd997039FFF16F653EF15D1428F2C791519f58d;
+    address internal constant FUSDT = 0xc7EE21406BB581e741FBb8B21f213188433D9f2F;
     address internal constant BALANCER_USDC_95_FARM_5 = 0x0395e4A17fF11D36DaC9959f2D7c8Eca10Fe89c9;
     address internal constant UNISWAP_V2_USDC_FARM = 0x514906FC121c7878424a5C928cad1852CC545892;
     address internal constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
