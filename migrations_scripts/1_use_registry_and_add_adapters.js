@@ -1,5 +1,7 @@
 const AragonStakingAdapter = artifacts.require('AragonStakingAdapter');
 const AaveAssetAdapter = artifacts.require('AaveAssetAdapter');
+const BzxAssetAdapter = artifacts.require('BzxAssetAdapter');
+const BzxDebtAdapter = artifacts.require('BzxDebtAdapter');
 const AaveDebtAdapter = artifacts.require('AaveDebtAdapter');
 const AaveUniswapAssetAdapter = artifacts.require('AaveUniswapAssetAdapter');
 const AaveUniswapDebtAdapter = artifacts.require('AaveUniswapDebtAdapter');
@@ -207,6 +209,29 @@ const maticAddress = '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0';
 
 const nxmAddress = '0xd7c49CEE7E9188cCa6AD8FF264C1DA2e69D4Cf3B';
 
+const iDaiAddress = '0x6b093998d36f2c7f0cc359441fbb24cc629d5ff0';
+const iEthAddress = '0xb983e01458529665007ff7e0cddecdb74b967eb6';
+const iUSDCAddress = '0x32e4c68b3a4a813b710595aeba7f6b7604ab9c15';
+const iWBTCAddress = '0x2ffa85f655752fb2acb210287c60b9ef335f5b6e';
+const iLENDAddress = '0xab45bf58c6482b87da85d6688c4d9640e093be98';
+const iKNCAddress = '0x687642347a9282be8fd809d8309910a3f984ac5a';
+const iMKRAddress = '0x9189c499727f88f8ecc7dc4eea22c828e6aac015';
+const iLINKAddress = '0x463538705e7d22aa7f03ebf8ab09b067e1001b54';
+const iYFIAddress = '0x7f3fe9d492a9a60aebb06d82cba23c6f32cad10b';
+const iUSDTAddress = '0x7e9997a38a439b2be7ed9c9c4628391d3e055d48';
+
+const bzxDaiAddress = '0x6b175474e89094c44da98b954eedeac495271d0f';
+const bzxEthAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+const bzxUSDCAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+const bzxWBTCAddress = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
+const bzxLENDAddress = '0x80fB784B7eD66730e8b1DBd9820aFD29931aab03';
+const bzxKNCAddress = '0xdd974d5c2e2928dea5f71b9825b8b646686bd200';
+const bzxMKRAddress = '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2';
+const bzxLINKAddress = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
+const bzxYFIAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
+const bzxUSDTAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7';
+
+
 const aaveAssetAdapterTokens = [
   aDaiAddress,
   aTusdAddress,
@@ -270,6 +295,30 @@ const ampleforthAdapterTokens = [
 const aragonStakingAdapterTokens = [
   antAddress,
   uniAntWethAddress,
+];
+const bzxAssetAdapterTokens = [
+  iDaiAddress,
+  iEthAddress,
+  iUSDCAddress,
+  iWBTCAddress,
+  iLENDAddress,
+  iKNCAddress,
+  iMKRAddress,
+  iLINKAddress,
+  iYFIAddress,
+  iUSDTAddress,
+];
+const bzxDebtAdapterTokens = [
+  bzxDaiAddress,
+  bzxEthAddress,
+  bzxUSDCAddress,
+  bzxWBTCAddress,
+  bzxLENDAddress,
+  bzxKNCAddress,
+  bzxMKRAddress,
+  bzxLINKAddress,
+  bzxYFIAddress,
+  bzxUSDTAddress,
 ];
 const compoundAssetAdapterTokens = [
   cDAIAddress,
@@ -520,6 +569,19 @@ module.exports = async (deployer, network, accounts) => {
     'Automated liquidity protocol',
     'bancor.network',
     'protocol-icons.s3.amazonaws.com/bancor.png',
+    '0',
+  ]);
+
+  await deployer.deploy(BzxAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(BzxDebtAdapter, { from: accounts[0] });
+  adapters.push([BzxAssetAdapter.address, BzxDebtAdapter.address]);
+  tokens.push([bzxAssetAdapterTokens, bzxDebtAdapterTokens]);
+  protocolNames.push('bZx');
+  metadata.push([
+    'bZx',
+    'Decentralized lending & borrowing protocol',
+    'bzx.network',
+    'protocol-icons.s3.amazonaws.com/TODO.png', // TODO
     '0',
   ]);
 
@@ -925,6 +987,12 @@ module.exports = async (deployer, network, accounts) => {
         BancorTokenAdapter.address,
       );
     });
+  await deployer.deploy(BzxTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        BzxTokenAdapter.address,
+      );
+    });
   await deployer.deploy(CompoundTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -1034,6 +1102,7 @@ module.exports = async (deployer, network, accounts) => {
           'AToken Uniswap Market',
           'Balancer pool token',
           'SmartToken',
+          'iToken',
           'CToken',
           'Curve pool token',
           'MToken',
