@@ -95,13 +95,14 @@ contract('Weth interactive adapter', () => {
           [
             WETH_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            [ethAddress],
-            [web3.utils.toWei('1', 'ether')],
-            [AMOUNT_ABSOLUTE],
+            [
+              [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             EMPTY_BYTES,
           ],
         ],
         [],
+        [0, ZERO],
         [
           [wethAddress, web3.utils.toWei('1', 'ether')],
         ],
@@ -157,15 +158,16 @@ contract('Weth interactive adapter', () => {
           [
             WETH_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            [wethAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
+            [
+              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
             EMPTY_BYTES,
           ],
         ],
         [
           [wethAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
         ],
+        [0, ZERO],
         [
           [ethAddress, web3.utils.toWei('1', 'ether')],
         ],
