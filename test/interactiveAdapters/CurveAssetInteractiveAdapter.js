@@ -31,14 +31,11 @@ const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const CurveAdapter = artifacts.require('./CurveAssetInteractiveAdapter');
 const UniswapV2ExchangeAdapter = artifacts.require('./UniswapV2ExchangeInteractiveAdapter');
 const WethAdapter = artifacts.require('./WethInteractiveAdapter');
-const CurveTokenAdapter = artifacts.require('./CurveTokenAdapter');
-const CTokenAdapter = artifacts.require('./CompoundTokenAdapter');
-const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('CurveAssetInteractiveAdapter', () => {
+contract.only('CurveAssetInteractiveAdapter', () => {
   const cPoolToken = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
   const tPoolToken = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
   const yPoolToken = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
@@ -56,12 +53,9 @@ contract('CurveAssetInteractiveAdapter', () => {
   let core;
   let router;
   let protocolAdapterRegistry;
-  let erc20TokenAdapterAddress;
   let protocolAdapterAddress;
   let uniswapAdapterAddress;
   let wethAdapterAddress;
-  let tokenAdapterAddress;
-  let cTokenAdapterAddress;
   let DAI;
   let WETH;
   let poolTokenAddress;
@@ -79,18 +73,6 @@ contract('CurveAssetInteractiveAdapter', () => {
     await WethAdapter.new({ from: accounts[0] })
       .then((result) => {
         wethAdapterAddress = result.address;
-      });
-    await CurveTokenAdapter.new({ from: accounts[0] })
-      .then((result) => {
-        tokenAdapterAddress = result.address;
-      });
-    await ERC20TokenAdapter.new({ from: accounts[0] })
-      .then((result) => {
-        erc20TokenAdapterAddress = result.address;
-      });
-    await CTokenAdapter.new({ from: accounts[0] })
-      .then((result) => {
-        cTokenAdapterAddress = result.address;
       });
     await ProtocolAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
@@ -119,22 +101,6 @@ contract('CurveAssetInteractiveAdapter', () => {
           pPoolToken,
           renPoolToken,
         ],
-      ],
-    )
-      .send({
-        from: accounts[0],
-        gas: '1000000',
-      });
-    await protocolAdapterRegistry.methods.addTokenAdapters(
-      [
-        web3.utils.toHex('ERC20'),
-        web3.utils.toHex('Curve Pool Token'),
-        web3.utils.toHex('CToken'),
-      ],
-      [
-        erc20TokenAdapterAddress,
-        tokenAdapterAddress,
-        cTokenAdapterAddress,
       ],
     )
       .send({
@@ -174,14 +140,15 @@ contract('CurveAssetInteractiveAdapter', () => {
           [
             WETH_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            [ethAddress],
-            [web3.utils.toWei('5', 'ether')],
-            [AMOUNT_ABSOLUTE],
+            [
+              [ethAddress, web3.utils.toWei('5', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             EMPTY_BYTES,
           ],
         ],
         // inputs
         [],
+        [0, ZERO],
         // outputs
         [],
       )
@@ -201,16 +168,17 @@ contract('CurveAssetInteractiveAdapter', () => {
           [
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [],
-            [web3.utils.toWei('5', 'ether')],
-            [AMOUNT_ABSOLUTE],
+            [
+              [wethAddress, web3.utils.toWei('5', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             web3.eth.abi.encodeParameter('address[]', [wethAddress, daiAddress]),
           ],
         ],
         // inputs
         [
-          [wethAddress, web3.utils.toWei('5', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+          [wethAddress, web3.utils.toWei('5', 'ether'), AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         // outputs
         [],
       )
@@ -242,9 +210,10 @@ contract('CurveAssetInteractiveAdapter', () => {
           [
             CURVE_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            [daiAddress, daiAddress],
-            [web3.utils.toWei('100', 'ether'), web3.utils.toWei('100', 'ether')],
-            [AMOUNT_ABSOLUTE, AMOUNT_ABSOLUTE],
+            [
+              [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
+              [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             web3.eth.abi.encodeParameter(
               'address',
               poolTokenAddress,
@@ -252,8 +221,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           ],
         ],
         [
-          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -284,9 +254,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           [
             CURVE_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            [renBTCAddress],
-            [web3.utils.toWei('100', 'ether')],
-            [AMOUNT_ABSOLUTE],
+            [
+              [renBTCAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             web3.eth.abi.encodeParameter(
               'address',
               poolTokenAddress,
@@ -294,50 +264,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           ],
         ],
         [
-          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
         ],
-        [],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-        }));
-    });
-
-    it('should not buy curve pool for 100 dai with inconsistent arrays', async () => {
-      poolTokenAddress = cPoolToken;
-      await ERC20.at(poolTokenAddress)
-        .then((result) => {
-          poolToken = result.contract;
-        });
-      let daiAmount;
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          daiAmount = result;
-        });
-      await DAI.methods.approve(router.options.address, daiAmount.toString())
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-        });
-      await expectRevert(router.methods.startExecution(
-        [
-          [
-            CURVE_ASSET_ADAPTER,
-            ACTION_DEPOSIT,
-            [daiAddress],
-            [web3.utils.toWei('100', 'ether'), web3.utils.toWei('100', 'ether')],
-            [AMOUNT_ABSOLUTE, AMOUNT_ABSOLUTE],
-            web3.eth.abi.encodeParameter(
-              'address',
-              poolTokenAddress,
-            ),
-          ],
-        ],
-        [
-          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
-        ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -374,9 +303,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           [
             CURVE_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            [daiAddress],
-            [web3.utils.toWei('100', 'ether')],
-            [AMOUNT_ABSOLUTE],
+            [
+              [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             web3.eth.abi.encodeParameter(
               'address',
               poolTokenAddress,
@@ -384,8 +313,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           ],
         ],
         [
-          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -445,9 +375,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           [
             CURVE_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            [daiAddress],
-            [web3.utils.toWei('100', 'ether')],
-            [AMOUNT_ABSOLUTE],
+            [
+              [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             web3.eth.abi.encodeParameter(
               'address',
               poolTokenAddress,
@@ -455,8 +385,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           ],
         ],
         [
-          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -516,9 +447,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           [
             CURVE_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            [daiAddress],
-            [web3.utils.toWei('100', 'ether')],
-            [AMOUNT_ABSOLUTE],
+            [
+              [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             web3.eth.abi.encodeParameter(
               'address',
               poolTokenAddress,
@@ -526,8 +457,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           ],
         ],
         [
-          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -587,9 +519,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           [
             CURVE_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            [daiAddress],
-            [web3.utils.toWei('100', 'ether')],
-            [AMOUNT_ABSOLUTE],
+            [
+              [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             web3.eth.abi.encodeParameter(
               'address',
               poolTokenAddress,
@@ -597,8 +529,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           ],
         ],
         [
-          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -658,9 +591,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           [
             CURVE_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            [daiAddress],
-            [web3.utils.toWei('100', 'ether')],
-            [AMOUNT_ABSOLUTE],
+            [
+              [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             web3.eth.abi.encodeParameter(
               'address',
               poolTokenAddress,
@@ -668,8 +601,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           ],
         ],
         [
-          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE, 0, ZERO],
+          [daiAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -718,9 +652,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           [
             CURVE_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            [poolTokenAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
+            [
+              [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
             web3.eth.abi.encodeParameter(
               'address',
               renBTCAddress,
@@ -728,91 +662,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           ],
         ],
         [
-          [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+          [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE],
         ],
-        [],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-        }));
-    });
-
-    it('should not sell 100% of pool tokens if 2 tokens', async () => {
-      let poolAmount;
-      await poolToken.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          poolAmount = result;
-        });
-      await poolToken.methods.approve(router.options.address, poolAmount.toString())
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-        });
-      await expectRevert(router.methods.startExecution(
-        [
-          [
-            CURVE_ASSET_ADAPTER,
-            ACTION_WITHDRAW,
-            [
-              poolTokenAddress,
-              poolTokenAddress,
-            ],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter(
-              'address',
-              daiAddress,
-            ),
-          ],
-        ],
-        [
-          [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-        ],
-        [],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-        }));
-    });
-
-    it('should not sell 100% of pool tokens if inconsistent arrays', async () => {
-      let poolAmount;
-      await poolToken.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          poolAmount = result;
-        });
-      await poolToken.methods.approve(router.options.address, poolAmount.toString())
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-        });
-      await expectRevert(router.methods.startExecution(
-        [
-          [
-            CURVE_ASSET_ADAPTER,
-            ACTION_WITHDRAW,
-            [poolTokenAddress],
-            [
-              convertToShare(1),
-              convertToShare(1),
-            ],
-            [
-              AMOUNT_RELATIVE,
-              AMOUNT_RELATIVE,
-            ],
-            web3.eth.abi.encodeParameter(
-              'address',
-              daiAddress,
-            ),
-          ],
-        ],
-        [
-          [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-        ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -849,9 +701,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           [
             CURVE_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            [poolTokenAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
+            [
+              [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
             web3.eth.abi.encodeParameter(
               'address',
               daiAddress,
@@ -859,8 +711,9 @@ contract('CurveAssetInteractiveAdapter', () => {
           ],
         ],
         [
-          [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+          [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
