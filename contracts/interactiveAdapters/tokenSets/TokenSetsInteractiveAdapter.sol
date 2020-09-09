@@ -60,10 +60,10 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        TokenAmount[] memory tokenAmounts,
-        bytes memory data
+        TokenAmount[] calldata tokenAmounts,
+        bytes calldata data
     )
-        public
+        external
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
@@ -99,10 +99,10 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        TokenAmount[] memory tokenAmounts,
-        bytes memory
+        TokenAmount[] calldata tokenAmounts,
+        bytes calldata
     )
-        public
+        external
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
@@ -129,7 +129,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
 
     function getSetAmountAndApprove(
         address setAddress,
-        TokenAmount[] memory tokenAmounts
+        TokenAmount[] calldata tokenAmounts
     )
         internal
         returns (uint256 setAmount)
@@ -157,17 +157,18 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         require(components.length == length, "TSIA: bad tokens");
 
         setAmount = type(uint256).max;
+
         uint256 amount;
-        uint256 tempAmount;
+        address token;
         for (uint256 i = 0; i < length; i++) {
+            token = tokenAmounts[i].token;
+
             for(uint256 j = 0; j < length; j++) {
-                if (tokenAmounts[i].token == components[j]) {
-                    tempAmount = absoluteAmounts[i] * bNaturalUnit;
-                    require(tempAmount / bNaturalUnit == absoluteAmounts[i], "TSIA: overflow[1]");
-                    amount = tempAmount / bUnits[j] / rUnit;
-                    tempAmount = amount * rNaturalUnit;
-                    require(tempAmount / rNaturalUnit == amount, "TSIA: overflow[2]");
-                    amount = tempAmount;
+                if (token == components[j]) {
+                    amount = mul(
+                        mul(absoluteAmounts[i], bNaturalUnit) / bUnits[j] / rUnit,
+                        rNaturalUnit
+                    );
                     if (amount < setAmount) {
                         setAmount = amount;
                     }

@@ -44,10 +44,10 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        TokenAmount[] memory tokenAmounts,
-        bytes memory data
+        TokenAmount[] calldata tokenAmounts,
+        bytes calldata data
     )
-        public
+        external
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
@@ -84,10 +84,10 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        TokenAmount[] memory tokenAmounts,
-        bytes memory data
+        TokenAmount[] calldata tokenAmounts,
+        bytes calldata data
     )
-        public
+        external
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)

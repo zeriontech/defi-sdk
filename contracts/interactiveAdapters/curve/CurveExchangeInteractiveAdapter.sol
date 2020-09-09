@@ -64,10 +64,10 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        TokenAmount[] memory tokenAmounts,
-        bytes memory data
+        TokenAmount[] calldata tokenAmounts,
+        bytes calldata data
     )
-        public
+        external
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
@@ -117,10 +117,10 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        TokenAmount[] memory,
-        bytes memory
+        TokenAmount[] calldata,
+        bytes calldata
     )
-        public
+        external
         payable
         override
         returns (address[] memory)

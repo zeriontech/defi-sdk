@@ -39,10 +39,10 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
      * @return MUST return assets to be sent back to the `msg.sender`.
      */
     function deposit(
-        TokenAmount[] memory tokenAmounts,
-        bytes memory data
+        TokenAmount[] calldata tokenAmounts,
+        bytes calldata data
     )
-        public
+        external
         payable
         virtual
         returns (address[] memory);
@@ -52,16 +52,16 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
      * @return MUST return assets to be sent back to the `msg.sender`.
      */
     function withdraw(
-        TokenAmount[] memory tokenAmounts,
-        bytes memory data
+        TokenAmount[] calldata tokenAmounts,
+        bytes calldata data
     )
-        public
+        external
         payable
         virtual
         returns (address[] memory);
 
     function getAbsoluteAmountDeposit(
-        TokenAmount memory tokenAmount
+        TokenAmount calldata tokenAmount
     )
         internal
         view
@@ -97,7 +97,7 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
     }
 
     function getAbsoluteAmountWithdraw(
-        TokenAmount memory tokenAmount
+        TokenAmount calldata tokenAmount
     )
         internal
         view

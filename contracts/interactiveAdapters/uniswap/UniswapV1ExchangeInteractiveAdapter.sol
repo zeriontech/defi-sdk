@@ -46,10 +46,10 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
-        TokenAmount[] memory tokenAmounts,
-        bytes memory data
+        TokenAmount[] calldata tokenAmounts,
+        bytes calldata data
     )
-        public
+        external
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
@@ -122,10 +122,10 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(
-        TokenAmount[] memory tokenAmounts,
-        bytes memory data
+        TokenAmount[] calldata tokenAmounts,
+        bytes calldata data
     )
-        public
+        external
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
