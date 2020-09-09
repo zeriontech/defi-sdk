@@ -21,7 +21,8 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
-import { CurveAssetAdapter } from "../../adapters/curve/CurveAssetAdapter.sol";
+import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
+import { CurveRegistry, PoolInfo } from "../../adapters/curve/CurveRegistry.sol";
 import { CurveInteractiveAdapter } from "./CurveInteractiveAdapter.sol";
 
 
@@ -59,8 +60,10 @@ interface Deposit {
  * @dev Implementation of CurveInteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdapter {
+contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
+
+    address internal constant REGISTRY = 0x86A1755BA805ecc8B0608d56c22716bd1d4B68A8;
 
     /**
      * @notice Deposits tokens to the Curve pool (pair).
@@ -89,19 +92,20 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = crvToken;
 
+        PoolInfo memory poolInfo = CurveRegistry(REGISTRY).getPoolInfo(crvToken);
+        uint256 totalCoins = poolInfo.totalCoins;
+        address callee = poolInfo.deposit;
+
         int128 tokenIndex = getTokenIndex(token);
         require(
-            Stableswap(getSwap(crvToken)).underlying_coins(tokenIndex) == token,
+            Stableswap(poolInfo.swap).underlying_coins(tokenIndex) == token,
             "CLIA: bad crvToken/token"
         );
 
-        uint256 totalCoins = getTotalCoins(crvToken);
         uint256[] memory inputAmounts = new uint256[](totalCoins);
         for (uint256 i = 0; i < totalCoins; i++) {
             inputAmounts[i] = i == uint256(tokenIndex) ? amount : 0;
         }
-
-        address callee = getDeposit(crvToken);
 
         ERC20(token).safeApprove(
             callee,
@@ -159,16 +163,19 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, CurveAssetAdap
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
         address toToken = abi.decode(data, (address));
+
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = toToken;
 
+        PoolInfo memory poolInfo = CurveRegistry(REGISTRY).getPoolInfo(token);
+        address swap = poolInfo.swap;
+        address callee = poolInfo.deposit;
+
         int128 tokenIndex = getTokenIndex(toToken);
         require(
-            Stableswap(getSwap(token)).underlying_coins(tokenIndex) == toToken,
+            Stableswap(swap).underlying_coins(tokenIndex) == toToken,
             "CLIA: bad toToken/token"
         );
-
-        address callee = getDeposit(token);
 
         ERC20(token).safeApprove(
             callee,

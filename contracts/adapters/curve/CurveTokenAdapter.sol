@@ -21,13 +21,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-
-
-interface CurveRegistry {
-    function getSwapAndTotalCoins(address) external view returns (address, uint256);
-    function getName(address) external view returns (string memory);
-}
-
+import { CurveRegistry, PoolInfo } from "./CurveRegistry.sol";
 
 /**
  * @dev stableswap contract interface.
@@ -50,26 +44,16 @@ interface stableswap {
 contract CurveTokenAdapter is TokenAdapter {
 
     address internal constant REGISTRY = 0x86A1755BA805ecc8B0608d56c22716bd1d4B68A8;
-    address internal constant CDAI = 0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643;
-    address internal constant CUSDC = 0x39AA39c021dfbaE8faC545936693aC917d5E7563;
-    address internal constant YDAIV2 = 0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01;
-    address internal constant YUSDCV2 = 0xd6aD7a6750A7593E092a9B218d66C0A814a3436e;
-    address internal constant YUSDTV2 = 0x83f798e925BcD4017Eb265844FDDAbb448f1707D;
-    address internal constant YTUSDV2 = 0x73a052500105205d34Daf004eAb301916DA8190f;
-    address internal constant YDAIV3 = 0xC2cB1040220768554cf699b0d863A3cd4324ce32;
-    address internal constant YUSDCV3 = 0x26EA744E5B887E5205727f55dFBE8685e3b21951;
-    address internal constant YUSDTV3 = 0xE6354ed5bC4b393a5Aad09f21c46E101e692d447;
-    address internal constant YBUSDV3 = 0x04bC0Ab673d88aE9dbC9DA2380cB6B79C4BCa9aE;
-    address internal constant YCDAI = 0x99d1Fa417f94dcD62BfE781a1213c092a47041Bc;
-    address internal constant YCUSDC = 0x9777d7E2b60bB01759D0E2f8be2095df444cb07E;
-    address internal constant YCUSDT = 0x1bE5d71F2dA660BFdee8012dDc58D024448A0A59;
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        (address swap, uint256 totalCoins) = CurveRegistry(REGISTRY).getSwapAndTotalCoins(token);
+        PoolInfo memory poolInfo = CurveRegistry(REGISTRY).getPoolInfo(token);
+        address swap = poolInfo.swap;
+        uint256 totalCoins = poolInfo.totalCoins;
+
         Component[] memory components = new Component[](totalCoins);
 
         for (uint256 i = 0; i < totalCoins; i++) {
@@ -86,6 +70,6 @@ contract CurveTokenAdapter is TokenAdapter {
      * @return Pool name.
      */
     function getName(address token) internal view override returns (string memory) {
-        return CurveRegistry(REGISTRY).getName(token);
+        return CurveRegistry(REGISTRY).getPoolInfo(token).name;
     }
 }

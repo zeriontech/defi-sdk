@@ -18,20 +18,19 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
+import { ERC20 } from "../shared/ERC20.sol";
+import { ProtocolAdapter } from "./ProtocolAdapter.sol";
 
 
 /**
- * @title Adapter for Curve protocol (liquidity).
+ * @title Adapter for any protocol with ERC20 interface.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CurveAssetAdapter is ProtocolAdapter {
+contract ERC20ProtocolAdapter is ProtocolAdapter {
 
     /**
-     * @return Amount of Curve Pool Tokens held by the given account.
-     * @param token Address of the Pool Token!
+     * @return Amount of tokens held by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(

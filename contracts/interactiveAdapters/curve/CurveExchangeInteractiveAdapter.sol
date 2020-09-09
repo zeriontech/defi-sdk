@@ -47,7 +47,26 @@ interface Stableswap {
 contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchangeAdapter {
     using SafeERC20 for ERC20;
 
-    uint256 internal constant POOLS_NUMBER = 7;
+    uint256 internal constant POOLS_NUMBER = 8;
+
+    address internal constant C_SWAP = 0xA2B47E3D5c44877cca798226B7B8118F9BFb7A56;
+    address internal constant T_SWAP = 0x52EA46506B9CC5Ef470C5bf89f17Dc28bB35D85C;
+    address internal constant Y_SWAP = 0x45F783CCE6B7FF23B2ab2D70e416cdb7D6055f51;
+    address internal constant B_SWAP = 0x79a8C46DeA5aDa233ABaFFD40F3A0A2B1e5A4F27;
+    address internal constant S_SWAP = 0xA5407eAE9Ba41422680e2e00537571bcC53efBfD;
+    address internal constant P_SWAP = 0x06364f10B501e868329afBc005b3492902d6C763;
+    address internal constant RENBTC_SWAP = 0x93054188d876f558f4a66B2EF1d97d16eDf0895B;
+    address internal constant SBTC_SWAP = 0x7fC77b5c7614E1533320Ea6DDc2Eb61fa00A9714;
+
+    uint256 internal constant C_MASK = 1;
+    uint256 internal constant T_MASK = 2;
+    uint256 internal constant Y_MASK = 4;
+    uint256 internal constant B_MASK = 8;
+    uint256 internal constant S_MASK = 16;
+    uint256 internal constant P_MASK = 32;
+    uint256 internal constant RENBTC_MASK = 64;
+    uint256 internal constant SBTC_MASK = 128;
+    uint256 internal constant INIT_MASK = 255;
 
     /**
      * @notice Exchanges tokens using pool with the best rate.
@@ -71,6 +90,7 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
         address toToken = abi.decode(data, (address));
+
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = toToken;
 
@@ -129,46 +149,59 @@ contract CurveExchangeInteractiveAdapter is CurveInteractiveAdapter, CurveExchan
         pure
         returns (address[POOLS_NUMBER] memory)
     {
-        uint256 poolsMask = 127;
+        uint256 poolsMask = INIT_MASK;
 
         if (toToken == DAI || fromToken == DAI) {
-            poolsMask &= 63; // everything except renBTC Pool
-        }
-        if (toToken == USDC || fromToken == USDC) {
-            poolsMask &= 63; // everything except renBTC Pool
-        }
-        if (toToken == USDT || fromToken == USDT) {
-            poolsMask &= 62; // everything except Compound Pool and renBTC Pool
-        }
-        if (toToken == TUSD || fromToken == TUSD) {
-            poolsMask &= 4; // Y Pool only
-        }
-        if (toToken == BUSD || fromToken == BUSD) {
-            poolsMask &= 8; // bUSD Pool onlly
-        }
-        if (toToken == SUSD || fromToken == SUSD) {
-            poolsMask &= 16; // sUSD Pool only
-        }
-        if (toToken == PAX || fromToken == PAX) {
-            poolsMask &= 32; // PAX Pool only
-        }
-        if (toToken == RENBTC || fromToken == RENBTC) {
-            poolsMask &= 64; // renBTC Pool only
-        }
-        if (toToken == WBTC || fromToken == WBTC) {
-            poolsMask &= 64; // renBTC Pool only
+            poolsMask &= INIT_MASK - RENBTC_MASK - SBTC_MASK;
         }
 
-        require(poolsMask != 0, "CEIA: bad pools");
+        if (toToken == USDC || fromToken == USDC) {
+            poolsMask &= INIT_MASK - RENBTC_MASK - SBTC_MASK;
+        }
+
+        if (toToken == USDT || fromToken == USDT) {
+            poolsMask &= INIT_MASK - C_MASK - RENBTC_MASK - SBTC_MASK;
+        }
+
+        if (toToken == TUSD || fromToken == TUSD) {
+            poolsMask &= Y_MASK;
+        }
+
+        if (toToken == BUSD || fromToken == BUSD) {
+            poolsMask &= B_MASK;
+        }
+
+        if (toToken == SUSD || fromToken == SUSD) {
+            poolsMask &= S_MASK;
+        }
+
+        if (toToken == PAX || fromToken == PAX) {
+            poolsMask &= P_MASK;
+        }
+
+        if (toToken == RENBTC || fromToken == RENBTC) {
+            poolsMask &= RENBTC_MASK + SBTC_MASK;
+        }
+
+        if (toToken == WBTC || fromToken == WBTC) {
+            poolsMask &= RENBTC_MASK + SBTC_MASK;
+        }
+
+        if (toToken == SBTC || fromToken == SBTC) {
+            poolsMask &= SBTC_MASK;
+        }
+
+        require(poolsMask != 0, "CEIA: tokens");
 
         return [
-            poolsMask & 1 == 0 ? address(0) : C_SWAP,
-            poolsMask & 2 == 0 ? address(0) : T_SWAP,
-            poolsMask & 4 == 0 ? address(0) : Y_SWAP,
-            poolsMask & 8 == 0 ? address(0) : B_SWAP,
-            poolsMask & 16 == 0 ? address(0) : S_SWAP,
-            poolsMask & 32 == 0 ? address(0) : P_SWAP,
-            poolsMask & 64 == 0 ? address(0) : REN_SWAP
+            poolsMask & C_MASK == 0 ? address(0) : C_SWAP,
+            poolsMask & T_MASK == 0 ? address(0) : T_SWAP,
+            poolsMask & Y_MASK == 0 ? address(0) : Y_SWAP,
+            poolsMask & B_MASK == 0 ? address(0) : B_SWAP,
+            poolsMask & S_MASK == 0 ? address(0) : S_SWAP,
+            poolsMask & P_MASK == 0 ? address(0) : P_SWAP,
+            poolsMask & RENBTC_MASK == 0 ? address(0) : RENBTC_SWAP,
+            poolsMask & SBTC_MASK == 0 ? address(0) : SBTC_SWAP
         ];
     }
 }
