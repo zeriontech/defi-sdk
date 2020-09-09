@@ -28,6 +28,7 @@ interface TheProtocol{
         returns(address);
 }
 
+
 /**
  * @title Token adapter for iTokens.
  * @dev Implementation of TokenAdapter interface.
@@ -55,12 +56,11 @@ contract BzxTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        address underlying = bZxContract.loanPoolToUnderlying(token);
 
         Component[] memory underlyingTokens = new Component[](1);
 
         underlyingTokens[0] = Component({
-            token: underlying,
+            token: bZxContract.loanPoolToUnderlying(token),
             tokenType: "ERC20",
             rate: uint256(1e18)
         });

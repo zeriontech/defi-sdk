@@ -33,11 +33,14 @@ interface TheProtocol{
         returns (LoanReturnData[] memory loansData);
 }
 
+
 enum LoanType {
     All,
     Margin,
     NonMargin
 }
+
+
 struct LoanReturnData{
     bytes32 loanId;
     uint96 endTimestamp;
@@ -55,6 +58,7 @@ struct LoanReturnData{
     uint256 maxLiquidatable;
     uint256 maxSeizable;
 }
+ 
  
 /**
  * @title Debt adapter for bZx protocol.
@@ -80,7 +84,7 @@ contract BzxDebtAdapter is ProtocolAdapter {
         uint256 principal = 0;
         uint256 loanLenght = loans.length;
         for(uint256 i = 0; i < loanLenght; i++) {
-            if (loans[i].loanToken == token){
+            if (loans[i].loanToken == token) {
                 principal += loans[i].principal;
             }
         }
