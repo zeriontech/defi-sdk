@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
@@ -23,21 +23,7 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { UniswapV2AssetAdapter } from "../../adapters/uniswap/UniswapV2AssetAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-
-
-/**
- * @dev UniswapV2Pair contract interface.
- * Only the functions required for UniswapV2AssetZapInteractiveAdapter contract are added.
- * The UniswapV2Pair contract is available here
- * github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2Pair.sol.
- */
-interface UniswapV2Pair {
-    function mint(address) external returns (uint256);
-    function burn(address) external returns (uint256, uint256);
-    function getReserves() external view returns (uint112, uint112);
-    function token0() external view returns (address);
-    function token1() external view returns (address);
-}
+import { UniswapV2Pair } from "../../interfaces/UniswapV2Pair.sol";
 
 
 /**

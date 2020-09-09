@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { TransactionData, Action, AbsoluteTokenAmount, Fee, TokenAmount } from "../shared/Structs.sol";
@@ -92,7 +92,7 @@ contract SignatureVerifier {
         ")"
     );
 
-    constructor(string memory name) public {
+    constructor(string memory name) {
         domainSeparator_ = keccak256(
             abi.encode(
                 DOMAIN_SEPARATOR_TYPEHASH,

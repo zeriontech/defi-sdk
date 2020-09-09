@@ -15,17 +15,17 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-contract ReentrancyGuard {
+abstract contract ReentrancyGuard {
 
     uint256 internal constant UNLOCKED = 1;
     uint256 internal constant LOCKED = 2;
 
     uint256 internal guard_;
 
-    constructor () internal {
+    constructor () {
         guard_ = UNLOCKED;
     }
 

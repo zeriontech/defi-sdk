@@ -15,32 +15,13 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
-
-/**
- * @dev CToken contract interface.
- * Only the functions required for CompoundDebtAdapter contract are added.
- * The CToken contract is available here
- * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
- */
-interface CToken {
-    function borrowBalanceStored(address) external view returns (uint256);
-}
-
-
-/**
- * @dev CompoundRegistry contract interface.
- * Only the functions required for CompoundDebtAdapter contract are added.
- * The CompoundRegistry contract is available in this repository.
- */
-interface CompoundRegistry {
-    function getCToken(address) external view returns (address);
-}
+import { CToken } from "../../interfaces/CToken.sol";
+import { CompoundRegistry } from "./CompoundRegistry.sol";
 
 
 /**

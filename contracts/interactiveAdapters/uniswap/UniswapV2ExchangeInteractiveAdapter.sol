@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
@@ -93,7 +93,7 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             path,
             address(this),
             // solhint-disable-next-line not-rely-on-time
-            now
+            block.timestamp
         ) returns (uint256[] memory) { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);
@@ -138,7 +138,7 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             path,
             address(this),
             // solhint-disable-next-line not-rely-on-time
-            now
+            block.timestamp
         ) returns (uint256[] memory) { //solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);

@@ -16,32 +16,16 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 
 pragma solidity 0.7.1;
-pragma experimental ABIEncoderV2;
-
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @title Adapter for Chi Gastoken by 1inch.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author 1inch.exchange <info@1inch.exchange>
+ * @dev RebalancingSetToken contract interface.
+ * The RebalancingSetToken contract is available here
+ * github.com/SetProtocol/set-protocol-contracts/blob/master/contracts/core/tokens/RebalancingSetTokenV3.sol.
  */
-contract ChiAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of Chi Token held by the given account.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface RebalancingSetToken {
+    function currentSet() external view returns (address);
+    function getUnits() external view returns(uint256[] memory);
+    function naturalUnit() external view returns(uint256);
+    function unitShares() external view returns (uint256);
 }

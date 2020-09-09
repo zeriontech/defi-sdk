@@ -15,49 +15,14 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-
-
-/**
- * @dev CToken contract interface.
- * Only the functions required for UniswapV1TokenAdapter contract are added.
- * The CToken contract is available here
- * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
- */
-interface CToken {
-    function isCToken() external view returns (bool);
-}
-
-
-/**
- * @dev SetToken contract interface.
- * Only the functions required for TokenSetsTokenAdapter contract are added.
- * The SetToken contract is available here
- * github.com/SetProtocol/set-protocol-contracts/blob/master/contracts/core/tokens/SetToken.sol.
- */
-interface SetToken {
-    function getUnits() external view returns (uint256[] memory);
-    function naturalUnit() external view returns (uint256);
-    function getComponents() external view returns(address[] memory);
-}
-
-
-/**
- * @dev RebalancingSetToken contract interface.
- * Only the functions required for TokenSetsTokenAdapter contract are added.
- * The RebalancingSetToken contract is available here
- * github.com/SetProtocol/set-protocol-contracts/blob/master/contracts/core/tokens/RebalancingSetTokenV3.sol.
- */
-interface RebalancingSetToken {
-    function unitShares() external view returns (uint256);
-    function naturalUnit() external view returns (uint256);
-    function currentSet() external view returns (address);
-}
+import { RebalancingSetToken } from "../../interfaces/RebalancingSetToken.sol";
+import { SetToken } from "../../interfaces/SetToken.sol";
 
 
 /**

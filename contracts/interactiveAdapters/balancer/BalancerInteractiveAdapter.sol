@@ -15,27 +15,15 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
-import { BalancerAdapter } from "../../adapters/balancer/BalancerAdapter.sol";
+import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-
-
-/**
- * @dev BPool contract interface.
- * Only the functions required for BalancerInteractiveAdapter contract are added.
- * The BPool contract is available here
- * github.com/balancer-labs/balancer-core/blob/master/contracts/BPool.sol.
- */
-interface BPool {
-    function joinswapExternAmountIn(address, uint256, uint256) external;
-    function exitswapPoolAmountIn(address, uint256, uint256) external;
-    function getFinalTokens() external view returns (address[] memory);
-}
+import { BPool } from "../../interfaces/BPool.sol";
 
 
 /**
@@ -43,7 +31,7 @@ interface BPool {
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract BalancerInteractiveAdapter is InteractiveAdapter, BalancerAdapter {
+contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     /**

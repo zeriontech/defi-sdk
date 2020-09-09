@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
@@ -36,7 +36,7 @@ contract WethTokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given asset.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address) external view override returns (Component[] memory) {
+    function getComponents(address) external pure override returns (Component[] memory) {
         Component[] memory components = new Component[](1);
 
         components[0] = Component({

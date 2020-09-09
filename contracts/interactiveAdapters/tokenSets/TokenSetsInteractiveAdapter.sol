@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
@@ -23,6 +23,8 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { TokenSetsAdapter } from "../../adapters/tokenSets/TokenSetsAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
+import { RebalancingSetToken } from "../../interfaces/RebalancingSetToken.sol";
+import { SetToken } from "../../interfaces/SetToken.sol";
 
 
 /**
@@ -34,32 +36,6 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 interface RebalancingSetIssuanceModule {
     function issueRebalancingSet(address, uint256, bool) external;
     function redeemRebalancingSet(address, uint256, bool) external;
-}
-
-
-/**
- * @dev RebalancingSetToken contract interface.
- * Only the functions required for TokenSetsInteractiveAdapter contract are added.
- * The RebalancingSetToken contract is available here
- * github.com/SetProtocol/set-protocol-contracts/blob/master/contracts/core/tokens/RebalancingSetTokenV3.sol.
- */
-interface RebalancingSetToken {
-    function currentSet() external view returns (SetToken);
-    function getUnits() external view returns(uint256[] memory);
-    function naturalUnit() external view returns(uint256);
-}
-
-
-/**
- * @dev SetToken contract interface.
- * Only the functions required for TokenSetsInteractiveAdapter contract are added.
- * The SetToken contract is available here
- * github.com/SetProtocol/set-protocol-contracts/blob/master/contracts/core/tokens/SetToken.sol.
- */
-interface SetToken {
-    function getComponents() external view returns(address[] memory);
-    function getUnits() external view returns(uint256[] memory);
-    function naturalUnit() external view returns(uint256);
 }
 
 
@@ -137,8 +113,8 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
         RebalancingSetIssuanceModule issuanceModule = RebalancingSetIssuanceModule(ISSUANCE_MODULE);
         RebalancingSetToken rebalancingSetToken = RebalancingSetToken(token);
-        SetToken setToken = rebalancingSetToken.currentSet();
-        tokensToBeWithdrawn = setToken.getComponents();
+        address setToken = rebalancingSetToken.currentSet();
+        tokensToBeWithdrawn = SetToken(setToken).getComponents();
 
         try issuanceModule.redeemRebalancingSet(
             token,
@@ -174,10 +150,10 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         uint256 rUnit = rebalancingSetToken.getUnits()[0];
         uint256 rNaturalUnit = rebalancingSetToken.naturalUnit();
 
-        SetToken baseSetToken = rebalancingSetToken.currentSet();
-        uint256[] memory bUnits = baseSetToken.getUnits();
-        uint256 bNaturalUnit = baseSetToken.naturalUnit();
-        address[] memory components = baseSetToken.getComponents();
+        address baseSetToken = rebalancingSetToken.currentSet();
+        uint256[] memory bUnits = SetToken(baseSetToken).getUnits();
+        uint256 bNaturalUnit = SetToken(baseSetToken).naturalUnit();
+        address[] memory components = SetToken(baseSetToken).getComponents();
         require(components.length == length, "TSIA: bad tokens");
 
         setAmount = type(uint256).max;

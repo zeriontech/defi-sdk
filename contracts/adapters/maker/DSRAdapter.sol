@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
@@ -59,7 +59,7 @@ contract DSRAdapter is ProtocolAdapter, MKRAdapter {
     {
         Pot pot = Pot(POT);
         // solhint-disable-next-line not-rely-on-time
-        uint256 chi = mkrRmul(mkrRpow(pot.dsr(), now - pot.rho(), ONE), pot.chi());
+        uint256 chi = mkrRmul(mkrRpow(pot.dsr(), block.timestamp - pot.rho(), ONE), pot.chi());
 
         return mkrRmul(chi, pot.pie(account));
     }

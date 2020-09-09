@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import {
@@ -48,8 +48,9 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     uint256 internal constant DELIMITER = 1e18; // 100%
     uint256 internal constant FEE_LIMIT = 1e16; // 1%
 
-    constructor(address payable core) public {
+    constructor(address payable core) {
         require(core != address(0), "R: empty core");
+
         core_ = core;
     }
 

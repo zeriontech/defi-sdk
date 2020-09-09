@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
@@ -23,7 +23,7 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { AaveAssetAdapter } from "../../adapters/aave/AaveAssetAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-
+import { AToken } from "../../interfaces/AToken.sol";
 
 /**
  * @dev LendingPoolAddressesProvider contract interface.
@@ -56,18 +56,6 @@ interface LendingPool {
  */
 interface LendingPoolCore {
     function getReserveATokenAddress(address) external view returns (address);
-}
-
-
-/**
- * @dev AToken contract interface.
- * Only the functions required for AaveAssetInteractiveAdapter contract are added.
- * The AToken contract is available here
- * github.com/aave/aave-protocol/blob/master/contracts/tokenization/AToken.sol.
- */
-interface AToken {
-    function redeem(uint256) external;
-    function underlyingAssetAddress() external view returns (address);
 }
 
 

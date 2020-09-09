@@ -15,11 +15,12 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
+import { CToken } from "../../interfaces/CToken.sol";
 
 
 /**
@@ -47,19 +48,6 @@ interface Comptroller {
     function compBorrowerIndex(address, address) external view returns (uint256);
     function compSupplierIndex(address, address) external view returns (uint256);
     function compAccrued(address) external view returns (uint256);
-}
-
-
-/**
- * @dev CToken contract interface.
- * Only the functions required for CompoundGovernanceAdapter contract are added.
- * The CToken contract is available here
- * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
- */
-interface CToken {
-    function borrowBalanceStored(address) external view returns (uint256);
-    function borrowIndex() external view returns (uint256);
-    function balanceOf(address) external view returns (uint256);
 }
 
 

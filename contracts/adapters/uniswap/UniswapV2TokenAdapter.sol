@@ -15,36 +15,14 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { Helpers } from "../../shared/Helpers.sol";
-
-
-/**
- * @dev CToken contract interface.
- * Only the functions required for UniswapV2TokenAdapter contract are added.
- * The CToken contract is available here
- * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
- */
-interface CToken {
-    function isCToken() external view returns (bool);
-}
-
-
-/**
- * @dev UniswapV2Pair contract interface.
- * Only the functions required for UniswapV2TokenAdapter contract are added.
- * The UniswapV2Pair contract is available here
- * github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2Pair.sol.
- */
-interface UniswapV2Pair {
-    function token0() external view returns (address);
-    function token1() external view returns (address);
-}
+import { UniswapV2Pair } from "../../interfaces/UniswapV2Pair.sol";
 
 
 /**

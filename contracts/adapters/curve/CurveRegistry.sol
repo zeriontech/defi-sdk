@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { Ownable } from "../../core/Ownable.sol";
@@ -40,27 +40,27 @@ contract CurveRegistry is Ownable {
 
     mapping (address => PoolInfo) internal poolInfo_;
 
-    function setPoolsInfo(
-        address[] calldata tokens,
-        PoolInfo[] calldata poolsInfo
-    )
-        external
-        onlyOwner
-    {
-        uint256 length = tokens.length;
-        for (uint256 i = 0; i < length; i++) {
-            setPoolInfo(tokens[i], poolsInfo[i]);
-        }
-    }
+//    function setPoolsInfo(
+//        address[] calldata tokens,
+//        PoolInfo[] calldata poolsInfo
+//    )
+//        external
+//        onlyOwner
+//    {
+//        uint256 length = tokens.length;
+//        for (uint256 i = 0; i < length; i++) {
+//            setPoolInfo(tokens[i], poolsInfo[i]);
+//        }
+//    }
 
-    function setPoolInfo(
-        address token,
-        PoolInfo calldata poolInfo
-    )
-        internal
-    {
-        poolInfo_[token] = poolInfo;
-    }
+//    function setPoolInfo(
+//        address token,
+//        PoolInfo calldata poolInfo
+//    )
+//        internal
+//    {
+//        poolInfo_[token] = poolInfo;
+//    }
 
     function getPoolInfo(address token) external view returns (PoolInfo memory) {
         return poolInfo_[token];

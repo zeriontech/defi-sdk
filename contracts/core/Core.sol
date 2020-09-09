@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { Action, AbsoluteTokenAmount, ActionType, AmountType } from "../shared/Structs.sol";
@@ -39,12 +39,9 @@ contract Core is ReentrancyGuard {
 
     event ExecutedAction(Action action);
 
-    constructor(
-        address protocolAdapterRegistry
-    )
-        public
-    {
+    constructor(address protocolAdapterRegistry) {
         require(protocolAdapterRegistry != address(0), "C: empty protocolAdapterRegistry");
+
         protocolAdapterRegistry_ = protocolAdapterRegistry;
     }
 

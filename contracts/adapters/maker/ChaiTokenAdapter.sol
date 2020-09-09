@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
@@ -51,12 +51,16 @@ contract ChaiTokenAdapter is TokenAdapter, MKRAdapter {
      */
     function getComponents(address) external view override returns (Component[] memory) {
         Pot pot = Pot(POT);
+
         Component[] memory components = new Component[](1);
 
         components[0] = Component({
             token: DAI,
             // solhint-disable-next-line not-rely-on-time
-            rate: mkrRmul(mkrRmul(mkrRpow(pot.dsr(), now - pot.rho(), ONE), pot.chi()), 1e18)
+            rate: mkrRmul(
+                mkrRmul(mkrRpow(pot.dsr(), block.timestamp - pot.rho(), ONE), pot.chi()),
+                1e18
+            )
         });
 
         return components;

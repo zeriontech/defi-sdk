@@ -15,24 +15,13 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { ERC20Metadata, Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-
-
-/**
- * @dev CToken contract interface.
- * Only the functions required for CompoundTokenAdapter contract are added.
- * The CToken contract is available here
- * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
- */
-interface CToken {
-    function exchangeRateStored() external view returns (uint256);
-    function underlying() external view returns (address);
-}
+import { CToken } from "../../interfaces/CToken.sol";
 
 
 /**

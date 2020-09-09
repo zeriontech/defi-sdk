@@ -15,48 +15,15 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { Helpers } from "../../shared/Helpers.sol";
-
-
-/**
- * @dev CToken contract interface.
- * Only the functions required for UniswapV1TokenAdapter contract are added.
- * The CToken contract is available here
- * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
- */
-interface CToken {
-    function isCToken() external view returns (bool);
-}
-
-
-/**
- * @dev Exchange contract interface.
- * Only the functions required for UniswapV1TokenAdapter contract are added.
- * The Exchange contract is available here
- * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_exchange.vy.
- */
-interface Exchange {
-    function name() external view returns (bytes32);
-    function symbol() external view returns (bytes32);
-    function decimals() external view returns (uint256);
-}
-
-
-/**
- * @dev Factory contract interface.
- * Only the functions required for UniswapV1TokenAdapter contract are added.
- * The Factory contract is available here
- * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_factory.vy.
- */
-interface Factory {
-    function getToken(address) external view returns (address);
-}
+import { Exchange } from "../../interfaces/Exchange.sol";
+import { Factory } from "../../interfaces/Factory.sol";
 
 
 /**
@@ -116,7 +83,7 @@ contract UniswapV1TokenAdapter is TokenAdapter {
     /**
      * @return Pool symbol.
      */
-    function getSymbol(address) internal view override returns (string memory) {
+    function getSymbol(address) internal pure override returns (string memory) {
         return "UNI-V1";
     }
 

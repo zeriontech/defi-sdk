@@ -15,48 +15,17 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { CompoundAssetAdapter } from "../../adapters/compound/CompoundAssetAdapter.sol";
+import { CompoundRegistry } from "../../adapters/compound/CompoundRegistry.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-
-
-/**
- * @dev CEther contract interface.
- * Only the functions required for CompoundAssetInteractiveAdapter contract are added.
- * The CEther contract is available here
- * github.com/compound-finance/compound-protocol/blob/master/contracts/CEther.sol.
- */
-interface CEther {
-    function mint() external payable;
-}
-
-
-/**
- * @dev CToken contract interface.
- * Only the functions required for CompoundAssetInteractiveAdapter contract are added.
- * The CToken contract is available here
- * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
- */
-interface CToken {
-    function mint(uint256) external returns (uint256);
-    function redeem(uint256) external returns (uint256);
-    function underlying() external view returns (address);
-}
-
-
-/**
- * @dev CompoundRegistry contract interface.
- * Only the functions required for CompoundAssetInteractiveAdapter contract are added.
- * The CompoundRegistry contract is available in this repository.
- */
-interface CompoundRegistry {
-    function getCToken(address) external view returns (address);
-}
+import { CToken } from "../../interfaces/CToken.sol";
+import { CEther } from "../../interfaces/CEther.sol";
 
 
 /**

@@ -16,32 +16,14 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 
 pragma solidity 0.7.1;
-pragma experimental ABIEncoderV2;
-
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @title Adapter for Chi Gastoken by 1inch.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author 1inch.exchange <info@1inch.exchange>
+ * @dev AToken contract interface.
+ * The AToken contract is available here
+ * github.com/aave/aave-protocol/blob/master/contracts/tokenization/AToken.sol.
  */
-contract ChiAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of Chi Token held by the given account.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface AToken {
+    function underlyingAssetAddress() external view returns (address);
+    function redeem(uint256) external;
 }

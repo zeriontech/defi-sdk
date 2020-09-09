@@ -30,7 +30,7 @@
     "core-js": "3.6.5",
     "dotenv": "8.2.0",
     "regenerator-runtime": "0.13.5",
-    "truffle": "5.1.33"
+    "truffle": "5.1.43"
   },
   "devDependencies": {
     "@codechecks/client": "0.1.10",

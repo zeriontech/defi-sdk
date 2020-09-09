@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
@@ -23,73 +23,8 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount, AmountType } from "../../shared/Structs.sol";
 import { UniswapExchangeAdapter } from "../../adapters/uniswap/UniswapExchangeAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-
-
-/**
- * @dev Exchange contract interface.
- * Only the functions required for UniswapV1ExchangeInteractiveAdapter contract are added.
- * The Exchange contract is available here
- * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_exchange.vy.
- */
-interface Exchange {
-    function ethToTokenSwapInput(
-        uint256,
-        uint256
-    )
-        external
-        payable
-        returns (uint256);
-    function tokenToEthSwapInput(
-        uint256,
-        uint256,
-        uint256
-    )
-        external
-        returns (uint256);
-    function tokenToTokenSwapInput(
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        address
-    )
-        external
-        returns (uint256);
-    function ethToTokenSwapOutput(
-        uint256,
-        uint256
-    )
-        external
-        payable
-        returns (uint256);
-    function tokenToEthSwapOutput(
-        uint256,
-        uint256,
-        uint256
-    )
-        external
-        returns (uint256);
-    function tokenToTokenSwapOutput(
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        address
-    )
-        external
-        returns (uint256);
-}
-
-
-/**
- * @dev Factory contract interface.
- * Only the functions required for UniswapV1ExchangeInteractiveAdapter contract are added.
- * The Factory contract is available here
- * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_factory.vy.
- */
-interface Factory {
-    function getExchange(address) external view returns (address);
-}
+import { Exchange } from "../../interfaces/Exchange.sol";
+import { Factory } from "../../interfaces/Factory.sol";
 
 
 /**
@@ -135,7 +70,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             try Exchange(exchange).ethToTokenSwapInput{value: amount}(
                 uint256(1),
                 // solhint-disable-next-line not-rely-on-time
-                now
+                block.timestamp
             ) returns (uint256) { // solhint-disable-line no-empty-blocks
             } catch Error(string memory reason) {
                 revert(reason);
@@ -153,7 +88,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                     amount,
                     uint256(1),
                     // solhint-disable-next-line not-rely-on-time
-                    now
+                    block.timestamp
                 ) returns (uint256) { // solhint-disable-line no-empty-blocks
                 } catch Error(string memory reason) {
                     revert(reason);
@@ -166,7 +101,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                     uint256(1),
                     uint256(1),
                     // solhint-disable-next-line not-rely-on-time
-                    now,
+                    block.timestamp,
                     toToken
                 ) returns (uint256) { // solhint-disable-line no-empty-blocks
                 } catch Error(string memory reason) {
@@ -211,7 +146,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             try Exchange(exchange).ethToTokenSwapOutput{value: address(this).balance}(
                 tokenAmounts[0].amount,
                 // solhint-disable-next-line not-rely-on-time
-                now
+                block.timestamp
             ) returns (uint256) { // solhint-disable-line no-empty-blocks
             } catch Error(string memory reason) {
                 revert(reason);
@@ -230,7 +165,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                     tokenAmounts[0].amount,
                     balance,
                     // solhint-disable-next-line not-rely-on-time
-                    now
+                    block.timestamp
                 ) returns (uint256) { // solhint-disable-line no-empty-blocks
                 } catch Error(string memory reason) {
                     revert(reason);
@@ -243,7 +178,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
                     balance,
                     type(uint256).max,
                     // solhint-disable-next-line not-rely-on-time
-                    now,
+                    block.timestamp,
                     token
                 ) returns (uint256) { // solhint-disable-line no-empty-blocks
                 } catch Error(string memory reason) {

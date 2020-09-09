@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
@@ -52,11 +52,7 @@ contract AaveDebtAdapter is ProtocolAdapter {
 
     address internal immutable provider_;
 
-    constructor(
-        address provider
-    )
-        public
-    {
+    constructor(address provider) {
         require(provider != address(0), "ADA: empty provider");
 
         provider_ = provider;

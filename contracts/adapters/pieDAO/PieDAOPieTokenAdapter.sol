@@ -15,12 +15,13 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
+import { BPool } from "../../interfaces/BPool.sol";
 
 
 /**
@@ -32,19 +33,6 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 interface PBasicSmartPool {
     function getTokens() external view returns (address[] memory);
     function getBPool() external view returns (address);
-}
-
-
-/**
- * @dev BPool contract interface.
- * Only the functions required for UniswapAdapter contract are added.
- * The BPool contract is available here
- * github.com/balancer-labs/balancer-core/blob/master/contracts/BPool.sol.
- */
-interface BPool {
-    function getFinalTokens() external view returns (address[] memory);
-    function getBalance(address) external view returns (uint256);
-    function getNormalizedWeight(address) external view returns (uint256);
 }
 
 

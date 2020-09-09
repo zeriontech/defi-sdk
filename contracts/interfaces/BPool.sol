@@ -16,32 +16,17 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 
 pragma solidity 0.7.1;
-pragma experimental ABIEncoderV2;
-
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @title Adapter for Chi Gastoken by 1inch.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author 1inch.exchange <info@1inch.exchange>
+ * @dev BPool contract interface.
+ * The BPool contract is available here
+ * github.com/balancer-labs/balancer-core/blob/master/contracts/BPool.sol.
  */
-contract ChiAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of Chi Token held by the given account.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface BPool {
+    function getCurrentTokens() external view returns (address[] memory);
+    function getBalance(address) external view returns (uint256);
+    function getNormalizedWeight(address) external view returns (uint256);
+    function joinswapExternAmountIn(address, uint256, uint256) external;
+    function exitswapPoolAmountIn(address, uint256, uint256) external;
 }

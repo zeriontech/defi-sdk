@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
@@ -94,7 +94,10 @@ contract MCDDebtAdapter is ProtocolAdapter, MKRAdapter {
             (uint256 duty, uint256 rho) = jug.ilks(ilk);
             uint256 base = jug.base();
             // solhint-disable-next-line not-rely-on-time
-            uint256 currentRate = mkrRmul(mkrRpow(mkrAdd(base, duty), now - rho, ONE), storedRate);
+            uint256 currentRate = mkrRmul(
+                mkrRpow(mkrAdd(base, duty), block.timestamp - rho, ONE),
+                storedRate
+            );
 
             totalValue = totalValue + mkrRmul(art, currentRate);
         }

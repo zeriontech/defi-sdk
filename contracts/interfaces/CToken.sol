@@ -16,32 +16,19 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 
 pragma solidity 0.7.1;
-pragma experimental ABIEncoderV2;
-
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @title Adapter for Chi Gastoken by 1inch.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author 1inch.exchange <info@1inch.exchange>
+ * @dev CToken contract interface.
+ * The CToken contract is available here
+ * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
  */
-contract ChiAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of Chi Token held by the given account.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface CToken {
+    function borrowBalanceStored(address) external view returns (uint256);
+    function exchangeRateStored() external view returns (uint256);
+    function underlying() external view returns (address);
+    function mint(uint256) external returns (uint256);
+    function redeem(uint256) external returns (uint256);
+    function borrowIndex() external view returns (uint256);
+    function balanceOf(address) external view returns (uint256);
 }

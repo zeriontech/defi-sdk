@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
@@ -24,19 +24,7 @@ import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { CurveRegistry, PoolInfo } from "../../adapters/curve/CurveRegistry.sol";
 import { CurveInteractiveAdapter } from "./CurveInteractiveAdapter.sol";
-
-
-/**
- * @dev Stableswap contract interface.
- * Only the functions required for CurveAssetInteractiveAdapter contract are added.
- * The Stableswap contract is available here
- * github.com/curvefi/curve-contract/blob/compounded/vyper/stableswap.vy.
- */
-/* solhint-disable func-name-mixedcase */
-interface Stableswap {
-    function underlying_coins(int128) external view returns (address);
-}
-/* solhint-enable func-name-mixedcase */
+import { Stableswap } from "../../interfaces/Stableswap.sol";
 
 
 /**

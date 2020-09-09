@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
@@ -66,13 +66,7 @@ contract SynthetixAssetAdapter is ProtocolAdapter {
     address internal immutable stakingToken_;
     address internal immutable rewardsToken_;
 
-    constructor(
-        address stakingContract,
-        address stakingToken,
-        address rewardsToken
-    )
-        public
-    {
+    constructor(address stakingContract, address stakingToken, address rewardsToken) {
         require(stakingContract != address(0), "SSA: empty stakingContract");
         require(stakingToken != address(0), "SSA: empty stakingToken");
         require(rewardsToken != address(0), "SSA: empty rewardsToken");

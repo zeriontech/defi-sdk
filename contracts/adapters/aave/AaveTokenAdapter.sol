@@ -15,23 +15,13 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-
-
-/**
- * @dev AToken contract interface.
- * Only the functions required for AaveTokenAdapter contract are added.
- * The AToken contract is available here
- * github.com/aave/aave-protocol/blob/master/contracts/tokenization/AToken.sol.
- */
-interface AToken {
-    function underlyingAssetAddress() external view returns (address);
-}
+import { AToken } from "../../interfaces/AToken.sol";
 
 
 /**

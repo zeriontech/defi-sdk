@@ -15,34 +15,18 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
-pragma experimental ABIEncoderV2;
-
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
+pragma solidity 0.7.1;
 
 
 /**
- * @title Adapter for Bancor protocol.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev UniswapV2Pair contract interface.
+ * The UniswapV2Pair contract is available here
+ * github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2Pair.sol.
  */
-contract BancorAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of SmartTokens held by the given account.
-     * @param token Address of the pool!
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface UniswapV2Pair {
+    function mint(address) external returns (uint256);
+    function burn(address) external returns (uint256, uint256);
+    function getReserves() external view returns (uint112, uint112);
+    function token0() external view returns (address);
+    function token1() external view returns (address);
 }

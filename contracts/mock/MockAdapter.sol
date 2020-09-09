@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
@@ -29,7 +29,7 @@ contract MockAdapter is ProtocolAdapter {
 
     mapping (address => uint256) internal balanceOf;
 
-    constructor() public {
+    constructor() {
         balanceOf[msg.sender] = 1000;
     }
 

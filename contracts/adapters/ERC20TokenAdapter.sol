@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../shared/ERC20.sol";
@@ -40,7 +40,7 @@ contract ERC20TokenAdapter is TokenAdapter {
      * @return Empty Component array.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address) external view override returns (Component[] memory) {
+    function getComponents(address) external pure override returns (Component[] memory) {
         return new Component[](0);
     }
 

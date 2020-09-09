@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
@@ -23,44 +23,8 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { UniswapV1AssetAdapter } from "../../adapters/uniswap/UniswapV1AssetAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-
-
-/**
- * @dev Exchange contract interface.
- * Only the functions required for UniswapV1AssetInteractiveAdapter contract are added.
- * The Exchange contract is available here
- * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_exchange.vy.
- */
-interface Exchange {
-    function addLiquidity(
-        uint256,
-        uint256,
-        uint256
-    )
-        external
-        payable
-        returns (uint256);
-    function removeLiquidity(
-        uint256,
-        uint256,
-        uint256,
-        uint256
-    )
-        external
-        returns (uint256, uint256);
-}
-
-
-/**
- * @dev Factory contract interface.
- * Only the functions required for UniswapV1AssetInteractiveAdapter contract are added.
- * The Factory contract is available here
- * github.com/Uniswap/contracts-vyper/blob/master/contracts/uniswap_factory.vy.
- */
-interface Factory {
-    function getExchange(address) external view returns (address);
-    function getToken(address) external view returns (address);
-}
+import { Exchange } from "../../interfaces/Exchange.sol";
+import { Factory } from "../../interfaces/Factory.sol";
 
 
 /**
@@ -108,7 +72,7 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, UniswapV1AssetA
             uint256(1),
             tokenAmount,
             // solhint-disable-next-line not-rely-on-time
-            now + 1
+            block.timestamp + 1
         ) returns (uint256 addedLiquidity) {
             require(addedLiquidity > 0, "ULIA: deposit fail[1]");
         } catch Error(string memory reason) {
@@ -150,7 +114,7 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, UniswapV1AssetA
             uint256(1),
             uint256(1),
             // solhint-disable-next-line not-rely-on-time
-            now + 1
+            block.timestamp + 1
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
         } catch {

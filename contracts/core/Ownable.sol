@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 
@@ -39,7 +39,7 @@ abstract contract Ownable {
     /**
      * @notice Initializes owner variable with msg.sender address.
      */
-    constructor() internal {
+    constructor() {
         owner_ = msg.sender;
         emit OwnershipTransferred(address(0), msg.sender);
     }

@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.11;
+pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
@@ -78,7 +78,7 @@ contract PoolTogetherTokenAdapter is TokenAdapter {
     /**
      * @return Pool symbol.
      */
-    function getSymbol(address) internal view override returns (string memory) {
+    function getSymbol(address) internal pure override returns (string memory) {
         return "PLT";
     }
 
