@@ -21,7 +21,7 @@ import { TokenMetadata, Component } from "../../Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
 
-interface TheProtocol{
+interface TheProtocol {
     function loanPoolToUnderlying(address iToken)
         external
         view
@@ -36,7 +36,7 @@ interface TheProtocol{
  */
 contract BzxTokenAdapter is TokenAdapter {
     
-    TheProtocol internal constant bZxContract = TheProtocol(0xD8Ee69652E4e4838f2531732a46d1f7F584F0b7f);
+    adderss internal constant bZxContract = 0xD8Ee69652E4e4838f2531732a46d1f7F584F0b7f;
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -60,7 +60,7 @@ contract BzxTokenAdapter is TokenAdapter {
         Component[] memory underlyingTokens = new Component[](1);
 
         underlyingTokens[0] = Component({
-            token: bZxContract.loanPoolToUnderlying(token),
+            token: TheProtocol(bZxContract).loanPoolToUnderlying(token),
             tokenType: "ERC20",
             rate: uint256(1e18)
         });

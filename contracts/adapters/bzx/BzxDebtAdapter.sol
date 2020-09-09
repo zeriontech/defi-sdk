@@ -19,7 +19,7 @@ pragma experimental ABIEncoderV2;
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
-interface TheProtocol{
+interface TheProtocol {
     function getUserLoans(
         address user,
         uint256 start,
@@ -41,7 +41,7 @@ enum LoanType {
 }
 
 
-struct LoanReturnData{
+struct LoanReturnData {
     bytes32 loanId;
     uint96 endTimestamp;
     address loanToken;
@@ -59,7 +59,7 @@ struct LoanReturnData{
     uint256 maxSeizable;
 }
  
- 
+
 /**
  * @title Debt adapter for bZx protocol.
  * @dev Implementation of ProtocolAdapter interface.
