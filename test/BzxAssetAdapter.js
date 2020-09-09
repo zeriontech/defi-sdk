@@ -19,7 +19,7 @@ contract('BzxAssetAdapter', () => {
 
   // const bzxDaiAddress = '0x6b175474e89094c44da98b954eedeac495271d0f';
   // const bzxEthAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
-  // const bzxUSDCAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+  const bzxUSDCAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
   // const bzxWBTCAddress = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
   // const bzxLENDAddress = '0x80fB784B7eD66730e8b1DBd9820aFD29931aab03';
   // const bzxKNCAddress = '0xdd974d5c2e2928dea5f71b9825b8b646686bd200';
