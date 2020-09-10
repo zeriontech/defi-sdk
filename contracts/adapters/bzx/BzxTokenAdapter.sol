@@ -36,7 +36,7 @@ interface TheProtocol {
  */
 contract BzxTokenAdapter is TokenAdapter {
     
-    adderss internal constant bZxContract = 0xD8Ee69652E4e4838f2531732a46d1f7F584F0b7f;
+    address internal constant bZxContract = 0xD8Ee69652E4e4838f2531732a46d1f7F584F0b7f;
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
