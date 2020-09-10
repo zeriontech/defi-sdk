@@ -56,7 +56,12 @@ contract BerezkaTokenAdapter is TokenAdapter {
      * @return TokenMetadata struct with ERC20-style token info.
      * @dev Implementation of TokenAdapter interface function.
      */
-    function getMetadata(address token) external view override returns (TokenMetadata memory) {
+    function getMetadata(address token) 
+        external 
+        view 
+        override 
+        returns (TokenMetadata memory) 
+    {
         return TokenMetadata({
             token: token,
             name: ERC20(token).name(),
@@ -69,31 +74,34 @@ contract BerezkaTokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter interface function.
      */
-    function getComponents(address token) external view override returns (Component[] memory) {
-        address[] memory vaults      = governance.getVaults(token);
-        address[] memory assets      = governance.listTokens();
-        address[] memory debts       = governance.listProtocols();
-        uint256          length      = assets.length;
-        uint256          totalSupply = ERC20(token).totalSupply();
+    function getComponents(address token)
+        external
+        view
+        override
+        returns (Component[] memory)
+    {
+        address[] memory vaults = governance.getVaults(token);
+        address[] memory assets = governance.listTokens();
+        address[] memory debtAdapters = governance.listProtocols();
+        uint256 length = assets.length;
+        uint256 totalSupply = ERC20(token).totalSupply();
 
-        Component[] memory underlyingTokens = new Component[]((1 + length) * 2);
+        Component[] memory underlyingTokens = new Component[](1 + length);
 
         // Handle ETH
         {
-            (Component memory ethComponent, Component memory ethDebt) = _getEthComponents(vaults, totalSupply);
+            Component memory ethComponent =
+                _getEthComponents(vaults, totalSupply);
             underlyingTokens[0] = ethComponent;
-            underlyingTokens[1] = ethDebt;
         }
         
         // Handle ERC20 assets + debt
-        
         for (uint256 i = 0; i < length; i++) {
-            uint256 index = (1 + i) * 2;
+            uint256 index = i + 1;
             address asset = assets[i];
-            (Component memory tokenComponent, Component memory tokenDebt) = 
-                _getTokenComponents(asset, vaults, debts, totalSupply);
-            underlyingTokens[index]     = tokenComponent;
-            underlyingTokens[index + 1] = tokenDebt;
+            Component memory tokenComponent =
+                _getTokenComponents(asset, vaults, debtAdapters, totalSupply);
+            underlyingTokens[index] = tokenComponent;
         }
         
         return underlyingTokens;
@@ -104,7 +112,11 @@ contract BerezkaTokenAdapter is TokenAdapter {
     function _getEthComponents(
         address[] memory _vaults,
         uint256 _totalSupply
-    ) internal view returns (Component memory, Component memory) {
+    )
+        internal
+        view
+        returns (Component memory)
+    {
         address[] memory debtsInEth = governance.listEthProtocols();
 
         uint256 ethBalance = 0;
@@ -114,26 +126,26 @@ contract BerezkaTokenAdapter is TokenAdapter {
         for (uint256 j = 0; j < _vaults.length; j++) {
             address vault = _vaults[j];
             ethBalance += vault.balance;
-            ethDebt    += _computeDebt(debtsInEth, ETH, vault);
+            ethDebt += _computeDebt(debtsInEth, ETH, vault);
         }
 
         return (Component({
             token: ETH,
             tokenType: ERC20_TOKEN,
-            rate: ethBalance * 1e18 / _totalSupply
-        }), Component({
-            token: ETH,
-            tokenType: ERC20_TOKEN,
-            rate: -(ethDebt * 1e18 / _totalSupply)
+            rate: (ethBalance * 1e18 / _totalSupply) - (ethDebt * 1e18 / _totalSupply)
         }));
     }
 
     function _getTokenComponents(
         address _asset,
         address[] memory _vaults,
-        address[] memory _debts,
+        address[] memory _debtAdapters,
         uint256 _totalSupply
-    ) internal view returns (Component memory, Component memory) {
+    ) 
+        internal
+        view
+        returns (Component memory)
+    {
         uint256 componentBalance = 0;
         uint256 componentDebt = 0;
 
@@ -142,36 +154,34 @@ contract BerezkaTokenAdapter is TokenAdapter {
         for (uint256 j = 0; j < vaultsLength; j++) {
             address vault = _vaults[j];
             componentBalance += ERC20(_asset).balanceOf(vault);
-            componentDebt    += _computeDebt(_debts, _asset, vault);
+            componentDebt    += _computeDebt(_debtAdapters, _asset, vault);
         }
 
         // Asset amount
         return(Component({
             token: _asset,
             tokenType: ERC20_TOKEN,
-            rate: componentBalance * 1e18 / _totalSupply
-        }), Component({
-            token: _asset,
-            tokenType: ERC20_TOKEN,
-            rate: -(componentDebt * 1e18 / _totalSupply)
+            rate: (componentBalance * 1e18 / _totalSupply) - (componentDebt * 1e18 / _totalSupply)
         }));
     }
 
     function _computeDebt(
-        address[] memory _debts,
+        address[] memory _debtAdapters,
         address _asset,
         address _vault
-    ) internal view returns (uint256) {
+    ) 
+        internal
+        view
+        returns (uint256)
+    {
         // Compute negative amount for a given asset using all debt adapters
         uint256 componentDebt = 0;
-        uint256 debtsLength   = _debts.length;
+        uint256 debtsLength = _debtAdapters.length;
         for (uint256 k = 0; k < debtsLength; k++) {
-            ProtocolAdapter debtAdapter = ProtocolAdapter(_debts[k]);
+            ProtocolAdapter debtAdapter = ProtocolAdapter(_debtAdapters[k]);
             try debtAdapter.getBalance(_asset, _vault) returns (uint256 _amount) {
                 componentDebt += _amount;
-            } catch {
-                componentDebt += 0;
-            }
+            } catch {} // solhint-disable-line no-empty-blocks
         }
         return (componentDebt);
     }
