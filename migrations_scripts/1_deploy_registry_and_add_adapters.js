@@ -18,9 +18,11 @@ const DmmAssetAdapter = artifacts.require('DmmAssetAdapter');
 const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
 const GnosisProtocolAdapter = artifacts.require('GnosisProtocolAdapter');
+const HarvestStakingAdapter = artifacts.require('HarvestStakingAdapter');
 const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
 const KeeperDaoAssetAdapter = artifacts.require('KeeperDaoAssetAdapter');
+const KimchiStakingAdapter = artifacts.require('KimchiStakingAdapter');
 const KyberAdapter = artifacts.require('KyberAdapter');
 const ChaiAdapter = artifacts.require('ChaiAdapter');
 const DSRAdapter = artifacts.require('DSRAdapter');
@@ -35,6 +37,10 @@ const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
+const SashimiStakingAdapter = artifacts.require('SashimiStakingAdapter');
+const SushiStakingAdapter = artifacts.require('SushiStakingAdapter');
+const SwerveAdapter = artifacts.require('SwerveAdapter');
+const SwerveStakingAdapter = artifacts.require('SwerveStakingAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
@@ -147,7 +153,7 @@ const idleBestYieldDAI = '0x3fE7940616e5Bc47b0775a0dccf6237893353bB4';
 const idleBestYieldUSDC = '0x5274891bEC421B39D23760c04A6755eCB444797C';
 const idleBestYieldUSDT = '0xF34842d05A1c888Ca02769A633DF37177415C2f8';
 const idleBestYieldSUSD = '0xf52cdcd458bf455aed77751743180ec4a595fd3f';
-const idleBestYieldTUSD = '0xF34842d05A1c888Ca02769A633DF37177415C2f8';
+const idleBestYieldTUSD = '0xc278041fDD8249FE4c1Aad1193876857EEa3D68c';
 const idleBestYieldWBTC = '0x8C81121B15197fA0eEaEE1DC75533419DcfD3151';
 
 const idleRiskAdjustedDAI = '0xa14eA0E11121e6E951E87c66AFe460A00BCD6A16';
@@ -209,6 +215,45 @@ const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
 const maticAddress = '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0';
 
 const nxmAddress = '0xd7c49CEE7E9188cCa6AD8FF264C1DA2e69D4Cf3B';
+
+const sashimiAddress = '0xC28E27870558cF22ADD83540d2126da2e4b464c2';
+const uniSashimiWethAddress = '0x4b618087DaE7765823BC47fFbF38C8Ee8489F5CA';
+const uniSashimiElfAddress = '0x1629B0259E6E5c315B8Eea09fd1a4D0A26291F98';
+const uniElfWethAddress = '0xA6be7F7C6c454B364cDA446ea39Be9e5E4369DE8';
+const uniWbtcWethAddress = '0xBb2b8038a1640196FbE3e38816F3e67Cba72D940';
+
+const sushiAddress = '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2';
+const uniSushiWethAddress = '0xCE84867c3c02B05dc570d0135103d3fB9CC19433';
+const uniUsdtWethAddress = '0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852';
+const uniUsdcWethAddress = '0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc';
+const uniDaiWethAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
+const uniSusdWethAddress = '0xf80758aB42C3B07dA84053Fd88804bCB6BAA4b5c';
+const uniUmaWethAddress = '0x88d97d199b9ed37c29d846d00d443de980832a22';
+const uniBandWethAddress = '0xf421c3f2e695c2d4c0765379ccace8ade4a480d9';
+const uniLinkWethAddress = '0xa2107FA5B38d9bbd2C461D6EDf11B11A50F6b974';
+const uniCompWethAddress = '0xCFfDdeD873554F362Ac02f8Fb1f02E5ada10516f';
+const uniLendWethAddress = '0xaB3F9bF1D81ddb224a2014e98B238638824bCf20';
+const uniSnxWethAddress = '0x43AE24960e5534731Fc831386c07755A2dc33D47';
+const uniYfiWethAddress = '0x2fDbAdf3C4D5A8666Bc06645B8358ab803996E28';
+
+const kimchiAddress = '0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0';
+const uniKimchiWeth = '0xC4da39E646e7F5D233B89CA0F7B75344e7ddB2cc';
+const uniKimchiSushi = '0xC8d02f2669eF9aABE6B3b75E2813695AeD63748d';
+const uniKimchiTend = '0x1F4e87F70002867ab5df276d6A09A94E3eDa4f9A';
+
+const farmAddress = '0xa0246c9032bC3A600820415aE600c6388619A14D';
+const fDaiAddress = '0xe85C8581e60D7Cd32Bbfd86303d2A4FA6a951Dac';
+const fUsdcAddress = '0xc3F7ffb5d5869B3ade9448D094d81B0521e8326f';
+const fUsdtAddress = '0xc7EE21406BB581e741FBb8B21f213188433D9f2F';
+const balancerUsdc95Farm5Address = '0x0395e4A17fF11D36DaC9959f2D7c8Eca10Fe89c9';
+const uniUsdcFarmAddress = '0x514906FC121c7878424a5C928cad1852CC545892';
+const yfvAddress = '0x45f24BaEef268BB6d63AEe5129015d69702BCDfa';
+const yfiiAddress = '0xa1d0E215a23d7030842FC67cE582a6aFa3CCaB83';
+const ognAddress = '0x8207c1FfC5B6804F6024322CcF34F29c3541Ae26';
+const uniBasedSusdAddress = '0xaAD22f5543FCDaA694B68f94Be177B561836AE57';
+const uniPastaWethAddress = '0xE92346d9369Fe03b735Ed9bDeB6bdC2591b8227E';
+
+const swUsdAddress = '0x77C6E4a580c0dCE4E5c7a17d0bc077188a83A059';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -368,9 +413,38 @@ const iearn3AdapterTokens = [
   yUSDTv3,
   yBUSDv3,
 ];
+const harvestStakingAdapterTokens = [
+  farmAddress,
+  fDaiAddress,
+  fUsdcAddress,
+  fUsdtAddress,
+  balancerUsdc95Farm5Address,
+  uniUsdcFarmAddress,
+  daiAddress,
+  wethAddress,
+  linkAddress,
+  yfiAddress,
+  sushiAddress,
+  yfvAddress,
+  yfiiAddress,
+  ognAddress,
+  uniBasedSusdAddress,
+  uniPastaWethAddress,
+];
 const keeperDaoAdapterTokens = [
   kETHAddress,
   kWETHAddress,
+];
+const kimchiStakingAdapterTokens = [
+  kimchiAddress,
+  uniKimchiWeth,
+  uniKimchiSushi,
+  uniKimchiTend,
+  uniUsdtWethAddress,
+  uniUsdcWethAddress,
+  uniSusdWethAddress,
+  uniBandWethAddress,
+  uniYfiWethAddress,
 ];
 const kyberAdapterTokens = [
   kncAddress,
@@ -424,6 +498,42 @@ const poolTogetherAdapterTokens = [
   saiPoolAddress,
   daiPoolAddress,
   usdcPoolAddress,
+];
+const sashimiStakingAdapterTokens = [
+  sashimiAddress,
+  uniSashimiWethAddress,
+  uniSashimiElfAddress,
+  uniElfWethAddress,
+  uniWbtcWethAddress,
+  uniUsdtWethAddress,
+  uniUsdcWethAddress,
+  uniDaiWethAddress,
+  uniLinkWethAddress,
+  uniLendWethAddress,
+  uniSnxWethAddress,
+  uniYfiWethAddress,
+];
+console.log(sashimiStakingAdapterTokens)
+const sushiStakingAdapterTokens = [
+  uniSushiWethAddress,
+  uniUsdtWethAddress,
+  uniUsdcWethAddress,
+  uniDaiWethAddress,
+  uniSusdWethAddress,
+  uniUmaWethAddress,
+  uniBandWethAddress,
+  uniLinkWethAddress,
+  uniAmplWethAddress,
+  uniCompWethAddress,
+  uniLendWethAddress,
+  uniSnxWethAddress,
+  uniYfiWethAddress,
+];
+const swerveAssetAdapterTokens = [
+  swUsdAddress,
+];
+const swerveStakingAdapterTokens = [
+  swUsdAddress,
 ];
 const synthetixAssetAdapterTokens = [
   snxAddress,
@@ -682,6 +792,18 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(HarvestStakingAdapter, { from: accounts[0] });
+  adapters.push([HarvestStakingAdapter.address]);
+  tokens.push([harvestStakingAdapterTokens]);
+  protocolNames.push('Harvest');
+  metadata.push([
+    'Harvest',
+    'Your hard work is about to become easier with Harvest',
+    'harvest.finance',
+    'protocol-icons.s3.amazonaws.com/harvest.png',
+    '0',
+  ]);
+
   await deployer.deploy(KeeperDaoAssetAdapter, { from: accounts[0] });
   adapters.push([KeeperDaoAssetAdapter.address]);
   tokens.push([keeperDaoAdapterTokens]);
@@ -691,6 +813,18 @@ module.exports = async (deployer, network, accounts) => {
     'An on-chain liquidity underwriter for DeFi',
     'keeperdao.com',
     'protocol-icons.s3.amazonaws.com/keeperDAO.png',
+    '0',
+  ]);
+
+  await deployer.deploy(KimchiStakingAdapter, { from: accounts[0] });
+  adapters.push([KimchiStakingAdapter.address]);
+  tokens.push([[kimchiStakingAdapterTokens]]);
+  protocolNames.push('KIMCHI');
+  metadata.push([
+    'KIMCHI',
+    'Farm KIMCHI by staking LP tokens',
+    'kimchi.finance',
+    'protocol-icons.s3.amazonaws.com/kimchi.png',
     '0',
   ]);
 
@@ -837,6 +971,43 @@ module.exports = async (deployer, network, accounts) => {
     'Decentralized no-loss lottery',
     'pooltogether.com',
     'protocol-icons.s3.amazonaws.com/pooltogether.png',
+    '0',
+  ]);
+
+  await deployer.deploy(SashimiStakingAdapter, { from: accounts[0] });
+  adapters.push([SashimiStakingAdapter.address]);
+  tokens.push([[sashimiStakingAdapterTokens]]);
+  protocolNames.push('SashimiSwap');
+  metadata.push([
+    'SashimiSwap',
+    'Earn SASHIMI tokens by staking Uniswap V2 LP Tokens',
+    'sashimi.cool',
+    'protocol-icons.s3.amazonaws.com/sashimi.png',
+    '0',
+  ]);
+
+  await deployer.deploy(SushiStakingAdapter, { from: accounts[0] });
+  adapters.push([SushiStakingAdapter.address]);
+  tokens.push([[sushiStakingAdapterTokens]]);
+  protocolNames.push('SushiSwap');
+  metadata.push([
+    'SushiSwap',
+    'Stake Uniswap LP tokens to claim your very own yummy SUSHI!',
+    'sushiswap.org',
+    'protocol-icons.s3.amazonaws.com/sushi.png',
+    '0',
+  ]);
+
+  await deployer.deploy(SwerveAdapter, { from: accounts[0] });
+  await deployer.deploy(SwerveStakingAdapter, { from: accounts[0] });
+  adapters.push([SwerveAdapter.address, SwerveStakingAdapter.address]);
+  tokens.push([[swerveAdapterTokens, swerveStakingAdapterTokens]]);
+  protocolNames.push('Swerve');
+  metadata.push([
+    'Swerve',
+    'A fork that\'s 100% community owned and governed',
+    'swerve.fi',
+    'protocol-icons.s3.amazonaws.com/swerve.png',
     '0',
   ]);
 

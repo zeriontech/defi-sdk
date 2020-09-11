@@ -1,12 +1,14 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('CurveVestingAdapter');
+const ProtocolAdapter = artifacts.require('KimchiStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('CurveVestingAdapter', () => {
-  const crvAddress = '0xD533a949740bb3306d119CC777fa900bA034cd52';
-  const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
+contract('KimchiStakingAdapter', () => {
+  const kimchiAddress = '0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0';
+  const uniYfiWethAddress = '0x2fDbAdf3C4D5A8666Bc06645B8358ab803996E28';
+  // Random address with positive balances
+  const testAddress = '0x75c8e2dd57927eb0373e8e201ebf582406adcf45';
 
   let accounts;
   let adapterRegistry;
@@ -28,7 +30,7 @@ contract('CurveVestingAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Curve Vesting'],
+      ['KIMCHI'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -40,7 +42,8 @@ contract('CurveVestingAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        crvAddress,
+        kimchiAddress,
+        uniYfiWethAddress,
       ]]],
     )
       .send({
@@ -62,6 +65,7 @@ contract('CurveVestingAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
+        displayToken(result[0].adapterBalances[0].balances[1].base);
       });
   });
 });

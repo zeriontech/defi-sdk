@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('MaticStakingAdapter');
 const TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('MaticStakingAdapter', () => {
+contract('MaticStakingAdapter', () => {
   const maticAddress = '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 

@@ -21,23 +21,22 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @title Adapter for Curve protocol (vesting).
+ * @title Adapter for Swerve protocol.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CurveVestingAdapter is ProtocolAdapter {
+contract SwerveAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "ERC20";
-
-    address internal constant VESTING = 0x575CCD8e2D300e2377B43478339E364000318E2c;
+    string public constant override tokenType = "Swerve pool token";
 
     /**
-     * @return Amount of withdrawable CRV tokens for a given account.
+     * @return Amount of Swerve pool tokens held by the given account.
+     * @param token Address of the pool token!
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address, address account) external view override returns (uint256) {
-            return ERC20(VESTING).balanceOf(account);
+    function getBalance(address token, address account) external view override returns (uint256) {
+        return ERC20(token).balanceOf(account);
     }
 }
