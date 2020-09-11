@@ -230,8 +230,6 @@ const bzxMKRAddress = '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2';
 const bzxLINKAddress = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
 const bzxYFIAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
 const bzxUSDTAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7';
-const bzxBZRXAddress = '0x56d811088235F11C8920698a204A5010a788f4b3';
-const bzxvBZRXAddress = '0xB72B31907C1C95F3650b64b2469e08EdACeE5e8F';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -308,8 +306,6 @@ const bzxAssetAdapterTokens = [
   iLINKAddress,
   iYFIAddress,
   iUSDTAddress,
-  bzxBZRXAddress,
-  bzxvBZRXAddress,
 ];
 const bzxDebtAdapterTokens = [
   bzxDaiAddress,

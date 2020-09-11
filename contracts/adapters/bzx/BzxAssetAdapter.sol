@@ -31,21 +31,11 @@ contract BzxAssetAdapter is ProtocolAdapter {
 
     string public constant override tokenType = "iToken";
 
-    address public constant BZRXAddress = 0x56d811088235F11C8920698a204A5010a788f4b3;
-    
-    address public constant vBZRXAddress = 0xB72B31907C1C95F3650b64b2469e08EdACeE5e8F;
-    
     /**
      * @return Amount of iTokens held by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        if (token == BZRXAddress) {
-            return ERC20(BZRXAddress).balanceOf(account) + ERC20(vBZRXAddress).balanceOf(account);
-        } else if(token == vBZRXAddress) {
-            return 0;
-        } else {
-            return ERC20(token).balanceOf(account);
-        }
+        return ERC20(token).balanceOf(account);
     }
 }

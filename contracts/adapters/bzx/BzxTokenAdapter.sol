@@ -29,6 +29,14 @@ interface TheProtocol {
 }
 
 
+interface IToken {
+    function tokenPrice()
+        external
+        view
+        returns(uint256);
+}
+
+
 /**
  * @title Token adapter for iTokens.
  * @dev Implementation of TokenAdapter interface.
@@ -62,7 +70,7 @@ contract BzxTokenAdapter is TokenAdapter {
         underlyingTokens[0] = Component({
             token: TheProtocol(bZxContract).loanPoolToUnderlying(token),
             tokenType: "ERC20",
-            rate: uint256(1e18)
+            rate: IToken(token).tokenPrice()
         });
 
         return underlyingTokens;
