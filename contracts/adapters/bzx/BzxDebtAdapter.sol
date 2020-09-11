@@ -26,8 +26,7 @@ interface TheProtocol {
         uint256 count,
         LoanType loanType,
         bool isLender,
-        bool unsafeOnly
-        )
+        bool unsafeOnly)
         external
         view
         returns (LoanReturnData[] memory loansData);
@@ -83,7 +82,6 @@ contract BzxDebtAdapter is ProtocolAdapter {
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-
         LoanReturnData[] memory loans;
         loans = TheProtocol(bZxContract).getUserLoans(
             account, 
@@ -91,7 +89,8 @@ contract BzxDebtAdapter is ProtocolAdapter {
             TheProtocol(bZxContract).getActiveLoansCount(), 
             LoanType.All, 
             false, 
-            false);
+            false
+        );
 
         uint256 principal = 0;
         uint256 loanLenght = loans.length;

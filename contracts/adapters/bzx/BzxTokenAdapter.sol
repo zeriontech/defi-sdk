@@ -64,7 +64,6 @@ contract BzxTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-
         Component[] memory underlyingTokens = new Component[](1);
 
         underlyingTokens[0] = Component({
