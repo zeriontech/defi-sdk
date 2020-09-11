@@ -39,6 +39,8 @@ const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
 const SashimiStakingAdapter = artifacts.require('SashimiStakingAdapter');
 const SushiStakingAdapter = artifacts.require('SushiStakingAdapter');
+const SwerveAdapter = artifacts.require('SwerveAdapter');
+const SwerveStakingAdapter = artifacts.require('SwerveStakingAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
@@ -248,6 +250,7 @@ const ognAddress = '0x8207c1FfC5B6804F6024322CcF34F29c3541Ae26';
 const uniBasedSusdAddress = '0xaAD22f5543FCDaA694B68f94Be177B561836AE57';
 const uniPastaWethAddress = '0xE92346d9369Fe03b735Ed9bDeB6bdC2591b8227E';
 
+const swUsdAddress = '0x77C6E4a580c0dCE4E5c7a17d0bc077188a83A059';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -519,6 +522,12 @@ const sushiStakingAdapterTokens = [
   uniLendWethAddress,
   uniSnxWethAddress,
   uniYfiWethAddress,
+];
+const swerveAssetAdapterTokens = [
+  swUsdAddress,
+];
+const swerveStakingAdapterTokens = [
+  swUsdAddress,
 ];
 const synthetixAssetAdapterTokens = [
   snxAddress,
@@ -980,6 +989,19 @@ module.exports = async (deployer, network, accounts) => {
     'Stake Uniswap LP tokens to claim your very own yummy SUSHI!',
     'sushiswap.org',
     'protocol-icons.s3.amazonaws.com/sushi.png',
+    '0',
+  ]);
+
+  await deployer.deploy(SwerveAdapter, { from: accounts[0] });
+  await deployer.deploy(SwerveStakingAdapter, { from: accounts[0] });
+  adapters.push([SwerveAdapter.address, SwerveStakingAdapter.address]);
+  tokens.push([[swerveAdapterTokens, swerveStakingAdapterTokens]]);
+  protocolNames.push('Swerve');
+  metadata.push([
+    'Swerve',
+    'A fork that\'s 100% community owned and governed',
+    'swerve.fi',
+    'protocol-icons.s3.amazonaws.com/swerve.png',
     '0',
   ]);
 
