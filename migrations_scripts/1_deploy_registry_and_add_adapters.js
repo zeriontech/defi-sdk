@@ -37,6 +37,7 @@ const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
+const SashimiStakingAdapter = artifacts.require('SashimiStakingAdapter');
 const SushiStakingAdapter = artifacts.require('SushiStakingAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
@@ -209,6 +210,12 @@ const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
 const maticAddress = '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0';
 
 const nxmAddress = '0xd7c49CEE7E9188cCa6AD8FF264C1DA2e69D4Cf3B';
+
+const sashimiAddress = '0xC28E27870558cF22ADD83540d2126da2e4b464c2';
+const uniSashimiWethAddress = '0x4b618087DaE7765823BC47fFbF38C8Ee8489F5CA';
+const uniSashimiElfAddress = '0x1629B0259E6E5c315B8Eea09fd1a4D0A26291F98';
+const uniElfWethAddress = '0xA6be7F7C6c454B364cDA446ea39Be9e5E4369DE8';
+const uniWbtcWethAddress = '0xBb2b8038a1640196FbE3e38816F3e67Cba72D940';
 
 const sushiAddress = '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2';
 const uniSushiWethAddress = '0xCE84867c3c02B05dc570d0135103d3fB9CC19433';
@@ -483,6 +490,21 @@ const poolTogetherAdapterTokens = [
   daiPoolAddress,
   usdcPoolAddress,
 ];
+const sashimiStakingAdapterTokens = [
+  sashimiAddress,
+  uniSashimiWethAddress,
+  uniSashimiElfAddress,
+  uniElfWethAddress,
+  uniWbtcWethAddress,
+  uniUsdtWethAddress,
+  uniUsdcWethAddress,
+  uniDaiWethAddress,
+  uniLinkWethAddress,
+  uniLendWethAddress,
+  uniSnxWethAddress,
+  uniYfiWethAddress,
+];
+console.log(sashimiStakingAdapterTokens)
 const sushiStakingAdapterTokens = [
   uniSushiWethAddress,
   uniUsdtWethAddress,
@@ -934,6 +956,18 @@ module.exports = async (deployer, network, accounts) => {
     'Decentralized no-loss lottery',
     'pooltogether.com',
     'protocol-icons.s3.amazonaws.com/pooltogether.png',
+    '0',
+  ]);
+
+  await deployer.deploy(SashimiStakingAdapter, { from: accounts[0] });
+  adapters.push([SashimiStakingAdapter.address]);
+  tokens.push([[sashimiStakingAdapterTokens]]);
+  protocolNames.push('SashimiSwap');
+  metadata.push([
+    'SashimiSwap',
+    'Earn SASHIMI tokens by staking Uniswap V2 LP Tokens',
+    'sashimi.cool',
+    'protocol-icons.s3.amazonaws.com/sashimi.png',
     '0',
   ]);
 
