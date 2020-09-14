@@ -236,6 +236,25 @@ const uniLendWethAddress = '0xaB3F9bF1D81ddb224a2014e98B238638824bCf20';
 const uniSnxWethAddress = '0x43AE24960e5534731Fc831386c07755A2dc33D47';
 const uniYfiWethAddress = '0x2fDbAdf3C4D5A8666Bc06645B8358ab803996E28';
 
+const sushiSushiWethAddress = '0x795065dCc9f64b5614C407a6EFDC400DA6221FB0';
+const sushiUsdtWethAddress = '0x06da0fd433C1A5d7a4faa01111c044910A184553';
+const sushiUsdcWethAddress = '0x397FF1542f962076d0BFE58eA045FfA2d347ACa0';
+const sushiDaiWethAddress = '0xC3D03e4F041Fd4cD388c549Ee2A29a9E5075882f';
+const sushiSusdWethAddress = '0xF1F85b2C54a2bD284B1cf4141D64fD171Bd85539';
+const sushiUmaWethAddress = '0x001b6450083e531a5a7bf310bd2c1af4247e23d4';
+const sushiBandWethAddress = '0xA75F7c2F025f470355515482BdE9EFA8153536A8';
+const sushiLinkWethAddress = '0xC40D16476380e4037e6b1A2594cAF6a6cc8Da967';
+const sushiAmplWethAddress = '0xCb2286d9471cc185281c4f763d34A962ED212962';
+const sushiCompWethAddress = '0x31503dcb60119a812fee820bb7042752019f2355';
+const sushiLendWethAddress = '0x5E63360E891BD60C69445970256C260b0A6A54c6';
+const sushiSnxWethAddress = '0xA1d7b2d891e3A1f9ef4bBC5be20630C2FEB1c470';
+const sushiYfiWethAddress = '0x088ee5007C98a9677165D78dD2109AE4a3D04d0C';
+const sushiRenWethAddress = '0x611CDe65deA90918c0078ac0400A72B0D25B9bb1';
+const sushiBaseSusdAddress = '0xaAD22f5543FCDaA694B68f94Be177B561836AE57';
+const sushiSrmWethAddress = '0x117d4288B3635021a3D612FE05a3Cbf5C717fEf2';
+const sushiYam2WethAddress = '0x95b54C8Da12BB23F7A5F6E26C38D04aCC6F81820';
+const sushiCrvWethAddress = '0x58Dc5a51fE44589BEb22E8CE67720B5BC5378009';
+
 const kimchiAddress = '0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0';
 const uniKimchiWeth = '0xC4da39E646e7F5D233B89CA0F7B75344e7ddB2cc';
 const uniKimchiSushi = '0xC8d02f2669eF9aABE6B3b75E2813695AeD63748d';
@@ -513,21 +532,25 @@ const sashimiStakingAdapterTokens = [
   uniSnxWethAddress,
   uniYfiWethAddress,
 ];
-console.log(sashimiStakingAdapterTokens)
 const sushiStakingAdapterTokens = [
-  uniSushiWethAddress,
-  uniUsdtWethAddress,
-  uniUsdcWethAddress,
-  uniDaiWethAddress,
-  uniSusdWethAddress,
-  uniUmaWethAddress,
-  uniBandWethAddress,
-  uniLinkWethAddress,
-  uniAmplWethAddress,
-  uniCompWethAddress,
-  uniLendWethAddress,
-  uniSnxWethAddress,
-  uniYfiWethAddress,
+  sushiSushiWethAddress,
+  sushiUsdtWethAddress,
+  sushiUsdcWethAddress,
+  sushiDaiWethAddress,
+  sushiSusdWethAddress,
+  sushiUmaWethAddress,
+  sushiBandWethAddress,
+  sushiLinkWethAddress,
+  sushiAmplWethAddress,
+  sushiCompWethAddress,
+  sushiLendWethAddress,
+  sushiSnxWethAddress,
+  sushiYfiWethAddress,
+  sushiRenWethAddress,
+  sushiBaseSusdAddress,
+  sushiSrmWethAddress,
+  sushiYam2WethAddress,
+  sushiCrvWethAddress,
 ];
 const swerveAssetAdapterTokens = [
   swUsdAddress,
