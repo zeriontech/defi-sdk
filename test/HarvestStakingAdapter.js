@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('HarvestStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('HarvestStakingAdapter', () => {
+contract('HarvestStakingAdapter', () => {
   const fusdcAddress = '0xc3F7ffb5d5869B3ade9448D094d81B0521e8326f';
   const farmAddress = '0xa0246c9032bC3A600820415aE600c6388619A14D';
   // Random address with positive balances

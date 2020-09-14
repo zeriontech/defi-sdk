@@ -21,14 +21,13 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @dev PooledStaking contract interface.
+ * @dev TokenController contract interface.
  * Only the functions required for NexusStakingAdapter contract are added.
- * The PooledStaking contract is available here
- * https://github.com/NexusMutual/smart-contracts/blob/master/contracts/PooledStaking.sol.
+ * The TokenController contract is available here
+ * github.com/somish/NexusMutual/blob/master/contracts/TokenController.sol.
  */
-interface PooledStaking {
-    function stakerDeposit(address) external view returns (uint256);
-    function stakerReward(address) external view returns (uint256);
+interface TokenController {
+    function totalBalanceOf(address) external view returns (uint256);
 }
 
 
@@ -43,16 +42,13 @@ contract NexusStakingAdapter is ProtocolAdapter {
 
     string public constant override tokenType = "ERC20";
 
-    address internal constant POOLED_STAKING = 0x84EdfFA16bb0b9Ab1163abb0a13Ff0744c11272f;
+    address internal constant TOKEN_CONTROLLER = 0x5407381b6c251cFd498ccD4A1d877739CB7960B8;
 
     /**
      * @return Amount of staked tokens + rewards by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address, address account) external view override returns (uint256) {
-        uint256 totalBalance = 0;
-        totalBalance += PooledStaking(POOLED_STAKING).stakerDeposit(account);
-        totalBalance += PooledStaking(POOLED_STAKING).stakerReward(account);
-        return totalBalance;
+        return TokenController(TOKEN_CONTROLLER).totalBalanceOf(account);
     }
 }
