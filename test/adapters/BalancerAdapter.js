@@ -2,11 +2,12 @@ import displayToken from '../helpers/displayToken';
 
 const ASSET_ADAPTER = '01';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./BalancerAdapter');
-const TokenAdapter = artifacts.require('./BalancerTokenAdapter');
-const CompoundTokenAdapter = artifacts.require('./CompoundTokenAdapter');
-const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
+const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
+const ProtocolAdapter = artifacts.require('ERC20ProtocolAdapter');
+const TokenAdapter = artifacts.require('BalancerTokenAdapter');
+const CompoundTokenAdapter = artifacts.require('CompoundTokenAdapter');
+const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('BalancerAdapter', () => {
   const wethDai3070PoolAddress = '0x53b89CE35928dda346c574D9105A5479CB87231c';

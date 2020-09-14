@@ -2,10 +2,11 @@ import displayToken from '../helpers/displayToken';
 
 const ASSET_ADAPTER = '01';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./IdleAdapter');
-const TokenAdapter = artifacts.require('./IdleTokenAdapter');
-const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
+const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
+const ProtocolAdapter = artifacts.require('IdleAdapter');
+const TokenAdapter = artifacts.require('IdleTokenAdapter');
+const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('IdleAdapter', () => {
   const idleDAIAddress = '0x78751B12Da02728F467A44eAc40F5cbc16Bd7934';

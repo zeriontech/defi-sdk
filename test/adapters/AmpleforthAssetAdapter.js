@@ -2,8 +2,8 @@ import displayToken from '../helpers/displayToken';
 
 const ASSET_ADAPTER = '01';
 
-const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('AmpleforthAssetAdapter');
+const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
+const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');const ProtocolAdapter = artifacts.require('AmpleforthAssetAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('AmpleforthAssetAdapter', () => {

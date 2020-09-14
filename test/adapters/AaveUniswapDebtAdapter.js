@@ -2,8 +2,8 @@ import displayToken from '../helpers/displayToken';
 
 const DEBT_ADAPTER = '02';
 
-const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('AaveDebtAdapter');
+const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
+const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');const ProtocolAdapter = artifacts.require('AaveDebtAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('AaveUniswapDebtAdapter', () => {

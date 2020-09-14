@@ -2,9 +2,10 @@ import displayToken from '../helpers/displayToken';
 
 const ASSET_ADAPTER = '01';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./SynthetixAssetAdapter');
-const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
+const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
+const ProtocolAdapter = artifacts.require('SynthetixAssetAdapter');
+const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('SynthetixAssetAdapter', () => {
   const snxAddress = '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F';

@@ -2,9 +2,10 @@ import displayToken from '../helpers/displayToken';
 
 const DEBT_ADAPTER = '02';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./SynthetixDebtAdapter');
-const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
+const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
+const ProtocolAdapter = artifacts.require('SynthetixDebtAdapter');
+const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('SynthetixDebtAdapter', () => {
   const susdAddress = '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51';

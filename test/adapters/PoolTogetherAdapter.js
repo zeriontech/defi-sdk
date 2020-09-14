@@ -2,10 +2,11 @@ import displayToken from '../helpers/displayToken';
 
 const ASSET_ADAPTER = '01';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./PoolTogetherAdapter');
-const TokenAdapter = artifacts.require('./PoolTogetherTokenAdapter');
-const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
+const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
+const ProtocolAdapter = artifacts.require('PoolTogetherAdapter');
+const TokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
+const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('PoolTogetherAdapter', () => {
   const saiPoolAddress = '0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84';

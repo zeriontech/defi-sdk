@@ -2,10 +2,11 @@ import displayToken from '../helpers/displayToken';
 
 const ASSET_ADAPTER = '01';
 
-const AdapterRegistry = artifacts.require('./AdapterRegistry');
-const ProtocolAdapter = artifacts.require('./BancorAdapter');
-const TokenAdapter = artifacts.require('./BancorTokenAdapter');
-const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
+const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
+const ProtocolAdapter = artifacts.require('ERC20ProtocolAdapter');
+const TokenAdapter = artifacts.require('BancorTokenAdapter');
+const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('BancorAdapter', () => {
   const bntEthPoolAddress = '0xb1CD6e4153B2a390Cf00A6556b0fC1458C4A5533';

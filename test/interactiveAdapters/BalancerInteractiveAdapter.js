@@ -360,7 +360,8 @@ contract.only('BalancerAssetInteractiveAdapter', () => {
             BALANCER_ASSET_ADAPTER,
             ACTION_WITHDRAW,
             [
-              [poolAddress, poolAddress, AMOUNT_RELATIVE],
+              [poolAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [poolAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
             web3.eth.abi.encodeParameter('address', mkrAddress),
           ],
