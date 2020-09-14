@@ -223,15 +223,12 @@ const uniElfWethAddress = '0xA6be7F7C6c454B364cDA446ea39Be9e5E4369DE8';
 const uniWbtcWethAddress = '0xBb2b8038a1640196FbE3e38816F3e67Cba72D940';
 
 const sushiAddress = '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2';
-const uniSushiWethAddress = '0xCE84867c3c02B05dc570d0135103d3fB9CC19433';
 const uniUsdtWethAddress = '0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852';
 const uniUsdcWethAddress = '0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc';
 const uniDaiWethAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
 const uniSusdWethAddress = '0xf80758aB42C3B07dA84053Fd88804bCB6BAA4b5c';
-const uniUmaWethAddress = '0x88d97d199b9ed37c29d846d00d443de980832a22';
 const uniBandWethAddress = '0xf421c3f2e695c2d4c0765379ccace8ade4a480d9';
 const uniLinkWethAddress = '0xa2107FA5B38d9bbd2C461D6EDf11B11A50F6b974';
-const uniCompWethAddress = '0xCFfDdeD873554F362Ac02f8Fb1f02E5ada10516f';
 const uniLendWethAddress = '0xaB3F9bF1D81ddb224a2014e98B238638824bCf20';
 const uniSnxWethAddress = '0x43AE24960e5534731Fc831386c07755A2dc33D47';
 const uniYfiWethAddress = '0x2fDbAdf3C4D5A8666Bc06645B8358ab803996E28';
@@ -533,6 +530,7 @@ const sashimiStakingAdapterTokens = [
   uniYfiWethAddress,
 ];
 const sushiStakingAdapterTokens = [
+  sushiAddress,
   sushiSushiWethAddress,
   sushiUsdtWethAddress,
   sushiUsdcWethAddress,
@@ -552,7 +550,7 @@ const sushiStakingAdapterTokens = [
   sushiYam2WethAddress,
   sushiCrvWethAddress,
 ];
-const swerveAssetAdapterTokens = [
+const swerveAdapterTokens = [
   swUsdAddress,
 ];
 const swerveStakingAdapterTokens = [
