@@ -25,13 +25,11 @@ const ZERO = '0x0000000000000000000000000000000000000000';
 const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const UniswapV1Adapter = artifacts.require('./UniswapV1ExchangeInteractiveAdapter');
 const BalancerAdapter = artifacts.require('./BalancerInteractiveAdapter');
-const BalancerTokenAdapter = artifacts.require('./BalancerTokenAdapter');
-const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('BalancerAssetInteractiveAdapter', () => {
+contract.only('BalancerAssetInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const mkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
@@ -44,8 +42,6 @@ contract('BalancerAssetInteractiveAdapter', () => {
   let protocolAdapterRegistry;
   let uniswapAdapterAddress;
   let balancerAdapterAddress;
-  let balancerTokenAdapterAddress;
-  let erc20TokenAdapterAddress;
 
   let DAI;
   let MKR;
@@ -60,14 +56,6 @@ contract('BalancerAssetInteractiveAdapter', () => {
     await BalancerAdapter.new({ from: accounts[0] })
       .then((result) => {
         balancerAdapterAddress = result.address;
-      });
-    await BalancerTokenAdapter.new({ from: accounts[0] })
-      .then((result) => {
-        balancerTokenAdapterAddress = result.address;
-      });
-    await ERC20TokenAdapter.new({ from: accounts[0] })
-      .then((result) => {
-        erc20TokenAdapterAddress = result.address;
       });
     await ProtocolAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
@@ -86,14 +74,6 @@ contract('BalancerAssetInteractiveAdapter', () => {
         [],
         [],
       ],
-    )
-      .send({
-        from: accounts[0],
-        gas: '1000000',
-      });
-    await protocolAdapterRegistry.methods.addTokenAdapters(
-      [web3.utils.toHex('ERC20'), web3.utils.toHex('Balancer Pool Token')],
-      [erc20TokenAdapterAddress, balancerTokenAdapterAddress],
     )
       .send({
         from: accounts[0],
@@ -148,18 +128,19 @@ contract('BalancerAssetInteractiveAdapter', () => {
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [daiAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
+            [
+              [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
             web3.eth.abi.encodeParameter('address', mkrAddress),
           ],
           // deposit to pool using mkr
           [
             BALANCER_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            [mkrAddress, wethAddress],
-            [convertToShare(1), convertToShare(1)],
-            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
+            [
+              [mkrAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
             web3.eth.abi.encodeParameter(
               'address',
               poolAddress,
@@ -168,98 +149,9 @@ contract('BalancerAssetInteractiveAdapter', () => {
         ],
         // inputs
         [
-          [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+          [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
         ],
-        // outputs
-        [
-          [poolAddress, '1000000000000000000'],
-        ],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-        }));
-    });
-
-    it('should not buy pool with inconsistent arrays', async () => {
-      let daiAmount;
-      await router.methods.startExecution(
-        // actions
-        [
-          // exchange 1 ETH to DAI like we had dai initially
-          [
-            UNISWAP_V1_EXCHANGE_ADAPTER,
-            ACTION_DEPOSIT,
-            [ethAddress],
-            ['1000000000000000000'],
-            [AMOUNT_ABSOLUTE],
-            web3.eth.abi.encodeParameter('address', daiAddress),
-          ],
-        ],
-        // inputs
-        [],
-        // outputs
-        [],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-          value: web3.utils.toWei('1', 'ether'),
-        });
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-          daiAmount = result;
-        });
-      await DAI.methods.approve(router.options.address, daiAmount.toString())
-        .send({
-          from: accounts[0],
-          gas: 1000000,
-        });
-      await MKR.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`mkr amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-        });
-      await pool.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`pool amount before is ${web3.utils.fromWei(result, 'ether')}`);
-        });
-      await web3.eth.getBalance(accounts[0])
-        .then((result) => {
-          console.log(`eth amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-        });
-      await expectRevert(router.methods.startExecution(
-        // actions
-        [
-          // exchange DAI to MKR to make swap
-          [
-            UNISWAP_V1_EXCHANGE_ADAPTER,
-            ACTION_DEPOSIT,
-            [daiAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', mkrAddress),
-          ],
-          // deposit to pool using mkr
-          [
-            BALANCER_ASSET_ADAPTER,
-            ACTION_DEPOSIT,
-            [mkrAddress],
-            [convertToShare(1), convertToShare(1)], // all MKR
-            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter(
-              'address',
-              poolAddress,
-            ),
-          ],
-        ],
-        // inputs
-        [
-          [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-        ],
+        [0, ZERO],
         // outputs
         [
           [poolAddress, '1000000000000000000'],
@@ -280,14 +172,15 @@ contract('BalancerAssetInteractiveAdapter', () => {
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [ethAddress],
-            ['1000000000000000000'],
-            [AMOUNT_ABSOLUTE],
+            [
+              [ethAddress, '1000000000000000000', AMOUNT_ABSOLUTE],
+            ],
             web3.eth.abi.encodeParameter('address', daiAddress),
           ],
         ],
         // inputs
         [],
+        [0, ZERO],
         // outputs
         [],
       )
@@ -328,18 +221,18 @@ contract('BalancerAssetInteractiveAdapter', () => {
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [daiAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
+            [
+              [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
             web3.eth.abi.encodeParameter('address', mkrAddress),
           ],
           // deposit to pool using mkr
           [
             BALANCER_ASSET_ADAPTER,
             ACTION_DEPOSIT,
-            [mkrAddress],
-            [convertToShare(1)], // all MKR
-            [AMOUNT_RELATIVE],
+            [
+              [mkrAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
             web3.eth.abi.encodeParameter(
               'address',
               poolAddress,
@@ -348,8 +241,9 @@ contract('BalancerAssetInteractiveAdapter', () => {
         ],
         // inputs
         [
-          [daiAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+          [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
         ],
+        [0, ZERO],
         // outputs
         [
           [poolAddress, '1000000000000000000'],
@@ -420,24 +314,25 @@ contract('BalancerAssetInteractiveAdapter', () => {
           [
             BALANCER_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            [poolAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
+            [
+              [poolAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
             web3.eth.abi.encodeParameter('address', mkrAddress),
           ],
           // exchange MKR to DAI
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [mkrAddress],
-            [web3.utils.toWei('100', 'ether')], // all MKR
-            [AMOUNT_ABSOLUTE],
+            [
+              [mkrAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
+            ],
             web3.eth.abi.encodeParameter('address', daiAddress),
           ],
         ],
         [
-          [poolAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+          [poolAddress, convertToShare(1), AMOUNT_RELATIVE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -464,68 +359,25 @@ contract('BalancerAssetInteractiveAdapter', () => {
           [
             BALANCER_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            [poolAddress, poolAddress],
-            [convertToShare(1), convertToShare(1)],
-            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
+            [
+              [poolAddress, poolAddress, AMOUNT_RELATIVE],
+            ],
             web3.eth.abi.encodeParameter('address', mkrAddress),
           ],
           // exchange MKR to DAI
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [mkrAddress],
-            [convertToShare(1)], // all MKR
-            [AMOUNT_RELATIVE],
+            [
+              [mkrAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
             web3.eth.abi.encodeParameter('address', daiAddress),
           ],
         ],
         [
-          [poolAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+          [poolAddress, convertToShare(1), AMOUNT_RELATIVE],
         ],
-        [],
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-        }));
-    });
-
-    it('should not sell pool with inconsistent arrays', async () => {
-      let poolAmount;
-      await pool.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          poolAmount = result;
-        });
-      await pool.methods.approve(router.options.address, poolAmount)
-        .send({
-          from: accounts[0],
-          gas: 1000000,
-        });
-      await expectRevert(router.methods.startExecution(
-        [
-          // withdraw pool tokens
-          [
-            BALANCER_ASSET_ADAPTER,
-            ACTION_WITHDRAW,
-            [poolAddress],
-            [convertToShare(1), convertToShare(1)],
-            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', mkrAddress),
-          ],
-          // exchange MKR to DAI
-          [
-            UNISWAP_V1_EXCHANGE_ADAPTER,
-            ACTION_DEPOSIT,
-            [mkrAddress],
-            [convertToShare(1)], // all MKR
-            [AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', daiAddress),
-          ],
-        ],
-        [
-          [poolAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
-        ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -563,24 +415,25 @@ contract('BalancerAssetInteractiveAdapter', () => {
           [
             BALANCER_ASSET_ADAPTER,
             ACTION_WITHDRAW,
-            [poolAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
+            [
+              [poolAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
             web3.eth.abi.encodeParameter('address', mkrAddress),
           ],
           // exchange MKR to DAI
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [mkrAddress],
-            [convertToShare(1)], // all MKR
-            [AMOUNT_RELATIVE],
+            [
+              [mkrAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
             web3.eth.abi.encodeParameter('address', daiAddress),
           ],
         ],
         [
-          [poolAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
+          [poolAddress, convertToShare(1), AMOUNT_RELATIVE],
         ],
+        [0, ZERO],
         [],
       )
         .send({

@@ -22,15 +22,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@0x/sol-compiler": "4.0.8",
-    "@babel/core": "7.9.6",
-    "@babel/preset-env": "7.9.6",
-    "@babel/register": "7.9.0",
-    "@truffle/hdwallet-provider": "1.0.35",
+    "@0x/sol-compiler": "4.1.1",
+    "@babel/core": "7.11.6",
+    "@babel/preset-env": "7.11.5",
+    "@babel/register": "7.11.5",
+    "@truffle/hdwallet-provider": "1.0.44",
     "core-js": "3.6.5",
     "dotenv": "8.2.0",
-    "regenerator-runtime": "0.13.5",
-    "truffle": "5.1.43"
+    "regenerator-runtime": "0.13.7",
+    "truffle": "5.1.44"
   },
   "devDependencies": {
     "@codechecks/client": "0.1.10",
