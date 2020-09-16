@@ -7,6 +7,9 @@ const BalancerAdapter = artifacts.require('BalancerAdapter');
 const BancorAdapter = artifacts.require('BancorAdapter');
 const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
 const CompoundDebtAdapter = artifacts.require('CompoundDebtAdapter');
+const CreamAssetAdapter = artifacts.require('CreamAssetAdapter');
+const CreamDebtAdapter = artifacts.require('CreamDebtAdapter');
+const CreamStakingAdapter = artifacts.require('CreamStakingAdapter');
 const CurveAdapter = artifacts.require('CurveAdapter');
 const CurveStakingAdapter = artifacts.require('CurveStakingAdapter');
 const CurveVestingAdapter = artifacts.require('CurveVestingAdapter');
@@ -130,6 +133,37 @@ const cZRXAddress = '0xB3319f5D18Bc0D84dD1b4825Dcde5d5f7266d407';
 const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
 const cWBTCAddress = '0xC11b1268C1A384e55C48c2391d8d480264A3A7F4';
 const cUSDTAddress = '0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9';
+
+const crEthAddress = '0xD06527D5e56A3495252A528C4987003b712860eE';
+const crUsdtAddress = '0x797AAB1ce7c01eB727ab980762bA88e7133d2157';
+const crUsdcAddress = '0x44fbeBd2F576670a6C33f6Fc0B00aA8c5753b322';
+const crCompAddress = '0x19D1666f543D42ef17F66E376944A22aEa1a8E46';
+const crBalAddress = '0xcE4Fe9b4b8Ff61949DCfeB7e03bc9FAca59D2Eb3';
+const crYfiAddress = '0xCbaE0A83f4f9926997c8339545fb8eE32eDc6b76';
+const crYCrvAddress = '0x9baF8a5236d44AC410c0186Fe39178d5AAD0Bb87';
+const crLinkAddress = '0x697256CAA3cCaFD62BB6d3Aa1C7C5671786A5fD9';
+const crCreamAddress = '0x892B14321a4FCba80669aE30Bd0cd99a7ECF6aC0';
+const crLendAddress = '0x8B86e0598616a8d4F1fdAE8b59E55FB5Bc33D0d6';
+const crCrvAddress = '0xc7Fd8Dcee4697ceef5a2fd4608a7BD6A94C77480';
+const crRenBtcAddress = '0x17107f40d70f4470d20CB3f138a052cAE8EbD4bE';
+const crBusdAddress = '0x1FF8CDB51219a8838b52E9cAc09b71e591BC998e';
+const crMtaAddress = '0x3623387773010d9214B10C551d6e7fc375D31F58';
+const crYYCrvAddress = '0x4EE15f44c6F0d8d1136c83EfD2e8E4AC768954c6';
+const crSushiAddress = '0x338286C0BC081891A4Bda39C7667ae150bf5D206';
+const crFttAddress = '0x10FDBD1e48eE2fD9336a482D746138AE19e649Db';
+const crYEthAddress = '0x01da76DEa59703578040012357b81ffE62015C2d';
+const crSrmAddress = '0xef58b2d5A1b8D3cDE67b8aB054dC5C831E9Bc025';
+
+const  balancerCream80Weth20Address = '0x5a82503652d05B21780f33178FDF53d31c29B916';
+const  uniCreamWethAddress = '0xddF9b7a31b32EBAF5c064C80900046C9e5b7C65F';
+const  creamCreamUsdcAddress = '0x4Fd2d9d6eF05E13Bf0B167509151A4EC3D4d4b93';
+const  creamCreamWethAddress = '0xa49b3c7C260ce8A7C665e20Af8aA6E099A86cf8A';
+const  creamCrCreamCrYfiAddress = '0xA65405e0dD378C65308deAE51dA9e3BcEBb81261';
+const  creamCrYEthCrYYCrvAddress = '0xB3284F2F22563F27cEF2912637b6A00F162317c4';
+const  creamCrYEth_WethAddrvess = '0x6a3B875854f5518E85Ef97620c5e7de75bbc3fA0';
+const  creamYYCrvUsdcAddress = '0x661b94d96ADb18646e791A06576F7905a8d1BEF6';
+const  creamYfiUsdcAddress = '0x7350c6D00D63AB5988250aea347f277c19BEA785';
+const  creamAddress = '0x2ba592F78dB6436527729929AAf6c908497cB200';
 
 const mDAIAddress = '0x06301057D77D54B6e14c7FafFB11Ffc7Cab4eaa7';
 const mETHAddress = '0xdF9307DFf0a1B57660F60f9457D32027a55ca0B2';
@@ -271,6 +305,15 @@ const uniPastaWethAddress = '0xE92346d9369Fe03b735Ed9bDeB6bdC2591b8227E';
 
 const swUsdAddress = '0x77C6E4a580c0dCE4E5c7a17d0bc077188a83A059';
 
+const compAddress = '0xc00e94Cb662C3520282E6f5717214004A7f26888';
+const creamAddress = '0x2ba592F78dB6436527729929AAf6c908497cB200';
+const renBtcAddress = '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D';
+const mtaAddress = '0xa3BeD4E1c75D00fa6f4E5E6922DB7261B5E9AcD2';
+const yYCrvAddress = '0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c';
+const fttAddress = '0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9';
+const yEthAddress = '0xe1237aA7f535b0CC33Fd973D66cBf830354D16c7';
+const srmAddress = '0x476c5E26a75bd202a9683ffD34359C0CC15be0fF';
+
 const aaveAssetAdapterTokens = [
   aDaiAddress,
   aTusdAddress,
@@ -357,6 +400,65 @@ const compoundDebtAdapterTokens = [
   wbtcAddress,
   usdtAddress,
 ];
+
+creamAssetAdapterTokens = [
+  crEthAddress,
+  crUsdtAddress,
+  crUsdcAddress,
+  crCompAddress,
+  crBalAddress,
+  crYfiAddress,
+  crYCrvAddress,
+  crLinkAddress,
+  crCreamAddress,
+  crLendAddress,
+  crCrvAddress,
+  crRenBtcAddress,
+  crBusdAddress,
+  crMtaAddress,
+  crYYCrvAddress,
+  crSushiAddress,
+  crFttAddress,
+  crYEthAddress,
+  crSrmAddress,
+];
+
+creamDebtAdapterTokens = [
+  ethAddress,
+  usdtAddress,
+  usdcAddress,
+  compAddress,
+  balAddress,
+  yfiAddress,
+  yCrvAddress,
+  linkAddress,
+  creamAddress,
+  lendAddress,
+  crvAddress,
+  renBtcAddress,
+  busdAddress,
+  mtaAddress,
+  yYCrvAddress,
+  sushiAddress,
+  fttAddress,
+  yEthAddress,
+  srmAddress,
+];
+
+creamStakingAdapterTokens = [
+  balancerCream80Weth20Address,
+  uniCreamWethAddress,
+  creamCreamUsdcAddress,
+  creamCreamWethAddress,
+  creamCrCreamCrYfiAddress,
+  creamCrYEthCrYYCrvAddress,
+  creamCrYEth_WethAddrvess,
+  creamYYCrvUsdcAddress,
+  creamYfiUsdcAddress,
+  crCreamAddress,
+  creamAddress,
+];
+
 const curveAdapterTokens = [
   cCrvAddress,
   tCrvAddress,
@@ -378,7 +480,7 @@ const curveStakingAdapterTokens = [
   renCrvAddress,
   sbtcCrvAddress,
 ];
-const CurveVestingAdapterTokens = [
+const curveVestingAdapterTokens = [
   crvAddress,
 ];
 const ddexAdapterTokens = [
@@ -670,6 +772,20 @@ module.exports = async (deployer, network, accounts) => {
     'Decentralized lending & borrowing protocol',
     'compound.finance',
     'protocol-icons.s3.amazonaws.com/compound.png',
+    '0',
+  ]);
+
+  await deployer.deploy(CreamAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(CreamDebtAdapter, { from: accounts[0] });
+  await deployer.deploy(CreamStakingAdapter, { from: accounts[0] });
+  adapters.push([CreamAssetAdapter.address, CreamDebtAdapter.address, CreamStakingAdapter.address]);
+  tokens.push([creamAssetAdapterTokens, creamDebtAdapterTokens, creamStakingAdapterTokens]);
+  protocolNames.push('C.R.E.A.M.');
+  metadata.push([
+    'C.R.E.A.M.',
+    'A lending platform based on Compound Finance and exchange platform based on Balancer Labs',
+    'cream.finance',
+    'protocol-icons.s3.amazonaws.com/cream.png',
     '0',
   ]);
 
