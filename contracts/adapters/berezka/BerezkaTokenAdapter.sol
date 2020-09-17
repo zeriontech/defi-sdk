@@ -35,6 +35,7 @@ interface IBerezkaTokenAdapterGovernance {
     function getVaults(address _token) external view returns (address[] memory);
 }
 
+
 /**
  * @title Token adapter for Berezka DAO.
  * @dev Implementation of TokenAdapter interface.
@@ -90,18 +91,16 @@ contract BerezkaTokenAdapter is TokenAdapter {
 
         // Handle ETH
         {
-            Component memory ethComponent =
-                _getEthComponents(vaults, totalSupply);
+            Component memory ethComponent = _getEthComponents(vaults, totalSupply);
             underlyingTokens[0] = ethComponent;
         }
         
         // Handle ERC20 assets + debt
         for (uint256 i = 0; i < length; i++) {
-            uint256 index = i + 1;
             address asset = assets[i];
             Component memory tokenComponent =
                 _getTokenComponents(asset, vaults, debtAdapters, totalSupply);
-            underlyingTokens[index] = tokenComponent;
+            underlyingTokens[i + 1] = tokenComponent;
         }
         
         return underlyingTokens;
@@ -129,11 +128,11 @@ contract BerezkaTokenAdapter is TokenAdapter {
             ethDebt += _computeDebt(debtsInEth, ETH, vault);
         }
 
-        return (Component({
+        return Component({
             token: ETH,
             tokenType: ERC20_TOKEN,
             rate: (ethBalance * 1e18 / _totalSupply) - (ethDebt * 1e18 / _totalSupply)
-        }));
+        });
     }
 
     function _getTokenComponents(
@@ -154,7 +153,7 @@ contract BerezkaTokenAdapter is TokenAdapter {
         for (uint256 j = 0; j < vaultsLength; j++) {
             address vault = _vaults[j];
             componentBalance += ERC20(_asset).balanceOf(vault);
-            componentDebt    += _computeDebt(_debtAdapters, _asset, vault);
+            componentDebt += _computeDebt(_debtAdapters, _asset, vault);
         }
 
         // Asset amount
@@ -183,6 +182,6 @@ contract BerezkaTokenAdapter is TokenAdapter {
                 componentDebt += _amount;
             } catch {} // solhint-disable-line no-empty-blocks
         }
-        return (componentDebt);
+        return componentDebt;
     }
 }

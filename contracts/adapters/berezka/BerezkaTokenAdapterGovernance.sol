@@ -119,6 +119,6 @@ contract BerezkaTokenAdapterGovernance is Ownable() {
         for (uint i = 0; i < _set.length(); i++) {
             result[i] = _set.at(i);
         }
-        return (result);
+        return result;
     }
 }

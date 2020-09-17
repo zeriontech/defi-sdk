@@ -27,7 +27,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  */
 contract BerezkaProtocolAdapter is ProtocolAdapter {
 
-    string public constant override adapterType = "Asset";
+    string public constant override adapterType = "Berezka DAO";
 
     string public constant override tokenType = "ERC20";
 
