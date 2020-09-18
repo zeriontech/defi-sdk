@@ -12,7 +12,7 @@
     "deploy:kovan": "npx truffle deploy --network kovan",
     "test:adapters": "TEST_FILES=./test/adapters/*.js ./scripts/test.sh",
     "test:interactiveAdapters": "TEST_FILES=./test/interactiveAdapters/*.js ./scripts/test.sh",
-    "test": "TEST_FILES=./test/core/*.js ./scripts/test.sh",
+    "test": "TEST_FILES=./test/interactiveAdapters/*.js ./scripts/test.sh",
     "coverage": "node --max-old-space-size=4096 ./node_modules/.bin/truffle run coverage",
     "lint:solhint": "npx solhint \"./contracts/**/*.sol\"",
     "lint:ethlint": "npx solium --dir contracts/",
