@@ -22,6 +22,7 @@ const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
 const GnosisProtocolAdapter = artifacts.require('GnosisProtocolAdapter');
 const HarvestStakingAdapter = artifacts.require('HarvestStakingAdapter');
+const HarvestStakingV2Adapter = artifacts.require('HarvestStakingV2Adapter');
 const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
 const KeeperDaoAssetAdapter = artifacts.require('KeeperDaoAssetAdapter');
@@ -303,6 +304,28 @@ const ognAddress = '0x8207c1FfC5B6804F6024322CcF34F29c3541Ae26';
 const uniBasedSusdAddress = '0xaAD22f5543FCDaA694B68f94Be177B561836AE57';
 const uniPastaWethAddress = '0xE92346d9369Fe03b735Ed9bDeB6bdC2591b8227E';
 
+const balancerCrv90Farm10 = '0xac6bac9Dc3de2c14b420E287De8ECB330d96E492';
+const balancerSwrv90Farm10 = '0xf9F2dF6e0e369145481a32Fcd260E353AA20c1a6';
+const balancerUniSusdBased90Farm10 = '0xf76206115617f090f5a49961a78BCf99BB91cFeE';
+const balancerUniAmplWeth90Farm10 = '0xdFb341093ea062a74Bd19a222c74Abdcb97C067b';
+const balancerYFV90Farm10 = '0x97cD8E51cd6C888567c6c620188B8Fb264EE8E91';
+const balancerSUSHI90Farm10 = '0xB39Ce7fa5953beBC6697112e88cd11579CBCA579';
+const balancerLINK90Farm10 = '0x418d3DfcA5099923Cd57e0Bf9Ed1e9994f515152';
+const balancerUniPastaWeth90Farm10 = '0xa3e69eBCE417eE0508d6996340126aD60078fCDd';
+const balancerPYLON90Farm10 = '0x1e2dA0aa71155726C5C0E39AF76Ac0c2e8F74bEF';
+const UniUsdtFUsdt = '0x713f62ccf8545Ff1Df19E5d7Ab94887cFaf95677';
+const UniUsdcFUsdc = '0x4161Fa43eaA1Ac3882aeeD12C5FC05249e533e67';
+const UniDaiFDai = '0x007E383BF3c3Ffa12A5De06a53BAb103335eFF28';
+const UniWbtcFWbtc = '0xaebfeA924DE4080C14DF5C432cECe261934457E0';
+const UniWbtcFRenbtc = '0x007F74c5C82d68A138Cc3Bc623E51270279fa525';
+const UniWbtcFCrvWbtc = '0xb6A6a3D8EF31D9FAeb1AB1487aCe79Fe1f5df1BB';
+const UniWethFWeth = '0x24b34098F6950a5d5B6BbE1358AD79B609B924fB';
+const balancerFarm20Usdc80 = '0x0126CfA7EC6B6d4A960b5979943c06a9742af55E';
+const fWbtc = '0xc07EB91961662D275E2D285BdC21885A4Db136B0';
+const fRenbtc = '0xfBe122D0ba3c75e1F7C80bd27613c9f35B81FEeC';
+const fCrvRenbtc = '0x192E9d29D43db385063799BC239E772c3b6888F3';
+const fWeth = '0x8e298734681adbfC41ee5d17FF8B0d6d803e7098';
+
 const swUsdAddress = '0x77C6E4a580c0dCE4E5c7a17d0bc077188a83A059';
 
 const compAddress = '0xc00e94Cb662C3520282E6f5717214004A7f26888';
@@ -546,6 +569,24 @@ const harvestStakingAdapterTokens = [
   ognAddress,
   uniBasedSusdAddress,
   uniPastaWethAddress,
+];
+const harvestStakingV2AdapterTokens = [
+  farmAddress,
+  balancerCrv90Farm10,
+  balancerSwrv90Farm10,
+  balancerUniSusdBased90Farm10,
+  balancerUniAmplWeth90Farm10,
+  balancerYFV90Farm10,
+  balancerSUSHI90Farm10,
+  balancerLINK90Farm10,
+  balancerUniPastaWeth90Farm10,
+  balancerPYLON90Farm10,
+  UniUsdtFUsdt,
+  UniUsdcFUsdc,
+  UniDaiFDai,
+  UniWbtcFWbtc,
+  UniWbtcFRenbtc,
+  UniWbtcFCrvWbtc,
 ];
 const keeperDaoAdapterTokens = [
   kETHAddress,
@@ -928,8 +969,9 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(HarvestStakingAdapter, { from: accounts[0] });
-  adapters.push([HarvestStakingAdapter.address]);
-  tokens.push([harvestStakingAdapterTokens]);
+  await deployer.deploy(HarvestStakingV2Adapter, { from: accounts[0] });
+  adapters.push([HarvestStakingAdapter.address, HarvestStakingV2Adapter.address]);
+  tokens.push([harvestStakingAdapterTokens, harvestStakingV2AdapterTokens]);
   protocolNames.push('Harvest');
   metadata.push([
     'Harvest',

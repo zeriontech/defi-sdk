@@ -65,7 +65,7 @@ contract HarvestStakingAdapter is ProtocolAdapter {
     address internal constant FUSDT_POOL = 0x5bd997039FFF16F653EF15D1428F2C791519f58d;
     address internal constant BALANCER_POOL = 0x6f8A975758436A5Ec38d2f9d2336504430465517;
     address internal constant UNISWAP_POOL = 0x99b0d6641A63Ce173E6EB063b3d3AED9A35Cf9bf;
-    address internal constant PROFIT_SHARING_POOL = 0xae024F29C26D6f71Ec71658B1980189956B0546D;
+    address internal constant PROFIT_SHARING_DAI_POOL = 0xae024F29C26D6f71Ec71658B1980189956B0546D;
 
     address internal constant WETH_POOL = 0xE604Fd5b1317BABd0cF2c72F7F5f2AD8c00Adbe1;
     address internal constant LINK_POOL = 0xa112c2354d27c2Fb3370cc5d027B28987117a268;
@@ -85,7 +85,7 @@ contract HarvestStakingAdapter is ProtocolAdapter {
         if (token == FARM) {
             uint256 totalRewards = 0;
 
-            totalRewards += ERC20(PROFIT_SHARING_POOL).balanceOf(account);
+            totalRewards += ERC20(PROFIT_SHARING_DAI_POOL).balanceOf(account);
             totalRewards += StakingRewards(FDAI_POOL).earned(account);
             totalRewards += StakingRewards(FUSDC_POOL).earned(account);
             totalRewards += StakingRewards(FUSDT_POOL).earned(account);
@@ -103,7 +103,7 @@ contract HarvestStakingAdapter is ProtocolAdapter {
 
             return totalRewards;
         } else if (token == DAI) {
-            return StakingRewards(PROFIT_SHARING_POOL).earned(account);
+            return StakingRewards(PROFIT_SHARING_DAI_POOL).earned(account);
         } else if (token == FDAI) {
             return ERC20(FDAI_POOL).balanceOf(account);
         } else if (token == FUSDC) {
