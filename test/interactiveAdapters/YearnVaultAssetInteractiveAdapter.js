@@ -83,7 +83,7 @@ contract.only('YearnVaultsAssetInteractiveAdapter', () => {
   });
 
   describe('DAI <-> YDAI', () => {
-    it.skip('should not be correct DAI -> YDAI deposit with two tokenAmounts', async () => {
+    it('should not be correct DAI -> YDAI deposit with two tokenAmounts', async () => {
       let daiAmount;
       await YDAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -199,7 +199,7 @@ contract.only('YearnVaultsAssetInteractiveAdapter', () => {
         });
     });
 
-    it.skip('should not be correct DAI <- YDAI withdraw with 2 tokenAmounts', async () => {
+    it('should not be correct DAI <- YDAI withdraw with 2 tokenAmounts', async () => {
       let ydaiAmount;
       await YDAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -217,28 +217,30 @@ contract.only('YearnVaultsAssetInteractiveAdapter', () => {
           gas: 10000000,
           from: accounts[0],
         });
-      await expectRevert(router.methods.startExecution(
-        [
+      await expectRevert(
+        router.methods.startExecution(
           [
-            YEARN_VAULTS_ASSET_ADAPTER,
-            ACTION_WITHDRAW,
             [
-              [ydaiAddress, convertToShare(1), AMOUNT_RELATIVE],
-              [ydaiAddress, convertToShare(1), AMOUNT_RELATIVE],
+              YEARN_VAULTS_ASSET_ADAPTER,
+              ACTION_WITHDRAW,
+              [
+                [ydaiAddress, convertToShare(1), AMOUNT_RELATIVE],
+                [ydaiAddress, convertToShare(1), AMOUNT_RELATIVE],
+              ],
+              EMPTY_BYTES,
             ],
-            EMPTY_BYTES,
           ],
-        ],
-        [
-          [ydaiAddress, convertToShare(1), AMOUNT_RELATIVE],
-        ],
-        [0, ZERO],
-        [],
-      )
-        .send({
-          gas: 10000000,
-          from: accounts[0],
-        }));
+          [
+            [ydaiAddress, convertToShare(1), AMOUNT_RELATIVE],
+          ],
+          [0, ZERO],
+          [],
+        )
+          .send({
+            gas: 10000000,
+            from: accounts[0],
+          })
+        );
     });
 
     it('should be correct DAI <- YDAI withdraw', async () => {
