@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('CreamAssetAdapter');
 const TokenAdapter = artifacts.require('CompoundTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('CreamAssetAdapter', () => {
+contract('CreamAssetAdapter', () => {
   const crUsdcAddress = '0x44fbeBd2F576670a6C33f6Fc0B00aA8c5753b322';
   // Random address with positive balance
   const testAddress = '0x020cA66C30beC2c4Fe3861a94E4DB4A498A35872';

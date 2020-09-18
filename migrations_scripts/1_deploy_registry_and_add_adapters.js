@@ -50,6 +50,7 @@ const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
 const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const UniswapV2Adapter = artifacts.require('UniswapV2Adapter');
+const UniswapV2StakingAdapter = artifacts.require('UniswapV2StakingAdapter');
 const YearnStakingV1Adapter = artifacts.require('YearnStakingV1Adapter');
 const YearnStakingV2Adapter = artifacts.require('YearnStakingV2Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
@@ -334,6 +335,8 @@ const yYCrvAddress = '0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c';
 const fttAddress = '0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9';
 const yEthAddress = '0xe1237aA7f535b0CC33Fd973D66cBf830354D16c7';
 const srmAddress = '0x476c5E26a75bd202a9683ffD34359C0CC15be0fF';
+
+const uniAddress = 'x1f9840a85d5aF5bf1D1762F925BDADdC4201F984';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -706,6 +709,13 @@ const synthetixAssetAdapterTokens = [
 const synthetixDebtAdapterTokens = [
   susdAddress,
 ];
+const uniswapV2StakingAdapterTokens = [
+  uniAddress,
+  uniDaiWethAddress,
+  uniUsdcWethAddress,
+  uniUsdcWethAddress,
+  uniWbtcWethAddress,
+]
 const yearnStakingV1AdapterTokens = [
   yfiAddress,
   yCrvAddress,
@@ -1226,8 +1236,9 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(UniswapV2Adapter, { from: accounts[0] });
-  adapters.push([UniswapV2Adapter.address]);
-  tokens.push([[]]);
+  await deployer.deploy(UniswapV2StakingAdapter, { from: accounts[0] });
+  adapters.push([UniswapV2Adapter.address, UniswapV2StakingAdapter.address]);
+  tokens.push([[], uniswapV2StakingAdapterTokens]);
   protocolNames.push('Uniswap V2');
   metadata.push([
     'Uniswap V2',

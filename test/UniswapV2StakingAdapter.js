@@ -1,13 +1,14 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('CreamStakingAdapter');
+const ProtocolAdapter = artifacts.require('UniswapV2StakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('CreamStakingAdapter', () => {
-  const balancerCreamWethAddress = '0x5a82503652d05B21780f33178FDF53d31c29B916';
-  // Random address with positive balance
-  const testAddress = '0xD761b97d8dbAaF908FDF6004B088d16E63Aa9222';
+contract.only('UniswapV2StakingAdapter', () => {
+  const uniDaiWethAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
+  const uniAddress = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984';
+  // Random address with positive balances
+  const testAddress = '0x6f71f06a0b93970a3b9e6dea8416380def99d032';
 
   let accounts;
   let adapterRegistry;
@@ -29,7 +30,7 @@ contract('CreamStakingAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Cream'],
+      ['UniswapV2'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -41,7 +42,8 @@ contract('CreamStakingAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        balancerCreamWethAddress,
+        uniDaiWethAddress,
+        uniAddress,
       ]]],
     )
       .send({
@@ -54,7 +56,7 @@ contract('CreamStakingAdapter', () => {
     )
       .send({
         from: accounts[0],
-        gas: '300000',
+        gas: '1000000',
       });
   });
 
@@ -63,6 +65,7 @@ contract('CreamStakingAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
+        displayToken(result[0].adapterBalances[0].balances[1].base);
       });
   });
 });
