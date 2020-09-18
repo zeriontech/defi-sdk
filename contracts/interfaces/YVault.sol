@@ -16,32 +16,16 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 
 pragma solidity 0.7.1;
-pragma experimental ABIEncoderV2;
-
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @title Adapter for iearn.finance protocol.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev yVault contract interface.
+ * Only the functions required for YearnVaultAssetInteractiveAdapter contract are added.
+ * The yVault contract is available here
+ * github.com/iearn-finance/yearn-protocol/blob/develop/contracts/vaults/yVault.sol.
  */
-contract IearnAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of YTokens held by the given account.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface YVault {
+    function deposit(uint256) external;
+    function withdraw(uint256) external;
+    function token() view external returns (address);
 }
