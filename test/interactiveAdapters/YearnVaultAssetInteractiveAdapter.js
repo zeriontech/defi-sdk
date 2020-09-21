@@ -114,7 +114,7 @@ contract.only('YearnVaultsAssetInteractiveAdapter', () => {
           ],
         ],
         [
-          [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
+          [daiAddress, convertToShare(0.5), AMOUNT_RELATIVE],
         ],
         [0, ZERO],
         [],
@@ -123,6 +123,17 @@ contract.only('YearnVaultsAssetInteractiveAdapter', () => {
           gas: 10000000,
           from: accounts[0],
         }));
+    await YDAI.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        console.log(`YDAI amount after is ${web3.utils.fromWei(result, 'ether')}`);
+      });
+    await DAI.methods['balanceOf(address)'](accounts[0])
+      .call()
+      .then((result) => {
+        daiAmount = result;
+        console.log(` DAI amount after is ${web3.utils.fromWei(result, 'ether')}`);
+      });
       await YDAI.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
@@ -231,7 +242,7 @@ contract.only('YearnVaultsAssetInteractiveAdapter', () => {
             ],
           ],
           [
-            [ydaiAddress, convertToShare(1), AMOUNT_RELATIVE],
+            [ydaiAddress, convertToShare(0.5), AMOUNT_RELATIVE],
           ],
           [0, ZERO],
           [],
