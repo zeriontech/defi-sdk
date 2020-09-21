@@ -30,7 +30,7 @@ import { YVault } from "../../interfaces/YVault.sol";
  * @title Interactive adapter for Yearn Vaults.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
-contract YearnVaultsAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
+contract YearnAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     /**

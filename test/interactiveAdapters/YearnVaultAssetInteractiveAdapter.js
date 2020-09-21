@@ -2,11 +2,11 @@
 import expectRevert from '../helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
 
-const YEARN_VAULTS_ADAPTER = web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Yearn • Vaults')).slice(0, -2);
+const YEARN_ADAPTER = web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('yearn.finance')).slice(0, -2);
 const ASSET_ADAPTER = '01';
-const YEARN_VAULTS_ASSET_ADAPTER = `${YEARN_VAULTS_ADAPTER}${ASSET_ADAPTER}`;
+const YEARN_ASSET_ADAPTER = `${YEARN_ADAPTER}${ASSET_ADAPTER}`;
 
-console.log(`yVauls adapter ${YEARN_VAULTS_ASSET_ADAPTER}`);
+console.log(`yVauls adapter ${YEARN_ASSET_ADAPTER}`);
 
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
@@ -17,12 +17,12 @@ const EMPTY_BYTES = '0x';
 const ZERO = '0x0000000000000000000000000000000000000000';
 
 const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
-const InteractiveAdapter = artifacts.require('./YearnVaultsAssetInteractiveAdapter');
+const InteractiveAdapter = artifacts.require('./YearnAssetInteractiveAdapter');
 const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('YearnVaultsAssetInteractiveAdapter', () => {
+contract.only('YearnAssetInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const ydaiAddress = '0xACd43E627e64355f1861cEC6d3a6688B31a6F952';
 
@@ -47,7 +47,7 @@ contract.only('YearnVaultsAssetInteractiveAdapter', () => {
       });
     await protocolAdapterRegistry.methods.addProtocolAdapters(
       [
-        YEARN_VAULTS_ASSET_ADAPTER,
+        YEARN_ASSET_ADAPTER,
       ],
       [
         protocolAdapterAddress,
@@ -104,7 +104,7 @@ contract.only('YearnVaultsAssetInteractiveAdapter', () => {
       await expectRevert(router.methods.startExecution(
         [
           [
-            YEARN_VAULTS_ASSET_ADAPTER,
+            YEARN_ASSET_ADAPTER,
             ACTION_DEPOSIT,
             [
               [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
@@ -167,7 +167,7 @@ contract.only('YearnVaultsAssetInteractiveAdapter', () => {
       await router.methods.startExecution(
         [
           [
-            YEARN_VAULTS_ASSET_ADAPTER,
+            YEARN_ASSET_ADAPTER,
             ACTION_DEPOSIT,
             [
               [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
@@ -232,7 +232,7 @@ contract.only('YearnVaultsAssetInteractiveAdapter', () => {
         router.methods.startExecution(
           [
             [
-              YEARN_VAULTS_ASSET_ADAPTER,
+              YEARN_ASSET_ADAPTER,
               ACTION_WITHDRAW,
               [
                 [ydaiAddress, convertToShare(1), AMOUNT_RELATIVE],
@@ -275,7 +275,7 @@ contract.only('YearnVaultsAssetInteractiveAdapter', () => {
       await router.methods.startExecution(
         [
           [
-            YEARN_VAULTS_ASSET_ADAPTER,
+            YEARN_ASSET_ADAPTER,
             ACTION_WITHDRAW,
             [
               [ydaiAddress, convertToShare(1), AMOUNT_RELATIVE],
