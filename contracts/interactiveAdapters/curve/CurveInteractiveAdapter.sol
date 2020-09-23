@@ -37,9 +37,10 @@ abstract contract CurveInteractiveAdapter is InteractiveAdapter {
     address internal constant RENBTC = 0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D;
     address internal constant WBTC = 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599;
     address internal constant SBTC = 0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6;
+    address internal constant HBTC = 0x0316EB71485b0Ab14103307bf65a021042c6d380;
 
     function getTokenIndex(address token) internal pure returns (int128) {
-        if (token == DAI || token == RENBTC) {
+        if (token == DAI || token == RENBTC || token == HBTC) {
             return int128(0);
         } else if (token == USDC || token == WBTC) {
             return int128(1);

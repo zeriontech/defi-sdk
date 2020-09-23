@@ -38,7 +38,7 @@ interface Deposit {
     function add_liquidity(uint256[2] calldata, uint256) external;
     function add_liquidity(uint256[3] calldata, uint256) external;
     function add_liquidity(uint256[4] calldata, uint256) external;
-    function remove_liquidity_one_coin(uint256, int128, uint256, bool) external;
+    function remove_liquidity_one_coin(uint256, int128, uint256) external;
 }
 /* solhint-enable func-name-mixedcase */
 
@@ -51,7 +51,7 @@ interface Deposit {
 contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
-    address internal constant REGISTRY = 0x86A1755BA805ecc8B0608d56c22716bd1d4B68A8;
+    address internal constant REGISTRY = 0x3fb5Cd4b0603C3D5828D3b5658B10C9CB81aa922;
 
     /**
      * @notice Deposits tokens to the Curve pool (pair).
@@ -85,10 +85,6 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, ERC20ProtocolA
         address callee = poolInfo.deposit;
 
         int128 tokenIndex = getTokenIndex(token);
-        require(
-            Stableswap(poolInfo.swap).underlying_coins(tokenIndex) == token,
-            "CLIA: bad crvToken/token"
-        );
 
         uint256[] memory inputAmounts = new uint256[](totalCoins);
         for (uint256 i = 0; i < totalCoins; i++) {
@@ -156,14 +152,9 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, ERC20ProtocolA
         tokensToBeWithdrawn[0] = toToken;
 
         PoolInfo memory poolInfo = CurveRegistry(REGISTRY).getPoolInfo(token);
-        address swap = poolInfo.swap;
         address callee = poolInfo.deposit;
 
         int128 tokenIndex = getTokenIndex(toToken);
-        require(
-            Stableswap(swap).underlying_coins(tokenIndex) == toToken,
-            "CLIA: bad toToken/token"
-        );
 
         ERC20(token).safeApprove(
             callee,
@@ -174,8 +165,7 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, ERC20ProtocolA
         try Deposit(callee).remove_liquidity_one_coin(
             amount,
             tokenIndex,
-            0,
-            true
+            0
         ) { // solhint-disable-line no-empty-blocks
         } catch {
             revert("CLIA: withdraw fail");

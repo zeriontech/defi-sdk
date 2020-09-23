@@ -22,7 +22,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('YearnAssetInteractiveAdapter', () => {
+contract('YearnAssetInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const ydaiAddress = '0xACd43E627e64355f1861cEC6d3a6688B31a6F952';
 

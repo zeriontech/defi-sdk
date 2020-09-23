@@ -43,7 +43,7 @@ interface stableswap {
  */
 contract CurveTokenAdapter is TokenAdapter {
 
-    address internal constant REGISTRY = 0x86A1755BA805ecc8B0608d56c22716bd1d4B68A8;
+    address internal constant REGISTRY = 0x3fb5Cd4b0603C3D5828D3b5658B10C9CB81aa922;
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
