@@ -32,7 +32,9 @@ import { CurveRegistry, PoolInfo } from "./CurveRegistry.sol";
 // solhint-disable-next-line contract-name-camelcase
 interface stableswap {
     function coins(int128) external view returns (address);
+    function coins(uint256) external view returns (address);
     function balances(int128) external view returns (uint256);
+    function balances(uint256) external view returns (uint256);
 }
 
 
@@ -45,6 +47,9 @@ contract CurveTokenAdapter is TokenAdapter {
 
     address internal constant REGISTRY = 0x3fb5Cd4b0603C3D5828D3b5658B10C9CB81aa922;
 
+    address internal constant THREE_CRV = 0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490;
+    address internal constant HBTC_CRV = 0xb19059ebb43466C323583928285a49f558E572Fd;
+
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.
@@ -56,11 +61,24 @@ contract CurveTokenAdapter is TokenAdapter {
 
         Component[] memory components = new Component[](totalCoins);
 
-        for (uint256 i = 0; i < totalCoins; i++) {
-            components[i] = Component({
-                token: stableswap(swap).coins(int128(i)),
-                rate: stableswap(swap).balances(int128(i)) * 1e18 / ERC20(token).totalSupply()
-            });
+        if (token == THREE_CRV || token == HBTC_CRV) {
+            for (uint256 i = 0; i < totalCoins; i++) {
+                underlyingToken = stableswap(swap).coins(i);
+                underlyingComponents[i] = Component({
+                    token: underlyingToken,
+                    tokenType: getTokenType(underlyingToken),
+                    rate: stableswap(swap).balances(i) * 1e18 / ERC20(token).totalSupply()
+                });
+            }
+        } else {
+            for (uint256 i = 0; i < totalCoins; i++) {
+                underlyingToken = stableswap(swap).coins(int128(i));
+                underlyingComponents[i] = Component({
+                    token: underlyingToken,
+                    tokenType: getTokenType(underlyingToken),
+                    rate: stableswap(swap).balances(int128(i)) * 1e18 / ERC20(token).totalSupply()
+                });
+            }
         }
 
         return components;
