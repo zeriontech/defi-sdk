@@ -1,12 +1,14 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('CurveVestingAdapter');
+const ProtocolAdapter = artifacts.require('HarvestStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('CurveVestingAdapter', () => {
-  const crvAddress = '0xD533a949740bb3306d119CC777fa900bA034cd52';
-  const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
+contract.only('HarvestStakingAdapter', () => {
+  const fusdcAddress = '0xc3F7ffb5d5869B3ade9448D094d81B0521e8326f';
+  const farmAddress = '0xa0246c9032bC3A600820415aE600c6388619A14D';
+  // Random address with positive balances
+  const testAddress = '0x1e2b3e14148487d26923beecb94b251c0a09ba5d';
 
   let accounts;
   let adapterRegistry;
@@ -28,7 +30,7 @@ contract('CurveVestingAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Curve Vesting'],
+      ['Harvest'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -40,7 +42,8 @@ contract('CurveVestingAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        crvAddress,
+        fusdcAddress,
+        farmAddress,
       ]]],
     )
       .send({
@@ -62,6 +65,7 @@ contract('CurveVestingAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
+        displayToken(result[0].adapterBalances[0].balances[1].base);
       });
   });
 });

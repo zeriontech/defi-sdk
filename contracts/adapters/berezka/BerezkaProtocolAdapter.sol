@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Zerion Inc. <https://zerion.io>
+// Copyright (C) 2020 Easy Chain. <https://easychain.tech>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,27 +17,25 @@ pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
+import { TokenMetadata, Component } from "../../Structs.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
-
 /**
- * @title Adapter for Curve protocol (vesting).
- * @dev Implementation of ProtocolAdapter interface.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev BerezkaProtocolAdapterContract contract.
+ * This adapter provides adapter for multiple BerezkaDAO contracts.
+ * @author Vasin Denis <denis.vasin@easychain.tech>
  */
-contract CurveVestingAdapter is ProtocolAdapter {
+contract BerezkaProtocolAdapter is ProtocolAdapter {
 
-    string public constant override adapterType = "Asset";
+    string public constant override adapterType = "Berezka DAO";
 
     string public constant override tokenType = "ERC20";
 
-    address internal constant VESTING = 0x575CCD8e2D300e2377B43478339E364000318E2c;
-
     /**
-     * @return Amount of withdrawable CRV tokens for a given account.
+     * @return Amount of BerezkaDAO tokens held by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address, address account) external view override returns (uint256) {
-            return ERC20(VESTING).balanceOf(account);
+    function getBalance(address token, address account) external view override returns (uint256) {
+        return ERC20(token).balanceOf(account);
     }
 }

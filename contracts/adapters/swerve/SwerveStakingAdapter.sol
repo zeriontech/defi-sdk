@@ -21,23 +21,29 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @title Adapter for Curve protocol (vesting).
+ * @title Adapter for Swerve protocol (staking).
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CurveVestingAdapter is ProtocolAdapter {
+contract SwerveStakingAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
     string public constant override tokenType = "ERC20";
 
-    address internal constant VESTING = 0x575CCD8e2D300e2377B43478339E364000318E2c;
+    address internal constant SWUSD = 0x77C6E4a580c0dCE4E5c7a17d0bc077188a83A059;
+
+    address internal constant SWUSD_GAUGE = 0xb4d0C929cD3A1FbDc6d57E7D3315cF0C4d6B4bFa;
 
     /**
-     * @return Amount of withdrawable CRV tokens for a given account.
+     * @return Amount of staked Swerve Pool tokens for a given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address, address account) external view override returns (uint256) {
-            return ERC20(VESTING).balanceOf(account);
+    function getBalance(address token, address account) external view override returns (uint256) {
+        if (token == SWUSD) {
+            return ERC20(SWUSD_GAUGE).balanceOf(account);
+        } else {
+            return 0;
+        }
     }
 }
