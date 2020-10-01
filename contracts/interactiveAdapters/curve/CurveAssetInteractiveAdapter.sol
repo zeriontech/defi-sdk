@@ -23,7 +23,7 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { CurveRegistry, PoolInfo } from "../../adapters/curve/CurveRegistry.sol";
-import { CurveInteractiveAdapter } from "./CurveInteractiveAdapter.sol";
+import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { Stableswap } from "../../interfaces/Stableswap.sol";
 
 
@@ -48,7 +48,7 @@ interface Deposit {
  * @dev Implementation of CurveInteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, ERC20ProtocolAdapter {
+contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant REGISTRY = 0x3fb5Cd4b0603C3D5828D3b5658B10C9CB81aa922;
@@ -76,15 +76,13 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, ERC20ProtocolA
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
-        address crvToken = abi.decode(data, (address));
+        (address crvToken, uint256 tokenIndex) = abi.decode(data, (address, uint256));
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = crvToken;
 
         PoolInfo memory poolInfo = CurveRegistry(REGISTRY).getPoolInfo(crvToken);
         uint256 totalCoins = poolInfo.totalCoins;
         address callee = poolInfo.deposit;
-
-        int128 tokenIndex = getTokenIndex(token);
 
         uint256[] memory inputAmounts = new uint256[](totalCoins);
         for (uint256 i = 0; i < totalCoins; i++) {
@@ -146,15 +144,13 @@ contract CurveAssetInteractiveAdapter is CurveInteractiveAdapter, ERC20ProtocolA
         
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
-        address toToken = abi.decode(data, (address));
+        (address toToken, int128 tokenIndex) = abi.decode(data, (address, int128));
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = toToken;
 
         PoolInfo memory poolInfo = CurveRegistry(REGISTRY).getPoolInfo(token);
         address callee = poolInfo.deposit;
-
-        int128 tokenIndex = getTokenIndex(toToken);
 
         ERC20(token).safeApprove(
             callee,

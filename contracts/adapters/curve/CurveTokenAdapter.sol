@@ -22,20 +22,7 @@ import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { CurveRegistry, PoolInfo } from "./CurveRegistry.sol";
-
-/**
- * @dev stableswap contract interface.
- * Only the functions required for CurveTokenAdapter contract are added.
- * The stableswap contract is available here
- * github.com/curvefi/curve-contract/blob/compounded/vyper/stableswap.vy.
- */
-// solhint-disable-next-line contract-name-camelcase
-interface stableswap {
-    function coins(int128) external view returns (address);
-    function coins(uint256) external view returns (address);
-    function balances(int128) external view returns (uint256);
-    function balances(uint256) external view returns (uint256);
-}
+import { Stableswap } from "../../interfaces/Stableswap.sol";
 
 
 /**
@@ -63,20 +50,16 @@ contract CurveTokenAdapter is TokenAdapter {
 
         if (token == THREE_CRV || token == HBTC_CRV) {
             for (uint256 i = 0; i < totalCoins; i++) {
-                underlyingToken = stableswap(swap).coins(i);
-                underlyingComponents[i] = Component({
-                    token: underlyingToken,
-                    tokenType: getTokenType(underlyingToken),
-                    rate: stableswap(swap).balances(i) * 1e18 / ERC20(token).totalSupply()
+                components[i] = Component({
+                    token: Stableswap(swap).coins(i),
+                    rate: Stableswap(swap).balances(i) * 1e18 / ERC20(token).totalSupply()
                 });
             }
         } else {
             for (uint256 i = 0; i < totalCoins; i++) {
-                underlyingToken = stableswap(swap).coins(int128(i));
-                underlyingComponents[i] = Component({
-                    token: underlyingToken,
-                    tokenType: getTokenType(underlyingToken),
-                    rate: stableswap(swap).balances(int128(i)) * 1e18 / ERC20(token).totalSupply()
+                components[i] = Component({
+                    token: Stableswap(swap).coins(int128(i)),
+                    rate: Stableswap(swap).balances(int128(i)) * 1e18 / ERC20(token).totalSupply()
                 });
             }
         }

@@ -55,7 +55,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * underlying tokens addresses, underlying tokens amounts to be deposited, and amount types.
      * @param data ABI-encoded additional parameters:
-     *     - setAddress - rebalancing set address.
+     *     - set - rebalancing set address.
      * @return tokensToBeWithdrawn Array with one element - rebalancing set address.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -68,16 +68,16 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        address setAddress = abi.decode(data, (address));
+        address set = abi.decode(data, (address));
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = setAddress;
+        tokensToBeWithdrawn[0] = set;
 
-        uint256 setAmount = getSetAmountAndApprove(setAddress, tokenAmounts);
+        uint256 amount = getSetAmountAndApprove(set, tokenAmounts);
 
         try RebalancingSetIssuanceModule(ISSUANCE_MODULE).issueRebalancingSet(
-            setAddress,
-            setAmount,
+            set,
+            amount,
             false
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
             revert(reason);
@@ -128,11 +128,11 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
     }
 
     function getSetAmountAndApprove(
-        address setAddress,
+        address set,
         TokenAmount[] calldata tokenAmounts
     )
         internal
-        returns (uint256 setAmount)
+        returns (uint256 amount)
     {
         uint256 length = tokenAmounts.length;
         uint256[] memory absoluteAmounts = new uint256[](length);
@@ -146,7 +146,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
             );
         }
 
-        RebalancingSetToken rebalancingSetToken = RebalancingSetToken(setAddress);
+        RebalancingSetToken rebalancingSetToken = RebalancingSetToken(set);
         uint256 rUnit = rebalancingSetToken.getUnits()[0];
         uint256 rNaturalUnit = rebalancingSetToken.naturalUnit();
 
@@ -156,21 +156,21 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
         address[] memory components = SetToken(baseSetToken).getComponents();
         require(components.length == length, "TSIA: bad tokens");
 
-        setAmount = type(uint256).max;
+        amount = type(uint256).max;
 
-        uint256 amount;
+        uint256 received;
         address token;
         for (uint256 i = 0; i < length; i++) {
             token = tokenAmounts[i].token;
 
             for(uint256 j = 0; j < length; j++) {
                 if (token == components[j]) {
-                    amount = mul(
+                    received = mul(
                         mul(absoluteAmounts[i], bNaturalUnit) / bUnits[j] / rUnit,
                         rNaturalUnit
                     );
-                    if (amount < setAmount) {
-                        setAmount = amount;
+                    if (received < amount) {
+                        amount = received;
                     }
                 }
             }

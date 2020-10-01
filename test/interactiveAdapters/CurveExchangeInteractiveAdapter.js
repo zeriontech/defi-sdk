@@ -30,7 +30,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('Curve exchange interactive adapter', () => {
+contract.only('Curve exchange interactive adapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
   const usdtAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
@@ -39,6 +39,17 @@ contract('Curve exchange interactive adapter', () => {
   const susdAddress = '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51';
   const paxAddress = '0x8E870D67F660D95d5be530380D0eC0bd388289E1';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+
+  const cSwapAddress = '0xA2B47E3D5c44877cca798226B7B8118F9BFb7A56';
+  const tSwapAddress = '0x52EA46506B9CC5Ef470C5bf89f17Dc28bB35D85C';
+  const ySwapAddress = '0x45F783CCE6B7FF23B2ab2D70e416cdb7D6055f51';
+  const bSwapAddress = '0x79a8C46DeA5aDa233ABaFFD40F3A0A2B1e5A4F27';
+  const sSwapAddress = '0xA5407eAE9Ba41422680e2e00537571bcC53efBfD';
+  const pSwapAddress = '0x06364f10B501e868329afBc005b3492902d6C763';
+  const threeSwapAddress = '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7';
+  const renbtcSwapAddress = '0x93054188d876f558f4a66B2EF1d97d16eDf0895B';
+  const sbtcSwapAddress = '0x7fC77b5c7614E1533320Ea6DDc2Eb61fa00A9714';
+  const hbtcSwapAddress = '0x4CA9b3063Ec5866A4B82E437059D2C43d1be596F';
 
   let accounts;
   let core;
@@ -139,14 +150,15 @@ contract('Curve exchange interactive adapter', () => {
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [ethAddress],
-            ['1000000000000000000'],
-            [AMOUNT_ABSOLUTE],
+            [
+              [ethAddress, '1000000000000000000', AMOUNT_ABSOLUTE],
+            ],
             web3.eth.abi.encodeParameter('address', daiAddress),
           ],
         ],
         // inputs
         [],
+        [0, ZERO],
         // outputs
         [],
       )
@@ -174,117 +186,20 @@ contract('Curve exchange interactive adapter', () => {
           [
             CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [daiAddress, daiAddress],
-            [convertToShare(1), convertToShare(1)],
-            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', susdAddress),
+            [
+              [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            web3.eth.abi.encodeParameter('address', susdAddress) +
+              web3.eth.abi.encodeParameter('address', sSwapAddress).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 3).slice(2),
           ],
         ],
         [
-          [daiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0, ZERO],
+          [daiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE],
         ],
-        [],
-      )
-        .send({
-          gas: 10000000,
-          from: accounts[0],
-        }));
-    });
-
-    it('should not swap TUSD -> SUSD', async () => {
-      let tusdAmount;
-      await TUSD.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          tusdAmount = result;
-        });
-      await TUSD.methods.approve(router.options.address, tusdAmount.toString())
-        .send({
-          from: accounts[0],
-          gas: 1000000,
-        });
-      await expectRevert(router.methods.startExecution(
-        [
-          [
-            CURVE_EXCHANGE_ADAPTER,
-            ACTION_DEPOSIT,
-            [tusdAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', susdAddress),
-          ],
-        ],
-        [
-          [tusdAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0, ZERO],
-        ],
-        [],
-      )
-        .send({
-          gas: 10000000,
-          from: accounts[0],
-        }));
-    });
-
-    it('should not swap DAI -> SUSD with inconsistent arrays', async () => {
-      let daiAmount;
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          daiAmount = result;
-        });
-      await DAI.methods.approve(router.options.address, daiAmount.toString())
-        .send({
-          from: accounts[0],
-          gas: 1000000,
-        });
-      await expectRevert(router.methods.startExecution(
-        [
-          [
-            CURVE_EXCHANGE_ADAPTER,
-            ACTION_DEPOSIT,
-            [daiAddress],
-            [convertToShare(1), convertToShare(1)],
-            [AMOUNT_RELATIVE, AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', susdAddress),
-          ],
-        ],
-        [
-          [daiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0, ZERO],
-        ],
-        [],
-      )
-        .send({
-          gas: 10000000,
-          from: accounts[0],
-        }));
-    });
-
-    it('should not swap DAI -> SUSD with inconsistent arrays', async () => {
-      let daiAmount;
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          daiAmount = result;
-        });
-      await DAI.methods.approve(router.options.address, daiAmount.toString())
-        .send({
-          from: accounts[0],
-          gas: 1000000,
-        });
-      await expectRevert(router.methods.startExecution(
-        [
-          [
-            CURVE_EXCHANGE_ADAPTER,
-            ACTION_WITHDRAW,
-            [susdAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', daiAddress),
-          ],
-        ],
-        [
-          [daiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0, ZERO],
-        ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -316,15 +231,19 @@ contract('Curve exchange interactive adapter', () => {
           [
             CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [daiAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', susdAddress),
+            [
+              [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            web3.eth.abi.encodeParameter('address', susdAddress) +
+              web3.eth.abi.encodeParameter('address', sSwapAddress).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 3).slice(2),
           ],
         ],
         [
-          [daiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE, 0, ZERO],
+          [daiAddress, RELATIVE_AMOUNT_BASE, AMOUNT_RELATIVE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -379,15 +298,20 @@ contract('Curve exchange interactive adapter', () => {
           [
             CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [susdAddress],
-            [susdAmount],
-            [AMOUNT_ABSOLUTE],
-            web3.eth.abi.encodeParameter('address', usdcAddress),
+            [
+              [susdAddress, susdAmount, AMOUNT_ABSOLUTE],
+            ],
+
+            web3.eth.abi.encodeParameter('address', usdcAddress) +
+              web3.eth.abi.encodeParameter('address', sSwapAddress).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 1).slice(2),
           ],
         ],
         [
-          [susdAddress, susdAmount, AMOUNT_ABSOLUTE, 0, ZERO],
+          [susdAddress, susdAmount, AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -442,15 +366,19 @@ contract('Curve exchange interactive adapter', () => {
           [
             CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [usdcAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', usdtAddress),
+            [
+              [usdcAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            web3.eth.abi.encodeParameter('address', usdtAddress) +
+              web3.eth.abi.encodeParameter('address', tSwapAddress).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 1).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 2).slice(2),
           ],
         ],
         [
-          [usdcAddress, usdcAmount, AMOUNT_ABSOLUTE, 0, ZERO],
+          [usdcAddress, usdcAmount, AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -505,15 +433,19 @@ contract('Curve exchange interactive adapter', () => {
           [
             CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [usdtAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', busdAddress),
+            [
+              [usdtAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            web3.eth.abi.encodeParameter('address', busdAddress) +
+              web3.eth.abi.encodeParameter('address', bSwapAddress).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 2).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 3).slice(2),
           ],
         ],
         [
-          [usdtAddress, usdtAmount, AMOUNT_ABSOLUTE, 0, ZERO],
+          [usdtAddress, usdtAmount, AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -568,15 +500,19 @@ contract('Curve exchange interactive adapter', () => {
           [
             CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [busdAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', daiAddress),
+            [
+              [busdAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            web3.eth.abi.encodeParameter('address', daiAddress) +
+              web3.eth.abi.encodeParameter('address', bSwapAddress).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 0).slice(2),
           ],
         ],
         [
-          [busdAddress, busdAmount, AMOUNT_ABSOLUTE, 0, ZERO],
+          [busdAddress, busdAmount, AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -631,15 +567,19 @@ contract('Curve exchange interactive adapter', () => {
           [
             CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [daiAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', paxAddress),
+            [
+              [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            web3.eth.abi.encodeParameter('address', paxAddress) +
+              web3.eth.abi.encodeParameter('address', pSwapAddress).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 3).slice(2),
           ],
         ],
         [
-          [daiAddress, daiAmount, AMOUNT_ABSOLUTE, 0, ZERO],
+          [daiAddress, daiAmount, AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -694,15 +634,19 @@ contract('Curve exchange interactive adapter', () => {
           [
             CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [paxAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', daiAddress),
+            [
+              [paxAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            web3.eth.abi.encodeParameter('address', daiAddress) +
+              web3.eth.abi.encodeParameter('address', pSwapAddress).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 0).slice(2),
           ],
         ],
         [
-          [paxAddress, paxAmount, AMOUNT_ABSOLUTE, 0, ZERO],
+          [paxAddress, paxAmount, AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         [],
       )
         .send({
@@ -757,15 +701,19 @@ contract('Curve exchange interactive adapter', () => {
           [
             CURVE_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
-            [daiAddress],
-            [convertToShare(1)],
-            [AMOUNT_RELATIVE],
-            web3.eth.abi.encodeParameter('address', tusdAddress),
+            [
+              [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            web3.eth.abi.encodeParameter('address', tusdAddress) +
+              web3.eth.abi.encodeParameter('address', tSwapAddress).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
+              web3.eth.abi.encodeParameter('uint256', 2).slice(2),
           ],
         ],
         [
-          [daiAddress, daiAmount, AMOUNT_ABSOLUTE, 0, ZERO],
+          [daiAddress, daiAmount, AMOUNT_ABSOLUTE],
         ],
+        [0, ZERO],
         [],
       )
         .send({

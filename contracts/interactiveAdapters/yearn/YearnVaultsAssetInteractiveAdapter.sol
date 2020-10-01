@@ -38,7 +38,7 @@ contract YearnAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * underlying token address, underlying token amount to be deposited, and amount type.
      * @param data ABI-encoded additional parameters:
-     *     - yVaultAddress - yVault address.
+     *     - yVault - yVault address.
      * @return tokensToBeWithdrawn Array with ane element - yVault.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -53,17 +53,17 @@ contract YearnAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
     {
         require(tokenAmounts.length == 1, "YVAIA: should be 1 tokenAmount[1]");
 
-        address yVaultAddress = abi.decode(data, (address));
+        address yVault = abi.decode(data, (address));
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = yVaultAddress;
+        tokensToBeWithdrawn[0] = yVault;
 
-        ERC20(token).safeApprove(yVaultAddress, amount, "YVAIA");
+        ERC20(token).safeApprove(yVault, amount, "YVAIA");
         // solhint-disable-next-line no-empty-blocks
-        try YVault(yVaultAddress).deposit(amount) {
+        try YVault(yVault).deposit(amount) {
         } catch Error(string memory reason) {
             revert(reason);
         } catch {

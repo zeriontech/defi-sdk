@@ -35,7 +35,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('CurveAssetInteractiveAdapter', () => {
+contract('CurveAssetInteractiveAdapter', () => {
   const cPoolToken = '0x845838DF265Dcd2c412A1Dc9e959c7d08537f8a2';
   const tPoolToken = '0x9fC689CCaDa600B6DF723D9E47D84d76664a1F23';
   const yPoolToken = '0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8';
@@ -1090,7 +1090,9 @@ contract.only('CurveAssetInteractiveAdapter', () => {
           [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE],
         ],
         [0, ZERO],
-        [],
+        [
+          [renBTCAddress, 1],
+        ],
       )
         .send({
           from: accounts[0],

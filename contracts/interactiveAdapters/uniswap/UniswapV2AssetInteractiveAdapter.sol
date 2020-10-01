@@ -41,7 +41,7 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * underlying tokens addresses, underlying tokens amounts to be deposited, and amount types.
      * @param data ABI-encoded additional parameters:
-     *     - pairAddress - pair address.
+     *     - pair - pair address.
      * @return tokensToBeWithdrawn Array with one element - UNI-token (pair) address.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -56,19 +56,19 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
     {
         require(tokenAmounts.length == 2, "ULIA: should be 2 tokenAmounts");
 
-        address pairAddress = abi.decode(data, (address));
+        address pair = abi.decode(data, (address));
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = pairAddress;
+        tokensToBeWithdrawn[0] = pair;
 
         uint256 amount0 = getAbsoluteAmountDeposit(tokenAmounts[0]);
         uint256 amount1 = getAbsoluteAmountDeposit(tokenAmounts[1]);
 
         uint256 reserve0;
         uint256 reserve1;
-        if (tokenAmounts[0].token == UniswapV2Pair(pairAddress).token0()) {
-            (reserve0, reserve1) = UniswapV2Pair(pairAddress).getReserves();
+        if (tokenAmounts[0].token == UniswapV2Pair(pair).token0()) {
+            (reserve0, reserve1) = UniswapV2Pair(pair).getReserves();
         } else {
-            (reserve1, reserve0) = UniswapV2Pair(pairAddress).getReserves();
+            (reserve1, reserve0) = UniswapV2Pair(pair).getReserves();
         }
 
         uint256 amount1Optimal = amount0 * reserve1 / reserve0;
@@ -78,10 +78,10 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetA
             amount0 = amount1 * reserve0 / reserve1;
         }
 
-        ERC20(tokenAmounts[0].token).safeTransfer(pairAddress, amount0, "ULIA[1]");
-        ERC20(tokenAmounts[1].token).safeTransfer(pairAddress, amount1, "ULIA[2]");
+        ERC20(tokenAmounts[0].token).safeTransfer(pair, amount0, "ULIA[1]");
+        ERC20(tokenAmounts[1].token).safeTransfer(pair, amount1, "ULIA[2]");
 
-        try UniswapV2Pair(pairAddress).mint(
+        try UniswapV2Pair(pair).mint(
             address(this)
         ) returns (uint256) { // solhint-disable-line no-empty-blocks
         } catch Error(string memory reason) {

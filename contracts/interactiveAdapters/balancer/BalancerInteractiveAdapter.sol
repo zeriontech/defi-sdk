@@ -39,7 +39,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * token address, token amount to be deposited, and amount type.
      * @param data ABI-encoded additional parameters:
-     *     - poolAddress - pool address.
+     *     - pool - pool address.
      * @return tokensToBeWithdrawn Array with one element - pool address.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -54,16 +54,16 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
     {
         require(tokenAmounts.length == 1, "BIA: should be 1 tokenAmount[1]");
 
-        address poolAddress = abi.decode(data, (address));
+        address pool = abi.decode(data, (address));
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = poolAddress;
+        tokensToBeWithdrawn[0] = pool;
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
-        ERC20(token).safeApprove(poolAddress, amount, "BIA");
+        ERC20(token).safeApprove(pool, amount, "BIA");
 
-        try BPool(poolAddress).joinswapExternAmountIn(
+        try BPool(pool).joinswapExternAmountIn(
             token,
             amount,
             0
@@ -79,7 +79,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * Balancer token address, Balancer token amount to be redeemed, and amount type.
      * @param data ABI-encoded additional parameters:
-     *     - toTokenAddress - destination token address.
+     *     - toToken - destination token address.
      * @return tokensToBeWithdrawn Array with one element - destination token address.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -94,16 +94,16 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
     {
         require(tokenAmounts.length == 1, "BIA: should be 1 tokenAmount[2]");
 
-        address toTokenAddress = abi.decode(data, (address));
+        address toToken = abi.decode(data, (address));
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = toTokenAddress;
+        tokensToBeWithdrawn[0] = toToken;
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         try BPool(token).exitswapPoolAmountIn(
-            toTokenAddress,
+            toToken,
             amount,
             0
         ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks

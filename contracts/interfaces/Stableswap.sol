@@ -28,4 +28,8 @@ interface Stableswap {
     function underlying_coins(int128) external view returns (address);
     function exchange_underlying(int128, int128, uint256, uint256) external;
     function get_dy_underlying(int128, int128, uint256) external view returns (uint256);
+    function coins(int128) external view returns (address);
+    function coins(uint256) external view returns (address);
+    function balances(int128) external view returns (uint256);
+    function balances(uint256) external view returns (uint256);
 }
