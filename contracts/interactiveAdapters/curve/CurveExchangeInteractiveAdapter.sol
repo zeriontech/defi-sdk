@@ -70,12 +70,10 @@ contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAda
 
         uint256 allowance = ERC20(token).allowance(address(this), swap);
         if (allowance < amount) {
-            if (allowance == 0) {
-                ERC20(token).safeApprove(swap, type(uint256).max, "CEIA[1]");
-            } else {
-                ERC20(token).safeApprove(swap, 0, "CEIA[2]");
-                ERC20(token).safeApprove(swap, type(uint256).max, "CEIA[3]");
+            if (allowance > 0) {
+                ERC20(token).safeApprove(swap, 0, "CEIA[1]");
             }
+            ERC20(token).safeApprove(swap, type(uint256).max, "CEIA[2]");
         }
 
         // solhint-disable-next-line no-empty-blocks
