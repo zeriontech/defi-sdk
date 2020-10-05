@@ -43,7 +43,9 @@ contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAda
      *     - toToken - destination token address (one of those used in swap).
      *     - swap - swap address.
      *     - i - input token index.
-     *     - j - destination token index.
+     *     - j - destination token index.this
+     *     - useUnderlying - true if swap_underlying() function should be called,
+     *                       else swap() function will be called.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(
@@ -60,9 +62,9 @@ contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAda
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
-        (address toToken, address swap, int128 i, int128 j) = abi.decode(
+        (address toToken, address swap, int128 i, int128 j, bool useUnderlying) = abi.decode(
             data,
-            (address, address, int128, int128)
+            (address, address, int128, int128, bool)
         );
 
         tokensToBeWithdrawn = new address[](1);
@@ -77,11 +79,20 @@ contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAda
         }
 
         // solhint-disable-next-line no-empty-blocks
-        try Stableswap(swap).exchange_underlying(i, j, amount, 0) {
-        } catch Error(string memory reason) {
-            revert(reason);
-        } catch {
-            revert("CEIA: deposit fail");
+        if (useUnderlying) {
+            try Stableswap(swap).exchange_underlying(i, j, amount, 0) {
+            } catch Error(string memory reason) {
+                revert(reason);
+            } catch {
+                revert("CEIA: deposit fail[1]");
+            }
+        } else {
+            try Stableswap(swap).exchange(i, j, amount, 0) {
+            } catch Error(string memory reason) {
+                revert(reason);
+            } catch {
+                revert("CEIA: deposit fail[2]");
+            }
         }
     }
 

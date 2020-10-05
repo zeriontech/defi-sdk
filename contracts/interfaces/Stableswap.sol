@@ -25,9 +25,8 @@ pragma solidity 0.7.1;
  */
 interface Stableswap {
     /* solhint-disable-next-line func-name-mixedcase */
-    function underlying_coins(int128) external view returns (address);
     function exchange_underlying(int128, int128, uint256, uint256) external;
-    function get_dy_underlying(int128, int128, uint256) external view returns (uint256);
+    function exchange(int128, int128, uint256, uint256) external;
     function coins(int128) external view returns (address);
     function coins(uint256) external view returns (address);
     function balances(int128) external view returns (uint256);

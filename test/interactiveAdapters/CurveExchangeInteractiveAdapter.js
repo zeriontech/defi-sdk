@@ -193,7 +193,8 @@ contract.only('Curve exchange interactive adapter', () => {
             web3.eth.abi.encodeParameter('address', susdAddress) +
               web3.eth.abi.encodeParameter('address', sSwapAddress).slice(2) +
               web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 3).slice(2),
+              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
+              web3.eth.abi.encodeParameter('bool', false).slice(2),
           ],
         ],
         [
@@ -237,7 +238,8 @@ contract.only('Curve exchange interactive adapter', () => {
             web3.eth.abi.encodeParameter('address', susdAddress) +
               web3.eth.abi.encodeParameter('address', sSwapAddress).slice(2) +
               web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 3).slice(2),
+              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
+              web3.eth.abi.encodeParameter('bool', false).slice(2),
           ],
         ],
         [
@@ -305,7 +307,8 @@ contract.only('Curve exchange interactive adapter', () => {
             web3.eth.abi.encodeParameter('address', usdcAddress) +
               web3.eth.abi.encodeParameter('address', sSwapAddress).slice(2) +
               web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 1).slice(2),
+              web3.eth.abi.encodeParameter('uint256', 1).slice(2) +
+              web3.eth.abi.encodeParameter('bool', false).slice(2),
           ],
         ],
         [
@@ -372,7 +375,8 @@ contract.only('Curve exchange interactive adapter', () => {
             web3.eth.abi.encodeParameter('address', usdtAddress) +
               web3.eth.abi.encodeParameter('address', tSwapAddress).slice(2) +
               web3.eth.abi.encodeParameter('uint256', 1).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 2).slice(2),
+              web3.eth.abi.encodeParameter('uint256', 2).slice(2) +
+              web3.eth.abi.encodeParameter('bool', true).slice(2),
           ],
         ],
         [
@@ -439,7 +443,8 @@ contract.only('Curve exchange interactive adapter', () => {
             web3.eth.abi.encodeParameter('address', busdAddress) +
               web3.eth.abi.encodeParameter('address', bSwapAddress).slice(2) +
               web3.eth.abi.encodeParameter('uint256', 2).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 3).slice(2),
+              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
+              web3.eth.abi.encodeParameter('bool', true).slice(2),
           ],
         ],
         [
@@ -506,7 +511,8 @@ contract.only('Curve exchange interactive adapter', () => {
             web3.eth.abi.encodeParameter('address', daiAddress) +
               web3.eth.abi.encodeParameter('address', bSwapAddress).slice(2) +
               web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 0).slice(2),
+              web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
+              web3.eth.abi.encodeParameter('bool', true).slice(2),
           ],
         ],
         [
@@ -573,7 +579,8 @@ contract.only('Curve exchange interactive adapter', () => {
             web3.eth.abi.encodeParameter('address', paxAddress) +
               web3.eth.abi.encodeParameter('address', pSwapAddress).slice(2) +
               web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 3).slice(2),
+              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
+              web3.eth.abi.encodeParameter('bool', true).slice(2),
           ],
         ],
         [
@@ -640,7 +647,8 @@ contract.only('Curve exchange interactive adapter', () => {
             web3.eth.abi.encodeParameter('address', daiAddress) +
               web3.eth.abi.encodeParameter('address', pSwapAddress).slice(2) +
               web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 0).slice(2),
+              web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
+              web3.eth.abi.encodeParameter('bool', true).slice(2),
           ],
         ],
         [
@@ -707,7 +715,8 @@ contract.only('Curve exchange interactive adapter', () => {
             web3.eth.abi.encodeParameter('address', tusdAddress) +
               web3.eth.abi.encodeParameter('address', tSwapAddress).slice(2) +
               web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 2).slice(2),
+              web3.eth.abi.encodeParameter('uint256', 2).slice(2) +
+              web3.eth.abi.encodeParameter('bool', true).slice(2),
           ],
         ],
         [
