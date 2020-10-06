@@ -1,18 +1,19 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('HarvestStakingAdapter');
+const ProtocolAdapter = artifacts.require('CreamAssetAdapter');
+const TokenAdapter = artifacts.require('CompoundTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('HarvestStakingAdapter', () => {
-  const fusdcAddress = '0xc3F7ffb5d5869B3ade9448D094d81B0521e8326f';
-  const farmAddress = '0xa0246c9032bC3A600820415aE600c6388619A14D';
-  // Random address with positive balances
-  const testAddress = '0x1e2b3e14148487d26923beecb94b251c0a09ba5d';
+contract('CreamAssetAdapter', () => {
+  const crUsdcAddress = '0x44fbeBd2F576670a6C33f6Fc0B00aA8c5753b322';
+  // Random address with positive balance
+  const testAddress = '0x020cA66C30beC2c4Fe3861a94E4DB4A498A35872';
 
   let accounts;
   let adapterRegistry;
   let protocolAdapterAddress;
+  let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
 
   beforeEach(async () => {
@@ -20,6 +21,10 @@ contract('HarvestStakingAdapter', () => {
     await ProtocolAdapter.new({ from: accounts[0] })
       .then((result) => {
         protocolAdapterAddress = result.address;
+      });
+    await TokenAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        tokenAdapterAddress = result.address;
       });
     await ERC20TokenAdapter.new({ from: accounts[0] })
       .then((result) => {
@@ -30,7 +35,7 @@ contract('HarvestStakingAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Harvest'],
+      ['Cream'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -42,8 +47,7 @@ contract('HarvestStakingAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        fusdcAddress,
-        farmAddress,
+        crUsdcAddress,
       ]]],
     )
       .send({
@@ -51,12 +55,12 @@ contract('HarvestStakingAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20'],
-      [erc20TokenAdapterAddress],
+      ['ERC20', 'CToken'],
+      [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({
         from: accounts[0],
-        gas: '1000000',
+        gas: '300000',
       });
   });
 
@@ -65,7 +69,7 @@ contract('HarvestStakingAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
-        displayToken(result[0].adapterBalances[0].balances[1].base);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
       });
   });
 });

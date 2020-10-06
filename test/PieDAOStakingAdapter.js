@@ -1,14 +1,14 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('HarvestStakingAdapter');
+const ProtocolAdapter = artifacts.require('PieDAOStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('HarvestStakingAdapter', () => {
-  const fusdcAddress = '0xc3F7ffb5d5869B3ade9448D094d81B0521e8326f';
-  const farmAddress = '0xa0246c9032bC3A600820415aE600c6388619A14D';
+contract.only('PieDAOStakingAdapter', () => {
+  const doughAddress = '0xad32A8e6220741182940c5aBF610bDE99E737b2D';
+  const bptAddress = '0xFAE2809935233d4BfE8a56c2355c4A2e7d1fFf1A';
   // Random address with positive balances
-  const testAddress = '0x1e2b3e14148487d26923beecb94b251c0a09ba5d';
+  const testAddress = '0x66827bcd635f2bb1779d68c46aeb16541bca6ba8';
 
   let accounts;
   let adapterRegistry;
@@ -30,7 +30,7 @@ contract('HarvestStakingAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Harvest'],
+      ['PieDAO Staking'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -42,8 +42,8 @@ contract('HarvestStakingAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        fusdcAddress,
-        farmAddress,
+        doughAddress,
+        bptAddress,
       ]]],
     )
       .send({

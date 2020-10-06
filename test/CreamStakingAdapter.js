@@ -1,14 +1,13 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('HarvestStakingAdapter');
+const ProtocolAdapter = artifacts.require('CreamStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('HarvestStakingAdapter', () => {
-  const fusdcAddress = '0xc3F7ffb5d5869B3ade9448D094d81B0521e8326f';
-  const farmAddress = '0xa0246c9032bC3A600820415aE600c6388619A14D';
-  // Random address with positive balances
-  const testAddress = '0x1e2b3e14148487d26923beecb94b251c0a09ba5d';
+contract('CreamStakingAdapter', () => {
+  const balancerCreamWethAddress = '0x5a82503652d05B21780f33178FDF53d31c29B916';
+  // Random address with positive balance
+  const testAddress = '0xD761b97d8dbAaF908FDF6004B088d16E63Aa9222';
 
   let accounts;
   let adapterRegistry;
@@ -30,7 +29,7 @@ contract('HarvestStakingAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Harvest'],
+      ['Cream'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -42,8 +41,7 @@ contract('HarvestStakingAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        fusdcAddress,
-        farmAddress,
+        balancerCreamWethAddress,
       ]]],
     )
       .send({
@@ -56,7 +54,7 @@ contract('HarvestStakingAdapter', () => {
     )
       .send({
         from: accounts[0],
-        gas: '1000000',
+        gas: '300000',
       });
   });
 
@@ -65,7 +63,6 @@ contract('HarvestStakingAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
-        displayToken(result[0].adapterBalances[0].balances[1].base);
       });
   });
 });

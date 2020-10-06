@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('AmpleforthAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('AmpleforthAdapter', () => {
+contract.only('AmpleforthAdapter', () => {
   const amplAddress = '0xD46bA6D942050d489DBd938a2C909A5d5039A161';
   const amplUniAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
@@ -76,11 +76,8 @@ contract('AmpleforthAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, ampl);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, amplUni);
         assert.equal(result[0].adapterBalances[0].balances[0].underlying.length, 0);
-        displayToken(result[0].adapterBalances[0].balances[1].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, amplUni);
-        assert.equal(result[0].adapterBalances[0].balances[1].underlying.length, 0);
       });
   });
 });

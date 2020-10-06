@@ -1,14 +1,14 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('HarvestStakingAdapter');
+const ProtocolAdapter = artifacts.require('UniswapV2StakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('HarvestStakingAdapter', () => {
-  const fusdcAddress = '0xc3F7ffb5d5869B3ade9448D094d81B0521e8326f';
-  const farmAddress = '0xa0246c9032bC3A600820415aE600c6388619A14D';
+contract('UniswapV2StakingAdapter', () => {
+  const uniDaiWethAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
+  const uniAddress = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984';
   // Random address with positive balances
-  const testAddress = '0x1e2b3e14148487d26923beecb94b251c0a09ba5d';
+  const testAddress = '0x6f71f06a0b93970a3b9e6dea8416380def99d032';
 
   let accounts;
   let adapterRegistry;
@@ -30,7 +30,7 @@ contract('HarvestStakingAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Harvest'],
+      ['UniswapV2'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -42,8 +42,8 @@ contract('HarvestStakingAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        fusdcAddress,
-        farmAddress,
+        uniDaiWethAddress,
+        uniAddress,
       ]]],
     )
       .send({

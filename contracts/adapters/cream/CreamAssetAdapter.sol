@@ -21,46 +21,21 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @dev CToken contract interface.
- * Only the functions required for CompoundDebtAdapter contract are added.
- * The CToken contract is available here
- * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
- */
-interface CToken {
-    function borrowBalanceStored(address) external view returns (uint256);
-}
-
-
-/**
- * @dev CompoundRegistry contract interface.
- * Only the functions required for CompoundDebtAdapter contract are added.
- * The CompoundRegistry contract is available in this repository.
- */
-interface CompoundRegistry {
-    function getCToken(address) external view returns (address);
-}
-
-
-/**
- * @title Debt adapter for Compound protocol.
+ * @title Asset adapter for C.R.E.A.M. protocol.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CompoundDebtAdapter is ProtocolAdapter {
+contract CreamAssetAdapter is ProtocolAdapter {
 
-    address internal constant REGISTRY = 0x745eC6C92E3Fa2Ac470B3323128c6ad2eAB21d67;
+    string public constant override adapterType = "Asset";
 
-    string public constant override adapterType = "Debt";
-
-    string public constant override tokenType = "ERC20";
+    string public constant override tokenType = "CToken";
 
     /**
-     * @return Amount of debt of the given account for the protocol.
+     * @return Amount of CTokens held by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        address cToken = CompoundRegistry(REGISTRY).getCToken(token);
-
-        return CToken(cToken).borrowBalanceStored(account);
+        return ERC20(token).balanceOf(account);
     }
 }

@@ -36,19 +36,19 @@ interface CToken {
  * Only the functions required for CompoundDebtAdapter contract are added.
  * The CompoundRegistry contract is available in this repository.
  */
-interface CompoundRegistry {
+interface CreamRegistry {
     function getCToken(address) external view returns (address);
 }
 
 
 /**
- * @title Debt adapter for Compound protocol.
+ * @title Debt adapter for C.R.E.A.M. protocol.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CompoundDebtAdapter is ProtocolAdapter {
+contract CreamDebtAdapter is ProtocolAdapter {
 
-    address internal constant REGISTRY = 0x745eC6C92E3Fa2Ac470B3323128c6ad2eAB21d67;
+    address internal constant REGISTRY = 0xecD78d9b6B6DAa268Ea7524557c361FCc8a323b7;
 
     string public constant override adapterType = "Debt";
 
@@ -59,7 +59,7 @@ contract CompoundDebtAdapter is ProtocolAdapter {
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        address cToken = CompoundRegistry(REGISTRY).getCToken(token);
+        address cToken = CreamRegistry(REGISTRY).getCToken(token);
 
         return CToken(cToken).borrowBalanceStored(account);
     }

@@ -43,6 +43,7 @@ contract CompoundTokenAdapter is TokenAdapter {
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;
+    address internal constant CRETH = 0xD06527D5e56A3495252A528C4987003b712860eE;
     address internal constant CSAI = 0xF5DCe57282A584D2746FaF1593d3121Fcac444dC;
 
     /**
@@ -87,6 +88,10 @@ contract CompoundTokenAdapter is TokenAdapter {
      * @dev Internal function to retrieve underlying token.
      */
     function getUnderlying(address token) internal view returns (address) {
-        return token == CETH ? ETH : CToken(token).underlying();
+        if (token == CETH || token == CRETH) {
+            return ETH;
+        } else {
+            return CToken(token).underlying();
+        }
     }
 }
