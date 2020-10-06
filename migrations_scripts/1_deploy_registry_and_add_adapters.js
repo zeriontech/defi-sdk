@@ -3,6 +3,7 @@ const AaveAssetAdapter = artifacts.require('AaveAssetAdapter');
 const AaveDebtAdapter = artifacts.require('AaveDebtAdapter');
 const AaveUniswapAssetAdapter = artifacts.require('AaveUniswapAssetAdapter');
 const AaveUniswapDebtAdapter = artifacts.require('AaveUniswapDebtAdapter');
+const AaveStakingAdapter = artifacts.require('AaveStakingAdapter');
 const BalancerAdapter = artifacts.require('BalancerAdapter');
 const BancorAdapter = artifacts.require('BancorAdapter');
 const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
@@ -40,6 +41,7 @@ const NexusStakingAdapter = artifacts.require('NexusStakingAdapter');
 const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
+const PieDAOStakingAdapter = artifacts.require('PieDAOStakingAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
 const SashimiStakingAdapter = artifacts.require('SashimiStakingAdapter');
 const SushiStakingAdapter = artifacts.require('SushiStakingAdapter');
@@ -135,6 +137,7 @@ const cZRXAddress = '0xB3319f5D18Bc0D84dD1b4825Dcde5d5f7266d407';
 const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
 const cWBTCAddress = '0xC11b1268C1A384e55C48c2391d8d480264A3A7F4';
 const cUSDTAddress = '0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9';
+const cUNIAddress = '0x35a18000230da775cac24873d00ff85bccded550';
 
 const crEthAddress = '0xD06527D5e56A3495252A528C4987003b712860eE';
 const crUsdtAddress = '0x797AAB1ce7c01eB727ab980762bA88e7133d2157';
@@ -156,16 +159,16 @@ const crFttAddress = '0x10FDBD1e48eE2fD9336a482D746138AE19e649Db';
 const crYEthAddress = '0x01da76DEa59703578040012357b81ffE62015C2d';
 const crSrmAddress = '0xef58b2d5A1b8D3cDE67b8aB054dC5C831E9Bc025';
 
-const  balancerCream80Weth20Address = '0x5a82503652d05B21780f33178FDF53d31c29B916';
-const  uniCreamWethAddress = '0xddF9b7a31b32EBAF5c064C80900046C9e5b7C65F';
-const  creamCreamUsdcAddress = '0x4Fd2d9d6eF05E13Bf0B167509151A4EC3D4d4b93';
-const  creamCreamWethAddress = '0xa49b3c7C260ce8A7C665e20Af8aA6E099A86cf8A';
-const  creamCrCreamCrYfiAddress = '0xA65405e0dD378C65308deAE51dA9e3BcEBb81261';
-const  creamCrYEthCrYYCrvAddress = '0xB3284F2F22563F27cEF2912637b6A00F162317c4';
-const  creamCrYEth_WethAddrvess = '0x6a3B875854f5518E85Ef97620c5e7de75bbc3fA0';
-const  creamYYCrvUsdcAddress = '0x661b94d96ADb18646e791A06576F7905a8d1BEF6';
-const  creamYfiUsdcAddress = '0x7350c6D00D63AB5988250aea347f277c19BEA785';
-const  creamAddress = '0x2ba592F78dB6436527729929AAf6c908497cB200';
+const balancerCream80Weth20Address = '0x5a82503652d05B21780f33178FDF53d31c29B916';
+const uniCreamWethAddress = '0xddF9b7a31b32EBAF5c064C80900046C9e5b7C65F';
+const creamCreamUsdcAddress = '0x4Fd2d9d6eF05E13Bf0B167509151A4EC3D4d4b93';
+const creamCreamWethAddress = '0xa49b3c7C260ce8A7C665e20Af8aA6E099A86cf8A';
+const creamCrCreamCrYfiAddress = '0xA65405e0dD378C65308deAE51dA9e3BcEBb81261';
+const creamCrYEthCrYYCrvAddress = '0xB3284F2F22563F27cEF2912637b6A00F162317c4';
+const creamCrYEth_WethAddrvess = '0x6a3B875854f5518E85Ef97620c5e7de75bbc3fA0';
+const creamYYCrvUsdcAddress = '0x661b94d96ADb18646e791A06576F7905a8d1BEF6';
+const creamYfiUsdcAddress = '0x7350c6D00D63AB5988250aea347f277c19BEA785';
+const creamAddress = '0x2ba592F78dB6436527729929AAf6c908497cB200';
 
 const mDAIAddress = '0x06301057D77D54B6e14c7FafFB11Ffc7Cab4eaa7';
 const mETHAddress = '0xdF9307DFf0a1B57660F60f9457D32027a55ca0B2';
@@ -336,7 +339,13 @@ const fttAddress = '0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9';
 const yEthAddress = '0xe1237aA7f535b0CC33Fd973D66cBf830354D16c7';
 const srmAddress = '0x476c5E26a75bd202a9683ffD34359C0CC15be0fF';
 
-const uniAddress = 'x1f9840a85d5aF5bf1D1762F925BDADdC4201F984';
+const uniAddress = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984';
+const aaveAddress = '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9';
+
+const goughAddress = '0xad32A8e6220741182940c5aBF610bDE99E737b2D';
+const balancerWeth20Dough80Address = '0xFAE2809935233d4BfE8a56c2355c4A2e7d1fFf1A';
+const uniswapDaiDefiSAddress = '0x7aeFaF3ea1b465dd01561B0548c9FD969e3F76BA';
+const balancerDefiS70Weth30Address = '0x35333CF3Db8e334384EC6D2ea446DA6e445701dF';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -394,6 +403,9 @@ const aaveUniswapDebtAdapterTokens = [
   usdtAddress,
   ethAddress,
 ];
+const aaveStakingAdapterTokens = [
+  aaveAddress,
+];
 const ampleforthAdapterTokens = [
   amplAddress,
   uniAmplWethAddress,
@@ -412,6 +424,7 @@ const compoundAssetAdapterTokens = [
   cUSDCAddress,
   cWBTCAddress,
   cUSDTAddress,
+  cUNIAddress,
 ];
 const compoundDebtAdapterTokens = [
   daiAddress,
@@ -423,6 +436,7 @@ const compoundDebtAdapterTokens = [
   usdcAddress,
   wbtcAddress,
   usdtAddress,
+  uniAddress,
 ];
 
 creamAssetAdapterTokens = [
@@ -654,6 +668,12 @@ const pieDAOPieAdapterTokens = [
   DEFIPSAddress,
   DEFIPPAddress,
 ];
+const pieDAOStakingAdapterTokens = [
+  goughAddress,
+  balancerWeth20Dough80Address,
+  uniswapDaiDefiSAddress,
+  balancerDefiS70Weth30Address,
+];
 const poolTogetherAdapterTokens = [
   saiPoolAddress,
   daiPoolAddress,
@@ -739,8 +759,9 @@ let tokenAdapters = [];
 module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(AaveAssetAdapter, { from: accounts[0] });
   await deployer.deploy(AaveDebtAdapter, { from: accounts[0] });
-  adapters.push([AaveAssetAdapter.address, AaveDebtAdapter.address]);
-  tokens.push([aaveAssetAdapterTokens, aaveDebtAdapterTokens]);
+  await deployer.deploy(AaveStakingAdapter, { from: accounts[0] });
+  adapters.push([AaveAssetAdapter.address, AaveDebtAdapter.address, AaveStakingAdapter.address]);
+  tokens.push([aaveAssetAdapterTokens, aaveDebtAdapterTokens, aaveStakingAdapterTokens]);
   protocolNames.push('Aave');
   metadata.push([
     'Aave',
@@ -1138,8 +1159,9 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(PieDAOPieAdapter, { from: accounts[0] });
-  adapters.push([PieDAOPieAdapter.address]);
-  tokens.push([pieDAOPieAdapterTokens]);
+  await deployer.deploy(PieDAOStakingAdapter, { from: accounts[0] });
+  adapters.push([PieDAOPieAdapter.address, PieDAOStakingAdapter.address]);
+  tokens.push([pieDAOPieAdapterTokens, pieDAOStakingAdapterTokens]);
   protocolNames.push('PieDAO');
   metadata.push([
     'PieDAO',
