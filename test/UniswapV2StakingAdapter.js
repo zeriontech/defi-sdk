@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('UniswapV2StakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('UniswapV2StakingAdapter', () => {
+contract('UniswapV2StakingAdapter', () => {
   const uniDaiWethAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
   const uniAddress = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984';
   // Random address with positive balances
