@@ -21,6 +21,8 @@ const DdexMarginAssetAdapter = artifacts.require('DdexMarginAssetAdapter');
 const DdexMarginDebtAdapter = artifacts.require('DdexMarginDebtAdapter');
 const DdexSpotAssetAdapter = artifacts.require('DdexSpotAssetAdapter');
 const DmmAssetAdapter = artifacts.require('DmmAssetAdapter');
+const DodoAdapter = artifacts.require('DodoAdapter');
+const DodoStakingAdapter = artifacts.require('DodoStakingAdapter');
 const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
 const GnosisProtocolAdapter = artifacts.require('GnosisProtocolAdapter');
@@ -67,6 +69,7 @@ const BancorTokenAdapter = artifacts.require('BancorTokenAdapter');
 const CompoundTokenAdapter = artifacts.require('CompoundTokenAdapter');
 const CurveTokenAdapter = artifacts.require('CurveTokenAdapter');
 const DmmTokenAdapter = artifacts.require('DmmTokenAdapter');
+const DodoTokenAdapter = artifacts.require('DodoTokenAdapter');
 const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
 const KeeperDaoTokenAdapter = artifacts.require('IearnTokenAdapter');
@@ -984,6 +987,19 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(DodoAdapter, { from: accounts[0] });
+  await deployer.deploy(DodoStakingAdapter, { from: accounts[0] });
+  adapters.push([DodoAdapter.address, DodoStakingAdapter.address]);
+  tokens.push([[], []]);
+  protocolNames.push('DODO');
+  metadata.push([
+    'DODO',
+    'Your on-chain liquidity provider',
+    'dodoex.io',
+    'protocol-icons.s3.amazonaws.com/dodo.png',
+    '0',
+  ]);
+
   await deployer.deploy(DyDxAssetAdapter, { from: accounts[0] });
   await deployer.deploy(DyDxDebtAdapter, { from: accounts[0] });
   adapters.push([DyDxAssetAdapter.address, DyDxDebtAdapter.address]);
@@ -1398,6 +1414,12 @@ module.exports = async (deployer, network, accounts) => {
         DmmTokenAdapter.address,
       );
     });
+  await deployer.deploy(DodoTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        DodoTokenAdapter.address,
+      );
+    });
   await deployer.deploy(IdleTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -1493,6 +1515,7 @@ module.exports = async (deployer, network, accounts) => {
           'CToken',
           'Curve pool token',
           'MToken',
+          'DODO pool token',
           'IdleToken',
           'YToken',
           'KToken',
