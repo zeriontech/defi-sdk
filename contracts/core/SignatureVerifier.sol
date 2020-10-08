@@ -23,7 +23,7 @@ import { TransactionData, Action, AbsoluteTokenAmount, Fee, TokenAmount } from "
 
 contract SignatureVerifier {
 
-    mapping (address => uint256) internal nonce_;
+    mapping (bytes32 => bool) internal isHashUsed_;
 
     bytes32 internal immutable domainSeparator_;
 
@@ -61,7 +61,7 @@ contract SignatureVerifier {
         "TokenAmount[] inputs,",
         "Fee fee,",
         "AbsoluteTokenAmount[] requiredOutputs,",
-        "uint256 nonce",
+        "uint256 salt",
         ")"
     );
     bytes internal constant ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE = abi.encodePacked(
@@ -105,26 +105,27 @@ contract SignatureVerifier {
     /**
      * @return Address of the Core contract used.
      */
-    function nonce(
-        address account
+    function isHashUsed(
+        bytes32 hash
     )
-        external
+        public
         view
-        returns (uint256)
+        returns (bool)
     {
-        return nonce_[account];
+        return isHashUsed_[hash];
     }
 
-    function updateNonce(
-        address account
+    function hashUsed(
+        bytes32 hash
     )
         internal
     {
-        nonce_[account]++;
+        require(!isHashUsed_[hash], "SV: used hash!");
+        isHashUsed_[hash] = true;
     }
 
     function getAccountFromSignature(
-        TransactionData memory data,
+        bytes32 hashedData,
         bytes memory signature
     )
         public
@@ -133,7 +134,17 @@ contract SignatureVerifier {
     {
         (uint8 v, bytes32 r, bytes32 s) = splitSignature(signature);
 
-        bytes32 hashedData = keccak256(
+        return payable(ecrecover(hashedData, v, r, s));
+    }
+
+    function hashData(
+        TransactionData memory data
+    )
+        public
+        view
+        returns (bytes32)
+    {
+        return keccak256(
             abi.encodePacked(
                 bytes1(0x19),
                 bytes1(0x01),
@@ -141,13 +152,6 @@ contract SignatureVerifier {
                 hash(data)
             )
         );
-
-        address signer = ecrecover(hashedData, v, r, s);
-
-        require(signer != address(0), "SV: bad signature");
-        require(nonce_[signer] == data.nonce, "SV: bad nonce");
-
-        return payable(signer);
     }
 
     /// @return Hash to be signed by tokens supplier.
@@ -165,7 +169,7 @@ contract SignatureVerifier {
                 hash(data.inputs),
                 hash(data.fee),
                 hash(data.requiredOutputs),
-                data.nonce
+                data.salt
             )
         );
     }
@@ -283,24 +287,6 @@ contract SignatureVerifier {
             s := mload(add(signature, 64))
             // final byte (first byte of the next 32 bytes).
             v := byte(0, mload(add(signature, 96)))
-        }
-
-        // EIP-2 still allows signature malleability for ecrecover(). Remove this possibility and make the signature
-        // unique. Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
-        // the valid range for s in (281): 0 < s < secp256k1n ÷ 2 + 1, and for v in (282): v ∈ {27, 28}. Most
-        // signatures from current libraries generate a unique signature with an s-value in the lower half order.
-        //
-        // If your library generates malleable signatures, such as s-values in the upper range, calculate a new s-value
-        // with 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 - s1 and flip v from 27 to 28 or
-        // vice versa. If your library also generates signatures with 0/1 for v instead 27/28, add 27 to v to accept
-        // these malleable signatures as well.
-        // Reference: github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/cryptography/ECDSA.sol
-        if (uint256(s) > 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0) {
-            revert("SV: bad 's'");
-        }
-
-        if (v != 27 && v != 28) {
-            revert("SV: bad 'v'");
         }
 
         return (v, r, s);

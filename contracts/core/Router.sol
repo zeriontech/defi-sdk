@@ -140,9 +140,9 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         payable
         returns (AbsoluteTokenAmount[] memory)
     {
-        address payable account = getAccountFromSignature(data, signature);
-
-        updateNonce(account);
+        bytes32 hashedData = hashData(data);
+        hashUsed(hashedData);
+        address payable account = getAccountFromSignature(hashedData, signature);
 
         return startExecution(
             data.actions,

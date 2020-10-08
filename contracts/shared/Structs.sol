@@ -78,7 +78,7 @@ struct TransactionData {
     TokenAmount[] inputs;
     Fee fee;
     AbsoluteTokenAmount[] requiredOutputs;
-    uint256 nonce;
+    uint256 salt;
 }
 
 

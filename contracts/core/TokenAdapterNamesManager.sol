@@ -167,7 +167,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
     function getTokenAdapterNameByHash(
         bytes32 hash
     )
-        public
+        external
         view
         returns (bytes32)
     {
@@ -193,6 +193,22 @@ abstract contract TokenAdapterNamesManager is Ownable {
         }
 
         return tokenAdapterName;
+    }
+
+    function getTokenHash(
+        address token
+    )
+        public
+        view
+        returns (bytes32)
+    {
+        bytes32 hash;
+
+        assembly {
+            hash := extcodehash(token)
+        }
+
+        return hash;
     }
 
     /**
@@ -295,21 +311,5 @@ abstract contract TokenAdapterNamesManager is Ownable {
         require(oldName != newTokenAdapterName, "PM: same name[1]");
 
         _tokenAdapterNameByToken[token] = newTokenAdapterName;
-    }
-
-    function getTokenHash(
-        address token
-    )
-        internal
-        view
-        returns (bytes32)
-    {
-        bytes32 hash;
-
-        assembly {
-            hash := extcodehash(token)
-        }
-
-        return hash;
     }
 }
