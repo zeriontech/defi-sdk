@@ -29,7 +29,8 @@ contract FinNexusAssetAdapter is ProtocolAdapter {
     string public constant override adapterType = "Asset";
     string public constant override tokenType = "FPT token";
 
-    address public constant FPTCoin = 0xcbdf179a57c091ae086a3d5c33d7ffc0833048f0;
+    address public constant FPTCoin = 0xA072EA1a2a75047908e68e0B1a2baC3a7190CE58;
+    
     /**
      * @return Amount of FPT token on FNX the Option protocol by the given account.
      * @dev Implementation of ProtocolAdapter interface function.

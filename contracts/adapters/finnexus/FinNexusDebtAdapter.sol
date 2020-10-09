@@ -23,7 +23,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @dev FinNexusCollecteralPool contract interface.
  */
 interface FinNexusCollecteralPool {
-    function getUserInputCollateral(address user,address collateral)public view returns (uint256);
+    function getUserInputCollateral(address user,address collateral) external view returns (uint256);
 }
 
 
@@ -37,10 +37,10 @@ contract FinNexusDebtAdapter is ProtocolAdapter {
     string public constant override adapterType = "Debt";
     string public constant override tokenType = "ERC20";
 
-    address public constant CollecteralPool = 0x2071bc1cefd2e2beb7e81db0c7517e7b40c6c10a;
+    address public constant CollecteralPool = 0x20081862B301C1ef9357BC0a125Aa414db210f2c;
     address internal constant FNX = 0xeF9Cd7882c067686691B6fF49e650b43AFBBCC6B;
     address internal constant FNX_ETH = 0x0000000000000000000000000000000000000000;
-    address internal constant USDC= 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48;
+    address internal constant USDC= 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
