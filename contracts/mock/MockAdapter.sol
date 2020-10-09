@@ -27,7 +27,7 @@ import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
  */
 contract MockAdapter is ProtocolAdapter {
 
-    mapping (address => uint256) internal balanceOf;
+    mapping (address => int256) internal balanceOf;
 
     constructor() {
         balanceOf[msg.sender] = 1000;
@@ -41,9 +41,8 @@ contract MockAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
         return balanceOf[account];
     }

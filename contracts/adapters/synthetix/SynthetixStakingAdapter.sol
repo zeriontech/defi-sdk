@@ -20,39 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
-
-/**
- * @dev StakingRewards contract interface.
- * Only the functions required for SynthetixAssetAdapter contract are added.
- * The StakingRewards contract is available here
- * github.com/Synthetixio/synthetix/blob/master/contracts/StakingRewards.sol.
- */
-interface StakingRewards {
-    function earned(address) external view returns (uint256);
-}
-
-
-/**
- * @dev Proxy contract interface.
- * Only the functions required for SynthetixAssetAdapter contract are added.
- * The Proxy contract is available here
- * github.com/Synthetixio/synthetix/blob/master/contracts/Proxy.sol.
- */
-interface Proxy {
-    function target() external view returns (address);
-}
-
-
-/**
- * @dev Synthetix contract interface.
- * Only the functions required for SynthetixAssetAdapter contract are added.
- * The Synthetix contract is available here
- * github.com/Synthetixio/synthetix/blob/master/contracts/Synthetix.sol.
- */
-interface Synthetix {
-    function collateral(address) external view returns (uint256);
-}
+import { StakingRewards } from "../../interfaces/StakingRewards.sol";
 
 
 /**
@@ -85,16 +53,15 @@ contract SynthetixAssetAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
         if (token == stakingToken_) {
-            return ERC20(stakingContract_).balanceOf(account);
+            return int256(ERC20(stakingContract_).balanceOf(account));
         } else if (token == rewardsToken_) {
-            return StakingRewards(stakingContract_).earned(account);
+            return int256(StakingRewards(stakingContract_).earned(account));
         } else {
-            return 0;
+            return int256(0);
         }
     }
 }

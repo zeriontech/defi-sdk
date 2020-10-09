@@ -18,30 +18,14 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
 
 /**
- * @title Adapter for Chi Gastoken by 1inch.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author 1inch.exchange <info@1inch.exchange>
+ * @dev SavingsContract contract interface.
+ * Only the functions required for MstableAssetAdapter contract are added.
+ * The SavingsContract contract is available here
+ * github.com/mstable/mStable-contracts/blob/master/contracts/savings/SavingsContract.sol.
  */
-contract ChiAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of Chi Token held by the given account.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface SavingsContract {
+    function creditBalances(address) external view returns (uint256);
+    function exchangeRate() external view returns (uint256);
 }

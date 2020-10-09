@@ -19,11 +19,11 @@ pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import {
-    FullAbsoluteTokenAmount,
-    AbsoluteTokenAmountMeta,
+    FullTokenBalance,
+    TokenBalanceMeta,
     ERC20Metadata,
     AdapterBalance,
-    AbsoluteTokenAmount,
+    TokenBalance,
     Component
 } from "../shared/Structs.sol";
 import { ERC20 } from "../shared/ERC20.sol";
@@ -45,221 +45,213 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
-     * @notice Fills in FullAbsoluteTokenAmount structs with underlying components.
-     * @param absoluteTokenAmounts Array of AbsoluteTokenAmount structs consisting of
+     * @notice Fills in FullTokenBalance structs with underlying components.
+     * @param tokenBalances Array of TokenBalance structs consisting of
      * token addresses and amounts.
      * @return Full absolute token amounts by token addresses and absolute amounts.
      */
-    function getFullAbsoluteTokenAmounts(
-        AbsoluteTokenAmount[] calldata absoluteTokenAmounts
+    function getFullTokenBalances(
+        TokenBalance[] calldata tokenBalances
     )
         external
-        view
-        returns (FullAbsoluteTokenAmount[] memory)
+        returns (FullTokenBalance[] memory)
     {
-        uint256 length = absoluteTokenAmounts.length;
+        uint256 length = tokenBalances.length;
 
-        FullAbsoluteTokenAmount[] memory fullAbsoluteTokenAmounts =
-            new FullAbsoluteTokenAmount[](length);
+        FullTokenBalance[] memory fullTokenBalances =
+            new FullTokenBalance[](length);
 
         for (uint256 i = 0; i < length; i++) {
-            fullAbsoluteTokenAmounts[i] = getFullAbsoluteTokenAmount(
-                absoluteTokenAmounts[i]
+            fullTokenBalances[i] = getFullTokenBalance(
+                tokenBalances[i]
             );
         }
 
-        return fullAbsoluteTokenAmounts;
+        return fullTokenBalances;
     }
 
     /**
-     * @notice Fills in FullAbsoluteTokenAmount structs with final underlying components.
-     * @param absoluteTokenAmounts Array of AbsoluteTokenAmount structs consisting of
+     * @notice Fills in FullTokenBalance structs with final underlying components.
+     * @param tokenBalances Array of TokenBalance structs consisting of
      * token addresses and amounts.
      * @return Final full absolute token amounts by token addresses and absolute amounts.
      */
-    function getFinalFullAbsoluteTokenAmounts(
-        AbsoluteTokenAmount[] calldata absoluteTokenAmounts
+    function getFinalFullTokenBalances(
+        TokenBalance[] calldata tokenBalances
     )
         external
-        view
-        returns (FullAbsoluteTokenAmount[] memory)
+        returns (FullTokenBalance[] memory)
     {
-        uint256 length = absoluteTokenAmounts.length;
+        uint256 length = tokenBalances.length;
 
-        FullAbsoluteTokenAmount[] memory finalFullAbsoluteTokenAmounts =
-            new FullAbsoluteTokenAmount[](length);
+        FullTokenBalance[] memory finalFullTokenBalances =
+            new FullTokenBalance[](length);
 
         for (uint256 i = 0; i < length; i++) {
-            finalFullAbsoluteTokenAmounts[i] = getFinalFullAbsoluteTokenAmount(
-                absoluteTokenAmounts[i]
+            finalFullTokenBalances[i] = getFinalFullTokenBalance(
+                tokenBalances[i]
             );
         }
 
-        return finalFullAbsoluteTokenAmounts;
+        return finalFullTokenBalances;
     }
 
     /**
-     * @notice Fills in FullAbsoluteTokenAmount structs with underlying components.
+     * @notice Fills in FullTokenBalance structs with underlying components.
      * @dev Amount is considered to be 10 ** decimals.
      * @param tokens Array of token addresses.
      * @return Full absolute token amounts by token addresses.
      */
-    function getFullAbsoluteTokenAmounts(
+    function getFullTokenBalances(
         address[] calldata tokens
     )
         external
-        view
-        returns (FullAbsoluteTokenAmount[] memory)
+        returns (FullTokenBalance[] memory)
     {
         uint256 length = tokens.length;
 
-        FullAbsoluteTokenAmount[] memory fullAbsoluteTokenAmounts =
-            new FullAbsoluteTokenAmount[](length);
+        FullTokenBalance[] memory fullTokenBalances =
+            new FullTokenBalance[](length);
 
         uint8 decimals;
         for (uint256 i = 0; i < length; i++) {
             decimals = tokens[i] == ETH ? 18 : ERC20(tokens[i]).decimals();
 
-            fullAbsoluteTokenAmounts[i] = getFullAbsoluteTokenAmount(
-                AbsoluteTokenAmount({
+            fullTokenBalances[i] = getFullTokenBalance(
+                TokenBalance({
                     token: tokens[i],
-                    amount: uint256(10) ** decimals
+                    amount: int256(10) ** decimals
                 })
             );
         }
 
-        return fullAbsoluteTokenAmounts;
+        return fullTokenBalances;
     }
 
     /**
-     * @notice Fills in FullAbsoluteTokenAmount structs with final underlying components.
+     * @notice Fills in FullTokenBalance structs with final underlying components.
      * @dev Amount is considered to be 10 ** decimals.
      * @param tokens Array of token addresses.
      * @return Final full absolute token amounts by token addresses.
      */
-    function getFinalFullAbsoluteTokenAmounts(
+    function getFinalFullTokenBalances(
         address[] calldata tokens
     )
         external
-        view
-        returns (FullAbsoluteTokenAmount[] memory)
+        returns (FullTokenBalance[] memory)
     {
         uint256 length = tokens.length;
 
-        FullAbsoluteTokenAmount[] memory finalFullAbsoluteTokenAmounts =
-            new FullAbsoluteTokenAmount[](length);
+        FullTokenBalance[] memory finalFullTokenBalances =
+            new FullTokenBalance[](length);
 
         uint8 decimals;
         for (uint256 i = 0; i < length; i++) {
             decimals = tokens[i] == ETH ? 18 : ERC20(tokens[i]).decimals();
 
-            finalFullAbsoluteTokenAmounts[i] = getFinalFullAbsoluteTokenAmount(
-                AbsoluteTokenAmount({
+            finalFullTokenBalances[i] = getFinalFullTokenBalance(
+                TokenBalance({
                     token: tokens[i],
-                    amount: uint256(10) ** decimals
+                    amount: int256(10) ** decimals
                 })
             );
         }
 
-        return finalFullAbsoluteTokenAmounts;
+        return finalFullTokenBalances;
     }
 
     /**
-     * @notice Fills in FullAbsoluteTokenAmount struct with underlying components.
-     * @param absoluteTokenAmount AbsoluteTokenAmount struct consisting of
+     * @notice Fills in FullTokenBalance struct with underlying components.
+     * @param tokenBalance TokenBalance struct consisting of
      * token address and its absolute amount.
      * @return Full absolute token amount by token address and absolute amount.
      */
-    function getFullAbsoluteTokenAmount(
-        AbsoluteTokenAmount memory absoluteTokenAmount
+    function getFullTokenBalance(
+        TokenBalance memory tokenBalance
     )
         internal
-        view
-        returns (FullAbsoluteTokenAmount memory)
+        returns (FullTokenBalance memory)
     {
-        Component[] memory components = getComponents(absoluteTokenAmount);
+        Component[] memory components = getComponents(tokenBalance);
 
-        return getFullAbsoluteTokenAmount(absoluteTokenAmount, components);
+        return getFullTokenBalance(tokenBalance, components);
     }
 
     /**
-     * @notice Fills in FullAbsoluteTokenAmount struct with final underlying components.
-     * @param absoluteTokenAmount AbsoluteTokenAmount struct consisting of
+     * @notice Fills in FullTokenBalance struct with final underlying components.
+     * @param tokenBalance TokenBalance struct consisting of
      * token address and its absolute amount.
      * @return Final full absolute token amount by token address and absolute amount.
      */
-    function getFinalFullAbsoluteTokenAmount(
-        AbsoluteTokenAmount memory absoluteTokenAmount
+    function getFinalFullTokenBalance(
+        TokenBalance memory tokenBalance
     )
         internal
-        view
-        returns (FullAbsoluteTokenAmount memory)
+        returns (FullTokenBalance memory)
     {
-        Component[] memory components = getFinalComponents(absoluteTokenAmount);
+        Component[] memory components = getFinalComponents(tokenBalance);
 
-        return getFullAbsoluteTokenAmount(absoluteTokenAmount, components);
+        return getFullTokenBalance(tokenBalance, components);
     }
 
     /**
-     * @notice Fills in FullAbsoluteTokenAmount struct with underlying components.
-     * @param absoluteTokenAmount AbsoluteTokenAmount struct consisting of
+     * @notice Fills in FullTokenBalance struct with underlying components.
+     * @param tokenBalance TokenBalance struct consisting of
      * token address and its absolute amount.
      * @param components Component struct consisting of
      * token address and its absolute amount for each component.
      * @return Full absolute token amount by token address, absolute amount, and components.
      */
-    function getFullAbsoluteTokenAmount(
-        AbsoluteTokenAmount memory absoluteTokenAmount,
+    function getFullTokenBalance(
+        TokenBalance memory tokenBalance,
         Component[] memory components
     )
         internal
-        view
-        returns (FullAbsoluteTokenAmount memory)
+        returns (FullTokenBalance memory)
     {
         uint256 length = components.length;
-        AbsoluteTokenAmountMeta[] memory componentAbsoluteTokenAmounts =
-            new AbsoluteTokenAmountMeta[](length);
+        TokenBalanceMeta[] memory componentTokenBalances =
+            new TokenBalanceMeta[](length);
 
         for (uint256 i = 0; i < length; i++) {
-            componentAbsoluteTokenAmounts[i] = getAbsoluteTokenAmountMeta(
-                AbsoluteTokenAmount({
+            componentTokenBalances[i] = getTokenBalanceMeta(
+                TokenBalance({
                     token: components[i].token,
-                    amount: components[i].rate * absoluteTokenAmount.amount / 1e18
+                    amount: components[i].rate * tokenBalance.amount / 1e18
                 })
             );
         }
 
-        return FullAbsoluteTokenAmount({
-            base: getAbsoluteTokenAmountMeta(absoluteTokenAmount),
-            underlying: componentAbsoluteTokenAmounts
+        return FullTokenBalance({
+            base: getTokenBalanceMeta(tokenBalance),
+            underlying: componentTokenBalances
         });
     }
 
     /**
-     * @param absoluteTokenAmount AbsoluteTokenAmount struct consisting of
+     * @param tokenBalance TokenBalance struct consisting of
      * token address and absolute amount.
      * @return Final components by absolute token amount.
      */
     function getFinalComponents(
-        AbsoluteTokenAmount memory absoluteTokenAmount
+        TokenBalance memory tokenBalance
     )
         internal
-        view
         returns (Component[] memory)
     {
-        uint256 totalLength = getFinalComponentsNumber(absoluteTokenAmount, true);
+        uint256 totalLength = getFinalComponentsNumber(tokenBalance, true);
         Component[] memory finalTokens = new Component[](totalLength);
         uint256 length;
         uint256 init = 0;
 
-        Component[] memory components = getComponents(absoluteTokenAmount);
+        Component[] memory components = getComponents(tokenBalance);
         Component[] memory finalComponents;
 
         for (uint256 i = 0; i < components.length; i++) {
             finalComponents = getFinalComponents(
-                AbsoluteTokenAmount({
+                TokenBalance({
                     token: components[i].token,
-                    amount: components[i].rate * absoluteTokenAmount.amount / 1e18
+                    amount: components[i].rate * tokenBalance.amount / 1e18
                 })
             );
 
@@ -281,28 +273,27 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
     }
 
     /**
-     * @param absoluteTokenAmount AbsoluteTokenAmount struct consisting of
+     * @param tokenBalance TokenBalance struct consisting of
      * token address and absolute amount.
      * @param initial Whether the function call is initial or recursive.
      * @return Final tokens number by absolute token amount.
      */
     function getFinalComponentsNumber(
-        AbsoluteTokenAmount memory absoluteTokenAmount,
+        TokenBalance memory tokenBalance,
         bool initial
     )
         internal
-        view
         returns (uint256)
     {
         uint256 totalLength = 0;
-        Component[] memory components = getComponents(absoluteTokenAmount);
+        Component[] memory components = getComponents(tokenBalance);
 
         if (components.length == 0) {
             return initial ? uint256(0) : uint256(1);
         }
 
         for (uint256 i = 0; i < components.length; i++) {
-            totalLength = totalLength + getFinalComponentsNumber(absoluteTokenAmount, false);
+            totalLength = totalLength + getFinalComponentsNumber(tokenBalance, false);
         }
 
         return totalLength;
@@ -310,18 +301,17 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
 
     /**
      * @dev Fetches internal data about underlying components.
-     * @param absoluteTokenAmount Struct consisting of
+     * @param tokenBalance Struct consisting of
      * token address and absolute amount.
      * @return Array of Component structs by token address and absolute amount.
      */
     function getComponents(
-        AbsoluteTokenAmount memory absoluteTokenAmount
+        TokenBalance memory tokenBalance
     )
         internal
-        view
         returns (Component[] memory)
     {
-        bytes32 tokenAdapterName = getTokenAdapterNameByToken(absoluteTokenAmount.token);
+        bytes32 tokenAdapterName = getTokenAdapterNameByToken(tokenBalance.token);
         address tokenAdapter = _tokenAdapterAddress[tokenAdapterName];
         Component[] memory components;
 
@@ -329,7 +319,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
             components = new Component[](0);
         } else {
             try TokenAdapter(tokenAdapter).getComponents(
-                absoluteTokenAmount.token
+                tokenBalance.token
             ) returns (Component[] memory result) {
                 components = result;
             } catch {
@@ -341,19 +331,19 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
     }
 
     /**
-     * @notice Fills in AbsoluteTokenAmountMeta for AbsoluteTokenAmount struct.
-     * @param absoluteTokenAmount Struct consisting of
+     * @notice Fills in TokenBalanceMeta for TokenBalance struct.
+     * @param tokenBalance Struct consisting of
      * token address and absolute amount.
-     * @return AbsoluteTokenAmountMeta struct by token address and absolute amount.
+     * @return TokenBalanceMeta struct by token address and absolute amount.
      */
-    function getAbsoluteTokenAmountMeta(
-        AbsoluteTokenAmount memory absoluteTokenAmount
+    function getTokenBalanceMeta(
+        TokenBalance memory tokenBalance
     )
         internal
         view
-        returns (AbsoluteTokenAmountMeta memory)
+        returns (TokenBalanceMeta memory)
     {
-        bytes32 tokenAdapterName = getTokenAdapterNameByToken(absoluteTokenAmount.token);
+        bytes32 tokenAdapterName = getTokenAdapterNameByToken(tokenBalance.token);
         address tokenAdapter = _tokenAdapterAddress[tokenAdapterName];
         ERC20Metadata memory erc20metadata;
 
@@ -365,7 +355,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
             });
         } else {
             try TokenAdapter(tokenAdapter).getMetadata(
-                absoluteTokenAmount.token
+                tokenBalance.token
             )
                 returns (ERC20Metadata memory result)
             {
@@ -379,8 +369,8 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
             }
         }
 
-        return AbsoluteTokenAmountMeta({
-            absoluteTokenAmount: absoluteTokenAmount,
+        return TokenBalanceMeta({
+            tokenBalance: tokenBalance,
             erc20metadata: erc20metadata
         });
     }

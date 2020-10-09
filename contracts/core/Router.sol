@@ -193,9 +193,13 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
             modifiedOutputs,
             account
         );
-        // try to burn gas token to save some gas
-        uint256 gasSpent = 21000 + gas - gasleft() + 16 * msg.data.length;
-        Chi(CHI).freeUpTo((gasSpent + 14154) / 41130);
+
+        if (ERC20(CHI).balanceOf(address(this)) > 0) {
+            // try to burn gas token to save some gas
+            uint256 gasSpent = 21000 + gas - gasleft() + 16 * msg.data.length;
+            Chi(CHI).freeUpTo((gasSpent + 14154) / 41130);
+        }
+
         // return tokens that were returned to the account address
         return actualOutputs;
     }

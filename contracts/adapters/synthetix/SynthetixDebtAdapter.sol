@@ -19,28 +19,8 @@ pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
-
-/**
- * @dev Proxy contract interface.
- * Only the functions required for SynthetixDebtAdapter contract are added.
- * The Proxy contract is available here
- * github.com/Synthetixio/synthetix/blob/master/contracts/Proxy.sol.
- */
-interface Proxy {
-    function target() external view returns (address);
-}
-
-
-/**
- * @dev Synthetix contract interface.
- * Only the functions required for SynthetixDebtAdapter contract are added.
- * The Synthetix contract is available here
- * github.com/Synthetixio/synthetix/blob/master/contracts/Synthetix.sol.
- */
-interface Synthetix {
-    function debtBalanceOf(address, bytes32) external view returns (uint256);
-}
+import { Proxy } from "../../interfaces/Proxy.sol";
+import { Synthetix } from "../../interfaces/Synthetix.sol";
 
 
 /**
@@ -61,12 +41,11 @@ contract SynthetixDebtAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
         Synthetix synthetix = Synthetix(Proxy(SNX).target());
 
-        return synthetix.debtBalanceOf(account, "sUSD");
+        return int256(synthetix.debtBalanceOf(account, "sUSD"));
     }
 }

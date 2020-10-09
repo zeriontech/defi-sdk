@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
-import { OneSplitAdapter } from "../../adapters/oneInch/OneSplitAdapter.sol";
+import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
 
@@ -60,7 +60,7 @@ interface OneSplit {
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract OneSplitInteractiveAdapter is InteractiveAdapter, OneSplitAdapter {
+contract OneSplitInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant ONE_SPLIT = 0xC586BeF4a0992C495Cf22e1aeEE4E446CECDee0E;

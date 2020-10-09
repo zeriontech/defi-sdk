@@ -41,7 +41,7 @@ contract WethTokenAdapter is TokenAdapter {
 
         components[0] = Component({
             token: ETH,
-            rate: 1e18
+            rate: int256(1e18)
         });
 
         return components;

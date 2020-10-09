@@ -18,23 +18,27 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
+import { ERC20 } from "../shared/ERC20.sol";
+
 
 /**
- * @title Protocol adapter abstract contract.
- * @dev adapterType(), tokenType(), and getBalance() functions MUST be implemented.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev OneSplit contract interface.
+ * Only the functions required for OneInchChiTokenAdapter contract are added.
+ * The OneSplit contract is available here
+ * github.com/CryptoManiacsZone/1inchProtocol/blob/master/contracts/OneSplit.sol.
  */
-abstract contract ProtocolAdapter {
-
-    /**
-     * @dev MUST return amount and type of the given token
-     * locked on the protocol by the given account.
-     */
-    function getBalance(
-        address token,
-        address account
+interface IOneSplit {
+    function getExpectedReturn(
+        ERC20 fromToken,
+        ERC20 toToken,
+        uint256 amount,
+        uint256 parts,
+        uint256 disableFlags
     )
-        public
-        virtual
-        returns (int256);
+    external
+    view
+    returns(
+        uint256 returnAmount,
+        uint256[] memory distribution
+    );
 }

@@ -18,31 +18,14 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
 
 /**
- * @title Asset adapter for Compound protocol.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * Base contract for Compound Asset interactive adapter.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev LendingPool contract interface.
+ * Only the functions required for AaveDebtAdapter contract are added.
+ * The LendingPool contract is available here
+ * github.com/aave/aave-protocol/blob/master/contracts/lendingpool/LendingPool.sol.
  */
-contract CompoundAssetAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of CTokens held by the given account.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface LendingPool {
+    function getUserReserveData(address, address) external view returns (uint256, uint256);
+    function deposit(address, uint256, uint16) external payable;
 }

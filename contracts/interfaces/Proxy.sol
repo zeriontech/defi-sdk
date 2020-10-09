@@ -18,31 +18,13 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
 
 /**
- * @title Adapter for Chai protocol.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * Base contract for Chai interactive adapter.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev Proxy contract interface.
+ * Only the functions required for SynthetixDebtAdapter contract are added.
+ * The Proxy contract is available here
+ * github.com/Synthetixio/synthetix/blob/master/contracts/Proxy.sol.
  */
-contract ChaiAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of Chai tokens held by the given account.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface Proxy {
+    function target() external view returns (address);
 }

@@ -19,17 +19,7 @@ pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
-
-/**
- * @dev TokenGeyser contract interface.
- * Only the functions required for AmpleforthStakingAdapter contract are added.
- * The TokenGeyser contract is available here
- * github.com/ampleforth/token-geyser/blob/master/contracts/TokenGeyser.sol.
- */
-interface TokenGeyser {
-    function totalStakedFor(address) external view returns (uint256);
-}
+import { TokenGeyser } from "../../interfaces/TokenGeyser.sol";
 
 
 /**
@@ -39,12 +29,15 @@ interface TokenGeyser {
  */
 contract AmpleforthStakingAdapter is ProtocolAdapter {
 
-    address internal immutable geyser_;
+    address[] internal geysers_;
+    address internal immutable stakingToken_;
 
-    constructor(address geyser) {
-        require(geyser != address(0), "ASA: empty geyser");
+    constructor(address[] memory geysers, address stakingToken) {
+        require(geysers.length != 0, "ASA: empty geysers");
+        require(stakingToken != address(0), "ASA: empty stakingToken");
 
-        geyser_ = geyser;
+        geysers_ = geysers;
+        stakingToken_ = stakingToken;
     }
 
     /**
@@ -52,14 +45,34 @@ contract AmpleforthStakingAdapter is ProtocolAdapter {
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
-        address,
+        address token,
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
-        return TokenGeyser(geyser_).totalStakedFor(account);
+        if (token == stakingToken_) {
+            int256 totalBalance = 0;
+            uint256 length = geysers_.length;
+
+            for (uint256 i = 0; i < length; i++) {
+                totalBalance += int256(TokenGeyser(geysers_[i]).totalStakedFor(account));
+            }
+
+            return totalBalance;
+        } else {
+            return int256(0);
+        }
+    }
+
+    function getGeysers() external view returns (address[] memory) {
+        return geysers_;
+    }
+
+    function setGeysers(address[] calldata geysers) external {
+        require(geysers.length != 0, "ASA: empty geysers");
+
+        geysers_ = geysers;
     }
 }

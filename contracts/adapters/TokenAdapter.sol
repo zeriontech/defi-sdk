@@ -38,7 +38,7 @@ abstract contract TokenAdapter {
      *     uint256 rate;     // Price per share (1e18)
      * }
      */
-    function getComponents(address token) external view virtual returns (Component[] memory);
+    function getComponents(address token) external virtual returns (Component[] memory);
 
     /**
      * @return ERC20Metadata struct with ERC20-style token info.

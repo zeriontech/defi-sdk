@@ -41,7 +41,7 @@ contract CurveTokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address token) external view override returns (Component[] memory) {
+    function getComponents(address token) external override returns (Component[] memory) {
         PoolInfo memory poolInfo = CurveRegistry(REGISTRY).getPoolInfo(token);
         address swap = poolInfo.swap;
         uint256 totalCoins = poolInfo.totalCoins;
@@ -52,14 +52,18 @@ contract CurveTokenAdapter is TokenAdapter {
             for (uint256 i = 0; i < totalCoins; i++) {
                 components[i] = Component({
                     token: Stableswap(swap).coins(i),
-                    rate: Stableswap(swap).balances(i) * 1e18 / ERC20(token).totalSupply()
+                    rate: int256(
+                        Stableswap(swap).balances(i) * 1e18 / ERC20(token).totalSupply()
+                    )
                 });
             }
         } else {
             for (uint256 i = 0; i < totalCoins; i++) {
                 components[i] = Component({
                     token: Stableswap(swap).coins(int128(i)),
-                    rate: Stableswap(swap).balances(int128(i)) * 1e18 / ERC20(token).totalSupply()
+                    rate: int256(
+                        Stableswap(swap).balances(int128(i)) * 1e18 / ERC20(token).totalSupply()
+                    )
                 });
             }
         }

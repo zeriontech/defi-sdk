@@ -20,21 +20,11 @@ pragma experimental ABIEncoderV2;
 
 
 /**
- * @title Protocol adapter abstract contract.
- * @dev adapterType(), tokenType(), and getBalance() functions MUST be implemented.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev Synthetix contract interface.
+ * Only the functions required for SynthetixDebtAdapter contract are added.
+ * The Synthetix contract is available here
+ * github.com/Synthetixio/synthetix/blob/master/contracts/Synthetix.sol.
  */
-abstract contract ProtocolAdapter {
-
-    /**
-     * @dev MUST return amount and type of the given token
-     * locked on the protocol by the given account.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        virtual
-        returns (int256);
+interface Synthetix {
+    function debtBalanceOf(address, bytes32) external view returns (uint256);
 }

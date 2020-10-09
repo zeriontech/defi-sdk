@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
-import { TokenSetsAdapter } from "../../adapters/tokenSets/TokenSetsAdapter.sol";
+import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { RebalancingSetToken } from "../../interfaces/RebalancingSetToken.sol";
 import { SetToken } from "../../interfaces/SetToken.sol";
@@ -44,7 +44,7 @@ interface RebalancingSetIssuanceModule {
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract TokenSetsInteractiveAdapter is InteractiveAdapter, TokenSetsAdapter {
+contract TokenSetsInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant TRANSFER_PROXY = 0x882d80D3a191859d64477eb78Cca46599307ec1C;

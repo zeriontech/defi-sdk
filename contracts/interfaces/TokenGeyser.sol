@@ -18,31 +18,13 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
 
 /**
- * @title Adapter for Uniswap V2 protocol (liquidity).
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev TokenGeyser contract interface.
+ * Only the functions required for AmpleforthStakingAdapter contract are added.
+ * The TokenGeyser contract is available here
+ * github.com/ampleforth/token-geyser/blob/master/contracts/TokenGeyser.sol.
  */
-contract UniswapV2AssetAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of Uniswap Pool Tokens held by the given account.
-     * @param token Address of the exchange (pair)!
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface TokenGeyser {
+    function totalStakedFor(address) external view returns (uint256);
 }

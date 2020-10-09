@@ -100,7 +100,6 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         TokenAmount calldata tokenAmount
     )
         internal
-        view
         virtual
         returns (uint256)
     {
@@ -115,7 +114,8 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         if (amountType == AmountType.Relative) {
             require(amount <= DELIMITER, "IA: bad amount");
 
-            uint256 balance = getBalance(token, address(this));
+            int256 balanceSigned = getBalance(token, address(this));
+            uint256 balance = balanceSigned > 0 ? uint256(balanceSigned) : uint256(-balanceSigned);
             if (amount == DELIMITER) {
                 return balance;
             } else {

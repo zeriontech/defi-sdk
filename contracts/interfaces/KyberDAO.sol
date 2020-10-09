@@ -20,21 +20,18 @@ pragma experimental ABIEncoderV2;
 
 
 /**
- * @title Protocol adapter abstract contract.
- * @dev adapterType(), tokenType(), and getBalance() functions MUST be implemented.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev KyberDAO contract interface.
+ * Only the functions required for KyberAssetAdapter contract are added.
+ * The KyberDAO contract is available here
+ * github.com/KyberNetwork/smart-contracts/blob/Katalyst/contracts/sol6/Dao/KyberDAO.sol.
  */
-abstract contract ProtocolAdapter {
-
-    /**
-     * @dev MUST return amount and type of the given token
-     * locked on the protocol by the given account.
-     */
-    function getBalance(
-        address token,
-        address account
+interface KyberDAO {
+    function getCurrentEpochNumber() external view returns (uint32);
+    function getPastEpochRewardPercentageInPrecision(
+        address,
+        uint32
     )
-        public
-        virtual
-        returns (int256);
+    external
+    view
+    returns (uint256);
 }

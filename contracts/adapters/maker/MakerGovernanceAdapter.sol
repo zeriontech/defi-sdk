@@ -19,18 +19,7 @@ pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
-
-/**
- * @dev DSChief contract interface.
- * Only the functions required for MakerGovernanceAdapter contract are added.
- * The DSChief contract is available here
- * github.com/dapphub/ds-chief/blob/master/src/chief.sol.
- */
-interface DSChief {
-    function deposits(address) external view returns (uint256);
-}
-
+import { DSChief } from "../../interfaces/DSChief.sol";
 
 /**
  * @title Adapter for Maker Governance.
@@ -50,10 +39,9 @@ contract MakerGovernanceAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
-        return DSChief(GOVERNANCE).deposits(account);
+        return int256(DSChief(GOVERNANCE).deposits(account));
     }
 }

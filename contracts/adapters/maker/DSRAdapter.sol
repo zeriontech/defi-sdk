@@ -20,20 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { MKRAdapter } from "./MakerAdapter.sol";
-
-
-/**
- * @dev Pot contract interface.
- * Only the functions required for DSRAdapter contract are added.
- * The Pot contract is available here
- * github.com/makerdao/dss/blob/master/src/pot.sol.
- */
-interface Pot {
-    function pie(address) external view returns (uint256);
-    function dsr() external view returns (uint256);
-    function rho() external view returns (uint256);
-    function chi() external view returns (uint256);
-}
+import { Pot } from "../../interfaces/Pot.sol";
 
 
 /**
@@ -53,14 +40,13 @@ contract DSRAdapter is ProtocolAdapter, MKRAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
         Pot pot = Pot(POT);
         // solhint-disable-next-line not-rely-on-time
         uint256 chi = mkrRmul(mkrRpow(pot.dsr(), block.timestamp - pot.rho(), ONE), pot.chi());
 
-        return mkrRmul(chi, pot.pie(account));
+        return int256(mkrRmul(chi, pot.pie(account)));
     }
 }

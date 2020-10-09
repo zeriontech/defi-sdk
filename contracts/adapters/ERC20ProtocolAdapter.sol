@@ -38,10 +38,9 @@ contract ERC20ProtocolAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
-        return ERC20(token).balanceOf(account);
+        return int256(ERC20(token).balanceOf(account));
     }
 }

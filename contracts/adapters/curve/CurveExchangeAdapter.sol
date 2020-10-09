@@ -38,9 +38,8 @@ contract CurveExchangeAdapter is ProtocolAdapter {
         address
     )
         public
-        pure
         override
-        returns (uint256)
+        returns (int256)
     {
         revert("CEA: no balance");
     }

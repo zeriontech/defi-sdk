@@ -18,9 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { DyDxAdapter } from "./DyDxAdapter.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
 
 /**
  * @dev Info struct from Account library.
@@ -52,34 +49,4 @@ struct Wei {
  */
 interface SoloMargin {
     function getAccountWei(Info calldata, uint256) external view returns (Wei memory);
-}
-
-
-/**
- * @title Asset adapter for dYdX protocol.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author Igor Sobolev <sobolev@zerion.io>
- */
-contract DyDxAssetAdapter is ProtocolAdapter, DyDxAdapter {
-
-    /**
-     * @return Amount of tokens held by the given account.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        Wei memory accountWei = SoloMargin(SOLO).getAccountWei(
-            Info(account, 0),
-            getMarketId(token)
-        );
-
-        return accountWei.sign ? accountWei.value : 0;
-    }
 }

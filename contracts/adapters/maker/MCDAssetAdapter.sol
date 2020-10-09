@@ -20,44 +20,9 @@ pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { MKRAdapter } from "./MakerAdapter.sol";
-
-
-/**
- * @dev Vat contract interface.
- * Only the functions required for MCDAssetAdapter contract are added.
- * The Vat contract is available here
- * github.com/makerdao/dss/blob/master/src/vat.sol.
- */
-interface Vat {
-    function urns(bytes32, address) external view returns (uint256, uint256);
-    function ilks(bytes32) external view returns (uint256, uint256);
-}
-
-
-/**
- * @dev Jug contract interface.
- * Only the functions required for MCDAssetAdapter contract are added.
- * The Jug contract is available here
- * github.com/makerdao/dss/blob/master/src/jug.sol.
- */
-interface Jug {
-    function ilks(bytes32) external view returns (uint256, uint256);
-    function base() external view returns (uint256);
-}
-
-
-/**
- * @dev DssCdpManager contract interface.
- * Only the functions required for MCDAssetAdapter contract are added.
- * The DssCdpManager contract is available here
- * github.com/makerdao/dss-cdp-manager/blob/master/src/DssCdpManager.sol.
- */
-interface DssCdpManager {
-    function first(address) external view returns (uint256);
-    function list(uint256) external view returns (uint256, uint256);
-    function urns(uint256) external view returns (address);
-    function ilks(uint256) external view returns (bytes32);
-}
+import { Vat } from "../../interfaces/Vat.sol";
+import { Jug } from "../../interfaces/Jug.sol";
+import { DssCdpManager } from "../../interfaces/DssCdpManager.sol";
 
 
 /**
@@ -76,17 +41,16 @@ contract MCDAssetAdapter is ProtocolAdapter, MKRAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
         DssCdpManager manager = DssCdpManager(MANAGER);
         Vat vat = Vat(VAT);
         uint256 id = manager.first(account);
         address urn;
         bytes32 ilk;
-        uint256 value;
-        uint256 totalValue = 0;
+        int256 value;
+        int256 totalValue = 0;
         uint256 ink;
 
         while (id > 0) {
@@ -96,9 +60,9 @@ contract MCDAssetAdapter is ProtocolAdapter, MKRAdapter {
             (ink, ) = vat.urns(ilk, urn);
 
             if (token == WETH && ilk == "ETH-A" || token == BAT && ilk == "BAT-A") {
-                value = uint256(ink);
+                value = int256(ink);
             } else {
-                value = 0;
+                value = int256(0);
             }
 
             totalValue = totalValue + value;

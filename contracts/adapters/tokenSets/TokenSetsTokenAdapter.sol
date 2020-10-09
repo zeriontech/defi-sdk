@@ -38,7 +38,7 @@ contract TokenSetsTokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address token) external view override returns (Component[] memory) {
+    function getComponents(address token) external override returns (Component[] memory) {
         RebalancingSetToken rebalancingSetToken = RebalancingSetToken(token);
         uint256 rebalancingUnitShare = rebalancingSetToken.unitShares();
         uint256 rebalancingNaturalUnit = rebalancingSetToken.naturalUnit();
@@ -54,7 +54,7 @@ contract TokenSetsTokenAdapter is TokenAdapter {
         for (uint256 i = 0; i < baseComponents.length; i++) {
             components[i] = Component({
                 token: baseComponents[i],
-                rate: rebalancingRate / baseNaturalUnit * baseUnitShares[i]
+                rate: int256(rebalancingRate / baseNaturalUnit * baseUnitShares[i])
             });
         }
 

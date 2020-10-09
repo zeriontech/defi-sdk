@@ -18,30 +18,21 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
+import { Basset } from "./BasketManager.sol";
 
 
 /**
- * @title Asset adapter for Aave protocol.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev ForgeValidator contract interface.
+ * Only the functions required for MassetTokenAdapter contract are added.
+ * The ForgeValidator contract is available here
+ * github.com/mstable/mStable-contracts/blob/master/contracts/masset/forge-validator/ForgeValidator.sol.
  */
-contract AaveAssetAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of ATokens held by the given account.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
+interface ForgeValidator {
+    function calculateRedemptionMulti(
+        uint256,
+        Basset[] calldata
     )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+    external
+    view
+    returns (bool, string memory, uint256[] memory);
 }

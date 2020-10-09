@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
-import { CompoundAssetAdapter } from "../../adapters/compound/CompoundAssetAdapter.sol";
+import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { CompoundRegistry } from "../../adapters/compound/CompoundRegistry.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { CToken } from "../../interfaces/CToken.sol";
@@ -32,7 +32,7 @@ import { CEther } from "../../interfaces/CEther.sol";
  * @title Interactive adapter for Compound protocol.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
-contract CompoundAssetInteractiveAdapter is InteractiveAdapter, CompoundAssetAdapter {
+contract CompoundAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;

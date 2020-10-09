@@ -19,28 +19,8 @@ pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
-
-/**
- * @dev LendingPoolAddressesProvider interface.
- * Only the functions required for AaveDebtAdapter contract are added.
- * The LendingPoolAddressesProvider contract is available here
- * github.com/aave/aave-protocol/blob/master/contracts/configuration/LendingPoolAddressesProvider.sol.
- */
-interface LendingPoolAddressesProvider {
-    function getLendingPool() external view returns (address);
-}
-
-
-/**
- * @dev LendingPool contract interface.
- * Only the functions required for AaveDebtAdapter contract are added.
- * The LendingPool contract is available here
- * github.com/aave/aave-protocol/blob/master/contracts/lendingpool/LendingPool.sol.
- */
-interface LendingPool {
-    function getUserReserveData(address, address) external view returns (uint256, uint256);
-}
+import { LendingPoolAddressesProvider } from "../../interfaces/LendingPoolAddressesProvider.sol";
+import { LendingPool } from "../../interfaces/LendingPool.sol";
 
 
 /**
@@ -67,14 +47,13 @@ contract AaveDebtAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
         address pool = LendingPoolAddressesProvider(provider_).getLendingPool();
 
         (, uint256 debtAmount) = LendingPool(pool).getUserReserveData(token, account);
 
-        return debtAmount;
+        return int256(-debtAmount);
     }
 }

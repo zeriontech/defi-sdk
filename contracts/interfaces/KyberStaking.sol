@@ -18,30 +18,13 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
 
 /**
- * @title Adapter for Wrapped Ether.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev KyberStaking contract interface.
+ * Only the functions required for KyberAssetAdapter contract are added.
+ * The KyberStaking contract is available here
+ * github.com/KyberNetwork/smart-contracts/blob/Katalyst/contracts/sol6/Dao/KyberStaking.sol.
  */
-contract WethAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of WETH held by the given account.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface KyberStaking {
+    function getLatestStakerData(address) external view returns (uint256, uint256);
 }

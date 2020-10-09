@@ -53,12 +53,11 @@ contract DdexMarginDebtAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
         uint256 allMarketsCount = Hydro(HYDRO).getAllMarketsCount();
-        uint256 totalAmountBorrowed = 0;
+        int256 totalAmountBorrowed = 0;
 
         for (uint16 i = 0; i < uint16(allMarketsCount); i++) {
             try Hydro(HYDRO).getAmountBorrowed(
@@ -66,7 +65,7 @@ contract DdexMarginDebtAdapter is ProtocolAdapter {
                 account,
                 i
             ) returns (uint256 amountBorrowed) {
-                totalAmountBorrowed += amountBorrowed;
+                totalAmountBorrowed -= int256(amountBorrowed);
             } catch {} // solhint-disable-line no-empty-blocks
         }
 

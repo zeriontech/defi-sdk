@@ -22,18 +22,7 @@ import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { BPool } from "../../interfaces/BPool.sol";
-
-
-/**
- * @dev PBasicSmartPool contract interface.
- * Only the functions required for PieDAOPieTokenAdapter contract are added.
- * The PBasicSmartPool contract is available here
- * github.com/pie-dao/pie-smart-pools/blob/development/contracts/smart-pools/PBasicSmartPool.sol.
- */
-interface PBasicSmartPool {
-    function getTokens() external view returns (address[] memory);
-    function getBPool() external view returns (address);
-}
+import { PBasicSmartPool } from "../../interfaces/PBasicSmartPool.sol";
 
 
 /**
@@ -47,17 +36,17 @@ contract PieDAOPieTokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given asset.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address token) external view override returns (Component[] memory) {
+    function getComponents(address token) external override returns (Component[] memory) {
         address[] memory tokens = PBasicSmartPool(token).getTokens();
         uint256 totalSupply = ERC20(token).totalSupply();
-        BPool bPool = BPool(PBasicSmartPool(token).getBPool());
+        address bPool = PBasicSmartPool(token).getBPool();
 
         Component[] memory components = new Component[](tokens.length);
 
         for (uint256 i = 0; i < tokens.length; i++) {
             components[i] = Component({
                 token: tokens[i],
-                rate: bPool.getBalance(tokens[i]) * 1e18 / totalSupply
+                rate: int256(BPool(bPool).getBalance(tokens[i]) * 1e18 / totalSupply)
             });
         }
 

@@ -20,21 +20,12 @@ pragma experimental ABIEncoderV2;
 
 
 /**
- * @title Protocol adapter abstract contract.
- * @dev adapterType(), tokenType(), and getBalance() functions MUST be implemented.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev Jug contract interface.
+ * Only the functions required for MCDAssetAdapter contract are added.
+ * The Jug contract is available here
+ * github.com/makerdao/dss/blob/master/src/jug.sol.
  */
-abstract contract ProtocolAdapter {
-
-    /**
-     * @dev MUST return amount and type of the given token
-     * locked on the protocol by the given account.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        virtual
-        returns (int256);
+interface Jug {
+    function ilks(bytes32) external view returns (uint256, uint256);
+    function base() external view returns (uint256);
 }

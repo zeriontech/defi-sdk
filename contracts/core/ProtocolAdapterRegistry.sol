@@ -18,7 +18,7 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { AdapterBalance, AbsoluteTokenAmount } from "../shared/Structs.sol";
+import { AdapterBalance, TokenBalance } from "../shared/Structs.sol";
 import { ERC20 } from "../shared/ERC20.sol";
 import { Ownable } from "./Ownable.sol";
 import { ProtocolAdapterManager } from "./ProtocolAdapterManager.sol";
@@ -43,7 +43,6 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         address account
     )
         external
-        view
         returns (AdapterBalance[] memory)
     {
         // Get balances for all the adapters
@@ -53,12 +52,12 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         );
 
         // Declare temp variable and counters
-        AbsoluteTokenAmount[] memory currentAbsoluteTokenAmounts;
-        AbsoluteTokenAmount[] memory nonZeroAbsoluteTokenAmounts;
+        TokenBalance[] memory currentTokenBalances;
+        TokenBalance[] memory nonZeroTokenBalances;
         uint256 nonZeroAdaptersCounter;
         uint256[] memory nonZeroTokensCounters;
         uint256 adapterBalancesLength;
-        uint256 currentAbsoluteTokenAmountsLength;
+        uint256 currentTokenBalancesLength;
 
         // Reset counters
         nonZeroTokensCounters = new uint256[](adapterBalances.length);
@@ -68,15 +67,15 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         // Iterate over all the adapters' balances
         for (uint256 i = 0; i < adapterBalancesLength; i++) {
             // Fill temp variable
-            currentAbsoluteTokenAmounts = adapterBalances[i].absoluteTokenAmounts;
+            currentTokenBalances = adapterBalances[i].tokenBalances;
 
             // Reset counter
             nonZeroTokensCounters[i] = 0;
-            currentAbsoluteTokenAmountsLength = currentAbsoluteTokenAmounts.length;
+            currentTokenBalancesLength = currentTokenBalances.length;
 
             // Increment if token balance is positive
-            for (uint256 j = 0; j < currentAbsoluteTokenAmountsLength; j++) {
-                if (currentAbsoluteTokenAmounts[j].amount > 0) {
+            for (uint256 j = 0; j < currentTokenBalancesLength; j++) {
+                if (currentTokenBalances[j].amount > 0) {
                     nonZeroTokensCounters[i]++;
                 }
             }
@@ -102,21 +101,21 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
             }
 
             // Fill temp variable
-            currentAbsoluteTokenAmounts = adapterBalances[i].absoluteTokenAmounts;
+            currentTokenBalances = adapterBalances[i].tokenBalances;
 
             // Reset temp variable and counter
-            nonZeroAbsoluteTokenAmounts = new AbsoluteTokenAmount[](nonZeroTokensCounters[i]);
+            nonZeroTokenBalances = new TokenBalance[](nonZeroTokensCounters[i]);
             nonZeroTokensCounters[i] = 0;
-            currentAbsoluteTokenAmountsLength = currentAbsoluteTokenAmounts.length;
+            currentTokenBalancesLength = currentTokenBalances.length;
 
-            for (uint256 j = 0; j < currentAbsoluteTokenAmountsLength; j++) {
+            for (uint256 j = 0; j < currentTokenBalancesLength; j++) {
                 // Skip if balance is not positive
-                if (currentAbsoluteTokenAmounts[j].amount == 0) {
+                if (currentTokenBalances[j].amount == 0) {
                     continue;
                 }
 
                 // Else fill temp variable
-                nonZeroAbsoluteTokenAmounts[nonZeroTokensCounters[i]] = currentAbsoluteTokenAmounts[j];
+                nonZeroTokenBalances[nonZeroTokensCounters[i]] = currentTokenBalances[j];
 
                 // Increment counter
                 nonZeroTokensCounters[i]++;
@@ -125,7 +124,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
             // Fill resulting variable
             nonZeroAdapterBalances[nonZeroAdaptersCounter] = AdapterBalance({
                 protocolAdapterName: adapterBalances[i].protocolAdapterName,
-                absoluteTokenAmounts: nonZeroAbsoluteTokenAmounts
+                tokenBalances: nonZeroTokenBalances
             });
 
             // Increment counter
@@ -145,7 +144,6 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         address account
     )
         public
-        view
         returns (AdapterBalance[] memory)
     {
         uint256 length = protocolAdapterNames.length;
@@ -174,26 +172,25 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         address account
     )
         public
-        view
         returns (AdapterBalance memory)
     {
         address adapter = _protocolAdapterAddress[protocolAdapterName];
         require(adapter != address(0), "AR: bad protocolAdapterName");
 
         uint256 length = tokens.length;
-        AbsoluteTokenAmount[] memory absoluteTokenAmounts = new AbsoluteTokenAmount[](tokens.length);
+        TokenBalance[] memory tokenBalances = new TokenBalance[](tokens.length);
 
         for (uint256 i = 0; i < length; i++) {
             try ProtocolAdapter(adapter).getBalance(
                 tokens[i],
                 account
-            ) returns (uint256 amount) {
-                absoluteTokenAmounts[i] = AbsoluteTokenAmount({
+            ) returns (int256 amount) {
+                tokenBalances[i] = TokenBalance({
                     token: tokens[i],
                     amount: amount
                 });
             } catch {
-                absoluteTokenAmounts[i] = AbsoluteTokenAmount({
+                tokenBalances[i] = TokenBalance({
                     token: tokens[i],
                     amount: 0
                 });
@@ -202,7 +199,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
 
         return AdapterBalance({
             protocolAdapterName: protocolAdapterName,
-            absoluteTokenAmounts: absoluteTokenAmounts
+            tokenBalances: tokenBalances
         });
     }
 }

@@ -20,21 +20,14 @@ pragma experimental ABIEncoderV2;
 
 
 /**
- * @title Protocol adapter abstract contract.
- * @dev adapterType(), tokenType(), and getBalance() functions MUST be implemented.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev DssCdpManager contract interface.
+ * Only the functions required for MCDAssetAdapter contract are added.
+ * The DssCdpManager contract is available here
+ * github.com/makerdao/dss-cdp-manager/blob/master/src/DssCdpManager.sol.
  */
-abstract contract ProtocolAdapter {
-
-    /**
-     * @dev MUST return amount and type of the given token
-     * locked on the protocol by the given account.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        virtual
-        returns (int256);
+interface DssCdpManager {
+    function first(address) external view returns (uint256);
+    function list(uint256) external view returns (uint256, uint256);
+    function urns(uint256) external view returns (address);
+    function ilks(uint256) external view returns (bytes32);
 }

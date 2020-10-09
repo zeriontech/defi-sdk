@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
-import { UniswapV2AssetAdapter } from "../../adapters/uniswap/UniswapV2AssetAdapter.sol";
+import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { UniswapV2Pair } from "../../interfaces/UniswapV2Pair.sol";
 
@@ -31,7 +31,7 @@ import { UniswapV2Pair } from "../../interfaces/UniswapV2Pair.sol";
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, UniswapV2AssetAdapter {
+contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;

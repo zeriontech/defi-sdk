@@ -19,7 +19,7 @@ pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { TokenAmount } from "../../shared/Structs.sol";
-import { WethAdapter } from "../../adapters/weth/WethAdapter.sol";
+import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
 
@@ -39,7 +39,7 @@ interface WETH9 {
  * @title Interactive adapter for Wrapped Ether.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
-contract WethInteractiveAdapter is InteractiveAdapter, WethAdapter {
+contract WethInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
 
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 

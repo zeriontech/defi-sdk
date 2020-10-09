@@ -53,12 +53,11 @@ contract DdexMarginAssetAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
         uint256 allMarketsCount = Hydro(HYDRO).getAllMarketsCount();
-        uint256 totalBalance = 0;
+        int256 totalBalance = 0;
 
         for (uint16 i = 0; i < uint16(allMarketsCount); i++) {
             try Hydro(HYDRO).marketBalanceOf(
@@ -66,7 +65,7 @@ contract DdexMarginAssetAdapter is ProtocolAdapter {
                 token == ETH ? HYDRO_ETH : token,
                 account
             ) returns (uint256 marketBalance) {
-                totalBalance += marketBalance;
+                totalBalance += int256(marketBalance);
             } catch {} // solhint-disable-line no-empty-blocks
         }
 

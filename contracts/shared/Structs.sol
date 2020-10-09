@@ -21,9 +21,9 @@ pragma experimental ABIEncoderV2;
 
 // The struct consists of AbsoluteTokenAmount structs for
 // (base) token and its underlying tokens (if any).
-struct FullAbsoluteTokenAmount {
-    AbsoluteTokenAmountMeta base;
-    AbsoluteTokenAmountMeta[] underlying;
+struct FullTokenBalance {
+    TokenBalanceMeta base;
+    TokenBalanceMeta[] underlying;
 }
 
 
@@ -31,8 +31,8 @@ struct FullAbsoluteTokenAmount {
 // with token address and absolute amount
 // and ERC20Metadata struct with ERC20-style metadata.
 // NOTE: 0xEeee...EEeE address is used for ETH.
-struct AbsoluteTokenAmountMeta {
-    AbsoluteTokenAmount absoluteTokenAmount;
+struct TokenBalanceMeta {
+    TokenBalance tokenBalance;
     ERC20Metadata erc20metadata;
 }
 
@@ -50,7 +50,7 @@ struct ERC20Metadata {
 // with token addresses and absolute amounts.
 struct AdapterBalance {
     bytes32 protocolAdapterName;
-    AbsoluteTokenAmount[] absoluteTokenAmounts;
+    TokenBalance[] tokenBalances;
 }
 
 
@@ -62,11 +62,19 @@ struct AbsoluteTokenAmount {
 }
 
 
+// The struct consists of token address
+// and its absolute amount (mey be negative).
+struct TokenBalance {
+    address token;
+    int256 amount;
+}
+
+
 // The struct consists of token address,
 // and price per full share (1e18).
 struct Component {
     address token;
-    uint256 rate;
+    int256 rate;
 }
 
 

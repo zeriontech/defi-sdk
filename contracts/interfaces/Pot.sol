@@ -18,32 +18,16 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
 
 /**
- * @title Adapter for TokenSets.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * Base contract for TokenSets interactive adapter.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev Pot contract interface.
+ * Only the functions required for DSRAdapter contract are added.
+ * The Pot contract is available here
+ * github.com/makerdao/dss/blob/master/src/pot.sol.
  */
-contract TokenSetsAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of SetTokens held by the given account.
-     * @param token Address of the SetToken contract.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface Pot {
+    function pie(address) external view returns (uint256);
+    function dsr() external view returns (uint256);
+    function rho() external view returns (uint256);
+    function chi() external view returns (uint256);
 }

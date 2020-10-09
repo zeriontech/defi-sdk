@@ -18,30 +18,28 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
+
+/**
+ * @dev Basset struct.
+ * The Basset struct is available here
+ * github.com/mstable/mStable-contracts/blob/master/contracts/masset/shared/MassetStructs.sol.
+ */
+struct Basset {
+    address addr;
+    uint8 status;
+    bool isTransferFeeCharged;
+    uint256 ratio;
+    uint256 maxWeight;
+    uint256 vaultBalance;
+}
 
 
 /**
- * @title Asset adapter for the DMM protocol.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author Corey Caplan <corey@dolomite.io>
+ * @dev BasketManager contract interface.
+ * Only the functions required for MassetTokenAdapter contract are added.
+ * The BasketManager contract is available here
+ * github.com/mstable/mStable-contracts/blob/master/contracts/masset/BasketManager.sol.
  */
-contract DmmAssetAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of MTokens held by the given account.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface BasketManager {
+    function getBassets() external view returns (Basset[] memory, uint256);
 }

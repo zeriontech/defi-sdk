@@ -20,21 +20,11 @@ pragma experimental ABIEncoderV2;
 
 
 /**
- * @title Protocol adapter abstract contract.
- * @dev adapterType(), tokenType(), and getBalance() functions MUST be implemented.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev DSChief contract interface.
+ * Only the functions required for MakerGovernanceAdapter contract are added.
+ * The DSChief contract is available here
+ * github.com/dapphub/ds-chief/blob/master/src/chief.sol.
  */
-abstract contract ProtocolAdapter {
-
-    /**
-     * @dev MUST return amount and type of the given token
-     * locked on the protocol by the given account.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        virtual
-        returns (int256);
+interface DSChief {
+    function deposits(address) external view returns (uint256);
 }

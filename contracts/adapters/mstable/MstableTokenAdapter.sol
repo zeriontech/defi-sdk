@@ -21,49 +21,8 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-
-
-/**
- * @dev Basset struct.
- * The Basset struct is available here
- * github.com/mstable/mStable-contracts/blob/master/contracts/masset/shared/MassetStructs.sol.
- */
-struct Basset {
-    address addr;
-    uint8 status;
-    bool isTransferFeeCharged;
-    uint256 ratio;
-    uint256 maxWeight;
-    uint256 vaultBalance;
-}
-
-
-/**
- * @dev BasketManager contract interface.
- * Only the functions required for MassetTokenAdapter contract are added.
- * The BasketManager contract is available here
- * github.com/mstable/mStable-contracts/blob/master/contracts/masset/BasketManager.sol.
- */
-interface BasketManager {
-    function getBassets() external view returns (Basset[] memory, uint256);
-}
-
-
-/**
- * @dev ForgeValidator contract interface.
- * Only the functions required for MassetTokenAdapter contract are added.
- * The ForgeValidator contract is available here
- * github.com/mstable/mStable-contracts/blob/master/contracts/masset/forge-validator/ForgeValidator.sol.
- */
-interface ForgeValidator {
-    function calculateRedemptionMulti(
-        uint256,
-        Basset[] calldata
-    )
-        external
-        view
-        returns (bool, string memory, uint256[] memory);
-}
+import { Basset, BasketManager } from "../../interfaces/BasketManager.sol";
+import { ForgeValidator } from "../../interfaces/ForgeValidator.sol";
 
 
 /**
@@ -91,7 +50,7 @@ contract MstableTokenAdapter is TokenAdapter {
         for (uint256 i = 0; i < length; i++) {
             components[i] = Component({
                 token: bassets[i].addr,
-                rate: rates[i]
+                rate: int256(rates[i])
             });
         }
 

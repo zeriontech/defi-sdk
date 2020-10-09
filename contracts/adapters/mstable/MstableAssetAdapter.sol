@@ -20,18 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
-
-/**
- * @dev SavingsContract contract interface.
- * Only the functions required for MstableAssetAdapter contract are added.
- * The SavingsContract contract is available here
- * github.com/mstable/mStable-contracts/blob/master/contracts/savings/SavingsContract.sol.
- */
-interface SavingsContract {
-    function creditBalances(address) external view returns (uint256);
-    function exchangeRate() external view returns (uint256);
-}
+import { SavingsContract } from "../../interfaces/SavingsContract.sol";
 
 
 /**
@@ -43,24 +32,21 @@ contract MstableAssetAdapter is ProtocolAdapter {
 
     address internal constant SAVINGS = 0xcf3F73290803Fc04425BEE135a4Caeb2BaB2C2A1;
 
-    uint256 internal constant FULL_SCALE = 1e18;
-
     /**
      * @return Amount of mUSD owned and locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
     function getBalance(
-        address token,
+        address,
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
         uint256 credits = SavingsContract(SAVINGS).creditBalances(account);
         uint256 exchangeRate = SavingsContract(SAVINGS).exchangeRate();
 
-        return ERC20(token).balanceOf(account) + credits * exchangeRate / FULL_SCALE;
+        return int256(credits * exchangeRate / 1e18);
     }
 }

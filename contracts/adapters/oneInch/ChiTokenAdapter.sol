@@ -21,29 +21,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-
-
-/**
- * @dev OneSplit contract interface.
- * Only the functions required for OneInchChiTokenAdapter contract are added.
- * The OneSplit contract is available here
- * github.com/CryptoManiacsZone/1inchProtocol/blob/master/contracts/OneSplit.sol.
- */
-interface IOneSplit {
-    function getExpectedReturn(
-        ERC20 fromToken,
-        ERC20 toToken,
-        uint256 amount,
-        uint256 parts,
-        uint256 disableFlags
-    )
-        external
-        view
-        returns(
-            uint256 returnAmount,
-            uint256[] memory distribution
-        );
-}
+import { IOneSplit } from "../../interfaces/IOneSplit.sol";
 
 
 /**
@@ -60,7 +38,7 @@ contract ChiTokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address token) external view override returns (Component[] memory) {
+    function getComponents(address token) external override returns (Component[] memory) {
         (uint256 returnAmount, ) = ONE_SPLIT.getExpectedReturn(
             ERC20(token),
             ERC20(ETH_ADDRESS),
@@ -73,7 +51,7 @@ contract ChiTokenAdapter is TokenAdapter {
 
         components[0] = Component({
             token: ETH_ADDRESS,
-            rate: returnAmount * 1e18
+            rate: int256(returnAmount * 1e18)
         });
 
         return components;

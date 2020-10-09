@@ -18,30 +18,14 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
 
 /**
- * @title Asset adapter for Ampleforth.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev LendingPoolAddressesProvider interface.
+ * Only the functions required for AaveDebtAdapter contract are added.
+ * The LendingPoolAddressesProvider contract is available here
+ * github.com/aave/aave-protocol/blob/master/contracts/configuration/LendingPoolAddressesProvider.sol.
  */
-contract AmpleforthAssetAdapter is ProtocolAdapter {
-    
-    /**
-     * @return AMPL balance.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface LendingPoolAddressesProvider {
+    function getLendingPool() external view returns (address);
+    function getLendingPoolCore() external view returns (address);
 }

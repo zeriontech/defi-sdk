@@ -50,10 +50,9 @@ contract GnosisProtocolAssetAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
-        return EpochTokenLocker(BALANCE).getBalance(account, token);
+        return int256(EpochTokenLocker(BALANCE).getBalance(account, token));
     }
 }

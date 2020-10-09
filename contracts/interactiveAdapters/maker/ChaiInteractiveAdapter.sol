@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
-import { ChaiAdapter } from "../../adapters/maker/ChaiAdapter.sol";
+import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
 
@@ -41,7 +41,7 @@ interface Chai {
  * @title Interactive adapter for Chai contract.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
-contract ChaiInteractiveAdapter is InteractiveAdapter, ChaiAdapter {
+contract ChaiInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;

@@ -57,12 +57,12 @@ contract DmmTokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given asset.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address token) external view override returns (Component[] memory) {
+    function getComponents(address token) external override returns (Component[] memory) {
         Component[] memory components = new Component[](1);
 
         components[0] = Component({
             token: IDmmToken(token).controller().getUnderlyingTokenForDmm(token),
-            rate: IDmmToken(token).controller().getExchangeRate(token)
+            rate: int256(IDmmToken(token).controller().getExchangeRate(token))
         });
 
         return components;

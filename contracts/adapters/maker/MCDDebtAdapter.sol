@@ -76,15 +76,14 @@ contract MCDDebtAdapter is ProtocolAdapter, MKRAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
         DssCdpManager manager = DssCdpManager(MANAGER);
         Vat vat = Vat(VAT);
         Jug jug = Jug(JUG);
         uint256 id = manager.first(account);
-        uint256 totalValue = 0;
+        int256 totalValue = 0;
 
         while (id > 0) {
             bytes32 ilk = manager.ilks(id);
@@ -99,7 +98,7 @@ contract MCDDebtAdapter is ProtocolAdapter, MKRAdapter {
                 storedRate
             );
 
-            totalValue = totalValue + mkrRmul(art, currentRate);
+            totalValue = totalValue - int256(mkrRmul(art, currentRate));
         }
 
         return totalValue;

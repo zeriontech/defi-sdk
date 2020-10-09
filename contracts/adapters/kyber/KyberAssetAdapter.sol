@@ -19,47 +19,9 @@ pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
-
-/**
- * @dev KyberStaking contract interface.
- * Only the functions required for KyberAssetAdapter contract are added.
- * The KyberStaking contract is available here
- * github.com/KyberNetwork/smart-contracts/blob/Katalyst/contracts/sol6/Dao/KyberStaking.sol.
- */
-interface KyberStaking {
-    function getLatestStakerData(address) external view returns (uint256, uint256);
-}
-
-
-/**
- * @dev KyberDAO contract interface.
- * Only the functions required for KyberAssetAdapter contract are added.
- * The KyberDAO contract is available here
- * github.com/KyberNetwork/smart-contracts/blob/Katalyst/contracts/sol6/Dao/KyberDAO.sol.
- */
-interface KyberDAO {
-    function getCurrentEpochNumber() external view returns (uint32);
-    function getPastEpochRewardPercentageInPrecision(
-        address,
-        uint32
-    )
-        external
-        view
-        returns (uint256);
-}
-
-
-/**
- * @dev KyberFeeHandler contract interface.
- * Only the functions required for KyberAssetAdapter contract are added.
- * The KyberFeeHandler contract is available here
- * github.com/KyberNetwork/smart-contracts/blob/Katalyst/contracts/sol6/Dao/KyberFeeHandler.sol.
- */
-interface KyberFeeHandler {
-    function hasClaimedReward(address, uint32) external view returns (bool);
-    function rewardsPerEpoch(uint32) external view returns (uint256);
-}
+import { KyberStaking } from "../../interfaces/KyberStaking.sol";
+import { KyberDAO } from "../../interfaces/KyberDAO.sol";
+import { KyberFeeHandler } from "../../interfaces/KyberFeeHandler.sol";
 
 
 /**
@@ -67,7 +29,7 @@ interface KyberFeeHandler {
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract KyberAssetAdapter is ProtocolAdapter {
+contract KyberStakingAdapter is ProtocolAdapter {
 
     address internal constant KNC = 0xdd974D5C2e2928deA5F71b9825b8b646686BD200;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -86,17 +48,16 @@ contract KyberAssetAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
         if (token == KNC) {
             uint256 stake;
             uint256 delegatedStake;
             (stake, delegatedStake) = KyberStaking(STAKING).getLatestStakerData(account);
-            return stake + delegatedStake;
+            return int256(stake + delegatedStake);
         } else if (token == ETH) {
-            uint256 reward = 0;
+            int256 reward = 0;
             uint256 rewardPercentage;
             uint256 rewardsPerEpoch;
             uint32 curEpoch = KyberDAO(DAO).getCurrentEpochNumber();
@@ -105,13 +66,13 @@ contract KyberAssetAdapter is ProtocolAdapter {
                     rewardPercentage = KyberDAO(DAO).getPastEpochRewardPercentageInPrecision(account, i);
                     if (rewardPercentage > 0) {
                         rewardsPerEpoch = KyberFeeHandler(FEE_HANDLER).rewardsPerEpoch(i);
-                        reward += rewardsPerEpoch * rewardPercentage / PRECISION;
+                        reward += int256(rewardsPerEpoch * rewardPercentage / PRECISION);
                     }
                 }
             }
             return reward;
         } else {
-            return 0;
+            return int256(0);
         }
     }
 }

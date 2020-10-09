@@ -22,48 +22,18 @@ import { ERC20 } from "../../shared/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-import { AaveAssetAdapter } from "../../adapters/aave/AaveAssetAdapter.sol";
+import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { AToken } from "../../interfaces/AToken.sol";
-
-/**
- * @dev LendingPoolAddressesProvider contract interface.
- * Only the functions required for AaveAssetInteractiveAdapter contract are added.
- * The LendingPoolAddressesProvider contract is available here
- * github.com/aave/aave-protocol/blob/master/contracts/configuration/LendingPoolAddressesProvider.sol.
- */
-interface LendingPoolAddressesProvider {
-    function getLendingPool() external view returns (address);
-    function getLendingPoolCore() external view returns (address);
-}
-
-
-/**
- * @dev LendingPool contract interface.
- * Only the functions required for AaveAssetInteractiveAdapter contract are added.
- * The LendingPool contract is available here
- * github.com/aave/aave-protocol/blob/master/contracts/lendingpool/LendingPool.sol.
- */
-interface LendingPool {
-    function deposit(address, uint256, uint16) external payable;
-}
-
-
-/**
- * @dev LendingPoolCore contract interface.
- * Only the functions required for AaveAssetInteractiveAdapter contract are added.
- * The LendingPoolCore contract is available here
- * github.com/aave/aave-protocol/blob/master/contracts/lendingpool/LendingPoolCore.sol.
- */
-interface LendingPoolCore {
-    function getReserveATokenAddress(address) external view returns (address);
-}
+import { LendingPoolAddressesProvider } from "../../interfaces/LendingPoolAddressesProvider.sol";
+import { LendingPool } from "../../interfaces/LendingPool.sol";
+import { LendingPoolCore } from "../../interfaces/LendingPoolCore.sol";
 
 
 /**
  * @title Interactive adapter for Aave protocol.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
-contract AaveAssetInteractiveAdapter is InteractiveAdapter, AaveAssetAdapter {
+contract AaveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant AETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;

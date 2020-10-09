@@ -18,31 +18,13 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
 
 /**
- * @title Adapter for PieDAO pools.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author Mick de Graaf <mick@dexlab.io>
+ * @dev LendingPoolCore contract interface.
+ * Only the functions required for AaveAssetInteractiveAdapter contract are added.
+ * The LendingPoolCore contract is available here
+ * github.com/aave/aave-protocol/blob/master/contracts/lendingpool/LendingPoolCore.sol.
  */
-contract PieDAOPieAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of PieDAO pool tokens held by the given account.
-     * @param token Address of the pool!
-     * @dev Implementation of ProtocolAdapter interface function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface LendingPoolCore {
+    function getReserveATokenAddress(address) external view returns (address);
 }

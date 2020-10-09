@@ -37,7 +37,7 @@ contract UniswapV2TokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address token) external view override returns (Component[] memory) {
+    function getComponents(address token) external override returns (Component[] memory) {
         address[] memory tokens = new address[](2);
         tokens[0] = UniswapV2Pair(token).token0();
         tokens[1] = UniswapV2Pair(token).token1();
@@ -48,7 +48,7 @@ contract UniswapV2TokenAdapter is TokenAdapter {
         for (uint256 i = 0; i < 2; i++) {
             components[i] = Component({
                 token: tokens[i],
-                rate: ERC20(tokens[i]).balanceOf(token) * 1e18 / totalSupply
+                rate: int256(ERC20(tokens[i]).balanceOf(token) * 1e18 / totalSupply)
             });
         }
 

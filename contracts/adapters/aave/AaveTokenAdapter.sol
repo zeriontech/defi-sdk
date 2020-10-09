@@ -35,12 +35,12 @@ contract AaveTokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address token) external view override returns (Component[] memory) {
+    function getComponents(address token) external override returns (Component[] memory) {
         Component[] memory components = new Component[](1);
 
         components[0] = Component({
             token: AToken(token).underlyingAssetAddress(),
-            rate: uint256(1e18)
+            rate: int256(1e18)
         });
 
         return components;

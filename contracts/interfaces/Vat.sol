@@ -18,31 +18,15 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
 
 /**
- * @title Adapter for Uniswap V1 protocol (liquidity).
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev Vat contract interface.
+ * Only the functions required for MCDAssetAdapter contract are added.
+ * The Vat contract is available here
+ * github.com/makerdao/dss/blob/master/src/vat.sol.
  */
-contract UniswapV1AssetAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of Uniswap Pool Tokens held by the given account.
-     * @param token Address of the exchange (pool)!
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface Vat {
+    function urns(bytes32, address) external view returns (uint256, uint256);
+    function ilks(bytes32) external view returns (uint256, uint256);
 }
+

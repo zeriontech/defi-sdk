@@ -51,10 +51,9 @@ contract ZrxAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
-        return Staking(STAKING).getTotalStake(account);
+        return int256(Staking(STAKING).getTotalStake(account));
     }
 }

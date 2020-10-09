@@ -38,7 +38,7 @@ contract BalancerTokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address token) external view override returns (Component[] memory) {
+    function getComponents(address token) external override returns (Component[] memory) {
         address[] memory currentTokens;
         currentTokens = BPool(token).getCurrentTokens();
 
@@ -49,14 +49,14 @@ contract BalancerTokenAdapter is TokenAdapter {
             for (uint256 i = 0; i < components.length; i++) {
                 components[i] = Component({
                     token: currentTokens[i],
-                    rate: 0
+                    rate: int256(0)
                 });
             }
         } else {
             for (uint256 i = 0; i < components.length; i++) {
                 components[i] = Component({
                     token: currentTokens[i],
-                    rate: BPool(token).getBalance(currentTokens[i]) * 1e18 / totalSupply
+                    rate: int256(BPool(token).getBalance(currentTokens[i]) * 1e18 / totalSupply)
                 });
             }
         }

@@ -69,9 +69,8 @@ contract CompoundGovernanceAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
         uint256 balance = Comptroller(COMPTROLLER).compAccrued(account);
         address[] memory allMarkets = Comptroller(COMPTROLLER).getAllMarkets();
@@ -81,7 +80,7 @@ contract CompoundGovernanceAdapter is ProtocolAdapter {
             balance += supplierComp(account, allMarkets[i]);
         }
 
-        return balance;
+        return int256(balance);
     }
 
     function borrowerComp(address account, address cToken) internal view returns (uint256) {

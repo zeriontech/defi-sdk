@@ -18,30 +18,13 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
 
 /**
- * @title Adapter for idle.finance protocol.
- * @dev Implementation of ProtocolAdapter abstract contract.
- * @author William Bergamo <william@idle.finance>
+ * @dev StakingRewards contract interface.
+ * Only the functions required for SynthetixAssetAdapter contract are added.
+ * The StakingRewards contract is available here
+ * github.com/Synthetixio/synthetix/blob/master/contracts/StakingRewards.sol.
  */
-contract IdleAdapter is ProtocolAdapter {
-
-    /**
-     * @return Amount of IdleTokens held by the given account.
-     * @dev Implementation of ProtocolAdapter abstract contract function.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        view
-        override
-        returns (uint256)
-    {
-        return ERC20(token).balanceOf(account);
-    }
+interface StakingRewards {
+    function earned(address) external view returns (uint256);
 }

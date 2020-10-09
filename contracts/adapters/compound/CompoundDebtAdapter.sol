@@ -42,12 +42,11 @@ contract CompoundDebtAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
         CToken cToken = CToken(CompoundRegistry(REGISTRY).getCToken(token));
 
-        return cToken.borrowBalanceStored(account);
+        return int256(-cToken.borrowBalanceCurrent(account));
     }
 }

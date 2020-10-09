@@ -20,21 +20,12 @@ pragma experimental ABIEncoderV2;
 
 
 /**
- * @title Protocol adapter abstract contract.
- * @dev adapterType(), tokenType(), and getBalance() functions MUST be implemented.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @dev PBasicSmartPool contract interface.
+ * Only the functions required for PieDAOPieTokenAdapter contract are added.
+ * The PBasicSmartPool contract is available here
+ * github.com/pie-dao/pie-smart-pools/blob/development/contracts/smart-pools/PBasicSmartPool.sol.
  */
-abstract contract ProtocolAdapter {
-
-    /**
-     * @dev MUST return amount and type of the given token
-     * locked on the protocol by the given account.
-     */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        virtual
-        returns (int256);
+interface PBasicSmartPool {
+    function getTokens() external view returns (address[] memory);
+    function getBPool() external view returns (address);
 }

@@ -52,10 +52,9 @@ contract DdexLendingAssetAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
-        return Hydro(HYDRO).getAmountSupplied(token == ETH ? HYDRO_ETH : token, account);
+        return int256(Hydro(HYDRO).getAmountSupplied(token == ETH ? HYDRO_ETH : token, account));
     }
 }

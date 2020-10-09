@@ -52,10 +52,9 @@ contract DdexSpotAssetAdapter is ProtocolAdapter {
         address account
     )
         public
-        view
         override
-        returns (uint256)
+        returns (int256)
     {
-        return Hydro(HYDRO).balanceOf(token == ETH ? HYDRO_ETH : token, account);
+        return int256(Hydro(HYDRO).balanceOf(token == ETH ? HYDRO_ETH : token, account));
     }
 }
