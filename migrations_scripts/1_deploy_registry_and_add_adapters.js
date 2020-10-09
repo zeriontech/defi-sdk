@@ -57,6 +57,7 @@ const SwerveStakingAdapter = artifacts.require('SwerveStakingAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
+const TokenSetsV2Adapter = artifacts.require('TokenSetsV2Adapter');
 const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const UniswapV2Adapter = artifacts.require('UniswapV2Adapter');
 const UniswapV2StakingAdapter = artifacts.require('UniswapV2StakingAdapter');
@@ -84,6 +85,7 @@ const PickleTokenAdapter = artifacts.require('PickleTokenAdapter');
 const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
+const TokenSetsV2TokenAdapter = artifacts.require('TokenSetsV2TokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
@@ -1385,8 +1387,9 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(TokenSetsAdapter, { from: accounts[0] });
-  adapters.push([TokenSetsAdapter.address]);
-  tokens.push([[]]);
+  await deployer.deploy(TokenSetsV2Adapter, { from: accounts[0] });
+  adapters.push([TokenSetsAdapter.address, TokenSetsV2Adapter.address]);
+  tokens.push([[], []]);
   protocolNames.push('TokenSets');
   metadata.push([
     'TokenSets',
@@ -1559,6 +1562,12 @@ module.exports = async (deployer, network, accounts) => {
         TokenSetsTokenAdapter.address,
       );
     });
+  await deployer.deploy(TokenSetsV2TokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        TokenSetsV2TokenAdapter.address,
+      );
+    });
   await deployer.deploy(UniswapV1TokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -1606,6 +1615,7 @@ module.exports = async (deployer, network, accounts) => {
           'PieDAO Pie Token',
           'PoolTogether pool',
           'SetToken',
+          'SetToken V2',
           'Uniswap V1 pool token',
           'Uniswap V2 pool token',
         ],
