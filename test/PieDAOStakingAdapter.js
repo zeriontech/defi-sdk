@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('PieDAOStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('PieDAOStakingAdapter', () => {
+contract('PieDAOStakingAdapter', () => {
   const doughAddress = '0xad32A8e6220741182940c5aBF610bDE99E737b2D';
   const bptAddress = '0xFAE2809935233d4BfE8a56c2355c4A2e7d1fFf1A';
   // Random address with positive balances
