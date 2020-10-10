@@ -16,8 +16,8 @@
 pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
-import { EnumerableSet } from "./EnumerableSet.sol";
-import { Ownable } from "./Ownable.sol";
+import { EnumerableSet } from "./lib/EnumerableSet.sol";
+import { Ownable } from "../../Ownable.sol";
 
 interface AdapterRegistry {
 
@@ -40,7 +40,7 @@ struct TypedToken {
  */
 contract BerezkaTokenAdapterGovernance is Ownable() {
 
-    AdapterRegistry immutable adapterRegistry = AdapterRegistry(0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672);
+    AdapterRegistry constant adapterRegistry = AdapterRegistry(0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672);
 
     using EnumerableSet for EnumerableSet.AddressSet;
 

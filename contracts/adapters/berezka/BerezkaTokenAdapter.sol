@@ -98,10 +98,14 @@ contract BerezkaTokenAdapter is TokenAdapter {
         
         // Handle ERC20 assets + debt
         for (uint256 i = 0; i < length; i++) {
-            address asset = assets[i].token;
-            string memory tokenType = assets[i].tokenType;
             Component memory tokenComponent =
-                _getTokenComponents(asset, tokenType, vaults, debtAdapters, totalSupply);
+                _getTokenComponents(
+                    assets[i].token, 
+                    assets[i].tokenType, 
+                    vaults, 
+                    debtAdapters, 
+                    totalSupply
+                );
             underlyingTokens[i + 1] = tokenComponent;
         }
         
