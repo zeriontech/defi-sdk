@@ -16,9 +16,12 @@
 pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
+interface FPTCoin {
+    function balanceOf(address account) external view returns (uint256);
+    function lockedBalanceOf(address account) external view returns (uint256);
+}
 /**
  * @title Asset adapter for FinNexus option protocol.
  * @dev Implementation of ProtocolAdapter interface.
@@ -29,13 +32,13 @@ contract FinNexusAssetAdapter is ProtocolAdapter {
     string public constant override adapterType = "Asset";
     string public constant override tokenType = "FPT token";
 
-    address public constant FPTCoin = 0xA072EA1a2a75047908e68e0B1a2baC3a7190CE58;
+    address public constant fptaddress = 0xA072EA1a2a75047908e68e0B1a2baC3a7190CE58;
     
     /**
      * @return Amount of FPT token on FNX the Option protocol by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        return ERC20(FPTCoin).balanceOf(account);
+        return FPTCoin(fptaddress).balanceOf(account) +  FPTCoin(fptaddress).lockedBalanceOf(account);
     }
 }
