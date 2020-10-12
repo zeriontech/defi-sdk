@@ -40,7 +40,8 @@ struct TypedToken {
  */
 contract BerezkaTokenAdapterGovernance is Ownable() {
 
-    AdapterRegistry constant adapterRegistry = AdapterRegistry(0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672);
+    AdapterRegistry internal constant ADAPTER_REGISTRY = 
+        AdapterRegistry(0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672);
 
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -50,7 +51,7 @@ contract BerezkaTokenAdapterGovernance is Ownable() {
 
     /// @dev This is a list of all token types that are managed by contract
     /// New token type is added to this list upon first adding a token with given type
-    string[] tokenTypes;
+    string[] public tokenTypes;
 
     /// @dev This is a set of debt protocol adapters that return debt in ETH
     EnumerableSet.AddressSet private ethProtocols;
@@ -83,7 +84,7 @@ contract BerezkaTokenAdapterGovernance is Ownable() {
 
     function addTokens(string memory _type, address[] memory _tokens) public onlyOwner() {
         require(_tokens.length > 0, "Length should be > 0");
-        require(adapterRegistry.isValidTokenAdapter(_type), "Invalid token adapter name");
+        require(ADAPTER_REGISTRY.isValidTokenAdapter(_type), "Invalid token adapter name");
 
         if (tokens[_type].length() == 0) {
             tokenTypes.push(_type);

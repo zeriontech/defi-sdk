@@ -89,12 +89,6 @@ contract BerezkaTokenAdapter is TokenAdapter {
         uint256 totalSupply = ERC20(token).totalSupply();
 
         Component[] memory underlyingTokens = new Component[](1 + length);
-
-        // Handle ETH
-        {
-            Component memory ethComponent = _getEthComponents(vaults, totalSupply);
-            underlyingTokens[0] = ethComponent;
-        }
         
         // Handle ERC20 assets + debt
         for (uint256 i = 0; i < length; i++) {
@@ -106,7 +100,13 @@ contract BerezkaTokenAdapter is TokenAdapter {
                     debtAdapters, 
                     totalSupply
                 );
-            underlyingTokens[i + 1] = tokenComponent;
+            underlyingTokens[i] = tokenComponent;
+        }
+
+        // Handle ETH
+        {
+            Component memory ethComponent = _getEthComponents(vaults, totalSupply);
+            underlyingTokens[length] = ethComponent;
         }
         
         return underlyingTokens;
