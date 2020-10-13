@@ -1,4 +1,4 @@
-import displayToken from '../helpers/displayToken';
+//import displayToken from '../helpers/displayToken';
 import convertToShare from '../helpers/convertToShare';
 import expectRevert from '../helpers/expectRevert';
 
@@ -115,7 +115,7 @@ contract('UniswapV2AssetInteractiveAdapter', () => {
         WETHDAI = result.contract;
       });
     // exchange 1 ETH to WETH like we had WETH initially
-    await router.methods.startExecution(
+    await router.methods.execute(
       // actions
       [
         [
@@ -148,7 +148,7 @@ contract('UniswapV2AssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           [
@@ -198,7 +198,7 @@ contract('UniswapV2AssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         [
           [
             UNISWAP_V2_ASSET_ADAPTER,
@@ -234,7 +234,7 @@ contract('UniswapV2AssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           [
@@ -288,7 +288,7 @@ contract('UniswapV2AssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(`wethdai amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             UNISWAP_V2_ASSET_ADAPTER,
@@ -319,7 +319,7 @@ contract('UniswapV2AssetInteractiveAdapter', () => {
         .then((receipt) => {
           console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             UNISWAP_V2_ASSET_ADAPTER,
@@ -350,7 +350,7 @@ contract('UniswapV2AssetInteractiveAdapter', () => {
         .then((receipt) => {
           console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             UNISWAP_V2_ASSET_ADAPTER,
@@ -436,7 +436,7 @@ contract('UniswapV2AssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             UNISWAP_V2_ASSET_ADAPTER,

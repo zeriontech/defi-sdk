@@ -143,7 +143,7 @@ contract('CurveAssetInteractiveAdapter', () => {
   describe('checking sell/buy curve pool', () => {
     it('should prepare for tests (sell 10 ETH for DAI)', async () => {
       // exchange 10 ETH to WETH like we had WETH initially
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           [
@@ -171,7 +171,7 @@ contract('CurveAssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 10000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           [
@@ -214,7 +214,7 @@ contract('CurveAssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 10000000,
         });
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,
@@ -258,7 +258,7 @@ contract('CurveAssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 10000000,
         });
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,
@@ -307,7 +307,7 @@ contract('CurveAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,
@@ -379,7 +379,7 @@ contract('CurveAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,
@@ -451,7 +451,7 @@ contract('CurveAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,
@@ -523,7 +523,7 @@ contract('CurveAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,
@@ -595,7 +595,7 @@ contract('CurveAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,
@@ -667,7 +667,7 @@ contract('CurveAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,
@@ -739,7 +739,7 @@ contract('CurveAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,
@@ -790,7 +790,7 @@ contract('CurveAssetInteractiveAdapter', () => {
 
     it('should prepare for tests (sell 10 ETH for WBTC)', async () => {
       // exchange 10 ETH to WETH like we had WETH initially
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           [
@@ -818,7 +818,7 @@ contract('CurveAssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 10000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           [
@@ -867,7 +867,7 @@ contract('CurveAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,
@@ -939,7 +939,7 @@ contract('CurveAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,
@@ -1011,7 +1011,7 @@ contract('CurveAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,
@@ -1072,7 +1072,7 @@ contract('CurveAssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 10000000,
         });
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,
@@ -1123,7 +1123,7 @@ contract('CurveAssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 10000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_ASSET_ADAPTER,

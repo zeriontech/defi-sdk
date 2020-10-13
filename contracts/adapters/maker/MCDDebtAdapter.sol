@@ -92,8 +92,8 @@ contract MCDDebtAdapter is ProtocolAdapter, MKRAdapter {
             (, uint256 storedRate) = vat.ilks(ilk);
             (uint256 duty, uint256 rho) = jug.ilks(ilk);
             uint256 base = jug.base();
-            // solhint-disable-next-line not-rely-on-time
             uint256 currentRate = mkrRmul(
+                // solhint-disable-next-line not-rely-on-time
                 mkrRpow(mkrAdd(base, duty), block.timestamp - rho, ONE),
                 storedRate
             );

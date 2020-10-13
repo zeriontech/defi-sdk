@@ -20,6 +20,10 @@
     ],
     "const-name-snakecase": [
       "off"
+    ],
+    "func-visibility": [
+      "warn",
+      { "ignoreConstructors": true }
     ]
   }
 }

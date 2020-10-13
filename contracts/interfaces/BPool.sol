@@ -24,9 +24,9 @@ pragma solidity 0.7.1;
  * github.com/balancer-labs/balancer-core/blob/master/contracts/BPool.sol.
  */
 interface BPool {
+    function joinswapExternAmountIn(address, uint256, uint256) external;
+    function exitswapPoolAmountIn(address, uint256, uint256) external;
     function getCurrentTokens() external view returns (address[] memory);
     function getBalance(address) external view returns (uint256);
     function getNormalizedWeight(address) external view returns (uint256);
-    function joinswapExternAmountIn(address, uint256, uint256) external;
-    function exitswapPoolAmountIn(address, uint256, uint256) external;
 }

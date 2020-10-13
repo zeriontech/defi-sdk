@@ -179,7 +179,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
       ];
       // console.log(actions);
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         actions,
         [],
         [],
@@ -236,7 +236,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
       ];
       // console.log(actions);
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         actions,
         [],
         [],
@@ -309,7 +309,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
       ];
       // console.log(actions);
-      await router.methods.startExecution(
+      await router.methods.execute(
         actions,
         [],
         [],
@@ -322,7 +322,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         .then((receipt) => {
           console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
-      // console.log(router.methods.startExecution(
+      // console.log(router.methods.execute(
       //   actions,
       //   [],
       // ).encodeABI());
@@ -415,7 +415,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
       ];
       // console.log(actions);
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         actions,
         [
           [setAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
@@ -478,7 +478,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
       ];
       // console.log(actions);
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         actions,
         [
           [setAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],
@@ -554,7 +554,7 @@ contract('TokenSetsInteractiveAdapter', () => {
         ],
       ];
       // console.log(actions);
-      await router.methods.startExecution(
+      await router.methods.execute(
         actions,
         [
           [setAddress, convertToShare(1), AMOUNT_RELATIVE, 0, ZERO],

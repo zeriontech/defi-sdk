@@ -53,16 +53,16 @@ contract CurveRegistry is Ownable {
         }
     }
 
+    function getPoolInfo(address token) external view returns (PoolInfo memory) {
+        return poolInfo_[token];
+    }
+
     function setPoolInfo(
         address token,
         PoolInfo memory poolInfo
     )
-        internal
+    internal
     {
         poolInfo_[token] = poolInfo;
-    }
-
-    function getPoolInfo(address token) external view returns (PoolInfo memory) {
-        return poolInfo_[token];
     }
 }

@@ -103,7 +103,7 @@ contract('UniswapV2ExchangeInteractiveAdapter', () => {
   describe('ETH <-> DAI exchange', () => {
     it('should prepare for exchanges (generate 1 WETH)', async () => {
       // exchange 1 ETH to WETH like we had WETH initially
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           [
@@ -147,7 +147,7 @@ contract('UniswapV2ExchangeInteractiveAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           [
@@ -211,7 +211,7 @@ contract('UniswapV2ExchangeInteractiveAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         [
           [
             UNISWAP_V2_EXCHANGE_ADAPTER,
@@ -258,7 +258,7 @@ contract('UniswapV2ExchangeInteractiveAdapter', () => {
         .then((result) => {
           console.log(`eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             UNISWAP_V2_EXCHANGE_ADAPTER,

@@ -12,7 +12,7 @@
     "deploy:kovan": "npx truffle deploy --network kovan",
     "test:adapters": "TEST_FILES=./test/adapters/*.js ./scripts/test.sh",
     "test:interactiveAdapters": "TEST_FILES=./test/interactiveAdapters/*.js ./scripts/test.sh",
-    "test": "TEST_FILES=./test/interactiveAdapters/*.js ./scripts/test.sh",
+    "test": "TEST_FILES=./test/core/*.js ./scripts/test.sh",
     "coverage": "node --max-old-space-size=4096 ./node_modules/.bin/truffle run coverage",
     "lint:solhint": "npx solhint \"./contracts/**/*.sol\"",
     "lint:ethlint": "npx solium --dir contracts/",
@@ -26,20 +26,20 @@
     "@babel/core": "7.11.6",
     "@babel/preset-env": "7.11.5",
     "@babel/register": "7.11.5",
-    "@truffle/hdwallet-provider": "1.0.44",
+    "@truffle/hdwallet-provider": "1.1.0",
     "core-js": "3.6.5",
     "dotenv": "8.2.0",
     "regenerator-runtime": "0.13.7",
-    "truffle": "5.1.44"
+    "truffle": "5.1.48"
   },
   "devDependencies": {
     "@codechecks/client": "0.1.10",
-    "eslint": "7.0.0",
-    "eslint-config-airbnb-base": "14.1.0",
+    "eslint": "7.11.0",
+    "eslint-config-airbnb-base": "14.2.0",
     "eslint-plugin-import": "2.20.2",
     "eth-gas-reporter": "0.2.17",
-    "ganache-cli": "6.9.1",
-    "solhint": "3.0.0",
-    "solidity-coverage": "0.7.10"
+    "ganache-cli": "6.12.0",
+    "solhint": "3.2.1",
+    "solidity-coverage": "0.7.11"
   }
 }

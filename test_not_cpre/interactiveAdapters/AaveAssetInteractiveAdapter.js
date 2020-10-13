@@ -97,7 +97,7 @@ contract('AaveAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(` eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             AAVE_ASSET_ADAPTER,
@@ -152,7 +152,7 @@ contract('AaveAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(` eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             AAVE_ASSET_ADAPTER,
@@ -210,7 +210,7 @@ contract('AaveAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(` eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             AAVE_ASSET_ADAPTER,
@@ -269,7 +269,7 @@ contract('AaveAssetInteractiveAdapter', () => {
           gas: 10000000,
           from: accounts[0],
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             AAVE_ASSET_ADAPTER,
@@ -332,7 +332,7 @@ contract('AaveAssetInteractiveAdapter', () => {
           gas: 10000000,
           from: accounts[0],
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             AAVE_ASSET_ADAPTER,
@@ -395,7 +395,7 @@ contract('AaveAssetInteractiveAdapter', () => {
           gas: 10000000,
           from: accounts[0],
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             AAVE_ASSET_ADAPTER,
@@ -458,7 +458,7 @@ contract('AaveAssetInteractiveAdapter', () => {
           gas: 10000000,
           from: accounts[0],
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             AAVE_ASSET_ADAPTER,
@@ -521,7 +521,7 @@ contract('AaveAssetInteractiveAdapter', () => {
           gas: 10000000,
           from: accounts[0],
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             AAVE_ASSET_ADAPTER,

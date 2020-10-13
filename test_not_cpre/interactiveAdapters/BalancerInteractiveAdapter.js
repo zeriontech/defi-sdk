@@ -121,7 +121,7 @@ contract('BalancerAssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         // actions
         [
           // exchange DAI to MKR to make swap
@@ -165,7 +165,7 @@ contract('BalancerAssetInteractiveAdapter', () => {
 
     it('should buy pool', async () => {
       let daiAmount;
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           // exchange 1 ETH to DAI like we had dai initially
@@ -214,7 +214,7 @@ contract('BalancerAssetInteractiveAdapter', () => {
         .then((result) => {
           console.log(`eth amount before is  ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           // exchange DAI to MKR to make swap
@@ -308,7 +308,7 @@ contract('BalancerAssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         [
           // withdraw pool tokens
           [
@@ -353,7 +353,7 @@ contract('BalancerAssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         [
           // withdraw pool tokens
           [
@@ -410,7 +410,7 @@ contract('BalancerAssetInteractiveAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           // withdraw pool tokens
           [

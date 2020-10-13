@@ -62,6 +62,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         onlyOwner
     {
         if (token == ETH) {
+            // solhint-disable-next-line avoid-low-level-calls
             (bool success, ) = beneficiary.call{value: address(this).balance}(new bytes(0));
             require(success, "R: bad beneficiary");
         } else {
@@ -132,7 +133,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         return core_;
     }
 
-    function startExecution(
+    function execute(
         TransactionData memory data,
         bytes memory signature
     )
@@ -141,10 +142,11 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         returns (AbsoluteTokenAmount[] memory)
     {
         bytes32 hashedData = hashData(data);
-        hashUsed(hashedData);
         address payable account = getAccountFromSignature(hashedData, signature);
 
-        return startExecution(
+        markHashUsed(hashedData, account);
+
+        return execute(
             data.actions,
             data.inputs,
             data.fee,
@@ -153,7 +155,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         );
     }
 
-    function startExecution(
+    function execute(
         Action[] memory actions,
         TokenAmount[] memory inputs,
         Fee memory fee,
@@ -163,7 +165,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         payable
         returns (AbsoluteTokenAmount[] memory)
     {
-        return startExecution(
+        return execute(
             actions,
             inputs,
             fee,
@@ -172,7 +174,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         );
     }
 
-    function startExecution(
+    function execute(
         Action[] memory actions,
         TokenAmount[] memory inputs,
         Fee memory fee,

@@ -24,6 +24,6 @@ pragma solidity 0.7.1;
  * github.com/aave/aave-protocol/blob/master/contracts/tokenization/AToken.sol.
  */
 interface AToken {
-    function underlyingAssetAddress() external view returns (address);
     function redeem(uint256) external;
+    function underlyingAssetAddress() external view returns (address);
 }

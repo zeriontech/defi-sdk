@@ -118,7 +118,7 @@ contract('UniswapV1AssetAdapter', () => {
   });
 
   it('should be correct addAsset call transfer with 0.1 ETH / 20 DAI', async () => {
-    await router.methods.startExecution(
+    await router.methods.execute(
       // actions
       [
         // exchange 1 ETH to DAI like we had dai initially
@@ -158,7 +158,7 @@ contract('UniswapV1AssetAdapter', () => {
       .then((result) => {
         console.log(`daiuni amount before is ${web3.utils.fromWei(result, 'ether')}`);
       });
-    await router.methods.startExecution(
+    await router.methods.execute(
       [
         [
           UNISWAP_V1_ASSET_ADAPTER,
@@ -213,7 +213,7 @@ contract('UniswapV1AssetAdapter', () => {
         gas: 1000000,
       });
     console.log('calling core with action...');
-    await router.methods.startExecution(
+    await router.methods.execute(
       [
         [
           UNISWAP_V1_ASSET_ADAPTER,

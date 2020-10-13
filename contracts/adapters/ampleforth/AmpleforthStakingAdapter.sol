@@ -40,6 +40,16 @@ contract AmpleforthStakingAdapter is ProtocolAdapter {
         stakingToken_ = stakingToken;
     }
 
+    function setGeysers(address[] calldata geysers) external {
+        require(geysers.length != 0, "ASA: empty geysers");
+
+        geysers_ = geysers;
+    }
+
+    function getGeysers() external view returns (address[] memory) {
+        return geysers_;
+    }
+
     /**
      * @return Amount of UNI-tokens locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.
@@ -64,15 +74,5 @@ contract AmpleforthStakingAdapter is ProtocolAdapter {
         } else {
             return int256(0);
         }
-    }
-
-    function getGeysers() external view returns (address[] memory) {
-        return geysers_;
-    }
-
-    function setGeysers(address[] calldata geysers) external {
-        require(geysers.length != 0, "ASA: empty geysers");
-
-        geysers_ = geysers;
     }
 }

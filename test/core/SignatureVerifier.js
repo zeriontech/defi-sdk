@@ -53,7 +53,7 @@ contract('SignatureVerifier', () => {
             { name: 'inputs', type: 'TokenAmount[]' },
             { name: 'fee', type: 'Fee' },
             { name: 'requiredOutputs', type: 'AbsoluteTokenAmount[]' },
-            { name: 'nonce', type: 'uint256' },
+            { name: 'salt', type: 'uint256' },
           ],
           Action: [
             { name: 'protocolAdapterName', type: 'bytes32' },
@@ -97,7 +97,7 @@ contract('SignatureVerifier', () => {
                 token: daiAddress,
                 amount: web3.utils.toWei('1', 'ether'),
                 amountType: 2,
-              }
+              },
             ],
             data: web3.eth.abi.encodeParameter(
               'address[]',
@@ -125,14 +125,14 @@ contract('SignatureVerifier', () => {
             amount: web3.utils.toWei('1', 'ether'),
           },
         ],
-        nonce: 0,
+        salt: 0,
       },
     );
 
     console.log(`signature: ${signature}`);
 
     // decode signature
-    await signatureVerifier.methods.getAccountFromSignature(
+    await signatureVerifier.methods.hashData(
       [
         [
           [
@@ -153,11 +153,17 @@ contract('SignatureVerifier', () => {
         ],
         0,
       ],
-      signature,
     )
       .call()
-      .then((result) => {
-        assert.equal(accounts[0], result);
+      .then(async (hash) => {
+        await signatureVerifier.methods.getAccountFromSignature(
+          hash,
+          signature,
+        )
+          .call()
+          .then((result) => {
+            assert.equal(accounts[0], result);
+          });
       });
   });
 });

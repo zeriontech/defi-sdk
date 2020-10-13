@@ -78,15 +78,15 @@ contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAda
             ERC20(token).safeApprove(swap, type(uint256).max, "CEIA[2]");
         }
 
-        // solhint-disable-next-line no-empty-blocks
-        if (useUnderlying) {
+
+        if (useUnderlying) {// solhint-disable-next-line no-empty-blocks
             try Stableswap(swap).exchange_underlying(i, j, amount, 0) {
             } catch Error(string memory reason) {
                 revert(reason);
             } catch {
                 revert("CEIA: deposit fail[1]");
             }
-        } else {
+        } else {// solhint-disable-next-line no-empty-blocks
             try Stableswap(swap).exchange(i, j, amount, 0) {
             } catch Error(string memory reason) {
                 revert(reason);

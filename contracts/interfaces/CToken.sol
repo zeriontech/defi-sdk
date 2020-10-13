@@ -25,11 +25,11 @@ pragma solidity 0.7.1;
  */
 interface CToken {
     function borrowBalanceCurrent(address) external returns (uint256);
-    function borrowBalanceStored(address) external view returns (uint256);
     function exchangeRateCurrent() external returns (uint256);
-    function underlying() external view returns (address);
     function mint(uint256) external returns (uint256);
     function redeem(uint256) external returns (uint256);
+    function borrowBalanceStored(address) external view returns (uint256);
+    function underlying() external view returns (address);
     function borrowIndex() external view returns (uint256);
     function balanceOf(address) external view returns (uint256);
 }

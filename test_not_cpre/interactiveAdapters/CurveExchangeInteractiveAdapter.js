@@ -15,7 +15,7 @@ const CURVE_EXCHANGE_ADAPTER = `${CURVE_ADAPTER}${EXCHANGE_ADAPTER}`;
 const UNISWAP_V1_EXCHANGE_ADAPTER = `${UNISWAP_V1_ADAPTER}${EXCHANGE_ADAPTER}`;
 
 const ACTION_DEPOSIT = 1;
-const ACTION_WITHDRAW = 2;
+//const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;
 const RELATIVE_AMOUNT_BASE = '1000000000000000000';
@@ -40,16 +40,16 @@ contract.only('Curve exchange interactive adapter', () => {
   const paxAddress = '0x8E870D67F660D95d5be530380D0eC0bd388289E1';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
-  const cSwapAddress = '0xA2B47E3D5c44877cca798226B7B8118F9BFb7A56';
+  //  const cSwapAddress = '0xA2B47E3D5c44877cca798226B7B8118F9BFb7A56';
   const tSwapAddress = '0x52EA46506B9CC5Ef470C5bf89f17Dc28bB35D85C';
-  const ySwapAddress = '0x45F783CCE6B7FF23B2ab2D70e416cdb7D6055f51';
+  //  const ySwapAddress = '0x45F783CCE6B7FF23B2ab2D70e416cdb7D6055f51';
   const bSwapAddress = '0x79a8C46DeA5aDa233ABaFFD40F3A0A2B1e5A4F27';
   const sSwapAddress = '0xA5407eAE9Ba41422680e2e00537571bcC53efBfD';
   const pSwapAddress = '0x06364f10B501e868329afBc005b3492902d6C763';
-  const threeSwapAddress = '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7';
-  const renbtcSwapAddress = '0x93054188d876f558f4a66B2EF1d97d16eDf0895B';
-  const sbtcSwapAddress = '0x7fC77b5c7614E1533320Ea6DDc2Eb61fa00A9714';
-  const hbtcSwapAddress = '0x4CA9b3063Ec5866A4B82E437059D2C43d1be596F';
+  //  const threeSwapAddress = '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7';
+  //  const renbtcSwapAddress = '0x93054188d876f558f4a66B2EF1d97d16eDf0895B';
+  //  const sbtcSwapAddress = '0x7fC77b5c7614E1533320Ea6DDc2Eb61fa00A9714';
+  //  const hbtcSwapAddress = '0x4CA9b3063Ec5866A4B82E437059D2C43d1be596F';
 
   let accounts;
   let core;
@@ -144,7 +144,7 @@ contract.only('Curve exchange interactive adapter', () => {
   describe('All possible (1-side) stablecoins swaps', () => {
     it('should prepare fot tests (sell 1 ETH for DAI)', async () => {
       // exchange 1 ETH to DAI like we had DAI initially
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           [
@@ -181,7 +181,7 @@ contract.only('Curve exchange interactive adapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         [
           [
             CURVE_EXCHANGE_ADAPTER,
@@ -190,11 +190,11 @@ contract.only('Curve exchange interactive adapter', () => {
               [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
               [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameter('address', susdAddress) +
-              web3.eth.abi.encodeParameter('address', sSwapAddress).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
-              web3.eth.abi.encodeParameter('bool', false).slice(2),
+            web3.eth.abi.encodeParameter('address', susdAddress)
+              + web3.eth.abi.encodeParameter('address', sSwapAddress).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 0).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 3).slice(2)
+              + web3.eth.abi.encodeParameter('bool', false).slice(2),
           ],
         ],
         [
@@ -227,7 +227,7 @@ contract.only('Curve exchange interactive adapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_EXCHANGE_ADAPTER,
@@ -235,11 +235,11 @@ contract.only('Curve exchange interactive adapter', () => {
             [
               [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameter('address', susdAddress) +
-              web3.eth.abi.encodeParameter('address', sSwapAddress).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
-              web3.eth.abi.encodeParameter('bool', false).slice(2),
+            web3.eth.abi.encodeParameter('address', susdAddress)
+              + web3.eth.abi.encodeParameter('address', sSwapAddress).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 0).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 3).slice(2)
+              + web3.eth.abi.encodeParameter('bool', false).slice(2),
           ],
         ],
         [
@@ -295,7 +295,7 @@ contract.only('Curve exchange interactive adapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_EXCHANGE_ADAPTER,
@@ -304,11 +304,11 @@ contract.only('Curve exchange interactive adapter', () => {
               [susdAddress, susdAmount, AMOUNT_ABSOLUTE],
             ],
 
-            web3.eth.abi.encodeParameter('address', usdcAddress) +
-              web3.eth.abi.encodeParameter('address', sSwapAddress).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 1).slice(2) +
-              web3.eth.abi.encodeParameter('bool', false).slice(2),
+            web3.eth.abi.encodeParameter('address', usdcAddress)
+              + web3.eth.abi.encodeParameter('address', sSwapAddress).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 3).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 1).slice(2)
+              + web3.eth.abi.encodeParameter('bool', false).slice(2),
           ],
         ],
         [
@@ -364,7 +364,7 @@ contract.only('Curve exchange interactive adapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_EXCHANGE_ADAPTER,
@@ -372,11 +372,11 @@ contract.only('Curve exchange interactive adapter', () => {
             [
               [usdcAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameter('address', usdtAddress) +
-              web3.eth.abi.encodeParameter('address', tSwapAddress).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 1).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 2).slice(2) +
-              web3.eth.abi.encodeParameter('bool', true).slice(2),
+            web3.eth.abi.encodeParameter('address', usdtAddress)
+              + web3.eth.abi.encodeParameter('address', tSwapAddress).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 1).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 2).slice(2)
+              + web3.eth.abi.encodeParameter('bool', true).slice(2),
           ],
         ],
         [
@@ -432,7 +432,7 @@ contract.only('Curve exchange interactive adapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_EXCHANGE_ADAPTER,
@@ -440,11 +440,11 @@ contract.only('Curve exchange interactive adapter', () => {
             [
               [usdtAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameter('address', busdAddress) +
-              web3.eth.abi.encodeParameter('address', bSwapAddress).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 2).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
-              web3.eth.abi.encodeParameter('bool', true).slice(2),
+            web3.eth.abi.encodeParameter('address', busdAddress)
+              + web3.eth.abi.encodeParameter('address', bSwapAddress).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 2).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 3).slice(2)
+              + web3.eth.abi.encodeParameter('bool', true).slice(2),
           ],
         ],
         [
@@ -500,7 +500,7 @@ contract.only('Curve exchange interactive adapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_EXCHANGE_ADAPTER,
@@ -508,11 +508,11 @@ contract.only('Curve exchange interactive adapter', () => {
             [
               [busdAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameter('address', daiAddress) +
-              web3.eth.abi.encodeParameter('address', bSwapAddress).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
-              web3.eth.abi.encodeParameter('bool', true).slice(2),
+            web3.eth.abi.encodeParameter('address', daiAddress)
+              + web3.eth.abi.encodeParameter('address', bSwapAddress).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 3).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 0).slice(2)
+              + web3.eth.abi.encodeParameter('bool', true).slice(2),
           ],
         ],
         [
@@ -568,7 +568,7 @@ contract.only('Curve exchange interactive adapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_EXCHANGE_ADAPTER,
@@ -576,11 +576,11 @@ contract.only('Curve exchange interactive adapter', () => {
             [
               [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameter('address', paxAddress) +
-              web3.eth.abi.encodeParameter('address', pSwapAddress).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
-              web3.eth.abi.encodeParameter('bool', true).slice(2),
+            web3.eth.abi.encodeParameter('address', paxAddress)
+              + web3.eth.abi.encodeParameter('address', pSwapAddress).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 0).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 3).slice(2)
+              + web3.eth.abi.encodeParameter('bool', true).slice(2),
           ],
         ],
         [
@@ -636,7 +636,7 @@ contract.only('Curve exchange interactive adapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_EXCHANGE_ADAPTER,
@@ -644,11 +644,11 @@ contract.only('Curve exchange interactive adapter', () => {
             [
               [paxAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameter('address', daiAddress) +
-              web3.eth.abi.encodeParameter('address', pSwapAddress).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 3).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
-              web3.eth.abi.encodeParameter('bool', true).slice(2),
+            web3.eth.abi.encodeParameter('address', daiAddress)
+              + web3.eth.abi.encodeParameter('address', pSwapAddress).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 3).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 0).slice(2)
+              + web3.eth.abi.encodeParameter('bool', true).slice(2),
           ],
         ],
         [
@@ -704,7 +704,7 @@ contract.only('Curve exchange interactive adapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             CURVE_EXCHANGE_ADAPTER,
@@ -712,11 +712,11 @@ contract.only('Curve exchange interactive adapter', () => {
             [
               [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameter('address', tusdAddress) +
-              web3.eth.abi.encodeParameter('address', tSwapAddress).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 0).slice(2) +
-              web3.eth.abi.encodeParameter('uint256', 2).slice(2) +
-              web3.eth.abi.encodeParameter('bool', true).slice(2),
+            web3.eth.abi.encodeParameter('address', tusdAddress)
+              + web3.eth.abi.encodeParameter('address', tSwapAddress).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 0).slice(2)
+              + web3.eth.abi.encodeParameter('uint256', 2).slice(2)
+              + web3.eth.abi.encodeParameter('bool', true).slice(2),
           ],
         ],
         [

@@ -1,7 +1,7 @@
 import expectRevert from '../helpers/expectRevert';
 
 const TokenAdapterRegistry = artifacts.require('./TokenAdapterRegistry');
-const ProtocolAdapter = artifacts.require('./MockAdapter');
+// const ProtocolAdapter = artifacts.require('./MockAdapter');
 const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const CompoundTokenAdapter = artifacts.require('./CompoundTokenAdapter');
 
@@ -12,16 +12,16 @@ const TWO = '0x2222222222222222222222222222222222222222';
 contract('TokenAdapterRegistry', () => {
   let accounts;
   let tokenAdapterRegistry;
-  let protocolAdapterAddress;
+  //  let protocolAdapterAddress;
   let tokenAdapterAddress;
   let compoundTokenAdapterAddress;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await ProtocolAdapter.new({ from: accounts[0] })
-      .then((result) => {
-        protocolAdapterAddress = result.address;
-      });
+    //    await ProtocolAdapter.new({ from: accounts[0] })
+    //      .then((result) => {
+    //        protocolAdapterAddress = result.address;
+    //      });
     await TokenAdapter.new({ from: accounts[0] })
       .then((result) => {
         tokenAdapterAddress = result.address;
@@ -366,6 +366,16 @@ contract('TokenAdapterRegistry', () => {
     );
   });
 
+  it('should not propose ownership to the owner', async () => {
+    await expectRevert(
+      tokenAdapterRegistry.methods.proposeOwnership(accounts[0])
+        .send({
+          from: accounts[0],
+          gas: '300000',
+        }),
+    );
+  });
+
   it('should propose ownership by the owner', async () => {
     await tokenAdapterRegistry.methods.proposeOwnership(accounts[1])
       .send({
@@ -377,6 +387,13 @@ contract('TokenAdapterRegistry', () => {
       .then((result) => {
         assert.equal(result, accounts[1]);
       });
+    await expectRevert(
+      tokenAdapterRegistry.methods.proposeOwnership(accounts[1])
+        .send({
+          from: accounts[0],
+          gas: '300000',
+        }),
+    );
     await expectRevert(
       tokenAdapterRegistry.methods.acceptOwnership()
         .send({

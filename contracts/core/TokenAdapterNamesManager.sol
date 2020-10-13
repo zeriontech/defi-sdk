@@ -204,6 +204,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
     {
         bytes32 hash;
 
+        // solhint-disable-next-line no-inline-assembly
         assembly {
             hash := extcodehash(token)
         }

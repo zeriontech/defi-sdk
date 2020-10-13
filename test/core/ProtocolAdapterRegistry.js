@@ -2,8 +2,8 @@ import expectRevert from '../helpers/expectRevert';
 
 const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const ProtocolAdapter = artifacts.require('./MockAdapter');
-const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
-const CompoundTokenAdapter = artifacts.require('./CompoundTokenAdapter');
+// const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
+// const CompoundTokenAdapter = artifacts.require('./CompoundTokenAdapter');
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 const ONE = '0x1111111111111111111111111111111111111111';
@@ -13,8 +13,8 @@ contract('ProtocolAdapterRegistry', () => {
   let accounts;
   let protocolAdapterRegistry;
   let protocolAdapterAddress;
-  let tokenAdapterAddress;
-  let compoundTokenAdapterAddress;
+  //  let tokenAdapterAddress;
+  //  let compoundTokenAdapterAddress;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -22,14 +22,14 @@ contract('ProtocolAdapterRegistry', () => {
       .then((result) => {
         protocolAdapterAddress = result.address;
       });
-    await TokenAdapter.new({ from: accounts[0] })
-      .then((result) => {
-        tokenAdapterAddress = result.address;
-      });
-    await CompoundTokenAdapter.new({ from: accounts[0] })
-      .then((result) => {
-        compoundTokenAdapterAddress = result.address;
-      });
+    //    await TokenAdapter.new({ from: accounts[0] })
+    //      .then((result) => {
+    //        tokenAdapterAddress = result.address;
+    //      });
+    //    await CompoundTokenAdapter.new({ from: accounts[0] })
+    //      .then((result) => {
+    //        compoundTokenAdapterAddress = result.address;
+    //      });
     await ProtocolAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
         protocolAdapterRegistry = result.contract;
@@ -40,21 +40,21 @@ contract('ProtocolAdapterRegistry', () => {
         protocolAdapterAddress,
       ],
       [
-        [protocolAdapterAddress],
+        [protocolAdapterAddress, ONE],
       ],
     )
       .send({
         from: accounts[0],
         gas: '1000000',
       });
-//    await protocolAdapterRegistry.methods.addTokenAdapters(
-//      [web3.utils.toHex('ERC20')],
-//      [tokenAdapterAddress],
-//    )
-//      .send({
-//        from: accounts[0],
-//        gas: '1000000',
-//      });
+    //    await protocolAdapterRegistry.methods.addTokenAdapters(
+    //      [web3.utils.toHex('ERC20')],
+    //      [tokenAdapterAddress],
+    //    )
+    //      .send({
+    //        from: accounts[0],
+    //        gas: '1000000',
+    //      });
   });
 
   it('should be correct owner', async () => {
@@ -86,8 +86,9 @@ contract('ProtocolAdapterRegistry', () => {
     await protocolAdapterRegistry.methods.getSupportedTokens(web3.utils.toHex('Mock'))
       .call()
       .then((result) => {
-        assert.equal(result.length, 1);
+        assert.equal(result.length, 2);
         assert.equal(result[0], protocolAdapterAddress);
+        assert.equal(result[1], ONE);
       });
   });
 
@@ -568,35 +569,35 @@ contract('ProtocolAdapterRegistry', () => {
           web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Mock')),
         );
         assert.deepEqual(
-          result[0].absoluteTokenAmounts[0],
+          result[0].tokenBalances[0],
           [
             protocolAdapterAddress,
             '1000',
           ],
         );
       });
-//    await protocolAdapterRegistry.methods.getFullTokenBalances(
-//      [[
-//        web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
-//        protocolAdapterAddress,
-//        '1000',
-//      ]],
-//    )
-//      .call()
-//      .then((result) => {
-//        assert.deepEqual(
-//          result[0].base,
-//          [
-//            protocolAdapterAddress,
-//            '1000',
-//            [
-//              'Not available',
-//              'N/A',
-//              '0',
-//            ],
-//          ],
-//        );
-//      });
+    //    await protocolAdapterRegistry.methods.getFullTokenBalances(
+    //      [[
+    //        web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
+    //        protocolAdapterAddress,
+    //        '1000',
+    //      ]],
+    //    )
+    //      .call()
+    //      .then((result) => {
+    //        assert.deepEqual(
+    //          result[0].base,
+    //          [
+    //            protocolAdapterAddress,
+    //            '1000',
+    //            [
+    //              'Not available',
+    //              'N/A',
+    //              '0',
+    //            ],
+    //          ],
+    //        );
+    //      });
   });
 
   it('should be correct balances null', async () => {

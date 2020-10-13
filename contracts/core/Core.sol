@@ -82,7 +82,7 @@ contract Core is ReentrancyGuard {
      * @dev Can be called only by this contract.
      * This function is used to create cross-protocol adapters.
      */
-    function executeActionExternal(
+    function executeExternal(
         Action calldata action
     )
         external

@@ -23,7 +23,7 @@ import { TransactionData, Action, AbsoluteTokenAmount, Fee, TokenAmount } from "
 
 contract SignatureVerifier {
 
-    mapping (bytes32 => bool) internal isHashUsed_;
+    mapping (bytes32 => mapping(address => bool)) internal isHashUsed_;
 
     bytes32 internal immutable domainSeparator_;
 
@@ -106,22 +106,14 @@ contract SignatureVerifier {
      * @return Address of the Core contract used.
      */
     function isHashUsed(
-        bytes32 hash
+        bytes32 hash,
+        address account
     )
         public
         view
         returns (bool)
     {
-        return isHashUsed_[hash];
-    }
-
-    function hashUsed(
-        bytes32 hash
-    )
-        internal
-    {
-        require(!isHashUsed_[hash], "SV: used hash!");
-        isHashUsed_[hash] = true;
+        return isHashUsed_[hash][account];
     }
 
     function getAccountFromSignature(
@@ -152,6 +144,16 @@ contract SignatureVerifier {
                 hash(data)
             )
         );
+    }
+
+    function markHashUsed(
+        bytes32 hash,
+        address account
+    )
+        internal
+    {
+        require(!isHashUsed_[hash][account], "SV: used hash!");
+        isHashUsed_[hash][account] = true;
     }
 
     /// @return Hash to be signed by tokens supplier.
@@ -280,6 +282,7 @@ contract SignatureVerifier {
     {
         require(signature.length == 65, "SV: bad signature");
 
+        // solhint-disable-next-line no-inline-assembly
         assembly {
             // first 32 bytes, after the length prefix.
             r := mload(add(signature, 32))

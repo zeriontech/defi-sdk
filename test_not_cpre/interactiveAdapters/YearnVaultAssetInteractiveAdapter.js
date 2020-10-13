@@ -31,7 +31,6 @@ contract('YearnAssetInteractiveAdapter', () => {
   let router;
   let protocolAdapterRegistry;
   let protocolAdapterAddress;
-  let AETH;
   let DAI;
   let YDAI;
 
@@ -101,7 +100,7 @@ contract('YearnAssetInteractiveAdapter', () => {
           gas: 10000000,
           from: accounts[0],
         });
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         [
           [
             YEARN_ASSET_ADAPTER,
@@ -125,9 +124,9 @@ contract('YearnAssetInteractiveAdapter', () => {
         }));
     await YDAI.methods['balanceOf(address)'](accounts[0])
       .call()
-      .then((result) => {
-        console.log(`YDAI amount after is ${web3.utils.fromWei(result, 'ether')}`);
-      });
+        .then((result) => {
+          console.log(`YDAI amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
     await DAI.methods['balanceOf(address)'](accounts[0])
       .call()
       .then((result) => {
@@ -164,7 +163,7 @@ contract('YearnAssetInteractiveAdapter', () => {
           gas: 10000000,
           from: accounts[0],
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             YEARN_ASSET_ADAPTER,
@@ -229,7 +228,7 @@ contract('YearnAssetInteractiveAdapter', () => {
           from: accounts[0],
         });
       await expectRevert(
-        router.methods.startExecution(
+        router.methods.execute(
           [
             [
               YEARN_ASSET_ADAPTER,
@@ -272,7 +271,7 @@ contract('YearnAssetInteractiveAdapter', () => {
           gas: 10000000,
           from: accounts[0],
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             YEARN_ASSET_ADAPTER,

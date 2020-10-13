@@ -26,6 +26,6 @@ pragma experimental ABIEncoderV2;
  * github.com/aave/aave-protocol/blob/master/contracts/lendingpool/LendingPool.sol.
  */
 interface LendingPool {
-    function getUserReserveData(address, address) external view returns (uint256, uint256);
     function deposit(address, uint256, uint16) external payable;
+    function getUserReserveData(address, address) external view returns (uint256, uint256);
 }

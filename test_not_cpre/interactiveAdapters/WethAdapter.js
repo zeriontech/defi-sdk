@@ -90,7 +90,7 @@ contract('Weth interactive adapter', () => {
         .then((result) => {
           console.log(`eth amount before is  ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             WETH_ASSET_ADAPTER,
@@ -153,7 +153,7 @@ contract('Weth interactive adapter', () => {
           console.log(`eth amount before is  ${web3.utils.fromWei(result, 'ether')}`);
         });
       console.log('calling router with action...');
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             WETH_ASSET_ADAPTER,

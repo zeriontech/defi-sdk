@@ -56,9 +56,9 @@ contract ChaiTokenAdapter is TokenAdapter, MKRAdapter {
 
         components[0] = Component({
             token: DAI,
-            // solhint-disable-next-line not-rely-on-time
             rate: int256(
                 mkrRmul(
+                    // solhint-disable-next-line not-rely-on-time
                     mkrRmul(mkrRpow(pot.dsr(), block.timestamp - pot.rho(), ONE), pot.chi()),
                     1e18
                 )

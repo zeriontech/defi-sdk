@@ -104,7 +104,7 @@ contract('Core + Router', () => {
     });
 
     it('should not get 1 WETH from 1 ETH with broken amount type', async () => {
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         // actions
         [
           [
@@ -134,7 +134,7 @@ contract('Core + Router', () => {
     });
 
     it('should not get 1 WETH from 1 ETH with too large relative amount', async () => {
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         // actions
         [
           [
@@ -164,7 +164,7 @@ contract('Core + Router', () => {
     });
 
     it('should get 1 WETH from 1 ETH and get half back', async () => {
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           [
@@ -196,7 +196,7 @@ contract('Core + Router', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           [
@@ -229,7 +229,7 @@ contract('Core + Router', () => {
     });
 
     it('should not execute action with wrong name', async () => {
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         // actions
         [
           [
@@ -250,6 +250,62 @@ contract('Core + Router', () => {
         ],
         // outputs
         [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+          value: web3.utils.toWei('1', 'ether'),
+        }));
+    });
+
+    it('should not execute action with too large limit', async () => {
+      await expectRevert(router.methods.execute(
+        // actions
+        [
+          [
+            web3.utils.toHex('Weth'),
+            ACTION_DEPOSIT,
+            [
+              [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
+            ],
+            EMPTY_BYTES,
+          ],
+        ],
+        // inputs
+        [],
+        // fee
+        [
+          0,
+          ZERO,
+        ],
+        // outputs
+        [
+          [wethAddress, web3.utils.toWei('2', 'ether'),]
+        ],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+          value: web3.utils.toWei('1', 'ether'),
+        }));
+    });
+
+    it('should not execute action with zero action type', async () => {
+      await expectRevert(core.methods.executeActions(
+        // actions
+        [
+          [
+            web3.utils.toHex('Weth'),
+            0,
+            [
+              [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
+            ],
+            EMPTY_BYTES,
+          ],
+        ],
+        // outputs
+        [],
+        accounts[0]
       )
         .send({
           from: accounts[0],
@@ -279,6 +335,19 @@ contract('Core + Router', () => {
         .then((result) => {
           assert.equal(result, 0);
         });
+    });
+
+    it('should return lost tokens', async () => {
+      await router.methods.returnLostTokens(ethAddress, accounts[0])
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(router.methods.returnLostTokens(ethAddress, router.options.address)
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        }));
     });
 
     it('should return required allowances', async () => {
@@ -351,7 +420,7 @@ contract('Core + Router', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         // actions
         [],
         // inputs
@@ -364,8 +433,8 @@ contract('Core + Router', () => {
         ],
         // fee
         [
-            web3.utils.toWei('0.011', 'ether'),
-            accounts[1],
+          web3.utils.toWei('0.011', 'ether'),
+          accounts[1],
         ],
         // outputs
         [],
@@ -376,13 +445,156 @@ contract('Core + Router', () => {
         }));
     });
 
+    it('should not handle large eth fees correctly', async () => {
+      await expectRevert(router.methods.execute(
+        // actions
+        [],
+        // inputs
+        [
+          [
+            ethAddress,
+            web3.utils.toWei('1', 'ether'),
+            AMOUNT_ABSOLUTE,
+          ],
+        ],
+        // fee
+        [
+          web3.utils.toWei('0.011', 'ether'),
+          accounts[1],
+        ],
+        // outputs
+        [],
+      )
+        .send({
+          from: accounts[0],
+          value: web3.utils.toWei('1', 'ether'),
+          gas: 10000000,
+        }));
+    });
+
+    it('should not accept 0 inputs', async () => {
+      await expectRevert(router.methods.execute(
+        // actions
+        [],
+        // inputs
+        [
+          [
+            ethAddress,
+            0,
+            AMOUNT_ABSOLUTE,
+          ],
+        ],
+        // fee
+        [
+          0,
+          ZERO,
+        ],
+        // outputs
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        }));
+    });
+
+    it('should accept full share input', async () => {
+      await expectRevert(router.methods.execute(
+        // actions
+        [],
+        // inputs
+        [
+          [
+            ethAddress,
+            convertToShare(1),
+            AMOUNT_RELATIVE,
+          ],
+        ],
+        // fee
+        [
+          0,
+          ZERO,
+        ],
+        // outputs
+        [],
+      )
+        .send({
+          from: accounts[0],
+          value: web3.utils.toWei('1', 'ether'),
+          gas: 10000000,
+        }));
+    });
+
+    it('should accept not full share input', async () => {
+      await expectRevert(router.methods.execute(
+        // actions
+        [],
+        // inputs
+        [
+          [
+            ethAddress,
+            convertToShare(0.99),
+            AMOUNT_RELATIVE,
+          ],
+        ],
+        // fee
+        [
+          0,
+          ZERO,
+        ],
+        // outputs
+        [],
+      )
+        .send({
+          from: accounts[0],
+          value: web3.utils.toWei('1', 'ether'),
+          gas: 10000000,
+        }));
+    });
+
+    it('should handle eth fee correctly', async () => {
+      let prevBalance;
+      await web3.eth.getBalance(accounts[1])
+        .then((result) => {
+          prevBalance = result;
+        });
+      await router.methods.execute(
+        // actions
+        [],
+        // inputs
+        [
+          [
+            ethAddress,
+            web3.utils.toWei('1', 'ether'),
+            AMOUNT_ABSOLUTE,
+          ],
+        ],
+        // fee
+        [
+          web3.utils.toWei('0.01', 'ether'),
+          accounts[1],
+        ],
+        // outputs
+        [],
+      )
+        .send({
+          from: accounts[0],
+          value: web3.utils.toWei('1', 'ether'),
+          gas: 10000000,
+        });
+      await web3.eth.getBalance(accounts[1])
+        .then((result) => {
+          assert.equal(result, new BN(prevBalance).add(new BN(web3.utils.toWei('0.01', 'ether'))));
+        });
+    });
+
     it('should not handle fees to ZERO correctly', async () => {
       await WETH.methods.approve(router.options.address, web3.utils.toWei('1', 'ether'))
         .send({
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(router.methods.startExecution(
+      await expectRevert(router.methods.execute(
         // actions
         [],
         // inputs
@@ -395,8 +607,8 @@ contract('Core + Router', () => {
         ],
         // fee
         [
-            web3.utils.toWei('0.01', 'ether'),
-            ZERO,
+          web3.utils.toWei('0.01', 'ether'),
+          ZERO,
         ],
         // outputs
         [],
@@ -413,7 +625,7 @@ contract('Core + Router', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [],
         // inputs
@@ -426,8 +638,8 @@ contract('Core + Router', () => {
         ],
         // fee
         [
-            web3.utils.toWei('0.01', 'ether'),
-            accounts[1],
+          web3.utils.toWei('0.01', 'ether'),
+          accounts[1],
         ],
         // outputs
         [],

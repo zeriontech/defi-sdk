@@ -92,7 +92,7 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         // actions
         [
           [
@@ -156,7 +156,7 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
@@ -210,7 +210,7 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
@@ -271,7 +271,7 @@ contract('UniswapV1ExchangeAdapter', () => {
         .then((result) => {
           console.log(`eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
@@ -385,7 +385,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
@@ -448,7 +448,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
@@ -514,7 +514,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
@@ -580,7 +580,7 @@ contract('UniswapV1ExchangeAdapter', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await router.methods.startExecution(
+      await router.methods.execute(
         [
           [
             UNISWAP_V1_EXCHANGE_ADAPTER,
