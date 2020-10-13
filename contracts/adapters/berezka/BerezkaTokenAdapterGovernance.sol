@@ -19,6 +19,20 @@ pragma experimental ABIEncoderV2;
 import { EnumerableSet } from "./lib/EnumerableSet.sol";
 import { Ownable } from "../../Ownable.sol";
 
+interface AdapterRegistry {
+
+    function isValidTokenAdapter(
+        string calldata tokenAdapterName
+    ) 
+        external 
+        returns (bool);
+}
+
+struct TypedToken {
+    string tokenType;
+    address token;
+}
+
 /**
  * @dev BerezkaTokenAdapterGovernance contract.
  * Main function of this contract is to maintains a Structure of BerezkaDAO
@@ -26,11 +40,18 @@ import { Ownable } from "../../Ownable.sol";
  */
 contract BerezkaTokenAdapterGovernance is Ownable() {
 
+    AdapterRegistry internal constant ADAPTER_REGISTRY = 
+        AdapterRegistry(0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672);
+
     using EnumerableSet for EnumerableSet.AddressSet;
 
     /// @dev This is a set of plain assets (ERC20) used by DAO. 
     /// This list also include addresses of Uniswap/Balancer tokenized pools.
-    EnumerableSet.AddressSet private tokens;
+    mapping (string => EnumerableSet.AddressSet) private tokens;
+
+    /// @dev This is a list of all token types that are managed by contract
+    /// New token type is added to this list upon first adding a token with given type
+    string[] public tokenTypes;
 
     /// @dev This is a set of debt protocol adapters that return debt in ETH
     EnumerableSet.AddressSet private ethProtocols;
@@ -41,9 +62,8 @@ contract BerezkaTokenAdapterGovernance is Ownable() {
     /// @dev This is a mapping from Berezka DAO product to corresponding Vault addresses
     mapping(address => address[]) private productVaults;
 
-    constructor(address[] memory _tokens, address[] memory _protocols, address[] memory _ethProtocols) public {
+    constructor(address[] memory _protocols, address[] memory _ethProtocols) public {
         _add(protocols, _protocols);
-        _add(tokens, _tokens);
         _add(ethProtocols, _ethProtocols);
     }
 
@@ -62,30 +82,76 @@ contract BerezkaTokenAdapterGovernance is Ownable() {
         delete productVaults[_product];
     }
 
-    function addTokens(address[] memory _tokens) public onlyOwner() {
-        _add(tokens, _tokens);
+    function addTokens(string memory _type, address[] memory _tokens) public onlyOwner() {
+        require(_tokens.length > 0, "Length should be > 0");
+        require(ADAPTER_REGISTRY.isValidTokenAdapter(_type), "Invalid token adapter name");
+
+        if (tokens[_type].length() == 0) {
+            tokenTypes.push(_type);
+        }
+        _add(tokens[_type], _tokens);
     }
 
     function addProtocols(address[] memory _protocols) public onlyOwner() {
+        require(_protocols.length > 0, "Length should be > 0");
+
         _add(protocols, _protocols);
     }
 
-    function removeTokens(address[] memory _tokens) public onlyOwner() {
-        _remove(tokens, _tokens);
+    function addEthProtocols(address[] memory _ethProtocols) public onlyOwner() {
+        require(_ethProtocols.length > 0, "Length should be > 0");
+
+        _add(ethProtocols, _ethProtocols);
+    }
+
+    function removeTokens(string memory _type, address[] memory _tokens) public onlyOwner() {
+        require(_tokens.length > 0, "Length should be > 0");
+
+        _remove(tokens[_type], _tokens);
     }
 
     function removeProtocols(address[] memory _protocols) public onlyOwner() {
+        require(_protocols.length > 0, "Length should be > 0");
+
         _remove(protocols, _protocols);
     }
 
     function removeEthProtocols(address[] memory _ethProtocols) public onlyOwner() {
+        require(_ethProtocols.length > 0, "Length should be > 0");
+
         _remove(ethProtocols, _ethProtocols);
+    }
+
+    function setTokenTypes(string[] memory _tokenTypes) public onlyOwner() {
+        require(_tokenTypes.length > 0, "Length should be > 0");
+
+        tokenTypes = _tokenTypes;
     }
 
     // View functions
 
-    function listTokens() external view returns (address[] memory) {
-        return _list(tokens);
+    function listTokens() external view returns (TypedToken[] memory) {
+        uint256 tokenLength = tokenTypes.length;
+        uint256 resultLength = 0;
+        for (uint256 i = 0; i < tokenLength; i++) {
+            resultLength += tokens[tokenTypes[i]].length();
+        }
+        TypedToken[] memory result = new TypedToken[](resultLength);
+        uint256 resultIndex = 0;
+        for (uint256 i = 0; i < tokenLength; i++) {
+            string memory tokenType = tokenTypes[i];
+            address[] memory typedTokens = _list(tokens[tokenType]);
+            uint256 typedTokenLength = typedTokens.length;
+            for (uint256 j = 0; j < typedTokenLength; j++) {
+                result[resultIndex] = TypedToken(tokenType, typedTokens[j]);
+                resultIndex++;
+            }
+        }
+        return result;
+    }
+
+    function listTokens(string calldata _type) external view returns (address[] memory) {
+        return _list(tokens[_type]);
     }
 
     function listProtocols() external view returns (address[] memory) {

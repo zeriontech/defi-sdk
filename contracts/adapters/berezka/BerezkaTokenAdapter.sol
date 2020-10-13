@@ -20,11 +20,12 @@ import { ERC20 } from "../../ERC20.sol";
 import { TokenMetadata, Component } from "../../Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
+import { TypedToken } from "./BerezkaTokenAdapterGovernance.sol";
 
 
 interface IBerezkaTokenAdapterGovernance {
     
-    function listTokens() external view returns (address[] memory);
+    function listTokens() external view returns (TypedToken[] memory);
 
     function listProtocols() external view returns (address[] memory);
 
@@ -82,25 +83,30 @@ contract BerezkaTokenAdapter is TokenAdapter {
         returns (Component[] memory)
     {
         address[] memory vaults = governance.getVaults(token);
-        address[] memory assets = governance.listTokens();
+        TypedToken[] memory assets = governance.listTokens();
         address[] memory debtAdapters = governance.listProtocols();
         uint256 length = assets.length;
         uint256 totalSupply = ERC20(token).totalSupply();
 
         Component[] memory underlyingTokens = new Component[](1 + length);
+        
+        // Handle ERC20 assets + debt
+        for (uint256 i = 0; i < length; i++) {
+            Component memory tokenComponent =
+                _getTokenComponents(
+                    assets[i].token, 
+                    assets[i].tokenType, 
+                    vaults, 
+                    debtAdapters, 
+                    totalSupply
+                );
+            underlyingTokens[i] = tokenComponent;
+        }
 
         // Handle ETH
         {
             Component memory ethComponent = _getEthComponents(vaults, totalSupply);
-            underlyingTokens[0] = ethComponent;
-        }
-        
-        // Handle ERC20 assets + debt
-        for (uint256 i = 0; i < length; i++) {
-            address asset = assets[i];
-            Component memory tokenComponent =
-                _getTokenComponents(asset, vaults, debtAdapters, totalSupply);
-            underlyingTokens[i + 1] = tokenComponent;
+            underlyingTokens[length] = ethComponent;
         }
         
         return underlyingTokens;
@@ -137,6 +143,7 @@ contract BerezkaTokenAdapter is TokenAdapter {
 
     function _getTokenComponents(
         address _asset,
+        string memory _type,
         address[] memory _vaults,
         address[] memory _debtAdapters,
         uint256 _totalSupply
@@ -159,7 +166,7 @@ contract BerezkaTokenAdapter is TokenAdapter {
         // Asset amount
         return(Component({
             token: _asset,
-            tokenType: ERC20_TOKEN,
+            tokenType: _type,
             rate: (componentBalance * 1e18 / _totalSupply) - (componentDebt * 1e18 / _totalSupply)
         }));
     }
