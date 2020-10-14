@@ -5,9 +5,8 @@ const ProtocolAdapter = artifacts.require('DODOAdapter');
 const TokenAdapter = artifacts.require('DODOTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('UniswapV2Adapter', () => {
+contract.only('DODOAdapter', () => {
   const dodoWethUsdcWethAddress = '0xc11eCCDee225d644f873776A68A02eCD8c015697';
-  const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
@@ -21,12 +20,6 @@ contract('UniswapV2Adapter', () => {
     'WETH/USDC Pool: WETH',
     'DLP',
     '18',
-  ];
-  const usdc = [
-    usdcAddress,
-    'USD Coin',
-    'USDC',
-    '6',
   ];
   const weth = [
     wethAddress,
@@ -89,10 +82,8 @@ contract('UniswapV2Adapter', () => {
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
         displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
-        displayToken(result[0].adapterBalances[0].balances[0].underlying[1]);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, dodoWethUsdcWeth);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, weth);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[1].metadata, usdc);
       });
   });
 });

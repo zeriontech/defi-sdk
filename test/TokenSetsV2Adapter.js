@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('TokenSetsV2Adapter');
 const TokenAdapter = artifacts.require('TokenSetsV2TokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('TokenSetsV2Adapter', () => {
+contract('TokenSetsV2Adapter', () => {
   const dpiAddress = '0x1494CA1F11D487c2bBe4543E90080AeBa4BA3C2b';
 
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';

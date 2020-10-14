@@ -41,7 +41,9 @@ interface DODOLpToken {
  */
 interface DODO {
     function _BASE_TOKEN_() external view returns (address);
+    function _BASE_CAPITAL_TOKEN_() external view returns (address);
     function _QUOTE_TOKEN_() external view returns (address);
+    function getExpectedTarget() external view returns (uint256, uint256);
 }
 
 
@@ -70,20 +72,21 @@ contract DodoTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        address[] memory tokens = new address[](2);
         address dodo = DODOLpToken(token)._OWNER_();
-        tokens[0] = DODO(dodo)._BASE_TOKEN_();
-        tokens[1] = DODO(dodo)._QUOTE_TOKEN_();
-        uint256 totalSupply = ERC20(token).totalSupply();
-        Component[] memory underlyingTokens = new Component[](2);
 
-        for (uint256 i = 0; i < 2; i++) {
-            underlyingTokens[i] = Component({
-                token: tokens[i],
-                tokenType: "ERC20",
-                rate: ERC20(tokens[i]).balanceOf(dodo) * 1e18 / totalSupply
-            });
-        }
+        (uint256 baseTarget, uint256 quoteTarget) = DODO(dodo).getExpectedTarget();
+        address baseToken = DODO(dodo)._BASE_TOKEN_();
+        address originToken = DODOLpToken(token).originToken();
+
+        uint256 underlyingTokenAmount = originToken == baseToken ? baseTarget : quoteTarget;
+
+        Component[] memory underlyingTokens = new Component[](1);
+
+        underlyingTokens[0] = Component({
+            token: originToken,
+            tokenType: "ERC20",
+            rate: underlyingTokenAmount * 1e18 / ERC20(token).totalSupply()
+        });
 
         return underlyingTokens;
     }
