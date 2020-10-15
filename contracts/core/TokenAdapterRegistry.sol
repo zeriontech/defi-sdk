@@ -217,7 +217,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
             componentTokenBalances[i] = getTokenBalanceMeta(
                 TokenBalance({
                     token: components[i].token,
-                    amount: components[i].rate * tokenBalance.amount / 1e18
+                    amount: components[i].rate * tokenBalance.amount / int256(1e18)
                 })
             );
         }
@@ -251,7 +251,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
             finalComponents = getFinalComponents(
                 TokenBalance({
                     token: components[i].token,
-                    amount: components[i].rate * tokenBalance.amount / 1e18
+                    amount: components[i].rate * tokenBalance.amount / int256(1e18)
                 })
             );
 

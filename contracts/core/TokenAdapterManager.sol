@@ -132,7 +132,6 @@ abstract contract TokenAdapterManager is Ownable {
     )
         internal
     {
-        require(newTokenAdapterName != bytes32(0), "TAM: zero[1]");
         require(newTokenAdapterAddress != address(0), "TAM: zero[2]");
         require(_tokenAdapterAddress[newTokenAdapterName] == address(0), "TAM: exists");
 

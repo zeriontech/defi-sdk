@@ -48,8 +48,8 @@ abstract contract TokenAdapterNamesManager is Ownable {
         onlyOwner
     {
         uint256 length = newHashes.length;
-        require(length != 0, "PM: empty[1]");
-        require(length == newTokenAdapterNames.length, "PM: lengths differ[1]");
+        require(length != 0, "TANM: empty[1]");
+        require(length == newTokenAdapterNames.length, "TANM: lengths differ[1]");
 
         for (uint256 i = 0; i < length; i++) {
             addTokenAdapterNameByHash(newHashes[i], newTokenAdapterNames[i]);
@@ -70,8 +70,8 @@ abstract contract TokenAdapterNamesManager is Ownable {
         onlyOwner
     {
         uint256 length = newTokens.length;
-        require(length != 0, "PM: empty[2]");
-        require(length == newTokenAdapterNames.length, "PM: lengths differ[2]");
+        require(length != 0, "TANM: empty[2]");
+        require(length == newTokenAdapterNames.length, "TANM: lengths differ[2]");
 
         for (uint256 i = 0; i < length; i++) {
             addTokenAdapterNameByToken(newTokens[i], newTokenAdapterNames[i]);
@@ -90,7 +90,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
         onlyOwner
     {
         uint256 length = hashes.length;
-        require(length != 0, "PM: empty[3]");
+        require(length != 0, "TANM: empty[3]");
 
         for (uint256 i = 0; i < length; i++) {
             removeTokenAdapterNameByHash(hashes[i]);
@@ -109,7 +109,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
         onlyOwner
     {
         uint256 length = tokens.length;
-        require(length != 0, "PM: empty[4]");
+        require(length != 0, "TANM: empty[4]");
 
         for (uint256 i = 0; i < length; i++) {
             removeTokenAdapterNameByToken(tokens[i]);
@@ -130,8 +130,8 @@ abstract contract TokenAdapterNamesManager is Ownable {
         onlyOwner
     {
         uint256 length = hashes.length;
-        require(length != 0, "PM: empty[5]");
-        require(length == newTokenAdapterNames.length, "PM: lengths differ[3]");
+        require(length != 0, "TANM: empty[5]");
+        require(length == newTokenAdapterNames.length, "TANM: lengths differ[3]");
 
         for (uint256 i = 0; i < length; i++) {
             updateTokenAdapterNameByHash(hashes[i], newTokenAdapterNames[i]);
@@ -152,8 +152,8 @@ abstract contract TokenAdapterNamesManager is Ownable {
         onlyOwner
     {
         uint256 length = tokens.length;
-        require(length != 0, "PM: empty[6]");
-        require(length == newTokenAdapterNames.length, "PM: lengths differ[4]");
+        require(length != 0, "TANM: empty[6]");
+        require(length == newTokenAdapterNames.length, "TANM: lengths differ[4]");
 
         for (uint256 i = 0; i < length; i++) {
             updateTokenAdapterNameByToken(tokens[i], newTokenAdapterNames[i]);
@@ -223,9 +223,9 @@ abstract contract TokenAdapterNamesManager is Ownable {
     )
         internal
     {
-        require(newHash != bytes32(0), "PM: zero[1]");
-        require(newTokenAdapterName != bytes32(0), "PM: zero[2]");
-        require(_tokenAdapterNameByHash[newHash] == bytes32(0), "PM: exists[1]");
+        require(newHash != bytes32(0), "TANM: zero[1]");
+        require(newTokenAdapterName != bytes32(0), "TANM: zero[2]");
+        require(_tokenAdapterNameByHash[newHash] == bytes32(0), "TANM: exists[1]");
 
         _tokenAdapterNameByHash[newHash] = newTokenAdapterName;
     }
@@ -241,9 +241,9 @@ abstract contract TokenAdapterNamesManager is Ownable {
     )
         internal
     {
-        require(newToken != address(0), "PM: zero[3]");
-        require(newTokenAdapterName != bytes32(0), "PM: zero[4]");
-        require(_tokenAdapterNameByToken[newToken] == bytes32(0), "PM: exists[2]");
+        require(newToken != address(0), "TANM: zero[3]");
+        require(newTokenAdapterName != bytes32(0), "TANM: zero[4]");
+        require(_tokenAdapterNameByToken[newToken] == bytes32(0), "TANM: exists[2]");
 
         _tokenAdapterNameByToken[newToken] = newTokenAdapterName;
     }
@@ -257,7 +257,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
     )
         internal
     {
-        require(_tokenAdapterNameByHash[hash] != bytes32(0), "PM: does not exist[1]");
+        require(_tokenAdapterNameByHash[hash] != bytes32(0), "TANM: does not exist[1]");
 
         delete _tokenAdapterNameByHash[hash];
     }
@@ -271,7 +271,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
     )
         internal
     {
-        require(_tokenAdapterNameByToken[token] != bytes32(0), "PM: does not exist[2]");
+        require(_tokenAdapterNameByToken[token] != bytes32(0), "TANM: does not exist[2]");
 
         delete _tokenAdapterNameByToken[token];
     }
@@ -288,9 +288,9 @@ abstract contract TokenAdapterNamesManager is Ownable {
         internal
     {
         bytes32 oldName = _tokenAdapterNameByHash[hash];
-        require(oldName != bytes32(0), "PM: does not exist[3]");
-        require(newTokenAdapterName != bytes32(0), "PM: zero[5]");
-        require(oldName != newTokenAdapterName, "PM: same name[1]");
+        require(oldName != bytes32(0), "TANM: does not exist[3]");
+        require(newTokenAdapterName != bytes32(0), "TANM: zero[5]");
+        require(oldName != newTokenAdapterName, "TANM: same name[1]");
 
         _tokenAdapterNameByHash[hash] = newTokenAdapterName;
     }
@@ -307,9 +307,9 @@ abstract contract TokenAdapterNamesManager is Ownable {
         internal
     {
         bytes32 oldName = _tokenAdapterNameByToken[token];
-        require(oldName != bytes32(0), "PM: does not exist[3]");
-        require(newTokenAdapterName != bytes32(0), "PM: zero[5]");
-        require(oldName != newTokenAdapterName, "PM: same name[1]");
+        require(oldName != bytes32(0), "TANM: does not exist[3]");
+        require(newTokenAdapterName != bytes32(0), "TANM: zero[5]");
+        require(oldName != newTokenAdapterName, "TANM: same name[1]");
 
         _tokenAdapterNameByToken[token] = newTokenAdapterName;
     }
