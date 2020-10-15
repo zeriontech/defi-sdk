@@ -1,19 +1,20 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('PieDAOStakingAdapter');
+const ProtocolAdapter = artifacts.require('PickleAssetAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
+const TokenAdapter = artifacts.require('PickleTokenAdapter');
 
-contract('PieDAOStakingAdapter', () => {
-  const doughAddress = '0xad32A8e6220741182940c5aBF610bDE99E737b2D';
-  const bptAddress = '0xFAE2809935233d4BfE8a56c2355c4A2e7d1fFf1A';
+contract('PickleAssetAdapter', () => {
+  const pickleThreeCrvJarV2Address = '0x1BB74b5DdC1f4fC91D6f9E7906cf68bc93538e33';
   // Random address with positive balances
-  const testAddress = '0x66827bcd635f2bb1779d68c46aeb16541bca6ba8';
+  const testAddress = '0xB671BBf9Cca4DAaB9953628303e51C3bCcb6924E';
 
   let accounts;
   let adapterRegistry;
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
+  let tokenAdapterAddress;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -25,12 +26,16 @@ contract('PieDAOStakingAdapter', () => {
       .then((result) => {
         erc20TokenAdapterAddress = result.address;
       });
+    await TokenAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        tokenAdapterAddress = result.address;
+      });
     await AdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['PieDAO Staking'],
+      ['Pickle Finance'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -42,8 +47,7 @@ contract('PieDAOStakingAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        doughAddress,
-        bptAddress,
+        pickleThreeCrvJarV2Address,
       ]]],
     )
       .send({
@@ -51,8 +55,8 @@ contract('PieDAOStakingAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20'],
-      [erc20TokenAdapterAddress],
+      ['ERC20', 'PickleJar'],
+      [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({
         from: accounts[0],
@@ -65,7 +69,7 @@ contract('PieDAOStakingAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
-        displayToken(result[0].adapterBalances[0].balances[1].base);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
       });
   });
 });

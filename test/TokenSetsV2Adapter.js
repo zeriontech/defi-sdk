@@ -1,36 +1,30 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('AmpleforthAdapter');
+const ProtocolAdapter = artifacts.require('TokenSetsV2Adapter');
+const TokenAdapter = artifacts.require('TokenSetsV2TokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('AmpleforthAdapter', () => {
-  const amplAddress = '0xD46bA6D942050d489DBd938a2C909A5d5039A161';
-  const amplUniAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
+contract('TokenSetsV2Adapter', () => {
+  const dpiAddress = '0x1494CA1F11D487c2bBe4543E90080AeBa4BA3C2b';
+
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
   let adapterRegistry;
   let protocolAdapterAddress;
+  let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
-  const ampl = [
-    amplAddress,
-    'Ampleforth',
-    'AMPL',
-    '9',
-  ];
-  const amplUni = [
-    amplUniAddress,
-    'Uniswap V2',
-    'UNI-V2',
-    '18',
-  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
     await ProtocolAdapter.new({ from: accounts[0] })
       .then((result) => {
         protocolAdapterAddress = result.address;
+      });
+    await TokenAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        tokenAdapterAddress = result.address;
       });
     await ERC20TokenAdapter.new({ from: accounts[0] })
       .then((result) => {
@@ -41,7 +35,7 @@ contract('AmpleforthAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['Synthetix'],
+      ['TokenSetsV2'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -53,8 +47,7 @@ contract('AmpleforthAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        amplAddress,
-        amplUniAddress,
+        dpiAddress,
       ]]],
     )
       .send({
@@ -62,8 +55,8 @@ contract('AmpleforthAdapter', () => {
         gas: '1000000',
       });
     await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20'],
-      [erc20TokenAdapterAddress],
+      ['ERC20', 'SetToken V2'],
+      [erc20TokenAdapterAddress, tokenAdapterAddress],
     )
       .send({
         from: accounts[0],
@@ -76,8 +69,18 @@ contract('AmpleforthAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, amplUni);
-        assert.equal(result[0].adapterBalances[0].balances[0].underlying.length, 0);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[1]);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[2]);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[3]);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[4]);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[5]);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[6]);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[7]);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[8]);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[9]);
+        displayToken(result[0].adapterBalances[0].balances[0].underlying[10]);
       });
   });
 });

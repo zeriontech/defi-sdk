@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('DodoStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('DodoStakingAdapter', () => {
+contract('DodoStakingAdapter', () => {
   const dodoAddress = '0x43Dfc4159D86F3A37A5A4B3D4580b888ad7d4DDd';
   // Random address with positive balances
   const testAddress = '0xC11a18f3F2F5D642EB85f15E284e0691125aeC51';

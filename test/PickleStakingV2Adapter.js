@@ -1,14 +1,14 @@
 import displayToken from './helpers/displayToken';
 
 const AdapterRegistry = artifacts.require('AdapterRegistry');
-const ProtocolAdapter = artifacts.require('PieDAOStakingAdapter');
+const ProtocolAdapter = artifacts.require('PickleStakingV2Adapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('PieDAOStakingAdapter', () => {
-  const doughAddress = '0xad32A8e6220741182940c5aBF610bDE99E737b2D';
-  const bptAddress = '0xFAE2809935233d4BfE8a56c2355c4A2e7d1fFf1A';
+contract('PickleStakingV2Adapter', () => {
+  const pickleAddress = '0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5';
+  const uniPickleWethAddress = '0xdc98556Ce24f007A5eF6dC1CE96322d65832A819';
   // Random address with positive balances
-  const testAddress = '0x66827bcd635f2bb1779d68c46aeb16541bca6ba8';
+  const testAddress = '0x774facd1685bca4a978f6097ed69c5ea0b158a65';
 
   let accounts;
   let adapterRegistry;
@@ -30,7 +30,7 @@ contract('PieDAOStakingAdapter', () => {
         adapterRegistry = result.contract;
       });
     await adapterRegistry.methods.addProtocols(
-      ['PieDAO Staking'],
+      ['Pickle Finance'],
       [[
         'Mock Protocol Name',
         'Mock protocol description',
@@ -42,8 +42,8 @@ contract('PieDAOStakingAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-        doughAddress,
-        bptAddress,
+        pickleAddress,
+        uniPickleWethAddress,
       ]]],
     )
       .send({

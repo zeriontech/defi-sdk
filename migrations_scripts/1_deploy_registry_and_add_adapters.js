@@ -44,6 +44,9 @@ const MstableAssetAdapter = artifacts.require('MstableAssetAdapter');
 const NexusStakingAdapter = artifacts.require('NexusStakingAdapter');
 const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
+const PickleAssetAdapter = artifacts.require('PickleAssetAdapter');
+const PickleStakingV1Adapter = artifacts.require('PickleStakingV1Adapter');
+const PickleStakingV2Adapter = artifacts.require('PickleStakingV2Adapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
 const PieDAOStakingAdapter = artifacts.require('PieDAOStakingAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
@@ -54,6 +57,7 @@ const SwerveStakingAdapter = artifacts.require('SwerveStakingAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
+const TokenSetsV2Adapter = artifacts.require('TokenSetsV2Adapter');
 const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const UniswapV2Adapter = artifacts.require('UniswapV2Adapter');
 const UniswapV2StakingAdapter = artifacts.require('UniswapV2StakingAdapter');
@@ -77,9 +81,11 @@ const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
 const MelonTokenAdapter = artifacts.require('MelonTokenAdapter');
 const MstableTokenAdapter = artifacts.require('MstableTokenAdapter');
 const ChiTokenAdapter = artifacts.require('ChiTokenAdapter');
+const PickleTokenAdapter = artifacts.require('PickleTokenAdapter');
 const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
+const TokenSetsV2TokenAdapter = artifacts.require('TokenSetsV2TokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
@@ -374,6 +380,21 @@ const goughAddress = '0xad32A8e6220741182940c5aBF610bDE99E737b2D';
 const balancerWeth20Dough80Address = '0xFAE2809935233d4BfE8a56c2355c4A2e7d1fFf1A';
 const uniswapDaiDefiSAddress = '0x7aeFaF3ea1b465dd01561B0548c9FD969e3F76BA';
 const balancerDefiS70Weth30Address = '0x35333CF3Db8e334384EC6D2ea446DA6e445701dF';
+
+const pickleAddress = '0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5';
+const pickleSCrvJarAddress = '0x68d14d66B2B0d6E157c06Dc8Fefa3D8ba0e66a89';
+const pickleRenbtcCrvJarAddress = '0x2E35392F4c36EBa7eCAFE4de34199b2373Af22ec';
+const pickleThreeCrvJarV2Address = '0x1BB74b5DdC1f4fC91D6f9E7906cf68bc93538e33';
+const pickleUniswapWethDaiJarV2Address = '0xCffA068F1E44D98D3753966eBd58D4CFe3BB5162';
+const pickleUniswapWethUsdcJarV2Address = '0x53Bf2E62fA20e2b4522f05de3597890Ec1b352C6';
+const pickleUniswapWethUsdtJarV2Address = '0x09FC573c502037B149ba87782ACC81cF093EC6ef';
+const pickleUniswapWethWbtcJarAddress = '0xc80090AA05374d336875907372EE4ee636CBC562';
+
+const uniswapWethPickleAddress = '0xdc98556Ce24f007A5eF6dC1CE96322d65832A819';
+const pickleUniswapWethDaiJarAddress = '0xf79Ae82DCcb71ca3042485c85588a3E0C395D55b';
+const pickleUniswapWethUsdcJarAddress = '0x46206E9BDaf534d057be5EcF231DaD2A1479258B';
+const pickleUniswapWethUsdtJarAddress = '0x3a41AB1e362169974132dEa424Fb8079Fd0E94d8';
+const pickleThreeCrvJarAddress = '0x2385D31f1EB3736bE0C3629E6f03C4b3cd997Ffd';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -713,6 +734,38 @@ const mstableStakingAdapterTokens = [
 const chiAdapterTokens = [
   chiAddress,
 ];
+const pickleAssetAdapterTokens = [
+  pickleSCrvJarAddress,
+  pickleRenbtcCrvJarAddress,
+  pickleThreeCrvJarV2Address,
+  pickleUniswapWethDaiJarV2Address,
+  pickleUniswapWethUsdcJarV2Address,
+  pickleUniswapWethUsdtJarV2Address,
+  pickleUniswapWethWbtcJarAddress,
+];
+console.log(pickleAssetAdapterTokens);
+const pickleStakingV1AdapterTokens = [
+  pickleAddress,
+  sCrvAddress,
+];
+console.log(pickleStakingV1AdapterTokens)
+const pickleStakingV2AdapterTokens = [
+  pickleAddress,
+  uniswapWethPickleAddress,
+  uniUsdtWethAddress,
+  uniUsdcWethAddress,
+  uniDaiWethAddress,
+  uniSusdWethAddress,
+  pickleUniswapWethDaiJarAddress,
+  pickleUniswapWethUsdcJarAddress,
+  pickleUniswapWethUsdtJarAddress,
+  pickleThreeCrvJarAddress,
+  pickleSCrvJarAddress,
+  pickleUniswapWethDaiJarV2Address,
+  pickleUniswapWethUsdcJarV2Address,
+  pickleUniswapWethUsdtJarV2Address,
+];
+console.log(pickleStakingV2AdapterTokens)
 const pieDAOPieAdapterTokens = [
   BTCPPAddress,
   USDPPAddress,
@@ -1236,6 +1289,28 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(PickleAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(PickleStakingV1Adapter, { from: accounts[0] });
+  await deployer.deploy(PickleStakingV2Adapter, { from: accounts[0] });
+  adapters.push([
+    PickleAssetAdapter.address,
+    PickleStakingV1Adapter.address,
+    PickleStakingV2Adapter.address,
+  ]);
+  tokens.push([
+    pickleAssetAdapterTokens,
+    pickleStakingV1AdapterTokens,
+    pickleStakingV2AdapterTokens,
+    ]);
+  protocolNames.push('Pickle Finance');
+  metadata.push([
+    'Pickle Finance',
+    'Off peg bad, on peg good',
+    'pickle.finance',
+    'protocol-icons.s3.us-east-1.amazonaws.com/pickle.png',
+    '0',
+  ]);
+
   await deployer.deploy(PieDAOPieAdapter, { from: accounts[0] });
   await deployer.deploy(PieDAOStakingAdapter, { from: accounts[0] });
   adapters.push([PieDAOPieAdapter.address, PieDAOStakingAdapter.address]);
@@ -1312,8 +1387,9 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(TokenSetsAdapter, { from: accounts[0] });
-  adapters.push([TokenSetsAdapter.address]);
-  tokens.push([[]]);
+  await deployer.deploy(TokenSetsV2Adapter, { from: accounts[0] });
+  adapters.push([TokenSetsAdapter.address, TokenSetsV2Adapter.address]);
+  tokens.push([[], []]);
   protocolNames.push('TokenSets');
   metadata.push([
     'TokenSets',
@@ -1468,6 +1544,12 @@ module.exports = async (deployer, network, accounts) => {
         PieDAOPieTokenAdapter.address,
       );
     });
+  await deployer.deploy(PickleTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        PickleTokenAdapter.address,
+      );
+    });
   await deployer.deploy(PoolTogetherTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -1478,6 +1560,12 @@ module.exports = async (deployer, network, accounts) => {
     .then(() => {
       tokenAdapters.push(
         TokenSetsTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(TokenSetsV2TokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        TokenSetsV2TokenAdapter.address,
       );
     });
   await deployer.deploy(UniswapV1TokenAdapter, { from: accounts[0] })
@@ -1523,9 +1611,11 @@ module.exports = async (deployer, network, accounts) => {
           'MelonToken',
           'Masset',
           'Chi token',
+          'PickleJar',
           'PieDAO Pie Token',
           'PoolTogether pool',
           'SetToken',
+          'SetToken V2',
           'Uniswap V1 pool token',
           'Uniswap V2 pool token',
         ],
