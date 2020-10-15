@@ -26,7 +26,7 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  * Only the functions required for FinNexusTokenAdapter contract are added.
  */
 interface OptionsManagerV2 {
-    function getTokenNetworth() public view returns (uint256);
+    function getTokenNetworth() external view returns (uint256);
 }
 
 
@@ -35,7 +35,7 @@ interface OptionsManagerV2 {
  * Only the functions required for FinNexusTokenAdapter contract are added.
  */
 interface FNXOracle {
-    function getPrice(address asset) public view returns (uint256);
+    function getPrice(address asset) external view returns (uint256);
 }
 
 
@@ -46,12 +46,12 @@ interface FNXOracle {
  */
 contract TokenSetsTokenAdapter is TokenAdapter {
 
-    address public  constant optManager = 0xfa30ec96de9840a611fcb64e7312f97bde6e155a;
+    address public  constant optManager = 0xfa30ec96De9840A611FcB64e7312f97bdE6e155A;
     address public  constant oracle = 0x940b491905529542Ba3b56244A06B1EBE11e71F2;
 
-    address[] internal constant underlyingTokensAddresses = [0x0000000000000000000000000000000000000000,
-                                                             0xeF9Cd7882c067686691B6fF49e650b43AFBBCC6B,
-                                                             0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48];
+    address[] internal underlyingAddress = [0x0000000000000000000000000000000000000000,0xeF9Cd7882c067686691B6fF49e650b43AFBBCC6B,0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48];
+                                                           //  ,
+                                                           //  ];
     /**
      * @return TokenMetadata struct with ERC20-style token info.
      * @dev Implementation of TokenAdapter interface function.
@@ -70,13 +70,14 @@ contract TokenSetsTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        Component[] memory underlyingTokens = new Component[](underlyingTokens.length);
+        
+        Component[] memory underlyingTokens = new Component[](underlyingAddress.length);
 
         for (uint256 i = 0; i < underlyingTokens.length; i++) {
             uint256 fptWorth = OptionsManagerV2(optManager).getTokenNetworth();
-            uint256 tokenPrice = FNXOracel(oracle).getPrice();
+            uint256 tokenPrice = FNXOracle(oracle).getPrice(underlyingAddress[i]);
             underlyingTokens[i] = Component({
-                token: components[i],
+                token: i==0?0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE:underlyingAddress[i],
                 tokenType: "ERC20",
                 rate: tokenPrice/fptWorth
             });
