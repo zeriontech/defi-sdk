@@ -76,6 +76,13 @@ contract FinNexusTokenAdapter is TokenAdapter {
         for (uint256 i = 0; i < underlyingTokens.length; i++) {
             uint256 fptWorth = OptionsManagerV2(optManager).getTokenNetworth();
             uint256 tokenPrice = FNXOracle(oracle).getPrice(underlyingAddress[i]);
+            
+            if(i==2) {
+                tokenPrice = 1e6 * tokenPrice;
+            } else {
+                tokenPrice = 1e18 * tokenPrice;
+            }
+            
             underlyingTokens[i] = Component({
                 token: i==0?0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE:underlyingAddress[i],
                 tokenType: "ERC20",
