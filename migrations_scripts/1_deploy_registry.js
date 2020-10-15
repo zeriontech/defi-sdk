@@ -1,5 +1,5 @@
-const AdapterRegistry = artifacts.require('AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
 
 module.exports = (deployer, network, accounts) => {
-  deployer.deploy(AdapterRegistry, { from: accounts[0] });
+  deployer.deploy(ProtocolAdapterRegistry, { from: accounts[0] });
 };

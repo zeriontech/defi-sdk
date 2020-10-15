@@ -6,18 +6,18 @@ const TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const CompoundTokenAdapter = artifacts.require('./CompoundTokenAdapter');
 
 const ZERO = '0x0000000000000000000000000000000000000000';
-const ZERO_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000000000000'
+const ZERO_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const ONE = '0x1111111111111111111111111111111111111111';
 const TWO = '0x2222222222222222222222222222222222222222';
 
-contract('TokenAdapterRegistry', () => {
+contract.only('TokenAdapterRegistry', () => {
   const cDAIAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
-  const cDAIHash = '0x3f1d4a4e2a03855c7ee8f6f2477c1245752a5ca3ef28d59e8fd509efe59ef877'
-  const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
-  const cUSDCHash = '0x37ead445e87de4842ff3f791ad73f3c3d1fd963d5b7a1735f8d3490547152074'
-  const cETHAddress = '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5';
-  const cETHHash = '0x5ee0e4991c3aedc27dca3ab6f3fe0dd810e281c6565e68ba93cb62ee6bd6d858'
-  const univ2Hash = '0x5b83bdbcc56b2e630f2807bbadd2b0c21619108066b92a58de081261089e9ce5'
+  const cDAIHash = '0x3f1d4a4e2a03855c7ee8f6f2477c1245752a5ca3ef28d59e8fd509efe59ef877';
+  //  const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
+  //  const cUSDCHash = '0x37ead445e87de4842ff3f791ad73f3c3d1fd963d5b7a1735f8d3490547152074';
+  //  const cETHAddress = '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5';
+  //  const cETHHash = '0x5ee0e4991c3aedc27dca3ab6f3fe0dd810e281c6565e68ba93cb62ee6bd6d858';
+  //  const univ2Hash = '0x5b83bdbcc56b2e630f2807bbadd2b0c21619108066b92a58de081261089e9ce5';
 
   let accounts;
   let tokenAdapterRegistry;
@@ -712,7 +712,7 @@ contract('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       }));
-    });
+  });
 
   it('should remove token adapter name by token by the owner', async () => {
     await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
@@ -828,7 +828,7 @@ contract('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       }));
-    });
+  });
 
   it('should remove token adapter name by hash by the owner', async () => {
     await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
@@ -1251,11 +1251,11 @@ contract('TokenAdapterRegistry', () => {
 
   it('should get token hash', async () => {
     await tokenAdapterRegistry.methods.getTokenHash(
-      cDAIAddress
+      cDAIAddress,
     )
       .call()
       .then((result) => {
-        console.log(`contract hash is ${result}`)
+        console.log(`contract hash is ${result}`);
         assert.equal(result, cDAIHash);
       });
   });
@@ -1270,7 +1270,7 @@ contract('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.['getFullTokenBalances(address[])'](
+    await tokenAdapterRegistry.methods['getFullTokenBalances(address[])'](
       [cDAIAddress],
     )
       .call()
@@ -1295,7 +1295,7 @@ contract('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.['getFullTokenBalances((address,int256)[])'](
+    await tokenAdapterRegistry.methods['getFullTokenBalances((address,int256)[])'](
       [
         [cDAIAddress, '50000000'],
       ],
@@ -1323,7 +1323,7 @@ contract('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.['getFinalFullTokenBalances(address[])'](
+    await tokenAdapterRegistry.methods['getFinalFullTokenBalances(address[])'](
       [cDAIAddress],
     )
       .call()
@@ -1349,7 +1349,7 @@ contract('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.['getFinalFullTokenBalances((address,int256)[])'](
+    await tokenAdapterRegistry.methods['getFinalFullTokenBalances((address,int256)[])'](
       [
         [cDAIAddress, '50000000'],
       ],

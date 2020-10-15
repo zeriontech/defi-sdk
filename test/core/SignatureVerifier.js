@@ -18,7 +18,7 @@ async function signTypedData(account, data) {
   });
 }
 
-contract('SignatureVerifier', () => {
+contract.only('SignatureVerifier', () => {
   let accounts;
   let signatureVerifier;
   let sign;
@@ -40,96 +40,96 @@ contract('SignatureVerifier', () => {
     await SignatureVerifier.new('0x0000000000000000000000000000000000000001', { from: accounts[0] })
       .then((result) => {
         signatureVerifier = result.contract;
-        sign = async function(transactionData) {
-  const typedData = {
-    types: {
-      EIP712Domain: [
-        { name: 'name', type: 'string' },
-        { name: 'verifyingContract', type: 'address' },
-      ],
-      TransactionData: [
-        { name: 'actions', type: 'Action[]' },
-        { name: 'inputs', type: 'TokenAmount[]' },
-        { name: 'fee', type: 'Fee' },
-        { name: 'requiredOutputs', type: 'AbsoluteTokenAmount[]' },
-        { name: 'salt', type: 'uint256' },
-      ],
-      Action: [
-        { name: 'protocolAdapterName', type: 'bytes32' },
-        { name: 'actionType', type: 'uint8' },
-        { name: 'tokenAmounts', type: 'TokenAmount[]' },
-        { name: 'data', type: 'bytes' },
-      ],
-      TokenAmount: [
-        { name: 'token', type: 'address' },
-        { name: 'amount', type: 'uint256' },
-        { name: 'amountType', type: 'uint8' },
-      ],
-      Fee: [
-        { name: 'share', type: 'uint256' },
-        { name: 'beneficiary', type: 'address' },
-      ],
-      AbsoluteTokenAmount: [
-        { name: 'token', type: 'address' },
-        { name: 'amount', type: 'uint256' },
-      ],
-    },
-    domain: {
-      name: 'Zerion Router',
-      verifyingContract: signatureVerifier.options.address,
-    },
-    primaryType: 'TransactionData',
-    message: transactionData,
-  };
+        sign = async function (transactionData) {
+          const typedData = {
+            types: {
+              EIP712Domain: [
+                { name: 'name', type: 'string' },
+                { name: 'verifyingContract', type: 'address' },
+              ],
+              TransactionData: [
+                { name: 'actions', type: 'Action[]' },
+                { name: 'inputs', type: 'TokenAmount[]' },
+                { name: 'fee', type: 'Fee' },
+                { name: 'requiredOutputs', type: 'AbsoluteTokenAmount[]' },
+                { name: 'salt', type: 'uint256' },
+              ],
+              Action: [
+                { name: 'protocolAdapterName', type: 'bytes32' },
+                { name: 'actionType', type: 'uint8' },
+                { name: 'tokenAmounts', type: 'TokenAmount[]' },
+                { name: 'data', type: 'bytes' },
+              ],
+              TokenAmount: [
+                { name: 'token', type: 'address' },
+                { name: 'amount', type: 'uint256' },
+                { name: 'amountType', type: 'uint8' },
+              ],
+              Fee: [
+                { name: 'share', type: 'uint256' },
+                { name: 'beneficiary', type: 'address' },
+              ],
+              AbsoluteTokenAmount: [
+                { name: 'token', type: 'address' },
+                { name: 'amount', type: 'uint256' },
+              ],
+            },
+            domain: {
+              name: 'Zerion Router',
+              verifyingContract: signatureVerifier.options.address,
+            },
+            primaryType: 'TransactionData',
+            message: transactionData,
+          };
 
-  return signTypedData(accounts[0], typedData);
-}
+          return signTypedData(accounts[0], typedData);
+        };
       });
   });
 
   it('should be correct signer', async () => {
     const signature = await sign(
-    {
-      actions: [
-        {
-          protocolAdapterName: UNISWAP_EXCHANGE_ADAPTER,
-          actionType: 1,
-          tokenAmounts: [
-            {
-              token: daiAddress,
-              amount: web3.utils.toWei('1', 'ether'),
-              amountType: 2,
-            },
-          ],
-          data: web3.eth.abi.encodeParameter(
-            'address[]',
-            [
-              daiAddress,
-              wethAddress,
+      {
+        actions: [
+          {
+            protocolAdapterName: UNISWAP_EXCHANGE_ADAPTER,
+            actionType: 1,
+            tokenAmounts: [
+              {
+                token: daiAddress,
+                amount: web3.utils.toWei('1', 'ether'),
+                amountType: 2,
+              },
             ],
-          ),
+            data: web3.eth.abi.encodeParameter(
+              'address[]',
+              [
+                daiAddress,
+                wethAddress,
+              ],
+            ),
+          },
+        ],
+        inputs: [
+          {
+            token: daiAddress,
+            amount: web3.utils.toWei('1', 'ether'),
+            amountType: 2,
+          },
+        ],
+        fee: {
+          share: 0,
+          beneficiary: ZERO,
         },
-      ],
-      inputs: [
-        {
-          token: daiAddress,
-          amount: web3.utils.toWei('1', 'ether'),
-          amountType: 2,
-        },
-      ],
-      fee: {
-        share: 0,
-        beneficiary: ZERO,
+        requiredOutputs: [
+          {
+            token: wethAddress,
+            amount: web3.utils.toWei('1', 'ether'),
+          },
+        ],
+        salt: 0,
       },
-      requiredOutputs: [
-        {
-          token: wethAddress,
-          amount: web3.utils.toWei('1', 'ether'),
-        },
-      ],
-      salt: 0,
-    },
-  );
+    );
     await signatureVerifier.methods.hashData(
       [
         [
@@ -241,7 +241,7 @@ contract('SignatureVerifier', () => {
       .then(async (hash) => {
         await signatureVerifier.methods.getAccountFromSignature(
           hash,
-          signature + '01',
+          `${signature}01`,
         )
           .call()
           .then((result) => {

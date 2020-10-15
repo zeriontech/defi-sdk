@@ -44,7 +44,7 @@ contract MockAdapter is ProtocolAdapter {
         override
         returns (int256)
     {
-        require(token == address(this));
+        require(token == address(this), "M: Wrong token!");
         return balanceOf[account];
     }
 }

@@ -19,7 +19,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('Core + Router', () => {
+contract.only('Core + Router', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
@@ -280,7 +280,7 @@ contract('Core + Router', () => {
         ],
         // outputs
         [
-          [wethAddress, web3.utils.toWei('2', 'ether'),]
+          [wethAddress, web3.utils.toWei('2', 'ether')],
         ],
       )
         .send({

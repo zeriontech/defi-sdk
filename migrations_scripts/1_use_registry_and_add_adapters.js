@@ -35,7 +35,7 @@ const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const WethTokenAdapter = artifacts.require('WethTokenAdapter');
-const AdapterRegistry = artifacts.require('AdapterRegistry');
+const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
 
 const aDaiAddress = '0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d';
 const aTusdAddress = '0x4DA9b813057D04BAef4e5800E36083717b4a0341';
@@ -569,7 +569,7 @@ module.exports = async (deployer, network, accounts) => {
         WethTokenAdapter.address,
       );
     });
-  await AdapterRegistry.at('0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672')
+  await ProtocolAdapterRegistry.at('0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672')
     .then(async (registry) => {
       await registry.contract.methods.addProtocolAdapters(
         protocolNames,
