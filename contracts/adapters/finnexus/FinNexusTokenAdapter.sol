@@ -44,7 +44,7 @@ interface FNXOracle {
  * @dev Implementation of TokenAdapter interface.
  * @author jeffqg123 <forestjqg@163.com>
  */
-contract TokenSetsTokenAdapter is TokenAdapter {
+contract FinNexusTokenAdapter is TokenAdapter {
 
     address public  constant optManager = 0xfa30ec96De9840A611FcB64e7312f97bdE6e155A;
     address public  constant oracle = 0x940b491905529542Ba3b56244A06B1EBE11e71F2;
@@ -69,7 +69,7 @@ contract TokenSetsTokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter interface function.
      */
-    function getComponents(address token) external view override returns (Component[] memory) {
+    function getComponents(address) external view override returns (Component[] memory) {
         
         Component[] memory underlyingTokens = new Component[](underlyingAddress.length);
 
