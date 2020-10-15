@@ -576,6 +576,11 @@ contract('ProtocolAdapterRegistry', () => {
           ],
         );
       });
+    await protocolAdapterRegistry.methods.getBalances(accounts[1])
+      .call()
+      .then((result) => {
+        assert.equal(result.length, 0);
+      });
     //    await protocolAdapterRegistry.methods.getFullTokenBalances(
     //      [[
     //        web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),

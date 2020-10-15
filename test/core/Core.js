@@ -305,7 +305,31 @@ contract('Core + Router', () => {
         ],
         // outputs
         [],
-        accounts[0]
+        accounts[0],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+          value: web3.utils.toWei('1', 'ether'),
+        }));
+    });
+
+    it('should not execute action with zero account', async () => {
+      await expectRevert(core.methods.executeActions(
+        // actions
+        [
+          [
+            web3.utils.toHex('Weth'),
+            ACTION_DEPOSIT,
+            [
+              [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
+            ],
+            EMPTY_BYTES,
+          ],
+        ],
+        // outputs
+        [],
+        ZERO,
       )
         .send({
           from: accounts[0],
