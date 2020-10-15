@@ -164,11 +164,11 @@ contract.only('SignatureVerifier', () => {
           });
         await signatureVerifier.methods.isHashUsed(
           hash,
-          accounts[0]
+          accounts[0],
         )
           .call()
           .then((result) => {
-            assert.equal('false', result);
+            assert.equal(false, result);
           });
       });
   });
