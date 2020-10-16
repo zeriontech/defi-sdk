@@ -1,5 +1,6 @@
 {
   "extends": "solhint:all",
+  "plugins": ["prettier"],
   "rules": {
     "mark-callable-contracts": [
       "off"
@@ -24,6 +25,7 @@
     "func-visibility": [
       "warn",
       { "ignoreConstructors": true }
-    ]
+    ],
+    "prettier/prettier": "warn"
   }
 }

@@ -239,64 +239,68 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
         internal
         returns (Component[] memory)
     {
-        uint256 totalLength = getFinalComponentsNumber(tokenBalance, true);
-        Component[] memory finalTokens = new Component[](totalLength);
-        uint256 length;
-        uint256 init = 0;
+        uint256 counter = 0;
+
+        uint256 finalComponentsLength = getFinalComponentsLength(tokenBalance, true);
+        Component[] memory finalComponents = new Component[](finalComponentsLength);
 
         Component[] memory components = getComponents(tokenBalance);
-        Component[] memory finalComponents;
+        uint256 componentsLength = components.length;
 
-        for (uint256 i = 0; i < components.length; i++) {
-            finalComponents = getFinalComponents(
+        Component[] memory tempComponents;
+        uint256 tempComponentsLength;
+
+        
+        for (uint256 i = 0; i < componentsLength; i++) {
+            tempComponents = getFinalComponents(
                 TokenBalance({
                     token: components[i].token,
                     amount: components[i].rate * tokenBalance.amount / int256(1e18)
                 })
             );
 
-            length = finalComponents.length;
+            tempComponentsLength = tempComponents.length;
 
-            if (length == 0) {
-                finalTokens[init] = components[i];
-                init = init + 1;
+            if (tempComponentsLength == 0) {
+                finalComponents[counter] = components[i];
+                counter = counter + 1;
             } else {
-                for (uint256 j = 0; j < length; j++) {
-                    finalTokens[init + j] = finalComponents[j];
+                for (uint256 j = 0; j < tempComponentsLength; j++) {
+                    finalComponents[counter + j] = tempComponents[j];
                 }
 
-                init = init + length;
+                counter = counter + tempComponentsLength;
             }
         }
 
-        return finalTokens;
+        return finalComponents;
     }
 
     /**
      * @param tokenBalance TokenBalance struct consisting of
      * token address and absolute amount.
-     * @param initial Whether the function call is initial or recursive.
+     * @param counterial Whether the function call is counterial or recursive.
      * @return Final tokens number by absolute token amount.
      */
-    function getFinalComponentsNumber(
+    function getFinalComponentsLength(
         TokenBalance memory tokenBalance,
-        bool initial
+        bool counterial
     )
         internal
         returns (uint256)
     {
-        uint256 totalLength = 0;
+        uint256 finalComponentsLength = 0;
         Component[] memory components = getComponents(tokenBalance);
 
         if (components.length == 0) {
-            return initial ? uint256(0) : uint256(1);
+            return counterial ? uint256(0) : uint256(1);
         }
 
         for (uint256 i = 0; i < components.length; i++) {
-            totalLength = totalLength + getFinalComponentsNumber(tokenBalance, false);
+            finalComponentsLength = finalComponentsLength + getFinalComponentsLength(tokenBalance, false);
         }
 
-        return totalLength;
+        return finalComponentsLength;
     }
 
     /**
@@ -311,8 +315,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
         internal
         returns (Component[] memory)
     {
-        bytes32 tokenAdapterName = getTokenAdapterNameByToken(tokenBalance.token);
-        address tokenAdapter = _tokenAdapterAddress[tokenAdapterName];
+        address tokenAdapter = getTokenAdapter(tokenBalance.token);
         Component[] memory components;
 
         if (tokenAdapter == address(0)) {
@@ -343,8 +346,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
         view
         returns (TokenBalanceMeta memory)
     {
-        bytes32 tokenAdapterName = getTokenAdapterNameByToken(tokenBalance.token);
-        address tokenAdapter = _tokenAdapterAddress[tokenAdapterName];
+        address tokenAdapter = getTokenAdapter(tokenBalance.token);
         ERC20Metadata memory erc20metadata;
 
         if (tokenAdapter == address(0)) {
@@ -373,5 +375,19 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
             tokenBalance: tokenBalance,
             erc20metadata: erc20metadata
         });
+    }
+    
+    function getTokenAdapter(
+        address token
+    )
+        internal
+        view
+        returns (address)
+    {
+        bytes32 hash = getTokenHash(token);
+        bytes32 tokenAdapterName = _tokenAdapterName[hash];
+        address tokenAdapter = _tokenAdapterAddress[tokenAdapterName];
+
+        return tokenAdapter;
     }
 }

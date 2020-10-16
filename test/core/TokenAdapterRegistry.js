@@ -424,109 +424,8 @@ contract.only('TokenAdapterRegistry', () => {
       });
   });
 
-  it('should not add token adapter name by hash not by the owner', async () => {
-    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[1],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add token adapter name by hash with empty list', async () => {
-    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add token adapter name by hash with inconsistent lists', async () => {
-    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add token adapter name by hash with zero hash', async () => {
-    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [ZERO_BYTES32],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add token adapter name by hash with zero name', async () => {
-    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [ZERO_BYTES32],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not add token adapter name by hash for existing one', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should add token adapter name by hash by the owner', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
-      .call()
-      .then((result) => {
-        assert.equal(
-          result,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
-        );
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
-      .call()
-      .then((result) => {
-        assert.equal(
-          result,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
-        );
-      });
-  });
-
   it('should not add token adapter name by token by the owner', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -537,7 +436,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not add token adapter name by token not by the owner', async () => {
-    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -548,7 +447,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not add token adapter name by token with zero address', async () => {
-    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNames(
       [ZERO],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -559,7 +458,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not add token adapter name by token with zero name', async () => {
-    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [ZERO_BYTES32],
     )
@@ -570,7 +469,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not add token adapter name by token with empty list', async () => {
-    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNames(
       [],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -581,7 +480,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not add token adapter name by token with inconsistent lists', async () => {
-    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [],
     )
@@ -592,7 +491,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not add token adapter name by existing token', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -600,7 +499,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -611,7 +510,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should add token adapter name by token by the owner', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -619,7 +518,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(
@@ -630,7 +529,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not remove token adapter name by token not by the owner', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -638,7 +537,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(
@@ -646,7 +545,7 @@ contract.only('TokenAdapterRegistry', () => {
           web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
         );
       });
-    await expectRevert(tokenAdapterRegistry.methods.removeTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.removeTokenAdapterNames(
       [cDAIAddress],
     )
       .send({
@@ -656,7 +555,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not remove token adapter name by token with empty list', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -664,7 +563,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(
@@ -672,7 +571,7 @@ contract.only('TokenAdapterRegistry', () => {
           web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
         );
       });
-    await expectRevert(tokenAdapterRegistry.methods.removeTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.removeTokenAdapterNames(
       [],
     )
       .send({
@@ -682,7 +581,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not remove token adapter name by token with removed name', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -690,7 +589,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(
@@ -698,14 +597,14 @@ contract.only('TokenAdapterRegistry', () => {
           web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
         );
       });
-    await tokenAdapterRegistry.methods.removeTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.removeTokenAdapterNames(
       [cDAIAddress],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await expectRevert(tokenAdapterRegistry.methods.removeTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.removeTokenAdapterNames(
       [cDAIAddress],
     )
       .send({
@@ -715,7 +614,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should remove token adapter name by token by the owner', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -723,7 +622,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(
@@ -731,130 +630,14 @@ contract.only('TokenAdapterRegistry', () => {
           web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
         );
       });
-    await tokenAdapterRegistry.methods.removeTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.removeTokenAdapterNames(
       [cDAIAddress],
     )
       .send({
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
-      .call()
-      .then((result) => {
-        assert.equal(result, ZERO_BYTES32);
-      });
-  });
-
-  it('should not remove token adapter name by hash not by the owner', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
-      .call()
-      .then((result) => {
-        assert.equal(
-          result,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
-        );
-      });
-    await expectRevert(tokenAdapterRegistry.methods.removeTokenAdapterNamesByHashes(
-      [cDAIHash],
-    )
-      .send({
-        from: accounts[1],
-        gas: '300000',
-      }));
-  });
-
-  it('should not remove token adapter name by hash with empty list', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
-      .call()
-      .then((result) => {
-        assert.equal(
-          result,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
-        );
-      });
-    await expectRevert(tokenAdapterRegistry.methods.removeTokenAdapterNamesByHashes(
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not remove token adapter name by hash with removed name', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
-      .call()
-      .then((result) => {
-        assert.equal(
-          result,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
-        );
-      });
-    await tokenAdapterRegistry.methods.removeTokenAdapterNamesByHashes(
-      [cDAIHash],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await expectRevert(tokenAdapterRegistry.methods.removeTokenAdapterNamesByHashes(
-      [cDAIHash],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should remove token adapter name by hash by the owner', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
-      .call()
-      .then((result) => {
-        assert.equal(
-          result,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
-        );
-      });
-    await tokenAdapterRegistry.methods.removeTokenAdapterNamesByHashes(
-      [cDAIHash],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(result, ZERO_BYTES32);
@@ -862,7 +645,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not update token adapter name by token not by the owner', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -870,7 +653,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(
@@ -878,7 +661,7 @@ contract.only('TokenAdapterRegistry', () => {
           web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
         );
       });
-    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('New CToken'))],
     )
@@ -889,7 +672,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not update token adapter name by token with empty list', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -897,7 +680,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(
@@ -905,7 +688,7 @@ contract.only('TokenAdapterRegistry', () => {
           web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
         );
       });
-    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNames(
       [],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('New CToken'))],
     )
@@ -916,7 +699,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not update token adapter name by token with inconsistent lists', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -924,7 +707,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(
@@ -932,7 +715,7 @@ contract.only('TokenAdapterRegistry', () => {
           web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
         );
       });
-    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNames(
       [cDAIAddress],
       [],
     )
@@ -943,7 +726,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not update token adapter name by token with zero address', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -951,7 +734,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(
@@ -959,7 +742,7 @@ contract.only('TokenAdapterRegistry', () => {
           web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
         );
       });
-    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNames(
       [ZERO],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('New CToken'))],
     )
@@ -970,7 +753,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not update token adapter name by token with same name', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -978,7 +761,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(
@@ -986,7 +769,7 @@ contract.only('TokenAdapterRegistry', () => {
           web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
         );
       });
-    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -997,7 +780,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should not update token adapter name by token with zero name', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -1005,7 +788,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(
@@ -1013,7 +796,7 @@ contract.only('TokenAdapterRegistry', () => {
           web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
         );
       });
-    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNamesByTokens(
+    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNames(
       [cDAIAddress],
       [ZERO_BYTES32],
     )
@@ -1024,7 +807,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it('should update token adapter name by token by the owner', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -1032,7 +815,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(
@@ -1040,7 +823,7 @@ contract.only('TokenAdapterRegistry', () => {
           web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
         );
       });
-    await tokenAdapterRegistry.methods.updateTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.updateTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('New CToken'))],
     )
@@ -1048,201 +831,7 @@ contract.only('TokenAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByToken(cDAIAddress)
-      .call()
-      .then((result) => {
-        assert.equal(result, web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('New CToken')));
-      });
-  });
-
-  it('should not update token adapter name by hash not by the owner', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
-      .call()
-      .then((result) => {
-        assert.equal(
-          result,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
-        );
-      });
-    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('New CToken'))],
-    )
-      .send({
-        from: accounts[1],
-        gas: '300000',
-      }));
-  });
-
-  it('should not update token adapter name by hash with empty list', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
-      .call()
-      .then((result) => {
-        assert.equal(
-          result,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
-        );
-      });
-    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNamesByHashes(
-      [],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('New CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not update token adapter name by hash with inconsistent lists', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
-      .call()
-      .then((result) => {
-        assert.equal(
-          result,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
-        );
-      });
-    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not update token adapter name by hash with zero hash', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
-      .call()
-      .then((result) => {
-        assert.equal(
-          result,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
-        );
-      });
-    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNamesByHashes(
-      [ZERO_BYTES32],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('New CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not update token adapter name by hash with same name', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
-      .call()
-      .then((result) => {
-        assert.equal(
-          result,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
-        );
-      });
-    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should not update token adapter name by hash with zero name', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
-      .call()
-      .then((result) => {
-        assert.equal(
-          result,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
-        );
-      });
-    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [ZERO_BYTES32],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
-  it('should update token adapter name by hash by the owner', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
-      .call()
-      .then((result) => {
-        assert.equal(
-          result,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken')),
-        );
-      });
-    await tokenAdapterRegistry.methods.updateTokenAdapterNamesByHashes(
-      [cDAIHash],
-      [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('New CToken'))],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      });
-    await tokenAdapterRegistry.methods.getTokenAdapterNameByHash(cDAIHash)
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
       .call()
       .then((result) => {
         assert.equal(result, web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('New CToken')));
@@ -1262,7 +851,7 @@ contract.only('TokenAdapterRegistry', () => {
 
   // The following tests fail because of the issue in Truffle
   it('should get full token balance by tokens', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -1287,7 +876,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it.skip('should get full token balance by token balances', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -1315,7 +904,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it.skip('should get final full token balance by tokens', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )
@@ -1341,7 +930,7 @@ contract.only('TokenAdapterRegistry', () => {
   });
 
   it.skip('should get final full token balance by token balances', async () => {
-    await tokenAdapterRegistry.methods.addTokenAdapterNamesByTokens(
+    await tokenAdapterRegistry.methods.addTokenAdapterNames(
       [cDAIAddress],
       [web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('CToken'))],
     )

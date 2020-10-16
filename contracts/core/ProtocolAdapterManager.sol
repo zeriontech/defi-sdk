@@ -154,23 +154,23 @@ abstract contract ProtocolAdapterManager is Ownable {
     /**
      * @notice Adds a protocol adapter.
      * @param newProtocolAdapterName New protocol adapter's protocolAdapterName.
-     * @param newAddress New protocol adapter's address.
+     * @param newProtocolAdapterAddress New protocol adapter's address.
      * @param newSupportedTokens Array of the new protocol adapter's supported tokens.
      * Empty array is always allowed.
      */
     function addProtocolAdapter(
         bytes32 newProtocolAdapterName,
-        address newAddress,
+        address newProtocolAdapterAddress,
         address[] calldata newSupportedTokens
     )
         internal
     {
         require(newProtocolAdapterName != bytes32(0), "PAM: zero[1]");
-        require(newAddress != address(0), "PAM: zero[2]");
+        require(newProtocolAdapterAddress != address(0), "PAM: zero[2]");
         require(_protocolAdapterAddress[newProtocolAdapterName] == address(0), "PAM: exists");
 
         _protocolAdapterNames.push(newProtocolAdapterName);
-        _protocolAdapterAddress[newProtocolAdapterName] = newAddress;
+        _protocolAdapterAddress[newProtocolAdapterName] = newProtocolAdapterAddress;
         _protocolAdapterSupportedTokens[newProtocolAdapterName] = newSupportedTokens;
     }
 

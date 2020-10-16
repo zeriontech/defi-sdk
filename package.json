@@ -40,7 +40,10 @@
     "eslint-plugin-import": "2.20.2",
     "eth-gas-reporter": "0.2.17",
     "ganache-cli": "6.12.0",
+    "prettier": "2.1.2",
+    "prettier-plugin-solidity": "1.0.0-alpha.59",
     "solhint": "3.2.1",
+    "solhint-plugin-prettier": "0.0.5",
     "solidity-coverage": "0.7.11"
   }
 }

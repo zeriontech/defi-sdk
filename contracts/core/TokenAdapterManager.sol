@@ -58,46 +58,46 @@ abstract contract TokenAdapterManager is Ownable {
     /**
      * @notice Removes token adapters.
      * The function is callable only by the owner.
-     * @param names Array of the token adapters' names.
+     * @param tokenAdapterNames Array of the token adapters' names.
      */
     function removeTokenAdapters(
-        bytes32[] calldata names
+        bytes32[] calldata tokenAdapterNames
     )
         external
         onlyOwner
     {
-        uint256 length = names.length;
+        uint256 length = tokenAdapterNames.length;
         require(length != 0, "TAM: empty[2]");
 
         for (uint256 i = 0; i < length; i++) {
-            removeTokenAdapter(names[i]);
+            removeTokenAdapter(tokenAdapterNames[i]);
         }
     }
 
     /**
      * @notice Updates token adapters.
      * The function is callable only by the owner.
-     * @param names Array of the token adapters' names.
+     * @param tokenAdapterNames Array of the token adapters' names.
      * @param newTokenAdapterAddresses Array of the token adapters' new addresses.
      */
     function updateTokenAdapters(
-        bytes32[] calldata names,
+        bytes32[] calldata tokenAdapterNames,
         address[] calldata newTokenAdapterAddresses
     )
         external
         onlyOwner
     {
-        uint256 length = names.length;
+        uint256 length = tokenAdapterNames.length;
         require(length != 0, "TAM: empty[3]");
         require(length == newTokenAdapterAddresses.length, "TAM: lengths differ[2]");
 
         for (uint256 i = 0; i < length; i++) {
-            updateTokenAdapter(names[i], newTokenAdapterAddresses[i]);
+            updateTokenAdapter(tokenAdapterNames[i], newTokenAdapterAddresses[i]);
         }
     }
 
     /**
-     * @return Array of token adapter names.
+     * @return Array of token adapter's names.
      */
     function getTokenAdapterNames()
         external
@@ -108,17 +108,17 @@ abstract contract TokenAdapterManager is Ownable {
     }
 
     /**
-     * @param name Name of token adapter.
+     * @param tokenAdapterName Token adapter's name.
      * @return Address of token adapter.
      */
     function getTokenAdapterAddress(
-        bytes32 name
+        bytes32 tokenAdapterName
     )
         external
         view
         returns (address)
     {
-        return _tokenAdapterAddress[name];
+        return _tokenAdapterAddress[tokenAdapterName];
     }
 
     /**
@@ -141,18 +141,18 @@ abstract contract TokenAdapterManager is Ownable {
 
     /**
      * @notice Removes a token adapter.
-     * @param name Token adapter's name.
+     * @param tokenAdapterName Token adapter's name.
      */
     function removeTokenAdapter(
-        bytes32 name
+        bytes32 tokenAdapterName
     )
         internal
     {
-        require(_tokenAdapterAddress[name] != address(0), "TAM: does not exist[1]");
+        require(_tokenAdapterAddress[tokenAdapterName] != address(0), "TAM: does not exist[1]");
 
         uint256 length = _tokenAdapterNames.length;
         uint256 index = 0;
-        while (_tokenAdapterNames[index] != name) {
+        while (_tokenAdapterNames[index] != tokenAdapterName) {
             index++;
         }
 
@@ -162,24 +162,25 @@ abstract contract TokenAdapterManager is Ownable {
 
         _tokenAdapterNames.pop();
 
-        delete _tokenAdapterAddress[name];
+        delete _tokenAdapterAddress[tokenAdapterName];
     }
+
     /**
      * @notice Updates a token adapter.
-     * @param name Token adapter's name.
+     * @param tokenAdapterName Token adapter's name.
      * @param newTokenAdapterAddress Token adapter's new address.
      */
     function updateTokenAdapter(
-        bytes32 name,
+        bytes32 tokenAdapterName,
         address newTokenAdapterAddress
     )
         internal
     {
-        address oldAddress = _tokenAdapterAddress[name];
-        require(oldAddress != address(0), "TAM: does not exist[2]");
+        address oldTokenAdapterAddress = _tokenAdapterAddress[tokenAdapterName];
+        require(oldTokenAdapterAddress != address(0), "TAM: does not exist[2]");
         require(newTokenAdapterAddress != address(0), "TAM: zero[3]");
-        require(oldAddress != newTokenAdapterAddress, "TAM: same addresses");
+        require(oldTokenAdapterAddress != newTokenAdapterAddress, "TAM: same addresses");
 
-        _tokenAdapterAddress[name] = newTokenAdapterAddress;
+        _tokenAdapterAddress[tokenAdapterName] = newTokenAdapterAddress;
     }
 }

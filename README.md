@@ -196,13 +196,21 @@ If you discover a security vulnerability within DeFi SDK, please send us an e-ma
 
 This project uses Truffle and web3js for all Ethereum interactions and testing.
 
+#### Set environment
+Rename `.env.sample` file to `.env`, and fill in the env variables. 
+
+`MNEMONIC` and `INFURA_API_KEY` are required for `core` and `adapters` tests. 
+`PRIVATE_KEY` is required for `interactiveAdapters` tests.
+
 #### Compile contracts
 
 `npm run compile`
 
 #### Run tests
 
-`npm run test`
+`npm run test:core` for `core` tests.
+`npm run test:adapters` for `adapters` tests.
+`npm run test:interactiveAdapters` for `interactiveAdapters` tests.
 
 #### Run Solidity code coverage
 
@@ -218,11 +226,7 @@ Currently, unsupported files are ignored.
 
 #### Run all the migrations scripts
 
-`npm run deploy:network`, `network` is either `development` or `mainnet`
-
-#### Verify contract's code on Etherscan
-
-`truffle run verify ContractName@0xcontractAddress --network mainnet`
+`npm run deploy:network`, `network` is either `development` or `mainnet`.
 
 ## License
 
