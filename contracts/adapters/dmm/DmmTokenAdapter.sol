@@ -22,7 +22,6 @@ import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
-
 /**
  * @dev IDmmToken contract interface.
  * Only the functions required for DmmTokenAdapter contract are added.
@@ -31,9 +30,9 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  */
 interface IDmmController {
     function getUnderlyingTokenForDmm(address dmmToken) external view returns (address);
-    function getExchangeRate(address dmmToken) external view returns (uint);
-}
 
+    function getExchangeRate(address dmmToken) external view returns (uint256);
+}
 
 /**
  * @dev IDmmToken contract interface.
@@ -45,14 +44,12 @@ interface IDmmToken {
     function controller() external view returns (IDmmController);
 }
 
-
 /**
  * @title Token adapter for IDmmTokens.
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Corey Caplan <corey@dolomite.io>
  */
 contract DmmTokenAdapter is TokenAdapter {
-
     /**
      * @return Array of Component structs with underlying tokens rates for the given asset.
      * @dev Implementation of TokenAdapter abstract contract function.

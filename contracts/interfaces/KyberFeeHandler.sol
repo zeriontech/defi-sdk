@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev KyberFeeHandler contract interface.
  * Only the functions required for KyberAssetAdapter contract are added.
@@ -27,5 +26,6 @@ pragma experimental ABIEncoderV2;
  */
 interface KyberFeeHandler {
     function hasClaimedReward(address, uint32) external view returns (bool);
+
     function rewardsPerEpoch(uint32) external view returns (uint256);
 }

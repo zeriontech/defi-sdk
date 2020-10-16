@@ -24,14 +24,12 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 import { RebalancingSetToken } from "../../interfaces/RebalancingSetToken.sol";
 import { SetToken } from "../../interfaces/SetToken.sol";
 
-
 /**
  * @title Token adapter for TokenSets.
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract TokenSetsTokenAdapter is TokenAdapter {
-
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     /**
@@ -42,7 +40,7 @@ contract TokenSetsTokenAdapter is TokenAdapter {
         RebalancingSetToken rebalancingSetToken = RebalancingSetToken(token);
         uint256 rebalancingUnitShare = rebalancingSetToken.unitShares();
         uint256 rebalancingNaturalUnit = rebalancingSetToken.naturalUnit();
-        uint256 rebalancingRate = 1e18 / rebalancingNaturalUnit * rebalancingUnitShare;
+        uint256 rebalancingRate = (1e18 / rebalancingNaturalUnit) * rebalancingUnitShare;
 
         SetToken baseSetToken = SetToken(rebalancingSetToken.currentSet());
         uint256[] memory baseUnitShares = baseSetToken.getUnits();
@@ -54,7 +52,7 @@ contract TokenSetsTokenAdapter is TokenAdapter {
         for (uint256 i = 0; i < baseComponents.length; i++) {
             components[i] = Component({
                 token: baseComponents[i],
-                rate: int256(rebalancingRate / baseNaturalUnit * baseUnitShares[i])
+                rate: int256((rebalancingRate / baseNaturalUnit) * baseUnitShares[i])
             });
         }
 

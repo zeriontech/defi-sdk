@@ -19,7 +19,6 @@ pragma solidity 0.7.1;
 
 import "./ERC20.sol";
 
-
 /**
  * @title SafeERC20
  * @dev Wrappers around ERC20 operations that throw on failure (when the token contract
@@ -29,22 +28,15 @@ import "./ERC20.sol";
  * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
  */
 library SafeERC20 {
-
     function safeTransfer(
         ERC20 token,
         address to,
         uint256 value,
         string memory location
-    )
-        internal
-    {
+    ) internal {
         callOptionalReturn(
             token,
-            abi.encodeWithSelector(
-                token.transfer.selector,
-                to,
-                value
-            ),
+            abi.encodeWithSelector(token.transfer.selector, to, value),
             "transfer",
             location
         );
@@ -56,17 +48,10 @@ library SafeERC20 {
         address to,
         uint256 value,
         string memory location
-    )
-        internal
-    {
+    ) internal {
         callOptionalReturn(
             token,
-            abi.encodeWithSelector(
-                token.transferFrom.selector,
-                from,
-                to,
-                value
-            ),
+            abi.encodeWithSelector(token.transferFrom.selector, from, to, value),
             "transferFrom",
             location
         );
@@ -77,9 +62,7 @@ library SafeERC20 {
         address spender,
         uint256 value,
         string memory location
-    )
-        internal
-    {
+    ) internal {
         require(
             (value == 0) || (token.allowance(address(this), spender) == 0),
             "SafeERC20: bad approve call"
@@ -105,9 +88,7 @@ library SafeERC20 {
         bytes memory data,
         string memory functionName,
         string memory location
-    )
-        private
-    {
+    ) private {
         // We need to perform a low level call here, to bypass Solidity's return data size checking
         // mechanism, since we're implementing it ourselves.
 
@@ -119,26 +100,15 @@ library SafeERC20 {
         (bool success, bytes memory returndata) = address(token).call(data);
         require(
             success,
-            string(
-                abi.encodePacked(
-                    "SafeERC20: ",
-                    functionName,
-                    " failed in ",
-                    location
-                )
-            )
+            string(abi.encodePacked("SafeERC20: ", functionName, " failed in ", location))
         );
 
-        if (returndata.length > 0) { // Return data is optional
+        if (returndata.length > 0) {
+            // Return data is optional
             require(
                 abi.decode(returndata, (bool)),
                 string(
-                    abi.encodePacked(
-                        "SafeERC20: ",
-                        functionName,
-                        " returned false in ",
-                        location
-                    )
+                    abi.encodePacked("SafeERC20: ", functionName, " returned false in ", location)
                 )
             );
         }

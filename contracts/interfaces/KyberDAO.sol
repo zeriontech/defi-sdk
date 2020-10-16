@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev KyberDAO contract interface.
  * Only the functions required for KyberAssetAdapter contract are added.
@@ -27,11 +26,9 @@ pragma experimental ABIEncoderV2;
  */
 interface KyberDAO {
     function getCurrentEpochNumber() external view returns (uint32);
-    function getPastEpochRewardPercentageInPrecision(
-        address,
-        uint32
-    )
-    external
-    view
-    returns (uint256);
+
+    function getPastEpochRewardPercentageInPrecision(address, uint32)
+        external
+        view
+        returns (uint256);
 }

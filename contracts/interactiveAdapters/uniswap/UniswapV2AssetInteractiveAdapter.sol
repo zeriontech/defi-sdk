@@ -25,7 +25,6 @@ import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { UniswapV2Pair } from "../../interfaces/UniswapV2Pair.sol";
 
-
 /**
  * @title Interactive adapter for Uniswap V2 protocol (liquidity).
  * @dev Implementation of InteractiveAdapter abstract contract.
@@ -45,10 +44,7 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
      * @return tokensToBeWithdrawn Array with one element - UNI-token (pair) address.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata data
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
@@ -71,20 +67,20 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
             (reserve1, reserve0) = UniswapV2Pair(pair).getReserves();
         }
 
-        uint256 amount1Optimal = amount0 * reserve1 / reserve0;
+        uint256 amount1Optimal = (amount0 * reserve1) / reserve0;
         if (amount1Optimal < amount1) {
             amount1 = amount1Optimal;
         } else if (amount1Optimal > amount1) {
-            amount0 = amount1 * reserve0 / reserve1;
+            amount0 = (amount1 * reserve0) / reserve1;
         }
 
         ERC20(tokenAmounts[0].token).safeTransfer(pair, amount0, "ULIA[1]");
         ERC20(tokenAmounts[1].token).safeTransfer(pair, amount1, "ULIA[2]");
 
-        try UniswapV2Pair(pair).mint(
-            address(this)
-        ) returns (uint256) { // solhint-disable-line no-empty-blocks
-        } catch Error(string memory reason) {
+        // solhint-disable-next-line no-empty-blocks
+        try UniswapV2Pair(pair).mint(address(this)) returns (uint256) {} catch Error(
+            string memory reason
+        ) {
             revert(reason);
         } catch {
             revert("ULIA: deposit fail");
@@ -98,10 +94,7 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
      * @return tokensToBeWithdrawn Array with two elements - underlying tokens.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata
-    )
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
@@ -118,10 +111,10 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
 
         ERC20(token).safeTransfer(token, amount, "ULIA[3]");
 
-        try UniswapV2Pair(token).burn(
-            address(this)
-        ) returns (uint256, uint256) { // solhint-disable-line no-empty-blocks
-        } catch Error(string memory reason) {
+        // solhint-disable-next-line no-empty-blocks
+        try UniswapV2Pair(token).burn(address(this)) returns (uint256, uint256) {} catch Error(
+            string memory reason
+        ) {
             revert(reason);
         } catch {
             revert("ULIA: withdraw fail");

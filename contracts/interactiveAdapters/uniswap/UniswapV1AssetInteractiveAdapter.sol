@@ -26,7 +26,6 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { Exchange } from "../../interfaces/Exchange.sol";
 import { Factory } from "../../interfaces/Factory.sol";
 
-
 /**
  * @title Interactive adapter for Uniswap V1 protocol (liquidity).
  * @dev Implementation of InteractiveAdapter abstract contract.
@@ -44,10 +43,7 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
      * @return tokensToBeWithdrawn Array with tokens sent back.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
@@ -68,12 +64,14 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
 
         ERC20(token).safeApprove(exchange, tokenAmount, "ULIA[1]");
 
-        try Exchange(exchange).addLiquidity{value: ethAmount}(
-            uint256(1),
-            tokenAmount,
-            // solhint-disable-next-line not-rely-on-time
-            block.timestamp + 1
-        ) returns (uint256 addedLiquidity) {
+        try
+            Exchange(exchange).addLiquidity{ value: ethAmount }(
+                uint256(1),
+                tokenAmount,
+                // solhint-disable-next-line not-rely-on-time
+                block.timestamp + 1
+            )
+        returns (uint256 addedLiquidity) {
             require(addedLiquidity > 0, "ULIA: deposit fail[1]");
         } catch Error(string memory reason) {
             revert(reason);
@@ -91,10 +89,7 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
      * @return tokensToBeWithdrawn Array with on element - underlying token.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata
-    )
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
@@ -109,13 +104,16 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
         tokensToBeWithdrawn[0] = Factory(FACTORY).getToken(token);
         tokensToBeWithdrawn[1] = ETH;
 
-        try Exchange(token).removeLiquidity(
-            amount,
-            uint256(1),
-            uint256(1),
-            // solhint-disable-next-line not-rely-on-time
-            block.timestamp + 1
-        ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
+        try
+            Exchange(token).removeLiquidity(
+                amount,
+                uint256(1),
+                uint256(1),
+                // solhint-disable-next-line not-rely-on-time
+                block.timestamp + 1
+            )
+         {} catch Error(string memory reason) {
+            //solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
             revert("ULIA: withdraw fail");

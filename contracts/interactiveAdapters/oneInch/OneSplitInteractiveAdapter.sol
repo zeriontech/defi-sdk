@@ -24,7 +24,6 @@ import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
-
 /**
  * @dev OneSplit contract interface.
  * Only the functions required for OneSplitInteractiveAdapter contract are added.
@@ -39,21 +38,16 @@ interface OneSplit {
         uint256,
         uint256[] calldata,
         uint256
-    )
-        external
-        payable;
+    ) external payable;
+
     function getExpectedReturn(
         address,
         address,
         uint256,
         uint256,
         uint256
-    )
-        external
-        view
-        returns (uint256, uint256[] memory);
+    ) external view returns (uint256, uint256[] memory);
 }
-
 
 /**
  * @title Interactive adapter for OneSplit exchange.
@@ -73,10 +67,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
      * @return tokensToBeWithdrawn Array with one element - `toToken` address.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata data
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
@@ -109,10 +100,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
      * @notice Withdraw functionality is not supported.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(
-        TokenAmount[] calldata,
-        bytes calldata
-    )
+    function withdraw(TokenAmount[] calldata, bytes calldata)
         external
         payable
         override
@@ -121,16 +109,22 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
         revert("OSIA: no withdraw");
     }
 
-    function swap(address fromToken, address toToken, uint256 amount) internal {
+    function swap(
+        address fromToken,
+        address toToken,
+        uint256 amount
+    ) internal {
         uint256[] memory distribution;
 
-        try OneSplit(ONE_SPLIT).getExpectedReturn(
-            fromToken,
-            toToken,
-            amount,
-            uint256(1),
-            uint256(0x040df0) // 0x040dfc to enable curve; 0x04fdf0 to enable base exchanges;
-        ) returns (uint256, uint256[] memory result) {
+        try
+            OneSplit(ONE_SPLIT).getExpectedReturn(
+                fromToken,
+                toToken,
+                amount,
+                uint256(1),
+                uint256(0x040df0) // 0x040dfc to enable curve; 0x04fdf0 to enable base exchanges;
+            )
+        returns (uint256, uint256[] memory result) {
             distribution = result;
         } catch Error(string memory reason) {
             revert(reason);
@@ -139,14 +133,17 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
         }
 
         uint256 ethAmount = fromToken == address(0) ? amount : 0;
-        try OneSplit(ONE_SPLIT).swap{value: ethAmount}(
-            fromToken,
-            toToken,
-            amount,
-            uint256(1),
-            distribution,
-            uint256(0x040df0) // 0x040dfc to enable curve; 0x04fdf0 to enable base exchanges;
-        ) {} catch Error(string memory reason) { //solhint-disable-line no-empty-blocks
+        try
+            OneSplit(ONE_SPLIT).swap{ value: ethAmount }(
+                fromToken,
+                toToken,
+                amount,
+                uint256(1),
+                distribution,
+                uint256(0x040df0) // 0x040dfc to enable curve; 0x04fdf0 to enable base exchanges;
+            )
+         {} catch Error(string memory reason) {
+            //solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
             revert("OSIA: 1split fail[2]");

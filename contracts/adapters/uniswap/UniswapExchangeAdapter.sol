@@ -21,7 +21,6 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
-
 /**
  * @title Adapter for Uniswap V1/V2 protocol (exchange).
  * @dev Implementation of ProtocolAdapter abstract contract.
@@ -29,7 +28,6 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract UniswapExchangeAdapter is ProtocolAdapter {
-
     /**
      * @notice This function is unavailable for exchange adapter.
      * @dev Implementation of ProtocolAdapter abstract contract function.

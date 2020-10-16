@@ -16,12 +16,21 @@
     "test": "npm run test:core",
     "coverage": "node --max-old-space-size=4096 ./node_modules/.bin/truffle run coverage",
     "lint:solhint": "npx solhint \"./contracts/**/*.sol\"",
-    "lint:ethlint": "npx solium --dir contracts/",
     "lint:eslint": "eslint .",
     "lint": "npm run lint:solhint && npm run lint:eslint"
   },
-  "author": "",
-  "license": "ISC",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "contracts/**/*.sol": "npx prettier --write",
+    "test/**/*.js": "npx eslint --fix",
+    "migrations_scripts/*.js": "npx eslint --fix"
+  },
+  "author": "Zerion Inc.",
+  "license": "LGPL-3.0-only",
   "dependencies": {
     "@0x/sol-compiler": "4.1.1",
     "@babel/core": "7.11.6",
@@ -40,6 +49,9 @@
     "eslint-plugin-import": "2.20.2",
     "eth-gas-reporter": "0.2.17",
     "ganache-cli": "6.12.0",
+    "husky": "4.3.0",
+    "lint-staged": "10.4.1",
+    "mrm": "2.5.2",
     "prettier": "2.1.2",
     "prettier-plugin-solidity": "1.0.0-alpha.59",
     "solhint": "3.2.1",

@@ -20,7 +20,6 @@ pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
-
 /**
  * @title Adapter for OneSplit exchange.
  * @dev Implementation of ProtocolAdapter abstract contract.
@@ -28,7 +27,6 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract OneSplitAdapter is ProtocolAdapter {
-
     /**
      * @return Amount of Uniswap Pool Tokens held by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.

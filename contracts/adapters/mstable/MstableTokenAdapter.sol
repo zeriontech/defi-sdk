@@ -24,13 +24,11 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 import { Basset, BasketManager } from "../../interfaces/BasketManager.sol";
 import { ForgeValidator } from "../../interfaces/ForgeValidator.sol";
 
-
 /**
  * @title Token adapter for Masset.
  * @dev Implementation of TokenAdapter abstract contract.
  */
 contract MstableTokenAdapter is TokenAdapter {
-
     address internal constant BASKET_MANAGER = 0x66126B4aA2a1C07536Ef8E5e8bD4EfDA1FdEA96D;
     address internal constant FORGE_VALIDATOR = 0xbB90D06371030fFa150E463621c22950b212eaa1;
 
@@ -41,17 +39,11 @@ contract MstableTokenAdapter is TokenAdapter {
     function getComponents(address) external view override returns (Component[] memory) {
         (Basset[] memory bassets, uint256 length) = BasketManager(BASKET_MANAGER).getBassets();
         uint256[] memory rates;
-        (, , rates) = ForgeValidator(FORGE_VALIDATOR).calculateRedemptionMulti(
-            1e18,
-            bassets
-        );
+        (, , rates) = ForgeValidator(FORGE_VALIDATOR).calculateRedemptionMulti(1e18, bassets);
 
         Component[] memory components = new Component[](length);
         for (uint256 i = 0; i < length; i++) {
-            components[i] = Component({
-                token: bassets[i].addr,
-                rate: int256(rates[i])
-            });
+            components[i] = Component({ token: bassets[i].addr, rate: int256(rates[i]) });
         }
 
         return components;

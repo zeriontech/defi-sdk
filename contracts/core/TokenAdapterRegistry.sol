@@ -34,14 +34,12 @@ import { TokenAdapterManager } from "./TokenAdapterManager.sol";
 import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
 import { TokenAdapter } from "../adapters/TokenAdapter.sol";
 
-
 /**
  * @title Registry for token adapters and protocol hashes.
  * @notice getBalances() function implements the main functionality.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNamesManager {
-
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
@@ -50,21 +48,16 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
      * token addresses and amounts.
      * @return Full absolute token amounts by token addresses and absolute amounts.
      */
-    function getFullTokenBalances(
-        TokenBalance[] calldata tokenBalances
-    )
+    function getFullTokenBalances(TokenBalance[] calldata tokenBalances)
         external
         returns (FullTokenBalance[] memory)
     {
         uint256 length = tokenBalances.length;
 
-        FullTokenBalance[] memory fullTokenBalances =
-            new FullTokenBalance[](length);
+        FullTokenBalance[] memory fullTokenBalances = new FullTokenBalance[](length);
 
         for (uint256 i = 0; i < length; i++) {
-            fullTokenBalances[i] = getFullTokenBalance(
-                tokenBalances[i]
-            );
+            fullTokenBalances[i] = getFullTokenBalance(tokenBalances[i]);
         }
 
         return fullTokenBalances;
@@ -76,21 +69,16 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
      * token addresses and amounts.
      * @return Final full absolute token amounts by token addresses and absolute amounts.
      */
-    function getFinalFullTokenBalances(
-        TokenBalance[] calldata tokenBalances
-    )
+    function getFinalFullTokenBalances(TokenBalance[] calldata tokenBalances)
         external
         returns (FullTokenBalance[] memory)
     {
         uint256 length = tokenBalances.length;
 
-        FullTokenBalance[] memory finalFullTokenBalances =
-            new FullTokenBalance[](length);
+        FullTokenBalance[] memory finalFullTokenBalances = new FullTokenBalance[](length);
 
         for (uint256 i = 0; i < length; i++) {
-            finalFullTokenBalances[i] = getFinalFullTokenBalance(
-                tokenBalances[i]
-            );
+            finalFullTokenBalances[i] = getFinalFullTokenBalance(tokenBalances[i]);
         }
 
         return finalFullTokenBalances;
@@ -102,26 +90,20 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
      * @param tokens Array of token addresses.
      * @return Full absolute token amounts by token addresses.
      */
-    function getFullTokenBalances(
-        address[] calldata tokens
-    )
+    function getFullTokenBalances(address[] calldata tokens)
         external
         returns (FullTokenBalance[] memory)
     {
         uint256 length = tokens.length;
 
-        FullTokenBalance[] memory fullTokenBalances =
-            new FullTokenBalance[](length);
+        FullTokenBalance[] memory fullTokenBalances = new FullTokenBalance[](length);
 
         uint8 decimals;
         for (uint256 i = 0; i < length; i++) {
             decimals = tokens[i] == ETH ? 18 : ERC20(tokens[i]).decimals();
 
             fullTokenBalances[i] = getFullTokenBalance(
-                TokenBalance({
-                    token: tokens[i],
-                    amount: int256(10) ** decimals
-                })
+                TokenBalance({ token: tokens[i], amount: int256(10)**decimals })
             );
         }
 
@@ -134,26 +116,20 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
      * @param tokens Array of token addresses.
      * @return Final full absolute token amounts by token addresses.
      */
-    function getFinalFullTokenBalances(
-        address[] calldata tokens
-    )
+    function getFinalFullTokenBalances(address[] calldata tokens)
         external
         returns (FullTokenBalance[] memory)
     {
         uint256 length = tokens.length;
 
-        FullTokenBalance[] memory finalFullTokenBalances =
-            new FullTokenBalance[](length);
+        FullTokenBalance[] memory finalFullTokenBalances = new FullTokenBalance[](length);
 
         uint8 decimals;
         for (uint256 i = 0; i < length; i++) {
             decimals = tokens[i] == ETH ? 18 : ERC20(tokens[i]).decimals();
 
             finalFullTokenBalances[i] = getFinalFullTokenBalance(
-                TokenBalance({
-                    token: tokens[i],
-                    amount: int256(10) ** decimals
-                })
+                TokenBalance({ token: tokens[i], amount: int256(10)**decimals })
             );
         }
 
@@ -166,9 +142,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
      * token address and its absolute amount.
      * @return Full absolute token amount by token address and absolute amount.
      */
-    function getFullTokenBalance(
-        TokenBalance memory tokenBalance
-    )
+    function getFullTokenBalance(TokenBalance memory tokenBalance)
         internal
         returns (FullTokenBalance memory)
     {
@@ -183,9 +157,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
      * token address and its absolute amount.
      * @return Final full absolute token amount by token address and absolute amount.
      */
-    function getFinalFullTokenBalance(
-        TokenBalance memory tokenBalance
-    )
+    function getFinalFullTokenBalance(TokenBalance memory tokenBalance)
         internal
         returns (FullTokenBalance memory)
     {
@@ -202,30 +174,27 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
      * token address and its absolute amount for each component.
      * @return Full absolute token amount by token address, absolute amount, and components.
      */
-    function getFullTokenBalance(
-        TokenBalance memory tokenBalance,
-        Component[] memory components
-    )
+    function getFullTokenBalance(TokenBalance memory tokenBalance, Component[] memory components)
         internal
         returns (FullTokenBalance memory)
     {
         uint256 length = components.length;
-        TokenBalanceMeta[] memory componentTokenBalances =
-            new TokenBalanceMeta[](length);
+        TokenBalanceMeta[] memory componentTokenBalances = new TokenBalanceMeta[](length);
 
         for (uint256 i = 0; i < length; i++) {
             componentTokenBalances[i] = getTokenBalanceMeta(
                 TokenBalance({
                     token: components[i].token,
-                    amount: components[i].rate * tokenBalance.amount / int256(1e18)
+                    amount: (components[i].rate * tokenBalance.amount) / int256(1e18)
                 })
             );
         }
 
-        return FullTokenBalance({
-            base: getTokenBalanceMeta(tokenBalance),
-            underlying: componentTokenBalances
-        });
+        return
+            FullTokenBalance({
+                base: getTokenBalanceMeta(tokenBalance),
+                underlying: componentTokenBalances
+            });
     }
 
     /**
@@ -233,9 +202,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
      * token address and absolute amount.
      * @return Final components by absolute token amount.
      */
-    function getFinalComponents(
-        TokenBalance memory tokenBalance
-    )
+    function getFinalComponents(TokenBalance memory tokenBalance)
         internal
         returns (Component[] memory)
     {
@@ -250,12 +217,11 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
         Component[] memory tempComponents;
         uint256 tempComponentsLength;
 
-        
         for (uint256 i = 0; i < componentsLength; i++) {
             tempComponents = getFinalComponents(
                 TokenBalance({
                     token: components[i].token,
-                    amount: components[i].rate * tokenBalance.amount / int256(1e18)
+                    amount: (components[i].rate * tokenBalance.amount) / int256(1e18)
                 })
             );
 
@@ -282,10 +248,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
      * @param counterial Whether the function call is counterial or recursive.
      * @return Final tokens number by absolute token amount.
      */
-    function getFinalComponentsLength(
-        TokenBalance memory tokenBalance,
-        bool counterial
-    )
+    function getFinalComponentsLength(TokenBalance memory tokenBalance, bool counterial)
         internal
         returns (uint256)
     {
@@ -297,7 +260,9 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
         }
 
         for (uint256 i = 0; i < components.length; i++) {
-            finalComponentsLength = finalComponentsLength + getFinalComponentsLength(tokenBalance, false);
+            finalComponentsLength =
+                finalComponentsLength +
+                getFinalComponentsLength(tokenBalance, false);
         }
 
         return finalComponentsLength;
@@ -309,9 +274,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
      * token address and absolute amount.
      * @return Array of Component structs by token address and absolute amount.
      */
-    function getComponents(
-        TokenBalance memory tokenBalance
-    )
+    function getComponents(TokenBalance memory tokenBalance)
         internal
         returns (Component[] memory)
     {
@@ -321,9 +284,9 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
         if (tokenAdapter == address(0)) {
             components = new Component[](0);
         } else {
-            try TokenAdapter(tokenAdapter).getComponents(
-                tokenBalance.token
-            ) returns (Component[] memory result) {
+            try TokenAdapter(tokenAdapter).getComponents(tokenBalance.token) returns (
+                Component[] memory result
+            ) {
                 components = result;
             } catch {
                 components = new Component[](0);
@@ -339,9 +302,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
      * token address and absolute amount.
      * @return TokenBalanceMeta struct by token address and absolute amount.
      */
-    function getTokenBalanceMeta(
-        TokenBalance memory tokenBalance
-    )
+    function getTokenBalanceMeta(TokenBalance memory tokenBalance)
         internal
         view
         returns (TokenBalanceMeta memory)
@@ -350,17 +311,11 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
         ERC20Metadata memory erc20metadata;
 
         if (tokenAdapter == address(0)) {
-            erc20metadata = ERC20Metadata({
-                name: "Not available",
-                symbol: "N/A",
-                decimals: 0
-            });
+            erc20metadata = ERC20Metadata({ name: "Not available", symbol: "N/A", decimals: 0 });
         } else {
-            try TokenAdapter(tokenAdapter).getMetadata(
-                tokenBalance.token
-            )
-                returns (ERC20Metadata memory result)
-            {
+            try TokenAdapter(tokenAdapter).getMetadata(tokenBalance.token) returns (
+                ERC20Metadata memory result
+            ) {
                 erc20metadata = result;
             } catch {
                 erc20metadata = ERC20Metadata({
@@ -371,19 +326,10 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
             }
         }
 
-        return TokenBalanceMeta({
-            tokenBalance: tokenBalance,
-            erc20metadata: erc20metadata
-        });
+        return TokenBalanceMeta({ tokenBalance: tokenBalance, erc20metadata: erc20metadata });
     }
-    
-    function getTokenAdapter(
-        address token
-    )
-        internal
-        view
-        returns (address)
-    {
+
+    function getTokenAdapter(address token) internal view returns (address) {
         bytes32 hash = getTokenHash(token);
         bytes32 tokenAdapterName = _tokenAdapterName[hash];
         address tokenAdapter = _tokenAdapterAddress[tokenAdapterName];

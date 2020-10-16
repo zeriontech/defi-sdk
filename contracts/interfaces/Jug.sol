@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev Jug contract interface.
  * Only the functions required for MCDAssetAdapter contract are added.
@@ -27,5 +26,6 @@ pragma experimental ABIEncoderV2;
  */
 interface Jug {
     function ilks(bytes32) external view returns (uint256, uint256);
+
     function base() external view returns (uint256);
 }

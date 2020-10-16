@@ -24,14 +24,12 @@ import { Vat } from "../../interfaces/Vat.sol";
 import { Jug } from "../../interfaces/Jug.sol";
 import { DssCdpManager } from "../../interfaces/DssCdpManager.sol";
 
-
 /**
  * @title Asset adapter for MCD protocol.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract MCDAssetAdapter is ProtocolAdapter, MKRAdapter {
-
     /**
      * @return Amount of collateral locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.
@@ -52,7 +50,7 @@ contract MCDAssetAdapter is ProtocolAdapter, MKRAdapter {
             (, id) = manager.list(id);
             (ink, ) = vat.urns(ilk, urn);
 
-            if (token == WETH && ilk == "ETH-A" || token == BAT && ilk == "BAT-A") {
+            if ((token == WETH && ilk == "ETH-A") || (token == BAT && ilk == "BAT-A")) {
                 value = int256(ink);
             } else {
                 value = int256(0);

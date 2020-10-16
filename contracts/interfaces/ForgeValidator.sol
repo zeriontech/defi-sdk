@@ -20,7 +20,6 @@ pragma experimental ABIEncoderV2;
 
 import { Basset } from "./BasketManager.sol";
 
-
 /**
  * @dev ForgeValidator contract interface.
  * Only the functions required for MassetTokenAdapter contract are added.
@@ -28,11 +27,12 @@ import { Basset } from "./BasketManager.sol";
  * github.com/mstable/mStable-contracts/blob/master/contracts/masset/forge-validator/ForgeValidator.sol.
  */
 interface ForgeValidator {
-    function calculateRedemptionMulti(
-        uint256,
-        Basset[] calldata
-    )
-    external
-    view
-    returns (bool, string memory, uint256[] memory);
+    function calculateRedemptionMulti(uint256, Basset[] calldata)
+        external
+        view
+        returns (
+            bool,
+            string memory,
+            uint256[] memory
+        );
 }

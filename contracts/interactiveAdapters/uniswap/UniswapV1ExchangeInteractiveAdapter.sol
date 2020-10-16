@@ -26,7 +26,6 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { Exchange } from "../../interfaces/Exchange.sol";
 import { Factory } from "../../interfaces/Factory.sol";
 
-
 /**
  * @title Interactive adapter for Uniswap V1 protocol (exchange).
  * @dev Implementation of InteractiveAdapter abstract contract.
@@ -45,10 +44,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
      * @return tokensToBeWithdrawn Array with one element - token address to be exchanged to.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata data
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
@@ -67,12 +63,14 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             address exchange = Factory(FACTORY).getExchange(toToken);
             require(exchange != address(0), "UEIA: no exchange[1]");
 
-            try Exchange(exchange).ethToTokenSwapInput{value: amount}(
-                uint256(1),
-                // solhint-disable-next-line not-rely-on-time
-                block.timestamp
-            ) returns (uint256) { // solhint-disable-line no-empty-blocks
-            } catch Error(string memory reason) {
+            try
+                Exchange(exchange).ethToTokenSwapInput{ value: amount }(
+                    uint256(1),
+                    // solhint-disable-next-line not-rely-on-time
+                    block.timestamp
+                )
+            returns (uint256) {} catch Error(string memory reason) {
+                //solhint-disable-previous-line no-empty-blocks
                 revert(reason);
             } catch {
                 revert("UEIA: deposit fail[2]");
@@ -84,27 +82,31 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             ERC20(token).safeApprove(exchange, amount, "UEIA[1]");
 
             if (toToken == ETH) {
-                try Exchange(exchange).tokenToEthSwapInput(
-                    amount,
-                    uint256(1),
-                    // solhint-disable-next-line not-rely-on-time
-                    block.timestamp
-                ) returns (uint256) { // solhint-disable-line no-empty-blocks
-                } catch Error(string memory reason) {
+                try
+                    Exchange(exchange).tokenToEthSwapInput(
+                        amount,
+                        uint256(1),
+                        // solhint-disable-next-line not-rely-on-time
+                        block.timestamp
+                    )
+                returns (uint256) {} catch Error(string memory reason) {
+                    //solhint-disable-previous-line no-empty-blocks
                     revert(reason);
                 } catch {
                     revert("UEIA: deposit fail[3]");
                 }
             } else {
-                try Exchange(exchange).tokenToTokenSwapInput(
-                    amount,
-                    uint256(1),
-                    uint256(1),
-                    // solhint-disable-next-line not-rely-on-time
-                    block.timestamp,
-                    toToken
-                ) returns (uint256) { // solhint-disable-line no-empty-blocks
-                } catch Error(string memory reason) {
+                try
+                    Exchange(exchange).tokenToTokenSwapInput(
+                        amount,
+                        uint256(1),
+                        uint256(1),
+                        // solhint-disable-next-line not-rely-on-time
+                        block.timestamp,
+                        toToken
+                    )
+                returns (uint256) {} catch Error(string memory reason) {
+                    //solhint-disable-previous-line no-empty-blocks
                     revert(reason);
                 } catch {
                     revert("UEIA: deposit fail[4]");
@@ -121,10 +123,7 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
      * @return tokensToBeWithdrawn Array with one element - token address to be changed to.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata data
-    )
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
@@ -143,12 +142,14 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             address exchange = Factory(FACTORY).getExchange(token);
             require(exchange != address(0), "UEIA: no exchange[1]");
 
-            try Exchange(exchange).ethToTokenSwapOutput{value: address(this).balance}(
-                tokenAmounts[0].amount,
-                // solhint-disable-next-line not-rely-on-time
-                block.timestamp
-            ) returns (uint256) { // solhint-disable-line no-empty-blocks
-            } catch Error(string memory reason) {
+            try
+                Exchange(exchange).ethToTokenSwapOutput{ value: address(this).balance }(
+                    tokenAmounts[0].amount,
+                    // solhint-disable-next-line not-rely-on-time
+                    block.timestamp
+                )
+            returns (uint256) {} catch Error(string memory reason) {
+                //solhint-disable-previous-line no-empty-blocks
                 revert(reason);
             } catch {
                 revert("UEIA: withdraw fail[1]");
@@ -161,27 +162,31 @@ contract UniswapV1ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
             ERC20(fromToken).safeApprove(exchange, balance, "UEIA[2]");
 
             if (token == ETH) {
-                try Exchange(exchange).tokenToEthSwapOutput(
-                    tokenAmounts[0].amount,
-                    balance,
-                    // solhint-disable-next-line not-rely-on-time
-                    block.timestamp
-                ) returns (uint256) { // solhint-disable-line no-empty-blocks
-                } catch Error(string memory reason) {
+                try
+                    Exchange(exchange).tokenToEthSwapOutput(
+                        tokenAmounts[0].amount,
+                        balance,
+                        // solhint-disable-next-line not-rely-on-time
+                        block.timestamp
+                    )
+                returns (uint256) {} catch Error(string memory reason) {
+                    //solhint-disable-previous-line no-empty-blocks
                     revert(reason);
                 } catch {
                     revert("UEIA: withdraw fail[2]");
                 }
             } else {
-                try Exchange(exchange).tokenToTokenSwapOutput(
-                    tokenAmounts[0].amount,
-                    balance,
-                    type(uint256).max,
-                    // solhint-disable-next-line not-rely-on-time
-                    block.timestamp,
-                    token
-                ) returns (uint256) { // solhint-disable-line no-empty-blocks
-                } catch Error(string memory reason) {
+                try
+                    Exchange(exchange).tokenToTokenSwapOutput(
+                        tokenAmounts[0].amount,
+                        balance,
+                        type(uint256).max,
+                        // solhint-disable-next-line not-rely-on-time
+                        block.timestamp,
+                        token
+                    )
+                returns (uint256) {} catch Error(string memory reason) {
+                    //solhint-disable-previous-line no-empty-blocks
                     revert(reason);
                 } catch {
                     revert("UEIA: withdraw fail[3]");

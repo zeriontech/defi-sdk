@@ -18,14 +18,12 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 // The struct consists of AbsoluteTokenAmount structs for
 // (base) token and its underlying tokens (if any).
 struct FullTokenBalance {
     TokenBalanceMeta base;
     TokenBalanceMeta[] underlying;
 }
-
 
 // The struct consists of AbsoluteTokenAmount struct
 // with token address and absolute amount
@@ -36,14 +34,12 @@ struct TokenBalanceMeta {
     ERC20Metadata erc20metadata;
 }
 
-
 // The struct consists of ERC20-style token metadata.
 struct ERC20Metadata {
     string name;
     string symbol;
     uint8 decimals;
 }
-
 
 // The struct consists of protocol adapter's name
 // and array of AbsoluteTokenAmount structs
@@ -53,14 +49,12 @@ struct AdapterBalance {
     TokenBalance[] tokenBalances;
 }
 
-
 // The struct consists of token address
 // and its absolute amount.
 struct AbsoluteTokenAmount {
     address token;
     uint256 amount;
 }
-
 
 // The struct consists of token address
 // and its absolute amount (mey be negative).
@@ -69,7 +63,6 @@ struct TokenBalance {
     int256 amount;
 }
 
-
 // The struct consists of token address,
 // and price per full share (1e18).
 struct Component {
@@ -77,9 +70,7 @@ struct Component {
     int256 rate;
 }
 
-
 //=============================== Interactive Adapters Structs ====================================
-
 
 struct TransactionData {
     Action[] actions;
@@ -89,7 +80,6 @@ struct TransactionData {
     uint256 salt;
 }
 
-
 struct Action {
     bytes32 protocolAdapterName;
     ActionType actionType;
@@ -97,21 +87,17 @@ struct Action {
     bytes data;
 }
 
-
 struct TokenAmount {
     address token;
     uint256 amount;
     AmountType amountType;
 }
 
-
 struct Fee {
     uint256 share;
     address beneficiary;
 }
 
-
 enum ActionType { None, Deposit, Withdraw }
-
 
 enum AmountType { None, Relative, Absolute }

@@ -21,14 +21,12 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../shared/ERC20.sol";
 import { ProtocolAdapter } from "./ProtocolAdapter.sol";
 
-
 /**
  * @title Adapter for any protocol with ERC20 interface.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ERC20ProtocolAdapter is ProtocolAdapter {
-
     /**
      * @return Amount of tokens held by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.

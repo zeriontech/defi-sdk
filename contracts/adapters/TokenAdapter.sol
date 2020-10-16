@@ -21,7 +21,6 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../shared/ERC20.sol";
 import { ERC20Metadata, Component } from "../shared/Structs.sol";
 
-
 /**
  * @title Token adapter abstract contract.
  * @dev getComponents() function MUST be implemented.
@@ -30,7 +29,6 @@ import { ERC20Metadata, Component } from "../shared/Structs.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract TokenAdapter {
-
     /**
      * @dev MUST return array of Component structs with underlying tokens rates for the given token.
      * struct Component {
@@ -50,11 +48,12 @@ abstract contract TokenAdapter {
      * }
      */
     function getMetadata(address token) public view virtual returns (ERC20Metadata memory) {
-        return ERC20Metadata({
-            name: getName(token),
-            symbol: getSymbol(token),
-            decimals: getDecimals(token)
-        });
+        return
+            ERC20Metadata({
+                name: getName(token),
+                symbol: getSymbol(token),
+                decimals: getDecimals(token)
+            });
     }
 
     /**

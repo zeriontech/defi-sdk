@@ -24,14 +24,12 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 import { BPool } from "../../interfaces/BPool.sol";
 import { PBasicSmartPool } from "../../interfaces/PBasicSmartPool.sol";
 
-
 /**
  * @title Token adapter for Pie pool tokens.
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Mick de Graaf <mick@dexlab.io>
  */
 contract PieDAOPieTokenAdapter is TokenAdapter {
-
     /**
      * @return Array of Component structs with underlying tokens rates for the given asset.
      * @dev Implementation of TokenAdapter abstract contract function.
@@ -46,11 +44,10 @@ contract PieDAOPieTokenAdapter is TokenAdapter {
         for (uint256 i = 0; i < tokens.length; i++) {
             components[i] = Component({
                 token: tokens[i],
-                rate: int256(BPool(bPool).getBalance(tokens[i]) * 1e18 / totalSupply)
+                rate: int256((BPool(bPool).getBalance(tokens[i]) * 1e18) / totalSupply)
             });
         }
 
         return components;
     }
-
 }

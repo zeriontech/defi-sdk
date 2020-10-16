@@ -24,7 +24,6 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 import { Helpers } from "../../shared/Helpers.sol";
 import { UniswapV2Pair } from "../../interfaces/UniswapV2Pair.sol";
 
-
 /**
  * @title Token adapter for Uniswap V2 Pool Tokens.
  * @dev Implementation of TokenAdapter abstract contract.
@@ -48,7 +47,7 @@ contract UniswapV2TokenAdapter is TokenAdapter {
         for (uint256 i = 0; i < 2; i++) {
             components[i] = Component({
                 token: tokens[i],
-                rate: int256(ERC20(tokens[i]).balanceOf(token) * 1e18 / totalSupply)
+                rate: int256((ERC20(tokens[i]).balanceOf(token) * 1e18) / totalSupply)
             });
         }
 
@@ -59,14 +58,15 @@ contract UniswapV2TokenAdapter is TokenAdapter {
      * @return Pool name.
      */
     function getName(address token) internal view override returns (string memory) {
-        return string(
-            abi.encodePacked(
-                getUnderlyingSymbol(UniswapV2Pair(token).token0()),
-                "/",
-                getUnderlyingSymbol(UniswapV2Pair(token).token1()),
-                " Pool"
-            )
-        );
+        return
+            string(
+                abi.encodePacked(
+                    getUnderlyingSymbol(UniswapV2Pair(token).token0()),
+                    "/",
+                    getUnderlyingSymbol(UniswapV2Pair(token).token1()),
+                    " Pool"
+                )
+            );
     }
 
     function getUnderlyingSymbol(address token) internal view returns (string memory) {

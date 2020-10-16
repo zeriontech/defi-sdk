@@ -22,14 +22,12 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { Proxy } from "../../interfaces/Proxy.sol";
 import { Synthetix } from "../../interfaces/Synthetix.sol";
 
-
 /**
  * @title Debt adapter for Synthetix protocol.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract SynthetixDebtAdapter is ProtocolAdapter {
-
     address internal constant SNX = 0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F;
 
     /**

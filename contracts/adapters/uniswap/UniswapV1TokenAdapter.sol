@@ -25,7 +25,6 @@ import { Helpers } from "../../shared/Helpers.sol";
 import { Exchange } from "../../interfaces/Exchange.sol";
 import { Factory } from "../../interfaces/Factory.sol";
 
-
 /**
  * @title Token adapter for Uniswap V1 Pool Tokens.
  * @dev Implementation of TokenAdapter abstract contract.
@@ -51,12 +50,12 @@ contract UniswapV1TokenAdapter is TokenAdapter {
 
         components[0] = Component({
             token: ETH,
-            rate: int256(token.balance * 1e18 / totalSupply)
+            rate: int256((token.balance * 1e18) / totalSupply)
         });
 
         components[1] = Component({
             token: underlyingToken,
-            rate: int256(ERC20(underlyingToken).balanceOf(token) * 1e18 / totalSupply)
+            rate: int256((ERC20(underlyingToken).balanceOf(token) * 1e18) / totalSupply)
         });
 
         return components;
@@ -71,12 +70,13 @@ contract UniswapV1TokenAdapter is TokenAdapter {
         } else if (token == CSAI_POOL) {
             return "cSAI Pool";
         } else {
-            return string(
-                abi.encodePacked(
-                    getUnderlyingSymbol(Factory(FACTORY).getToken(token)),
-                    " Pool"
-                )
-            );
+            return
+                string(
+                    abi.encodePacked(
+                        getUnderlyingSymbol(Factory(FACTORY).getToken(token)),
+                        " Pool"
+                    )
+                );
         }
     }
 

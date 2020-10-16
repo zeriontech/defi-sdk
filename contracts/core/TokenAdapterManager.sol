@@ -20,18 +20,16 @@ pragma experimental ABIEncoderV2;
 
 import { Ownable } from "./Ownable.sol";
 
-
 /**
  * @title TokenAdapterRegistry part responsible for token adapters management.
  * @dev Base contract for TokenAdapterRegistry.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract TokenAdapterManager is Ownable {
-
     // Token adapters' names
     bytes32[] internal _tokenAdapterNames;
     // Token adapter's name => token adapter's address
-    mapping (bytes32 => address) internal _tokenAdapterAddress;
+    mapping(bytes32 => address) internal _tokenAdapterAddress;
 
     /**
      * @notice Adds token adapters.
@@ -42,10 +40,7 @@ abstract contract TokenAdapterManager is Ownable {
     function addTokenAdapters(
         bytes32[] calldata newTokenAdapterNames,
         address[] calldata newTokenAdapterAddresses
-    )
-        external
-        onlyOwner
-    {
+    ) external onlyOwner {
         uint256 length = newTokenAdapterNames.length;
         require(length != 0, "TAM: empty[1]");
         require(length == newTokenAdapterAddresses.length, "TAM: lengths differ[1]");
@@ -60,12 +55,7 @@ abstract contract TokenAdapterManager is Ownable {
      * The function is callable only by the owner.
      * @param tokenAdapterNames Array of the token adapters' names.
      */
-    function removeTokenAdapters(
-        bytes32[] calldata tokenAdapterNames
-    )
-        external
-        onlyOwner
-    {
+    function removeTokenAdapters(bytes32[] calldata tokenAdapterNames) external onlyOwner {
         uint256 length = tokenAdapterNames.length;
         require(length != 0, "TAM: empty[2]");
 
@@ -83,10 +73,7 @@ abstract contract TokenAdapterManager is Ownable {
     function updateTokenAdapters(
         bytes32[] calldata tokenAdapterNames,
         address[] calldata newTokenAdapterAddresses
-    )
-        external
-        onlyOwner
-    {
+    ) external onlyOwner {
         uint256 length = tokenAdapterNames.length;
         require(length != 0, "TAM: empty[3]");
         require(length == newTokenAdapterAddresses.length, "TAM: lengths differ[2]");
@@ -99,11 +86,7 @@ abstract contract TokenAdapterManager is Ownable {
     /**
      * @return Array of token adapter's names.
      */
-    function getTokenAdapterNames()
-        external
-        view
-        returns (bytes32[] memory)
-    {
+    function getTokenAdapterNames() external view returns (bytes32[] memory) {
         return _tokenAdapterNames;
     }
 
@@ -111,13 +94,7 @@ abstract contract TokenAdapterManager is Ownable {
      * @param tokenAdapterName Token adapter's name.
      * @return Address of token adapter.
      */
-    function getTokenAdapterAddress(
-        bytes32 tokenAdapterName
-    )
-        external
-        view
-        returns (address)
-    {
+    function getTokenAdapterAddress(bytes32 tokenAdapterName) external view returns (address) {
         return _tokenAdapterAddress[tokenAdapterName];
     }
 
@@ -126,10 +103,7 @@ abstract contract TokenAdapterManager is Ownable {
      * @param newTokenAdapterName New token adapter's name.
      * @param newTokenAdapterAddress New token adapter's address.
      */
-    function addTokenAdapter(
-        bytes32 newTokenAdapterName,
-        address newTokenAdapterAddress
-    )
+    function addTokenAdapter(bytes32 newTokenAdapterName, address newTokenAdapterAddress)
         internal
     {
         require(newTokenAdapterAddress != address(0), "TAM: zero[2]");
@@ -143,11 +117,7 @@ abstract contract TokenAdapterManager is Ownable {
      * @notice Removes a token adapter.
      * @param tokenAdapterName Token adapter's name.
      */
-    function removeTokenAdapter(
-        bytes32 tokenAdapterName
-    )
-        internal
-    {
+    function removeTokenAdapter(bytes32 tokenAdapterName) internal {
         require(_tokenAdapterAddress[tokenAdapterName] != address(0), "TAM: does not exist[1]");
 
         uint256 length = _tokenAdapterNames.length;
@@ -170,10 +140,7 @@ abstract contract TokenAdapterManager is Ownable {
      * @param tokenAdapterName Token adapter's name.
      * @param newTokenAdapterAddress Token adapter's new address.
      */
-    function updateTokenAdapter(
-        bytes32 tokenAdapterName,
-        address newTokenAdapterAddress
-    )
+    function updateTokenAdapter(bytes32 tokenAdapterName, address newTokenAdapterAddress)
         internal
     {
         address oldTokenAdapterAddress = _tokenAdapterAddress[tokenAdapterName];

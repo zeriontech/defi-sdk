@@ -23,14 +23,12 @@ import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { AToken } from "../../interfaces/AToken.sol";
 
-
 /**
  * @title Token adapter for ATokens.
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract AaveTokenAdapter is TokenAdapter {
-
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.

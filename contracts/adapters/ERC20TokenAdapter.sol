@@ -23,7 +23,6 @@ import { ERC20Metadata, Component } from "../shared/Structs.sol";
 import { TokenAdapter } from "./TokenAdapter.sol";
 import { Helpers } from "../shared/Helpers.sol";
 
-
 /**
  * @title Adapter for ERC20 tokens.
  * @dev Implementation of TokenAdapter abstract contract function.
@@ -50,23 +49,12 @@ contract ERC20TokenAdapter is TokenAdapter {
      */
     function getMetadata(address token) public view override returns (ERC20Metadata memory) {
         if (token == ETH) {
-            return ERC20Metadata({
-                name: "Ether",
-                symbol: "ETH",
-                decimals: uint8(18)
-            });
+            return ERC20Metadata({ name: "Ether", symbol: "ETH", decimals: uint8(18) });
         } else if (token == SAI) {
-            return ERC20Metadata({
-                name: "Sai Stablecoin v1.0",
-                symbol: "SAI",
-                decimals: uint8(18)
-            });
+            return
+                ERC20Metadata({ name: "Sai Stablecoin v1.0", symbol: "SAI", decimals: uint8(18) });
         } else if (token == CSAI) {
-            return ERC20Metadata({
-                name: "Compound Sai",
-                symbol: "cSAI",
-                decimals: uint8(8)
-            });
+            return ERC20Metadata({ name: "Compound Sai", symbol: "cSAI", decimals: uint8(8) });
         } else {
             return super.getMetadata(token);
         }

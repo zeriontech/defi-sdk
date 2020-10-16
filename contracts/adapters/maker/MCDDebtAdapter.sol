@@ -21,7 +21,6 @@ pragma experimental ABIEncoderV2;
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { MKRAdapter } from "./MakerAdapter.sol";
 
-
 /**
  * @dev Vat contract interface.
  * Only the functions required for MCDDebtAdapter contract are added.
@@ -30,9 +29,9 @@ import { MKRAdapter } from "./MakerAdapter.sol";
  */
 interface Vat {
     function urns(bytes32, address) external view returns (uint256, uint256);
+
     function ilks(bytes32) external view returns (uint256, uint256);
 }
-
 
 /**
  * @dev Jug contract interface.
@@ -42,9 +41,9 @@ interface Vat {
  */
 interface Jug {
     function ilks(bytes32) external view returns (uint256, uint256);
+
     function base() external view returns (uint256);
 }
-
 
 /**
  * @dev DssCdpManager contract interface.
@@ -54,11 +53,13 @@ interface Jug {
  */
 interface DssCdpManager {
     function first(address) external view returns (uint256);
+
     function list(uint256) external view returns (uint256, uint256);
+
     function urns(uint256) external view returns (address);
+
     function ilks(uint256) external view returns (bytes32);
 }
-
 
 /**
  * @title Debt adapter for MCD protocol.
@@ -66,7 +67,6 @@ interface DssCdpManager {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract MCDDebtAdapter is ProtocolAdapter, MKRAdapter {
-
     /**
      * @return Amount of debt of the given account for the protocol.
      * @dev Implementation of ProtocolAdapter abstract contract function.

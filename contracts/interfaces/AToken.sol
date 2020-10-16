@@ -17,7 +17,6 @@
 
 pragma solidity 0.7.1;
 
-
 /**
  * @dev AToken contract interface.
  * The AToken contract is available here
@@ -25,5 +24,6 @@ pragma solidity 0.7.1;
  */
 interface AToken {
     function redeem(uint256) external;
+
     function underlyingAssetAddress() external view returns (address);
 }

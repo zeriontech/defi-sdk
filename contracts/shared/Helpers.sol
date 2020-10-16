@@ -18,13 +18,11 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @notice Library helps to convert different types to strings.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 library Helpers {
-
     /**
      * @dev Internal function to convert bytes32 to string and trim zeroes.
      */

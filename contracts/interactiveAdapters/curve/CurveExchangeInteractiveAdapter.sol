@@ -25,13 +25,12 @@ import { CurveExchangeAdapter } from "../../adapters/curve/CurveExchangeAdapter.
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { Stableswap } from "../../interfaces/Stableswap.sol";
 
-
 /**
  * @title Interactive adapter for Curve protocol (exchange).
  * @dev Implementation of CurveInteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAdapter  {
+contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAdapter {
     using SafeERC20 for ERC20;
 
     /**
@@ -48,10 +47,7 @@ contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAda
      *                       else swap() function will be called.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata data
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
@@ -78,17 +74,18 @@ contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAda
             ERC20(token).safeApprove(swap, type(uint256).max, "CEIA[2]");
         }
 
-
-        if (useUnderlying) {// solhint-disable-next-line no-empty-blocks
-            try Stableswap(swap).exchange_underlying(i, j, amount, 0) {
-            } catch Error(string memory reason) {
+        if (useUnderlying) {
+            // solhint-disable-next-line no-empty-blocks
+            try Stableswap(swap).exchange_underlying(i, j, amount, 0)  {} catch Error(
+                string memory reason
+            ) {
                 revert(reason);
             } catch {
                 revert("CEIA: deposit fail[1]");
             }
-        } else {// solhint-disable-next-line no-empty-blocks
-            try Stableswap(swap).exchange(i, j, amount, 0) {
-            } catch Error(string memory reason) {
+        } else {
+            // solhint-disable-next-line no-empty-blocks
+            try Stableswap(swap).exchange(i, j, amount, 0)  {} catch Error(string memory reason) {
                 revert(reason);
             } catch {
                 revert("CEIA: deposit fail[2]");
@@ -100,10 +97,7 @@ contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAda
      * @notice Withdraw functionality is not supported.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(
-        TokenAmount[] calldata,
-        bytes calldata
-    )
+    function withdraw(TokenAmount[] calldata, bytes calldata)
         external
         payable
         override

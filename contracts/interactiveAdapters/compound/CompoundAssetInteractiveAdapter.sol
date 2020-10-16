@@ -27,7 +27,6 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { CToken } from "../../interfaces/CToken.sol";
 import { CEther } from "../../interfaces/CEther.sol";
 
-
 /**
  * @title Interactive adapter for Compound protocol.
  * @dev Implementation of InteractiveAdapter abstract contract.
@@ -46,10 +45,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
      * @return tokensToBeWithdrawn Array with two elements - cToken and COMP addresses.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
@@ -66,7 +62,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
         if (token == ETH) {
             tokensToBeWithdrawn[1] = CETH;
 
-            CEther(CETH).mint{value: amount}();
+            CEther(CETH).mint{ value: amount }();
         } else {
             address cToken = CompoundRegistry(REGISTRY).getCToken(token);
             tokensToBeWithdrawn[1] = cToken;
@@ -83,10 +79,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
      * @return tokensToBeWithdrawn Array with two elements - underlying token and COMP addresses.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata
-    )
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override

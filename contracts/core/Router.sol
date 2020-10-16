@@ -32,11 +32,9 @@ import { SignatureVerifier } from "./SignatureVerifier.sol";
 import { Ownable } from "./Ownable.sol";
 import { Core } from "./Core.sol";
 
-
 interface Chi {
     function freeFromUpTo(address, uint256) external;
 }
-
 
 contract Router is SignatureVerifier("Zerion Router"), Ownable {
     using SafeERC20 for ERC20;
@@ -54,26 +52,17 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         core_ = core;
     }
 
-    function returnLostTokens(
-        address token,
-        address payable beneficiary
-    )
-        external
-        onlyOwner
-    {
+    function returnLostTokens(address token, address payable beneficiary) external onlyOwner {
         if (token == ETH) {
             // solhint-disable-next-line avoid-low-level-calls
-            (bool success, ) = beneficiary.call{value: address(this).balance}(new bytes(0));
+            (bool success, ) = beneficiary.call{ value: address(this).balance }(new bytes(0));
             require(success, "R: bad beneficiary");
         } else {
             ERC20(token).safeTransfer(beneficiary, ERC20(token).balanceOf(address(this)), "R");
         }
     }
 
-    function getRequiredAllowances(
-        TokenAmount[] calldata inputs,
-        address account
-    )
+    function getRequiredAllowances(TokenAmount[] calldata inputs, address account)
         external
         view
         returns (AbsoluteTokenAmount[] memory)
@@ -96,10 +85,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         return requiredAllowances;
     }
 
-    function getRequiredBalances(
-        TokenAmount[] calldata inputs,
-        address account
-    )
+    function getRequiredBalances(TokenAmount[] calldata inputs, address account)
         external
         view
         returns (AbsoluteTokenAmount[] memory)
@@ -125,18 +111,11 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     /**
      * @return Address of the Core contract used.
      */
-    function core()
-        external
-        view
-        returns (address)
-    {
+    function core() external view returns (address) {
         return core_;
     }
 
-    function execute(
-        TransactionData memory data,
-        bytes memory signature
-    )
+    function execute(TransactionData memory data, bytes memory signature)
         public
         payable
         returns (AbsoluteTokenAmount[] memory)
@@ -146,14 +125,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
         markHashUsed(hashedData, account);
 
-        return execute(
-            data.actions,
-            data.inputs,
-            data.fee,
-            data.requiredOutputs,
-            account,
-            false
-        );
+        return execute(data.actions, data.inputs, data.fee, data.requiredOutputs, account, false);
     }
 
     function execute(
@@ -161,25 +133,11 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         TokenAmount[] memory inputs,
         Fee memory fee,
         AbsoluteTokenAmount[] memory requiredOutputs
-    )
-        public
-        payable
-        returns (AbsoluteTokenAmount[] memory)
-    {
-        return execute(
-            actions,
-            inputs,
-            fee,
-            requiredOutputs,
-            msg.sender,
-            false
-        );
+    ) public payable returns (AbsoluteTokenAmount[] memory) {
+        return execute(actions, inputs, fee, requiredOutputs, msg.sender, false);
     }
 
-    function executeWithChi(
-        TransactionData memory data,
-        bytes memory signature
-    )
+    function executeWithChi(TransactionData memory data, bytes memory signature)
         public
         payable
         returns (AbsoluteTokenAmount[] memory)
@@ -189,14 +147,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
         markHashUsed(hashedData, account);
 
-        return execute(
-            data.actions,
-            data.inputs,
-            data.fee,
-            data.requiredOutputs,
-            account,
-            true
-        );
+        return execute(data.actions, data.inputs, data.fee, data.requiredOutputs, account, true);
     }
 
     function executeWithChi(
@@ -204,19 +155,8 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         TokenAmount[] memory inputs,
         Fee memory fee,
         AbsoluteTokenAmount[] memory requiredOutputs
-    )
-        public
-        payable
-        returns (AbsoluteTokenAmount[] memory)
-    {
-        return execute(
-            actions,
-            inputs,
-            fee,
-            requiredOutputs,
-            msg.sender,
-            true
-        );
+    ) public payable returns (AbsoluteTokenAmount[] memory) {
+        return execute(actions, inputs, fee, requiredOutputs, msg.sender, true);
     }
 
     function execute(
@@ -226,10 +166,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         AbsoluteTokenAmount[] memory requiredOutputs,
         address payable account,
         bool useChi
-    )
-        internal
-        returns (AbsoluteTokenAmount[] memory)
-    {
+    ) internal returns (AbsoluteTokenAmount[] memory) {
         // Save initial gas to burn gas token later
         uint256 gas = gasleft();
         // Transfer tokens to Core contract, handle fees (if any), and add these tokens to outputs
@@ -257,9 +194,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         TokenAmount[] memory inputs,
         Fee memory fee,
         address account
-    )
-        internal
-    {
+    ) internal {
         address token;
         uint256 absoluteAmount;
         uint256 feeAmount;
@@ -278,20 +213,10 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
             feeAmount = mul(absoluteAmount, fee.share) / DELIMITER;
 
             if (feeAmount > 0) {
-                ERC20(token).safeTransferFrom(
-                    account,
-                    fee.beneficiary,
-                    feeAmount,
-                    "R[1]"
-                );
+                ERC20(token).safeTransferFrom(account, fee.beneficiary, feeAmount, "R[1]");
             }
 
-            ERC20(token).safeTransferFrom(
-                account,
-                core_,
-                absoluteAmount - feeAmount,
-                "R[2]"
-            );
+            ERC20(token).safeTransferFrom(account, core_, absoluteAmount - feeAmount, "R[2]");
         }
 
         if (msg.value > 0) {
@@ -299,20 +224,17 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
 
             if (feeAmount > 0) {
                 // solhint-disable-next-line avoid-low-level-calls
-                (bool success, ) = fee.beneficiary.call{value: feeAmount}(new bytes(0));
+                (bool success, ) = fee.beneficiary.call{ value: feeAmount }(new bytes(0));
                 require(success, "ETH transfer to beneficiary failed");
             }
 
             // solhint-disable-next-line avoid-low-level-calls
-            (bool success, ) = core_.call{value: msg.value - feeAmount}(new bytes(0));
+            (bool success, ) = core_.call{ value: msg.value - feeAmount }(new bytes(0));
             require(success, "ETH transfer to Core failed");
         }
     }
 
-    function getAbsoluteAmount(
-        TokenAmount memory tokenAmount,
-        address account
-    )
+    function getAbsoluteAmount(TokenAmount memory tokenAmount, address account)
         internal
         view
         returns (uint256)
@@ -341,11 +263,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
     function modifyOutputs(
         AbsoluteTokenAmount[] memory requiredOutputs,
         TokenAmount[] memory inputs
-    )
-        internal
-        view
-        returns (AbsoluteTokenAmount[] memory)
-    {
+    ) internal view returns (AbsoluteTokenAmount[] memory) {
         uint256 ethInput = msg.value > 0 ? 1 : 0;
         AbsoluteTokenAmount[] memory modifiedOutputs = new AbsoluteTokenAmount[](
             requiredOutputs.length + inputs.length + ethInput
@@ -372,14 +290,7 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         return modifiedOutputs;
     }
 
-    function mul(
-        uint256 a,
-        uint256 b
-    )
-        internal
-        pure
-        returns (uint256)
-    {
+    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
         if (a == 0) {
             return 0;
         }

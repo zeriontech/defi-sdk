@@ -24,7 +24,6 @@ import { TokenAmount, AmountType } from "../../shared/Structs.sol";
 import { UniswapExchangeAdapter } from "../../adapters/uniswap/UniswapExchangeAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
-
 /**
  * @dev UniswapV2Router01 contract interface.
  * Only the functions required for UniswapV2ExchangeInteractiveAdapter contract are added.
@@ -33,19 +32,20 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
  */
 interface UniswapV2Router01 {
     function swapExactTokensForTokens(
-        uint,
-        uint,
+        uint256,
+        uint256,
         address[] calldata,
         address,
-        uint
-    ) external returns (uint[] memory);
+        uint256
+    ) external returns (uint256[] memory);
+
     function swapTokensForExactTokens(
-        uint,
-        uint,
+        uint256,
+        uint256,
         address[] calldata,
         address,
-        uint
-    ) external returns (uint[] memory);
+        uint256
+    ) external returns (uint256[] memory);
 }
 
 /**
@@ -66,10 +66,7 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
      * @return tokensToBeWithdrawn Array with one element - token address to be exchanged to.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata data
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
@@ -87,15 +84,17 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
 
         ERC20(token).safeApprove(ROUTER, amount, "UEIA[1]");
 
-        try UniswapV2Router01(ROUTER).swapExactTokensForTokens(
-            amount,
-            0,
-            path,
-            address(this),
-            // solhint-disable-next-line not-rely-on-time
-            block.timestamp
-        ) returns (uint256[] memory) { // solhint-disable-line no-empty-blocks
-        } catch Error(string memory reason) {
+        try
+            UniswapV2Router01(ROUTER).swapExactTokensForTokens(
+                amount,
+                0,
+                path,
+                address(this),
+                // solhint-disable-next-line not-rely-on-time
+                block.timestamp
+            )
+        returns (uint256[] memory) {} catch Error(string memory reason) {
+            //solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
             revert("UEIA: deposit fail");
@@ -110,10 +109,7 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
      * @return tokensToBeWithdrawn Array with one element - token address to be changed to.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata data
-    )
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
@@ -132,15 +128,17 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
 
         ERC20(path[0]).safeApprove(ROUTER, ERC20(path[0]).balanceOf(address(this)), "UEIA[2]");
 
-        try UniswapV2Router01(ROUTER).swapTokensForExactTokens(
-            amount,
-            type(uint256).max,
-            path,
-            address(this),
-            // solhint-disable-next-line not-rely-on-time
-            block.timestamp
-        ) returns (uint256[] memory) { //solhint-disable-line no-empty-blocks
-        } catch Error(string memory reason) {
+        try
+            UniswapV2Router01(ROUTER).swapTokensForExactTokens(
+                amount,
+                type(uint256).max,
+                path,
+                address(this),
+                // solhint-disable-next-line not-rely-on-time
+                block.timestamp
+            )
+        returns (uint256[] memory) {} catch Error(string memory reason) {
+            //solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
             revert("UEIA: withdraw fail");

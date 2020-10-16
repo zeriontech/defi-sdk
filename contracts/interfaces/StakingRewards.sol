@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev StakingRewards contract interface.
  * Only the functions required for SynthetixAssetAdapter contract are added.

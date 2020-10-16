@@ -25,7 +25,6 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { YVault } from "../../interfaces/YVault.sol";
 
-
 /**
  * @title Interactive adapter for Yearn Vaults.
  * @dev Implementation of InteractiveAdapter abstract contract.
@@ -42,10 +41,7 @@ contract YearnAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
      * @return tokensToBeWithdrawn Array with ane element - yVault.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata data
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
@@ -63,8 +59,7 @@ contract YearnAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
 
         ERC20(token).safeApprove(yVault, amount, "YVAIA");
         // solhint-disable-next-line no-empty-blocks
-        try YVault(yVault).deposit(amount) {
-        } catch Error(string memory reason) {
+        try YVault(yVault).deposit(amount)  {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("YVAIA: deposit fail");
@@ -78,10 +73,7 @@ contract YearnAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
      * @return tokensToBeWithdrawn Array with one element - underlying token.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata
-    )
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
@@ -96,8 +88,7 @@ contract YearnAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         tokensToBeWithdrawn[0] = YVault(token).token();
 
         // solhint-disable-next-line no-empty-blocks
-        try YVault(token).withdraw(amount) {
-        } catch Error(string memory reason) {
+        try YVault(token).withdraw(amount)  {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("YVAIA: withdraw fail");

@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev Pot contract interface.
  * Only the functions required for DSRAdapter contract are added.
@@ -27,7 +26,10 @@ pragma experimental ABIEncoderV2;
  */
 interface Pot {
     function pie(address) external view returns (uint256);
+
     function dsr() external view returns (uint256);
+
     function rho() external view returns (uint256);
+
     function chi() external view returns (uint256);
 }

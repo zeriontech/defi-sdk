@@ -22,19 +22,21 @@ import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { StakingRewards } from "../../interfaces/StakingRewards.sol";
 
-
 /**
  * @title Asset adapter for Synthetix protocol.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract SynthetixAssetAdapter is ProtocolAdapter {
-
     address internal immutable stakingContract_;
     address internal immutable stakingToken_;
     address internal immutable rewardsToken_;
 
-    constructor(address stakingContract, address stakingToken, address rewardsToken) {
+    constructor(
+        address stakingContract,
+        address stakingToken,
+        address rewardsToken
+    ) {
         require(stakingContract != address(0), "SSA: empty stakingContract");
         require(stakingToken != address(0), "SSA: empty stakingToken");
         require(rewardsToken != address(0), "SSA: empty rewardsToken");

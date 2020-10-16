@@ -22,7 +22,6 @@ import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
 import { TokenAmount, AmountType } from "../shared/Structs.sol";
 import { ERC20 } from "../shared/ERC20.sol";
 
-
 /**
  * @title Base contract for interactive protocol adapters.
  * @dev deposit() and withdraw() functions MUST be implemented
@@ -30,7 +29,6 @@ import { ERC20 } from "../shared/ERC20.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract InteractiveAdapter is ProtocolAdapter {
-
     uint256 internal constant DELIMITER = 1e18;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
@@ -38,10 +36,7 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
      * @dev The function must deposit assets to the protocol.
      * @return MUST return assets to be sent back to the `msg.sender`.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata data
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         virtual
@@ -51,18 +46,13 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
      * @dev The function must withdraw assets from the protocol.
      * @return MUST return assets to be sent back to the `msg.sender`.
      */
-    function withdraw(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata data
-    )
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         virtual
         returns (address[] memory);
 
-    function getAbsoluteAmountDeposit(
-        TokenAmount calldata tokenAmount
-    )
+    function getAbsoluteAmountDeposit(TokenAmount calldata tokenAmount)
         internal
         view
         virtual
@@ -96,9 +86,7 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         }
     }
 
-    function getAbsoluteAmountWithdraw(
-        TokenAmount calldata tokenAmount
-    )
+    function getAbsoluteAmountWithdraw(TokenAmount calldata tokenAmount)
         internal
         virtual
         returns (uint256)
@@ -126,14 +114,7 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         }
     }
 
-    function mul(
-        uint256 a,
-        uint256 b
-    )
-        internal
-        pure
-        returns (uint256)
-    {
+    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
         if (a == 0) {
             return 0;
         }

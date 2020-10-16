@@ -21,14 +21,12 @@ pragma experimental ABIEncoderV2;
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { TokenGeyser } from "../../interfaces/TokenGeyser.sol";
 
-
 /**
  * @title Asset adapter for Ampleforth Staking.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract AmpleforthStakingAdapter is ProtocolAdapter {
-
     address[] internal geysers_;
     address internal immutable stakingToken_;
 

@@ -23,14 +23,12 @@ import { ERC20Metadata, Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { CToken } from "../../interfaces/CToken.sol";
 
-
 /**
  * @title Token adapter for CTokens.
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CompoundTokenAdapter is TokenAdapter {
-
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;
     address internal constant CSAI = 0xF5DCe57282A584D2746FaF1593d3121Fcac444dC;
@@ -56,11 +54,7 @@ contract CompoundTokenAdapter is TokenAdapter {
      */
     function getMetadata(address token) public view override returns (ERC20Metadata memory) {
         if (token == CSAI) {
-            return ERC20Metadata({
-                name: "Compound Sai",
-                symbol: "cSAI",
-                decimals: uint8(8)
-            });
+            return ERC20Metadata({ name: "Compound Sai", symbol: "cSAI", decimals: uint8(8) });
         } else {
             return super.getMetadata(token);
         }

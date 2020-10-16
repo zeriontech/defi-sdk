@@ -22,14 +22,12 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { MKRAdapter } from "./MakerAdapter.sol";
 import { Pot } from "../../interfaces/Pot.sol";
 
-
 /**
  * @title Adapter for DSR protocol.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract DSRAdapter is ProtocolAdapter, MKRAdapter {
-
     /**
      * @return Amount of DAI locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.

@@ -24,7 +24,6 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 import { Helpers } from "../../shared/Helpers.sol";
 import { BPool } from "../../interfaces/BPool.sol";
 
-
 /**
  * @title Token adapter for Balancer Pool Tokens.
  * @dev Implementation of TokenAdapter abstract contract.
@@ -53,7 +52,9 @@ contract BalancerTokenAdapter is TokenAdapter {
             for (uint256 i = 0; i < components.length; i++) {
                 components[i] = Component({
                     token: currentTokens[i],
-                    rate: int256((BPool(token).getBalance(currentTokens[i])) * 1e18 / totalSupply)
+                    rate: int256(
+                        ((BPool(token).getBalance(currentTokens[i])) * 1e18) / totalSupply
+                    )
                 });
             }
         }
@@ -88,13 +89,14 @@ contract BalancerTokenAdapter is TokenAdapter {
     }
 
     function getPoolElement(address pool, address token) internal view returns (string memory) {
-        return string(
-            abi.encodePacked(
-                (BPool(pool).getNormalizedWeight(token) / 1e16).toString(),
-                "% ",
-                getUnderlyingSymbol(token)
-            )
-        );
+        return
+            string(
+                abi.encodePacked(
+                    (BPool(pool).getNormalizedWeight(token) / 1e16).toString(),
+                    "% ",
+                    getUnderlyingSymbol(token)
+                )
+            );
     }
 
     function getUnderlyingSymbol(address token) internal view returns (string memory) {

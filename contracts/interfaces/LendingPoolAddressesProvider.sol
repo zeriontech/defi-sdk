@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev LendingPoolAddressesProvider interface.
  * Only the functions required for AaveDebtAdapter contract are added.
@@ -27,5 +26,6 @@ pragma experimental ABIEncoderV2;
  */
 interface LendingPoolAddressesProvider {
     function getLendingPool() external view returns (address);
+
     function getLendingPoolCore() external view returns (address);
 }

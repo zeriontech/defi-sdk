@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev TokenGeyser contract interface.
  * Only the functions required for AmpleforthStakingAdapter contract are added.

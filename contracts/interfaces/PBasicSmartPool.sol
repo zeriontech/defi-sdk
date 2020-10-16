@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev PBasicSmartPool contract interface.
  * Only the functions required for PieDAOPieTokenAdapter contract are added.
@@ -27,5 +26,6 @@ pragma experimental ABIEncoderV2;
  */
 interface PBasicSmartPool {
     function getTokens() external view returns (address[] memory);
+
     function getBPool() external view returns (address);
 }

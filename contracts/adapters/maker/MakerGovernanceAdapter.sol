@@ -27,7 +27,6 @@ import { DSChief } from "../../interfaces/DSChief.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract MakerGovernanceAdapter is ProtocolAdapter {
-
     address internal constant GOVERNANCE = 0x9eF05f7F6deB616fd37aC3c959a2dDD25A54E4F5;
 
     /**

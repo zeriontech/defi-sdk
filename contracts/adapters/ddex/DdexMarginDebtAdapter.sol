@@ -20,7 +20,6 @@ pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
-
 /**
  * @dev Hydro contract interface.
  * Only the functions required for DdexMarginDebtAdapter contract are added.
@@ -29,9 +28,13 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  */
 interface Hydro {
     function getAllMarketsCount() external view returns (uint256);
-    function getAmountBorrowed(address, address, uint16) external view returns (uint256);
-}
 
+    function getAmountBorrowed(
+        address,
+        address,
+        uint16
+    ) external view returns (uint256);
+}
 
 /**
  * @title Debt adapter for DDEX protocol (margin account).
@@ -39,7 +42,6 @@ interface Hydro {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract DdexMarginDebtAdapter is ProtocolAdapter {
-
     address internal constant HYDRO = 0x241e82C79452F51fbfc89Fac6d912e021dB1a3B7;
     address internal constant HYDRO_ETH = 0x000000000000000000000000000000000000000E;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -53,11 +55,9 @@ contract DdexMarginDebtAdapter is ProtocolAdapter {
         int256 totalAmountBorrowed = 0;
 
         for (uint16 i = 0; i < uint16(allMarketsCount); i++) {
-            try Hydro(HYDRO).getAmountBorrowed(
-                token == ETH ? HYDRO_ETH : token,
-                account,
-                i
-            ) returns (uint256 amountBorrowed) {
+            try
+                Hydro(HYDRO).getAmountBorrowed(token == ETH ? HYDRO_ETH : token, account, i)
+            returns (uint256 amountBorrowed) {
                 totalAmountBorrowed -= int256(amountBorrowed);
             } catch {} // solhint-disable-line no-empty-blocks
         }

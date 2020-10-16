@@ -21,14 +21,12 @@ pragma experimental ABIEncoderV2;
 import { Info, Wei, SoloMargin } from "../../interfaces/SoloMargin.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
-
 /**
  * @dev dYdX adapter abstract contract.
  * @dev Base contract for dYdX adapters.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract DyDxAdapter is ProtocolAdapter {
-
     address internal constant SOLO = 0x1E0447b19BB6EcFdAe1e4AE1694b0C3659614e4e;
 
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;

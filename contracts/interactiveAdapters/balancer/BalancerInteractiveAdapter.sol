@@ -25,7 +25,6 @@ import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { BPool } from "../../interfaces/BPool.sol";
 
-
 /**
  * @title Interactive adapter for Balancer (liquidity).
  * @dev Implementation of InteractiveAdapter abstract contract.
@@ -43,10 +42,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
      * @return tokensToBeWithdrawn Array with one element - pool address.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata data
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
@@ -62,12 +58,10 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
         ERC20(token).safeApprove(pool, amount, "BIA");
-
-        try BPool(pool).joinswapExternAmountIn(
-            token,
-            amount,
-            0
-        ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
+        // solhint-disable-next-line no-empty-blocks
+        try BPool(pool).joinswapExternAmountIn(token, amount, 0)  {} catch Error(
+            string memory reason
+        ) {
             revert(reason);
         } catch {
             revert("BIA: deposit fail");
@@ -83,10 +77,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
      * @return tokensToBeWithdrawn Array with one element - destination token address.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata data
-    )
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
@@ -101,12 +92,10 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
-
-        try BPool(token).exitswapPoolAmountIn(
-            toToken,
-            amount,
-            0
-        ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
+        // solhint-disable-next-line no-empty-blocks
+        try BPool(token).exitswapPoolAmountIn(toToken, amount, 0)  {} catch Error(
+            string memory reason
+        ) {
             revert(reason);
         } catch {
             revert("BIA: withdraw fail");

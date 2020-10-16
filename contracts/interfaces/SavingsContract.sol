@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev SavingsContract contract interface.
  * Only the functions required for MstableAssetAdapter contract are added.
@@ -27,5 +26,6 @@ pragma experimental ABIEncoderV2;
  */
 interface SavingsContract {
     function creditBalances(address) external view returns (uint256);
+
     function exchangeRate() external view returns (uint256);
 }

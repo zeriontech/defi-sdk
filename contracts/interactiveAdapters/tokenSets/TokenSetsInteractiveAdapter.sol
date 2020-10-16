@@ -26,7 +26,6 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { RebalancingSetToken } from "../../interfaces/RebalancingSetToken.sol";
 import { SetToken } from "../../interfaces/SetToken.sol";
 
-
 /**
  * @dev RebalancingSetIssuanceModule contract interface.
  * Only the functions required for TokenSetsInteractiveAdapter contract are added.
@@ -34,10 +33,18 @@ import { SetToken } from "../../interfaces/SetToken.sol";
  * github.com/SetProtocol/set-protocol-contracts/blob/master/contracts/core/modules/RebalancingSetIssuanceModule.sol.
  */
 interface RebalancingSetIssuanceModule {
-    function issueRebalancingSet(address, uint256, bool) external;
-    function redeemRebalancingSet(address, uint256, bool) external;
-}
+    function issueRebalancingSet(
+        address,
+        uint256,
+        bool
+    ) external;
 
+    function redeemRebalancingSet(
+        address,
+        uint256,
+        bool
+    ) external;
+}
 
 /**
  * @title Interactive adapter for TokenSets.
@@ -59,10 +66,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
      * @return tokensToBeWithdrawn Array with one element - rebalancing set address.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata data
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
@@ -75,11 +79,10 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
 
         uint256 amount = getSetAmountAndApprove(set, tokenAmounts);
 
-        try RebalancingSetIssuanceModule(ISSUANCE_MODULE).issueRebalancingSet(
-            set,
-            amount,
-            false
-        ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
+        try
+            RebalancingSetIssuanceModule(ISSUANCE_MODULE).issueRebalancingSet(set, amount, false)
+         {} catch Error(string memory reason) {
+            //solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
             revert("TSIA: issue fail");
@@ -98,10 +101,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
      * @return tokensToBeWithdrawn Array with set token components.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata
-    )
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
@@ -111,26 +111,23 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
-        RebalancingSetIssuanceModule issuanceModule = RebalancingSetIssuanceModule(ISSUANCE_MODULE);
+        RebalancingSetIssuanceModule issuanceModule = RebalancingSetIssuanceModule(
+            ISSUANCE_MODULE
+        );
         RebalancingSetToken rebalancingSetToken = RebalancingSetToken(token);
         address setToken = rebalancingSetToken.currentSet();
         tokensToBeWithdrawn = SetToken(setToken).getComponents();
-
-        try issuanceModule.redeemRebalancingSet(
-            token,
-            amount,
-            false
-        ) {} catch Error(string memory reason) { // solhint-disable-line no-empty-blocks
+        // solhint-disable-next-line no-empty-blocks
+        try issuanceModule.redeemRebalancingSet(token, amount, false)  {} catch Error(
+            string memory reason
+        ) {
             revert(reason);
         } catch {
             revert("TSIA: redeem fail");
         }
     }
 
-    function getSetAmountAndApprove(
-        address set,
-        TokenAmount[] calldata tokenAmounts
-    )
+    function getSetAmountAndApprove(address set, TokenAmount[] calldata tokenAmounts)
         internal
         returns (uint256 amount)
     {
@@ -163,7 +160,7 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
         for (uint256 i = 0; i < length; i++) {
             token = tokenAmounts[i].token;
 
-            for(uint256 j = 0; j < length; j++) {
+            for (uint256 j = 0; j < length; j++) {
                 if (token == components[j]) {
                     received = mul(
                         mul(absoluteAmounts[i], bNaturalUnit) / bUnits[j] / rUnit,

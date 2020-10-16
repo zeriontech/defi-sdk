@@ -22,14 +22,12 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { LendingPoolAddressesProvider } from "../../interfaces/LendingPoolAddressesProvider.sol";
 import { LendingPool } from "../../interfaces/LendingPool.sol";
 
-
 /**
  * @title Debt adapter for Aave protocol.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract AaveDebtAdapter is ProtocolAdapter {
-
     address internal immutable provider_;
 
     constructor(address provider) {

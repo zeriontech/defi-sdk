@@ -4,7 +4,7 @@ const ASSET_ADAPTER = '01';
 
 const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
 const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
-const ProtocolAdapter = artifacts.require('ChiAdapter');
+const ProtocolAdapter = artifacts.require('ERC20ProtocolAdapter');
 const TokenAdapter = artifacts.require('ChiTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 

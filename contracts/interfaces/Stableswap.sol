@@ -17,7 +17,6 @@
 
 pragma solidity 0.7.1;
 
-
 /**
  * @dev Stableswap contract interface.
  * The Stableswap contract is available here
@@ -25,10 +24,25 @@ pragma solidity 0.7.1;
  */
 interface Stableswap {
     /* solhint-disable-next-line func-name-mixedcase */
-    function exchange_underlying(int128, int128, uint256, uint256) external;
-    function exchange(int128, int128, uint256, uint256) external;
+    function exchange_underlying(
+        int128,
+        int128,
+        uint256,
+        uint256
+    ) external;
+
+    function exchange(
+        int128,
+        int128,
+        uint256,
+        uint256
+    ) external;
+
     function coins(int128) external view returns (address);
+
     function coins(uint256) external view returns (address);
+
     function balances(int128) external view returns (uint256);
+
     function balances(uint256) external view returns (uint256);
 }

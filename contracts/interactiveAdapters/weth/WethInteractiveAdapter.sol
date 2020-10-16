@@ -22,7 +22,6 @@ import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
-
 /**
  * @dev WETH9 contract interface.
  * Only the functions required for WethInteractiveAdapter contract are added.
@@ -31,16 +30,15 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
  */
 interface WETH9 {
     function deposit() external payable;
+
     function withdraw(uint256) external;
 }
-
 
 /**
  * @title Interactive adapter for Wrapped Ether.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
 contract WethInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
-
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     /**
@@ -50,10 +48,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
      * @return tokensToBeWithdrawn Array with one element - WETH token address.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
@@ -67,8 +62,8 @@ contract WethInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = WETH;
 
-        try WETH9(WETH).deposit{value: amount}() { // solhint-disable-line no-empty-blocks
-        } catch Error(string memory reason) {
+        // solhint-disable-next-line no-empty-blocks
+        try WETH9(WETH).deposit{ value: amount }()  {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("WIA: deposit fail");
@@ -82,10 +77,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
      * @return tokensToBeWithdrawn Array with one element - ETH address (0xEeee...EEeE).
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata
-    )
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
@@ -99,8 +91,8 @@ contract WethInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = ETH;
 
-        try WETH9(WETH).withdraw(amount) { // solhint-disable-line no-empty-blocks
-        } catch Error(string memory reason) {
+        // solhint-disable-next-line no-empty-blocks
+        try WETH9(WETH).withdraw(amount)  {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("WIA: withdraw fail");

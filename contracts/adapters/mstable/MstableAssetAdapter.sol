@@ -22,14 +22,12 @@ import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { SavingsContract } from "../../interfaces/SavingsContract.sol";
 
-
 /**
  * @title Asset adapter for mStable protocol.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract MstableAssetAdapter is ProtocolAdapter {
-
     address internal constant SAVINGS = 0xcf3F73290803Fc04425BEE135a4Caeb2BaB2C2A1;
 
     /**
@@ -40,6 +38,6 @@ contract MstableAssetAdapter is ProtocolAdapter {
         uint256 credits = SavingsContract(SAVINGS).creditBalances(account);
         uint256 exchangeRate = SavingsContract(SAVINGS).exchangeRate();
 
-        return int256(credits * exchangeRate / 1e18);
+        return int256((credits * exchangeRate) / 1e18);
     }
 }

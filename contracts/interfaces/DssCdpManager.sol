@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev DssCdpManager contract interface.
  * Only the functions required for MCDAssetAdapter contract are added.
@@ -27,7 +26,10 @@ pragma experimental ABIEncoderV2;
  */
 interface DssCdpManager {
     function first(address) external view returns (uint256);
+
     function list(uint256) external view returns (uint256, uint256);
+
     function urns(uint256) external view returns (address);
+
     function ilks(uint256) external view returns (bytes32);
 }

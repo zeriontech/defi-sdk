@@ -20,7 +20,6 @@ pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
-
 /**
  * @dev BasePool contract interface.
  * Only the functions required for PoolTogetherAdapter contract are added.
@@ -31,7 +30,6 @@ interface BasePool {
     function totalBalanceOf(address) external view returns (uint256);
 }
 
-
 /**
  * @dev Pod contract interface.
  * Only the functions required for PoolTogetherAdapter contract are added.
@@ -40,9 +38,9 @@ interface BasePool {
  */
 interface Pod {
     function balanceOfUnderlying(address) external view returns (uint256);
+
     function pendingDeposit(address) external view returns (uint256);
 }
-
 
 /**
  * @title Adapter for PoolTogether protocol.
@@ -50,7 +48,6 @@ interface Pod {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract PoolTogetherAdapter is ProtocolAdapter {
-
     address internal constant DAI_POOL = 0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958;
     address internal constant USDC_POOL = 0x0034Ea9808E620A0EF79261c51AF20614B742B24;
     address internal constant DAI_POD = 0x9F4C5D8d9BE360DF36E67F52aE55C1B137B4d0C4;

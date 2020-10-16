@@ -18,9 +18,7 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 abstract contract Ownable {
-
     modifier onlyOwner {
         require(msg.sender == owner_, "O: only owner");
         _;

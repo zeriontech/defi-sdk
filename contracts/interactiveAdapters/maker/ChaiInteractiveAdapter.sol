@@ -24,7 +24,6 @@ import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
-
 /**
  * @dev Chai contract interface.
  * Only the functions required for ChaiAdapter contract are added.
@@ -32,10 +31,10 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
  * github.com/dapphub/chai/blob/master/src/chai.sol.
  */
 interface Chai {
-    function join(address, uint) external;
-    function exit(address, uint) external;
-}
+    function join(address, uint256) external;
 
+    function exit(address, uint256) external;
+}
 
 /**
  * @title Interactive adapter for Chai contract.
@@ -53,10 +52,7 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
      * DAI token address, DAI token amount to be deposited, and amount type.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
@@ -68,8 +64,8 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
         ERC20(DAI).safeApprove(CHAI, amount, "CIA");
 
-        try Chai(CHAI).join(address(this), amount) { // solhint-disable-line no-empty-blocks
-        } catch Error(string memory reason) {
+        try Chai(CHAI).join(address(this), amount)  {} catch Error(string memory reason) {
+            //solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
             revert("CIA: deposit fail");
@@ -86,10 +82,7 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
      * @return tokensToBeWithdrawn Array with one element - DAI address.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata
-    )
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
@@ -99,8 +92,9 @@ contract ChaiInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         require(tokenAmounts[0].token == CHAI, "CIA: should be CHAI");
 
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
-        try Chai(CHAI).exit(address(this), amount) { // solhint-disable-line no-empty-blocks
-        } catch Error(string memory reason) {
+
+        try Chai(CHAI).exit(address(this), amount)  {} catch Error(string memory reason) {
+            //solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
             revert("CIA: deposit fail");

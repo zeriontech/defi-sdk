@@ -22,7 +22,6 @@ import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
-
 /**
  * @dev BasePool contract interface.
  * Only the functions required for PoolTogetherTokenAdapter contract are added.
@@ -33,14 +32,12 @@ interface BasePool {
     function token() external view returns (address);
 }
 
-
 /**
  * @title Token adapter for PoolTogether pools.
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract PoolTogetherTokenAdapter is TokenAdapter {
-
     address internal constant SAI_POOL = 0xb7896fce748396EcFC240F5a0d3Cc92ca42D7d84;
 
     /**
@@ -50,10 +47,7 @@ contract PoolTogetherTokenAdapter is TokenAdapter {
     function getComponents(address token) external override returns (Component[] memory) {
         Component[] memory components = new Component[](1);
 
-        components[0] = Component({
-            token: BasePool(token).token(),
-            rate: int256(1e18)
-        });
+        components[0] = Component({ token: BasePool(token).token(), rate: int256(1e18) });
 
         return components;
     }
@@ -66,12 +60,7 @@ contract PoolTogetherTokenAdapter is TokenAdapter {
             return "SAI Pool";
         } else {
             address underlying = BasePool(token).token();
-            return string(
-                abi.encodePacked(
-                    ERC20(underlying).symbol(),
-                    " Pool"
-                )
-            );
+            return string(abi.encodePacked(ERC20(underlying).symbol(), " Pool"));
         }
     }
 

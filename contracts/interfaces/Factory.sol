@@ -17,7 +17,6 @@
 
 pragma solidity 0.7.1;
 
-
 /**
  * @dev Factory contract interface.
  * The Factory contract is available here
@@ -25,5 +24,6 @@ pragma solidity 0.7.1;
  */
 interface Factory {
     function getExchange(address) external view returns (address);
+
     function getToken(address) external view returns (address);
 }

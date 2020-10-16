@@ -17,7 +17,6 @@
 
 pragma solidity 0.7.1;
 
-
 /**
  * @dev SetToken contract interface.
  * The SetToken contract is available here
@@ -25,6 +24,8 @@ pragma solidity 0.7.1;
  */
 interface SetToken {
     function getUnits() external view returns (uint256[] memory);
+
     function naturalUnit() external view returns (uint256);
-    function getComponents() external view returns(address[] memory);
+
+    function getComponents() external view returns (address[] memory);
 }

@@ -24,14 +24,12 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 import { CurveRegistry, PoolInfo } from "./CurveRegistry.sol";
 import { Stableswap } from "../../interfaces/Stableswap.sol";
 
-
 /**
  * @title Token adapter for Curve Pool Tokens.
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CurveTokenAdapter is TokenAdapter {
-
     address internal constant REGISTRY = 0x3fb5Cd4b0603C3D5828D3b5658B10C9CB81aa922;
 
     address internal constant THREE_CRV = 0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490;
@@ -53,7 +51,7 @@ contract CurveTokenAdapter is TokenAdapter {
                 components[i] = Component({
                     token: Stableswap(swap).coins(i),
                     rate: int256(
-                        Stableswap(swap).balances(i) * 1e18 / ERC20(token).totalSupply()
+                        (Stableswap(swap).balances(i) * 1e18) / ERC20(token).totalSupply()
                     )
                 });
             }
@@ -62,7 +60,7 @@ contract CurveTokenAdapter is TokenAdapter {
                 components[i] = Component({
                     token: Stableswap(swap).coins(int128(i)),
                     rate: int256(
-                        Stableswap(swap).balances(int128(i)) * 1e18 / ERC20(token).totalSupply()
+                        (Stableswap(swap).balances(int128(i)) * 1e18) / ERC20(token).totalSupply()
                     )
                 });
             }

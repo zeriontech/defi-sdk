@@ -31,7 +31,6 @@ interface Proxy {
     function target() external view returns (address);
 }
 
-
 /**
  * @dev Synthetix contract interface.
  * Only the functions required for SynthetixAssetAdapter contract are added.
@@ -42,14 +41,12 @@ interface Synthetix {
     function collateral(address) external view returns (uint256);
 }
 
-
 /**
  * @title Asset adapter for Synthetix protocol.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract SynthetixAssetAdapter is ProtocolAdapter {
-
     /**
      * @return Amount of SNX locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.

@@ -22,7 +22,6 @@ import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
-
 /**
  * @dev YToken contract interface.
  * Only the functions required for IearnAdapter contract are added.
@@ -31,9 +30,9 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  */
 interface YToken {
     function token() external view returns (address);
+
     function getPricePerFullShare() external view returns (uint256);
 }
-
 
 /**
  * @title Token adapter for YTokens.
@@ -41,7 +40,6 @@ interface YToken {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract YearnTokenAdapter is TokenAdapter {
-
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.

@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev Synthetix contract interface.
  * Only the functions required for SynthetixDebtAdapter contract are added.

@@ -23,14 +23,12 @@ import { KyberStaking } from "../../interfaces/KyberStaking.sol";
 import { KyberDAO } from "../../interfaces/KyberDAO.sol";
 import { KyberFeeHandler } from "../../interfaces/KyberFeeHandler.sol";
 
-
 /**
  * @title Asset adapter for KyberDAO protocol.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract KyberStakingAdapter is ProtocolAdapter {
-
     address internal constant KNC = 0xdd974D5C2e2928deA5F71b9825b8b646686BD200;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     address internal constant DAO = 0x49bdd8854481005bBa4aCEbaBF6e06cD5F6312e9;
@@ -56,10 +54,13 @@ contract KyberStakingAdapter is ProtocolAdapter {
             uint32 curEpoch = KyberDAO(DAO).getCurrentEpochNumber();
             for (uint32 i = 0; i < curEpoch; i++) {
                 if (!KyberFeeHandler(FEE_HANDLER).hasClaimedReward(account, i)) {
-                    rewardPercentage = KyberDAO(DAO).getPastEpochRewardPercentageInPrecision(account, i);
+                    rewardPercentage = KyberDAO(DAO).getPastEpochRewardPercentageInPrecision(
+                        account,
+                        i
+                    );
                     if (rewardPercentage > 0) {
                         rewardsPerEpoch = KyberFeeHandler(FEE_HANDLER).rewardsPerEpoch(i);
-                        reward += int256(rewardsPerEpoch * rewardPercentage / PRECISION);
+                        reward += int256((rewardsPerEpoch * rewardPercentage) / PRECISION);
                     }
                 }
             }

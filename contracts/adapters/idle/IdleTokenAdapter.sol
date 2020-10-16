@@ -22,7 +22,6 @@ import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
-
 /**
  * @dev IdleToken contract interface.
  * Only the functions required for IdleTokenAdapter contract are added.
@@ -32,16 +31,15 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  */
 interface IdleToken {
     function token() external view returns (address);
+
     function tokenPrice() external view returns (uint256);
 }
-
 
 /**
  * @title Token adapter for IdleTokens.
  * @dev Implementation of TokenAdapter abstract contract.
  */
 contract IdleTokenAdapter is TokenAdapter {
-
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.

@@ -20,14 +20,12 @@ pragma experimental ABIEncoderV2;
 
 import { Ownable } from "../../core/Ownable.sol";
 
-
 struct PoolInfo {
-    address swap;       // stableswap contract address.
-    address deposit;    // deposit contract address.
+    address swap; // stableswap contract address.
+    address deposit; // deposit contract address.
     uint256 totalCoins; // Number of coins used in stableswap contract.
-    string name;        // Pool name ("... Pool").
+    string name; // Pool name ("... Pool").
 }
-
 
 /**
  * @title Registry for Curve contracts.
@@ -37,13 +35,9 @@ struct PoolInfo {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CurveRegistry is Ownable {
+    mapping(address => PoolInfo) internal poolInfo_;
 
-    mapping (address => PoolInfo) internal poolInfo_;
-
-    function setPoolsInfo(
-        address[] memory tokens,
-        PoolInfo[] memory poolsInfo
-    )
+    function setPoolsInfo(address[] memory tokens, PoolInfo[] memory poolsInfo)
         external
         onlyOwner
     {
@@ -57,12 +51,7 @@ contract CurveRegistry is Ownable {
         return poolInfo_[token];
     }
 
-    function setPoolInfo(
-        address token,
-        PoolInfo memory poolInfo
-    )
-    internal
-    {
+    function setPoolInfo(address token, PoolInfo memory poolInfo) internal {
         poolInfo_[token] = poolInfo;
     }
 }

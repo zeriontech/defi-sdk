@@ -17,7 +17,6 @@
 
 pragma solidity 0.7.1;
 
-
 /**
  * @dev yVault contract interface.
  * Only the functions required for YearnVaultAssetInteractiveAdapter contract are added.
@@ -26,6 +25,8 @@ pragma solidity 0.7.1;
  */
 interface YVault {
     function deposit(uint256) external;
+
     function withdraw(uint256) external;
-    function token() view external returns (address);
+
+    function token() external view returns (address);
 }

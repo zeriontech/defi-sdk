@@ -21,14 +21,12 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
-
 /**
  * @title Adapter for Curve protocol (exchange).
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CurveExchangeAdapter is ProtocolAdapter {
-
     /**
      * @notice This function is unavailable for exchange adapter.
      * @dev Implementation of ProtocolAdapter abstract contract function.

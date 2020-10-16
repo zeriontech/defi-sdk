@@ -17,7 +17,6 @@
 
 pragma solidity 0.7.1;
 
-
 /**
  * @dev CEther contract interface.
  * The CEther contract is available here

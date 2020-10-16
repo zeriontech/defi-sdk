@@ -23,7 +23,6 @@ import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { MKRAdapter } from "./MakerAdapter.sol";
 
-
 /**
  * @dev Pot contract interface.
  * Only the functions required for ChaiTokenAdapter contract are added.
@@ -32,11 +31,13 @@ import { MKRAdapter } from "./MakerAdapter.sol";
  */
 interface Pot {
     function pie(address) external view returns (uint256);
+
     function dsr() external view returns (uint256);
+
     function rho() external view returns (uint256);
+
     function chi() external view returns (uint256);
 }
-
 
 /**
  * @title Token adapter for Chai tokens.
@@ -44,7 +45,6 @@ interface Pot {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ChaiTokenAdapter is TokenAdapter, MKRAdapter {
-
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.

@@ -18,17 +18,15 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev Info struct from Account library.
  * The Account library is available here
  * github.com/dydxprotocol/solo/blob/master/contracts/protocol/lib/Account.sol.
  */
 struct Info {
-    address owner;  // The address that owns the account
+    address owner; // The address that owns the account
     uint256 number; // A nonce that allows a single address to control many accounts
 }
-
 
 /**
  * @dev Wei struct from Types library.
@@ -39,7 +37,6 @@ struct Wei {
     bool sign; // true if positive
     uint256 value;
 }
-
 
 /**
  * @dev SoloMargin contract interface.

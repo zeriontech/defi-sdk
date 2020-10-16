@@ -17,7 +17,6 @@
 
 pragma solidity 0.7.1;
 
-
 /**
  * @dev UniswapV2Pair contract interface.
  * The UniswapV2Pair contract is available here
@@ -25,8 +24,12 @@ pragma solidity 0.7.1;
  */
 interface UniswapV2Pair {
     function mint(address) external returns (uint256);
+
     function burn(address) external returns (uint256, uint256);
+
     function getReserves() external view returns (uint112, uint112);
+
     function token0() external view returns (address);
+
     function token1() external view returns (address);
 }

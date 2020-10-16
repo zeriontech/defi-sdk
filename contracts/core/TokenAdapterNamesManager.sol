@@ -21,16 +21,14 @@ pragma experimental ABIEncoderV2;
 import { Ownable } from "./Ownable.sol";
 import { TokenAdapter } from "../adapters/TokenAdapter.sol";
 
-
 /**
  * @title TokenAdapterRegistry part responsible for contracts' hashes management.
  * @dev Base contract for TokenAdapterRegistry.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract TokenAdapterNamesManager is Ownable {
-
     // Contract's hash => token adapter's name
-    mapping (bytes32 => bytes32) internal _tokenAdapterName;
+    mapping(bytes32 => bytes32) internal _tokenAdapterName;
 
     /**
      * @notice Adds token adapters' names by tokens.
@@ -41,10 +39,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
     function addTokenAdapterNames(
         address[] calldata newTokens,
         bytes32[] calldata newTokenAdapterNames
-    )
-        external
-        onlyOwner
-    {
+    ) external onlyOwner {
         uint256 length = newTokens.length;
         require(length != 0, "TANM: empty[1]");
         require(length == newTokenAdapterNames.length, "TANM: lengths differ[1]");
@@ -60,12 +55,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
      * The function is callable only by the owner.
      * @param tokens Array of tokens.
      */
-    function removeTokenAdapterNames(
-        address[] calldata tokens
-    )
-        external
-        onlyOwner
-    {
+    function removeTokenAdapterNames(address[] calldata tokens) external onlyOwner {
         uint256 length = tokens.length;
         require(length != 0, "TANM: empty[2]");
 
@@ -83,10 +73,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
     function updateTokenAdapterNames(
         address[] calldata tokens,
         bytes32[] calldata newTokenAdapterNames
-    )
-        external
-        onlyOwner
-    {
+    ) external onlyOwner {
         uint256 length = tokens.length;
         require(length != 0, "TANM: empty[3]");
         require(length == newTokenAdapterNames.length, "TANM: lengths differ[2]");
@@ -100,23 +87,11 @@ abstract contract TokenAdapterNamesManager is Ownable {
      * @param token Address of token.
      * @return Name of token adapter.
      */
-    function getTokenAdapterName(
-        address token
-    )
-        public
-        view
-        returns (bytes32)
-    {
+    function getTokenAdapterName(address token) public view returns (bytes32) {
         return _tokenAdapterName[getTokenHash(token)];
     }
 
-    function getTokenHash(
-        address token
-    )
-        public
-        view
-        returns (bytes32)
-    {
+    function getTokenHash(address token) public view returns (bytes32) {
         bytes32 hash;
 
         // solhint-disable-next-line no-inline-assembly
@@ -132,12 +107,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
      * @param newHash New hash.
      * @param newTokenAdapterName New token adapter's name.
      */
-    function addTokenAdapterName(
-        bytes32 newHash,
-        bytes32 newTokenAdapterName
-    )
-        internal
-    {
+    function addTokenAdapterName(bytes32 newHash, bytes32 newTokenAdapterName) internal {
         require(newTokenAdapterName != bytes32(0), "TANM: zero[2]");
         require(_tokenAdapterName[newHash] == bytes32(0), "TANM: exists");
 
@@ -148,11 +118,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
      * @notice Removes a token adapters' name by hash.
      * @param hash Hash.
      */
-    function removeTokenAdapterName(
-        bytes32 hash
-    )
-        internal
-    {
+    function removeTokenAdapterName(bytes32 hash) internal {
         require(_tokenAdapterName[hash] != bytes32(0), "TANM: does not exist[1]");
 
         delete _tokenAdapterName[hash];
@@ -163,12 +129,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
      * @param hash Hash.
      * @param newTokenAdapterName New token adapter's name.
      */
-    function updateTokenAdapterName(
-        bytes32 hash,
-        bytes32 newTokenAdapterName
-    )
-        internal
-    {
+    function updateTokenAdapterName(bytes32 hash, bytes32 newTokenAdapterName) internal {
         bytes32 oldTokenAdapterName = _tokenAdapterName[hash];
         require(oldTokenAdapterName != bytes32(0), "TANM: does not exist[2]");
         require(newTokenAdapterName != bytes32(0), "TANM: zero[3]");

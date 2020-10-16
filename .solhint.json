@@ -1,5 +1,6 @@
 {
   "extends": "solhint:all",
+  "plugins": ["prettier"],
   "rules": {
     "mark-callable-contracts": [
       "off"
@@ -18,9 +19,13 @@
     "private-vars-leading-underscore": [
       "off"
     ],
+    "const-name-snakecase": [
+      "off"
+    ],
     "func-visibility": [
       "warn",
       { "ignoreConstructors": true }
-    ]
+    ],
+    "prettier/prettier": "warn"
   }
 }

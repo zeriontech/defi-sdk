@@ -21,7 +21,6 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
-
 /**
  * @dev Staking contract interface.
  * Only the functions required for ZrxAdapter contract are added.
@@ -32,14 +31,12 @@ interface Staking {
     function getTotalStake(address) external view returns (uint256);
 }
 
-
 /**
  * @title Adapter for 0x protocol.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ZrxAdapter is ProtocolAdapter {
-
     address internal constant STAKING = 0xa26e80e7Dea86279c6d778D702Cc413E6CFfA777;
 
     /**

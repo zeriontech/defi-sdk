@@ -17,7 +17,6 @@
 
 pragma solidity 0.7.1;
 
-
 /**
  * @title Registry for Compound contracts.
  * @dev Implements the only function - getCToken(address).
@@ -26,8 +25,7 @@ pragma solidity 0.7.1;
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CompoundRegistry {
-
-    mapping (address => address) internal cTokens;
+    mapping(address => address) internal cTokens;
 
     constructor() {
         cTokens[0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359] = 0xF5DCe57282A584D2746FaF1593d3121Fcac444dC;

@@ -22,7 +22,6 @@ import { ERC20 } from "../../shared/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { CToken } from "../../interfaces/CToken.sol";
 
-
 /**
  * @dev CompMarketState contract interface.
  * Only the functions required for CompoundGovernanceAdapter contract are added.
@@ -34,7 +33,6 @@ struct CompMarketState {
     uint32 block;
 }
 
-
 /**
  * @dev Comptroller contract interface.
  * Only the functions required for CompoundGovernanceAdapter contract are added.
@@ -43,13 +41,17 @@ struct CompMarketState {
  */
 interface Comptroller {
     function getAllMarkets() external view returns (address[] memory);
+
     function compBorrowState(address) external view returns (CompMarketState memory);
+
     function compSupplyState(address) external view returns (CompMarketState memory);
+
     function compBorrowerIndex(address, address) external view returns (uint256);
+
     function compSupplierIndex(address, address) external view returns (uint256);
+
     function compAccrued(address) external view returns (uint256);
 }
-
 
 /**
  * @title Asset adapter for Compound Governance.
@@ -57,7 +59,6 @@ interface Comptroller {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CompoundGovernanceAdapter is ProtocolAdapter {
-
     address internal constant COMPTROLLER = 0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B;
 
     /**
@@ -83,10 +84,8 @@ contract CompoundGovernanceAdapter is ProtocolAdapter {
             uint256 borrowIndex = uint256(Comptroller(COMPTROLLER).compBorrowState(cToken).index);
             require(borrowIndex >= borrowerIndex, "CGA: underflow");
             uint256 deltaIndex = borrowIndex - borrowerIndex;
-            uint256 borrowerAmount = mul(
-                CToken(cToken).borrowBalanceStored(account),
-                1e18
-            ) / CToken(cToken).borrowIndex();
+            uint256 borrowerAmount = mul(CToken(cToken).borrowBalanceStored(account), 1e18) /
+                CToken(cToken).borrowIndex();
             uint256 borrowerDelta = mul(borrowerAmount, deltaIndex) / 1e36;
             return borrowerDelta;
         } else {

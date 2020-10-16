@@ -28,7 +28,6 @@ import { LendingPoolAddressesProvider } from "../../interfaces/LendingPoolAddres
 import { LendingPool } from "../../interfaces/LendingPool.sol";
 import { LendingPoolCore } from "../../interfaces/LendingPoolCore.sol";
 
-
 /**
  * @title Interactive adapter for Aave protocol.
  * @dev Implementation of InteractiveAdapter abstract contract.
@@ -46,10 +45,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
      * @return tokensToBeWithdrawn Array with ane element - aToken.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata
-    )
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
@@ -68,8 +64,9 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
 
         if (token == ETH) {
             // solhint-disable-next-line no-empty-blocks
-            try LendingPool(pool).deposit{value: amount}(ETH, amount, 0) {
-            } catch Error(string memory reason) {
+            try LendingPool(pool).deposit{ value: amount }(ETH, amount, 0)  {} catch Error(
+                string memory reason
+            ) {
                 revert(reason);
             } catch {
                 revert("AAIA: deposit fail[1]");
@@ -77,8 +74,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
         } else {
             ERC20(token).safeApprove(core, amount, "AAIA");
             // solhint-disable-next-line no-empty-blocks
-            try LendingPool(pool).deposit(token, amount, 0) {
-            } catch Error(string memory reason) {
+            try LendingPool(pool).deposit(token, amount, 0)  {} catch Error(string memory reason) {
                 revert(reason);
             } catch {
                 revert("AAIA: deposit fail[2]");
@@ -93,10 +89,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
      * @return tokensToBeWithdrawn Array with one element - underlying token.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(
-        TokenAmount[] calldata tokenAmounts,
-        bytes calldata
-    )
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
@@ -111,8 +104,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
         tokensToBeWithdrawn[0] = AToken(token).underlyingAssetAddress();
 
         // solhint-disable-next-line no-empty-blocks
-        try AToken(token).redeem(amount) {
-        } catch Error(string memory reason) {
+        try AToken(token).redeem(amount)  {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("AAIA: withdraw fail");

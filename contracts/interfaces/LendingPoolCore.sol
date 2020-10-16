@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev LendingPoolCore contract interface.
  * Only the functions required for AaveAssetInteractiveAdapter contract are added.

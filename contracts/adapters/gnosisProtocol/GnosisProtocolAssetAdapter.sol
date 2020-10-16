@@ -20,7 +20,6 @@ pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
-
 /**
  * @dev EpochTokenLocker contract interface.
  * Only the functions required for GnosisProtocolAdapter contract are added.
@@ -31,14 +30,12 @@ interface EpochTokenLocker {
     function getBalance(address, address) external view returns (uint256);
 }
 
-
 /**
  * @title Asset adapter for GnosisProtocol.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Marek Galvanek <marek.galvanek@gmail.com>
  */
 contract GnosisProtocolAssetAdapter is ProtocolAdapter {
-
     address internal constant BALANCE = 0x6F400810b62df8E13fded51bE75fF5393eaa841F;
 
     /**

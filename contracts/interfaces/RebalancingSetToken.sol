@@ -17,7 +17,6 @@
 
 pragma solidity 0.7.1;
 
-
 /**
  * @dev RebalancingSetToken contract interface.
  * The RebalancingSetToken contract is available here
@@ -25,7 +24,10 @@ pragma solidity 0.7.1;
  */
 interface RebalancingSetToken {
     function currentSet() external view returns (address);
-    function getUnits() external view returns(uint256[] memory);
-    function naturalUnit() external view returns(uint256);
+
+    function getUnits() external view returns (uint256[] memory);
+
+    function naturalUnit() external view returns (uint256);
+
     function unitShares() external view returns (uint256);
 }

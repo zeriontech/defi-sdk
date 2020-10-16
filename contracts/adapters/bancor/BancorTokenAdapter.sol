@@ -22,7 +22,6 @@ import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
-
 /**
  * @dev SmartToken contract interface.
  * Only the functions required for BancorTokenAdapter contract are added.
@@ -31,9 +30,9 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  */
 interface SmartToken {
     function owner() external view returns (address);
+
     function totalSupply() external view returns (uint256);
 }
-
 
 /**
  * @dev BancorConverter contract interface.
@@ -43,9 +42,9 @@ interface SmartToken {
  */
 interface BancorConverter {
     function connectorTokenCount() external view returns (uint256);
+
     function connectorTokens(uint256) external view returns (address);
 }
-
 
 /**
  * @dev ContractRegistry contract interface.
@@ -56,7 +55,6 @@ interface BancorConverter {
 interface ContractRegistry {
     function addressOf(bytes32) external view returns (address);
 }
-
 
 /**
  * @dev BancorFormula contract interface.
@@ -70,12 +68,8 @@ interface BancorFormula {
         uint256,
         uint32,
         uint256
-    )
-        external
-        view
-        returns (uint256);
+    ) external view returns (uint256);
 }
-
 
 /**
  * @title Token adapter for SmartTokens.
@@ -83,7 +77,6 @@ interface BancorFormula {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract BancorTokenAdapter is TokenAdapter {
-
     address internal constant REGISTRY = 0x52Ae12ABe5D8BD778BD5397F99cA900624CfADD4;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 

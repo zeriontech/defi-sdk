@@ -23,14 +23,12 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { CToken } from "../../interfaces/CToken.sol";
 import { CompoundRegistry } from "./CompoundRegistry.sol";
 
-
 /**
  * @title Debt adapter for Compound protocol.
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract CompoundDebtAdapter is ProtocolAdapter {
-
     address internal constant REGISTRY = 0xD0ff11EA62C867F6dF8E9cc37bb5339107FAb141;
 
     /**

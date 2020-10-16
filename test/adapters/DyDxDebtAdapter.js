@@ -4,7 +4,7 @@ const DEBT_ADAPTER = '02';
 
 const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
 const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
-const ProtocolAdapter = artifacts.require('DyDxDebtAdapter');
+const ProtocolAdapter = artifacts.require('DyDxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('DyDxDebtAdapter', () => {

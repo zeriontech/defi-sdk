@@ -22,14 +22,12 @@ import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
-
 /**
  * @title Token adapter for Wrapped Ether.
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract WethTokenAdapter is TokenAdapter {
-
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
@@ -39,10 +37,7 @@ contract WethTokenAdapter is TokenAdapter {
     function getComponents(address) external pure override returns (Component[] memory) {
         Component[] memory components = new Component[](1);
 
-        components[0] = Component({
-            token: ETH,
-            rate: int256(1e18)
-        });
+        components[0] = Component({ token: ETH, rate: int256(1e18) });
 
         return components;
     }

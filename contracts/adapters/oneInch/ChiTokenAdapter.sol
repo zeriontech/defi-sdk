@@ -23,14 +23,12 @@ import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { IOneSplit } from "../../interfaces/IOneSplit.sol";
 
-
 /**
  * @title Token adapter for Chi Gastoken by 1inch.
  * @dev Implementation of TokenAdapter abstract contract.
  * @author 1inch.exchange <info@1inch.exchange>
  */
 contract ChiTokenAdapter is TokenAdapter {
-
     address private constant ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     IOneSplit private constant ONE_SPLIT = IOneSplit(0xC586BeF4a0992C495Cf22e1aeEE4E446CECDee0E);
 
@@ -49,10 +47,7 @@ contract ChiTokenAdapter is TokenAdapter {
 
         Component[] memory components = new Component[](1);
 
-        components[0] = Component({
-            token: ETH_ADDRESS,
-            rate: int256(returnAmount * 1e18)
-        });
+        components[0] = Component({ token: ETH_ADDRESS, rate: int256(returnAmount * 1e18) });
 
         return components;
     }

@@ -20,14 +20,12 @@ pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
 
-
 /**
  * @notice Mock protocol adapter for tests.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract MockAdapter is ProtocolAdapter {
-
-    mapping (address => int256) internal balanceOf;
+    mapping(address => int256) internal balanceOf;
 
     constructor() {
         balanceOf[msg.sender] = 1000;

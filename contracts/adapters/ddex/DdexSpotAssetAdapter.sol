@@ -20,7 +20,6 @@ pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
-
 /**
  * @dev Hydro contract interface.
  * Only the functions required for DdexSpotAssetAdapter contract are added.
@@ -31,14 +30,12 @@ interface Hydro {
     function balanceOf(address, address) external view returns (uint256);
 }
 
-
 /**
  * @title Asset adapter for DDEX protocol (spot account).
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract DdexSpotAssetAdapter is ProtocolAdapter {
-
     address internal constant HYDRO = 0x241e82C79452F51fbfc89Fac6d912e021dB1a3B7;
     address internal constant HYDRO_ETH = 0x000000000000000000000000000000000000000E;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;

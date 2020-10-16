@@ -24,14 +24,12 @@ import { Ownable } from "./Ownable.sol";
 import { ProtocolAdapterManager } from "./ProtocolAdapterManager.sol";
 import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
 
-
 /**
  * @title Registry for protocol adapters.
  * @notice getBalances() function implements the main functionality.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
-
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
@@ -39,12 +37,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
      * @return AdapterBalance array by the given account.
      * @notice Zero values are filtered out!
      */
-    function getBalances(
-        address account
-    )
-        external
-        returns (AdapterBalance[] memory)
-    {
+    function getBalances(address account) external returns (AdapterBalance[] memory) {
         // Get balances for all the adapters
         AdapterBalance[] memory adapterBalances = getAdapterBalances(
             _protocolAdapterNames,
@@ -139,10 +132,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
      * @param account Address of the account.
      * @return AdapterBalance array by the given parameters.
      */
-    function getAdapterBalances(
-        bytes32[] memory protocolAdapterNames,
-        address account
-    )
+    function getAdapterBalances(bytes32[] memory protocolAdapterNames, address account)
         public
         returns (AdapterBalance[] memory)
     {
@@ -170,10 +160,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         bytes32 protocolAdapterName,
         address[] memory tokens,
         address account
-    )
-        public
-        returns (AdapterBalance memory)
-    {
+    ) public returns (AdapterBalance memory) {
         address adapter = _protocolAdapterAddress[protocolAdapterName];
         require(adapter != address(0), "AR: bad protocolAdapterName");
 
@@ -181,25 +168,17 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         TokenBalance[] memory tokenBalances = new TokenBalance[](tokens.length);
 
         for (uint256 i = 0; i < length; i++) {
-            try ProtocolAdapter(adapter).getBalance(
-                tokens[i],
-                account
-            ) returns (int256 amount) {
-                tokenBalances[i] = TokenBalance({
-                    token: tokens[i],
-                    amount: amount
-                });
+            try ProtocolAdapter(adapter).getBalance(tokens[i], account) returns (int256 amount) {
+                tokenBalances[i] = TokenBalance({ token: tokens[i], amount: amount });
             } catch {
-                tokenBalances[i] = TokenBalance({
-                    token: tokens[i],
-                    amount: 0
-                });
+                tokenBalances[i] = TokenBalance({ token: tokens[i], amount: 0 });
             }
         }
 
-        return AdapterBalance({
-            protocolAdapterName: protocolAdapterName,
-            tokenBalances: tokenBalances
-        });
+        return
+            AdapterBalance({
+                protocolAdapterName: protocolAdapterName,
+                tokenBalances: tokenBalances
+            });
     }
 }

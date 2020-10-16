@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev Vat contract interface.
  * Only the functions required for MCDAssetAdapter contract are added.
@@ -27,6 +26,6 @@ pragma experimental ABIEncoderV2;
  */
 interface Vat {
     function urns(bytes32, address) external view returns (uint256, uint256);
+
     function ilks(bytes32) external view returns (uint256, uint256);
 }
-

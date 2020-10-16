@@ -18,7 +18,6 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-
 /**
  * @dev Basset struct.
  * The Basset struct is available here
@@ -32,7 +31,6 @@ struct Basset {
     uint256 maxWeight;
     uint256 vaultBalance;
 }
-
 
 /**
  * @dev BasketManager contract interface.

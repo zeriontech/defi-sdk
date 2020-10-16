@@ -19,13 +19,12 @@ pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 abstract contract ReentrancyGuard {
-
     uint256 internal constant UNLOCKED = 1;
     uint256 internal constant LOCKED = 2;
 
     uint256 internal guard_;
 
-    constructor () {
+    constructor() {
         guard_ = UNLOCKED;
     }
 

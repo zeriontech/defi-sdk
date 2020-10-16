@@ -18,22 +18,21 @@
 pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
-import { TransactionData, Action, AbsoluteTokenAmount, Fee, TokenAmount } from "../shared/Structs.sol";
-
+import {
+    TransactionData,
+    Action,
+    AbsoluteTokenAmount,
+    Fee,
+    TokenAmount
+} from "../shared/Structs.sol";
 
 contract SignatureVerifier {
-
-    mapping (bytes32 => mapping(address => bool)) internal isHashUsed_;
+    mapping(bytes32 => mapping(address => bool)) internal isHashUsed_;
 
     bytes32 internal immutable domainSeparator_;
 
     bytes32 internal constant DOMAIN_SEPARATOR_TYPEHASH = keccak256(
-        abi.encodePacked(
-            "EIP712Domain(",
-            "string name,",
-            "address verifyingContract",
-            ")"
-        )
+        abi.encodePacked("EIP712Domain(", "string name,", "address verifyingContract", ")")
     );
     bytes32 internal constant TX_DATA_TYPEHASH = keccak256(
         abi.encodePacked(
@@ -48,10 +47,7 @@ contract SignatureVerifier {
         ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE
     );
     bytes32 internal constant ACTION_TYPEHASH = keccak256(
-        abi.encodePacked(
-            ACTION_ENCODED_TYPE,
-            TOKEN_AMOUNT_ENCODED_TYPE
-        )
+        abi.encodePacked(ACTION_ENCODED_TYPE, TOKEN_AMOUNT_ENCODED_TYPE)
     );
     bytes32 internal constant FEE_TYPEHASH = keccak256(FEE_ENCODED_TYPE);
     bytes32 internal constant TOKEN_AMOUNT_TYPEHASH = keccak256(TOKEN_AMOUNT_ENCODED_TYPE);
@@ -95,32 +91,18 @@ contract SignatureVerifier {
 
     constructor(string memory name) {
         domainSeparator_ = keccak256(
-            abi.encode(
-                DOMAIN_SEPARATOR_TYPEHASH,
-                keccak256(abi.encodePacked(name)),
-                address(this)
-            )
+            abi.encode(DOMAIN_SEPARATOR_TYPEHASH, keccak256(abi.encodePacked(name)), address(this))
         );
     }
 
     /**
      * @return Address of the Core contract used.
      */
-    function isHashUsed(
-        bytes32 hash,
-        address account
-    )
-        public
-        view
-        returns (bool)
-    {
+    function isHashUsed(bytes32 hash, address account) public view returns (bool) {
         return isHashUsed_[hash][account];
     }
 
-    function getAccountFromSignature(
-        bytes32 hashedData,
-        bytes memory signature
-    )
+    function getAccountFromSignature(bytes32 hashedData, bytes memory signature)
         public
         pure
         returns (address payable)
@@ -130,60 +112,32 @@ contract SignatureVerifier {
         return payable(ecrecover(hashedData, v, r, s));
     }
 
-    function hashData(
-        TransactionData memory data
-    )
-        public
-        view
-        returns (bytes32)
-    {
-        return keccak256(
-            abi.encodePacked(
-                bytes1(0x19),
-                bytes1(0x01),
-                domainSeparator_,
-                hash(data)
-            )
-        );
+    function hashData(TransactionData memory data) public view returns (bytes32) {
+        return
+            keccak256(abi.encodePacked(bytes1(0x19), bytes1(0x01), domainSeparator_, hash(data)));
     }
 
-    function markHashUsed(
-        bytes32 hash,
-        address account
-    )
-        internal
-    {
+    function markHashUsed(bytes32 hash, address account) internal {
         require(!isHashUsed_[hash][account], "SV: used hash!");
         isHashUsed_[hash][account] = true;
     }
 
     /// @return Hash to be signed by tokens supplier.
-    function hash(
-        TransactionData memory data
-    )
-        internal
-        pure
-        returns (bytes32)
-    {
-        return keccak256(
-            abi.encode(
-                TX_DATA_TYPEHASH,
-                hash(data.actions),
-                hash(data.inputs),
-                hash(data.fee),
-                hash(data.requiredOutputs),
-                data.salt
-            )
-        );
+    function hash(TransactionData memory data) internal pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(
+                    TX_DATA_TYPEHASH,
+                    hash(data.actions),
+                    hash(data.inputs),
+                    hash(data.fee),
+                    hash(data.requiredOutputs),
+                    data.salt
+                )
+            );
     }
 
-    function hash(
-        Action[] memory actions
-    )
-        internal
-        pure
-        returns (bytes32)
-    {
+    function hash(Action[] memory actions) internal pure returns (bytes32) {
         bytes memory actionsData = new bytes(0);
 
         uint256 length = actions.length;
@@ -205,13 +159,7 @@ contract SignatureVerifier {
         return keccak256(actionsData);
     }
 
-    function hash(
-        TokenAmount[] memory tokenAmounts
-    )
-        internal
-        pure
-        returns (bytes32)
-    {
+    function hash(TokenAmount[] memory tokenAmounts) internal pure returns (bytes32) {
         bytes memory tokenAmountsData = new bytes(0);
 
         uint256 length = tokenAmounts.length;
@@ -232,25 +180,11 @@ contract SignatureVerifier {
         return keccak256(tokenAmountsData);
     }
 
-    function hash(
-        Fee memory fee
-    )
-        internal
-        pure
-        returns (bytes32)
-    {
-        return keccak256(
-            abi.encode(
-                FEE_TYPEHASH,
-                fee.share,
-                fee.beneficiary
-            )
-        );
+    function hash(Fee memory fee) internal pure returns (bytes32) {
+        return keccak256(abi.encode(FEE_TYPEHASH, fee.share, fee.beneficiary));
     }
 
-    function hash(
-        AbsoluteTokenAmount[] memory absoluteTokenAmounts
-    )
+    function hash(AbsoluteTokenAmount[] memory absoluteTokenAmounts)
         internal
         pure
         returns (bytes32)
@@ -274,12 +208,14 @@ contract SignatureVerifier {
         return keccak256(absoluteTokenAmountsData);
     }
 
-    function splitSignature(
-        bytes memory signature
-    )
+    function splitSignature(bytes memory signature)
         internal
         pure
-        returns (uint8 v, bytes32 r, bytes32 s)
+        returns (
+            uint8 v,
+            bytes32 r,
+            bytes32 s
+        )
     {
         require(signature.length == 65, "SV: bad signature");
 
