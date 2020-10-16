@@ -79,11 +79,7 @@ contract FinNexusTokenAdapter is TokenAdapter {
             uint256 fptWorth = OptionsManagerV2(optManager).getTokenNetworth();
             uint256 tokenPrice = FNXOracle(oracle).getPrice(underlyingAddress[i]);
             
-            if(i==2) {
-                tokenPrice = 1e6 * tokenPrice;
-            } else {
-                tokenPrice = 1e18 * tokenPrice;
-            }
+            tokenPrice = (i == 2) ? tokenPrice * 1e6 : tokenPrice * 1e18;
             
             underlyingTokens[i] = Component({
                 token: i == 0 ? 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE : underlyingAddress[i],
