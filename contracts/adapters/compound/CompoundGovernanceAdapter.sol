@@ -64,14 +64,7 @@ contract CompoundGovernanceAdapter is ProtocolAdapter {
      * @return Amount of unclaimed COMP by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(
-        address,
-        address account
-    )
-        public
-        override
-        returns (int256)
-    {
+    function getBalance(address, address account) public override returns (int256) {
         uint256 balance = Comptroller(COMPTROLLER).compAccrued(account);
         address[] memory allMarkets = Comptroller(COMPTROLLER).getAllMarkets();
 

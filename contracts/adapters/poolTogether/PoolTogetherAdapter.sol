@@ -61,14 +61,7 @@ contract PoolTogetherAdapter is ProtocolAdapter {
      * @param token Address of the pool!
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        override
-        returns (int256)
-    {
+    function getBalance(address token, address account) public override returns (int256) {
         int256 totalBalance = int256(BasePool(token).totalBalanceOf(account));
         if (token == DAI_POOL) {
             totalBalance += int256(getPodBalance(DAI_POD, account));

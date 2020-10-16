@@ -86,11 +86,7 @@ library SafeERC20 {
         );
         callOptionalReturn(
             token,
-            abi.encodeWithSelector(
-                token.approve.selector,
-                spender,
-                value
-            ),
+            abi.encodeWithSelector(token.approve.selector, spender, value),
             "approve",
             location
         );

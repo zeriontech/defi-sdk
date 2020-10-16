@@ -36,14 +36,7 @@ contract MCDAssetAdapter is ProtocolAdapter, MKRAdapter {
      * @return Amount of collateral locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        override
-        returns (int256)
-    {
+    function getBalance(address token, address account) public override returns (int256) {
         DssCdpManager manager = DssCdpManager(MANAGER);
         Vat vat = Vat(VAT);
         uint256 id = manager.first(account);

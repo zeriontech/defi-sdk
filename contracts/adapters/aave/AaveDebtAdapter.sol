@@ -42,14 +42,7 @@ contract AaveDebtAdapter is ProtocolAdapter {
      * @return Amount of debt of the given account for the protocol.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        override
-        returns (int256)
-    {
+    function getBalance(address token, address account) public override returns (int256) {
         address pool = LendingPoolAddressesProvider(provider_).getLendingPool();
 
         (, uint256 debtAmount) = LendingPool(pool).getUserReserveData(token, account);

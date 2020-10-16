@@ -36,14 +36,7 @@ contract MockAdapter is ProtocolAdapter {
     /**
      * @return Mock balance.
      */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        override
-        returns (int256)
-    {
+    function getBalance(address token, address account) public override returns (int256) {
         require(token == address(this), "M: Wrong token!");
         return balanceOf[account];
     }

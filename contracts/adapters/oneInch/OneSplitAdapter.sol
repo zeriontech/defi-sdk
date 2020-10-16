@@ -33,14 +33,7 @@ contract OneSplitAdapter is ProtocolAdapter {
      * @return Amount of Uniswap Pool Tokens held by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(
-        address,
-        address
-    )
-        public
-        override
-        returns (int256)
-    {
+    function getBalance(address, address) public override returns (int256) {
         revert("OSA: no balance");
     }
 }

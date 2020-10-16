@@ -47,16 +47,13 @@ contract BalancerTokenAdapter is TokenAdapter {
         Component[] memory components = new Component[](currentTokens.length);
         if (totalSupply == 0) {
             for (uint256 i = 0; i < components.length; i++) {
-                components[i] = Component({
-                    token: currentTokens[i],
-                    rate: int256(0)
-                });
+                components[i] = Component({ token: currentTokens[i], rate: int256(0) });
             }
         } else {
             for (uint256 i = 0; i < components.length; i++) {
                 components[i] = Component({
                     token: currentTokens[i],
-                    rate: int256(BPool(token).getBalance(currentTokens[i]) * 1e18 / totalSupply)
+                    rate: int256((BPool(token).getBalance(currentTokens[i])) * 1e18 / totalSupply)
                 });
             }
         }
@@ -78,22 +75,26 @@ contract BalancerTokenAdapter is TokenAdapter {
         string memory poolName = "";
         uint256 lastIndex = currentTokens.length - 1;
         for (uint256 i = 0; i < currentTokens.length; i++) {
-            poolName = string(abi.encodePacked(
-                poolName,
-                getPoolElement(token, currentTokens[i]),
-                i == lastIndex ? " Pool" : " + "
-            ));
+            poolName = string(
+                abi.encodePacked(
+                    poolName,
+                    getPoolElement(token, currentTokens[i]),
+                    i == lastIndex ? " Pool" : " + "
+                )
+            );
         }
 
         return poolName;
     }
 
     function getPoolElement(address pool, address token) internal view returns (string memory) {
-        return string(abi.encodePacked(
-            (BPool(pool).getNormalizedWeight(token) / 1e16).toString(),
-            "% ",
-            getUnderlyingSymbol(token)
-        ));
+        return string(
+            abi.encodePacked(
+                (BPool(pool).getNormalizedWeight(token) / 1e16).toString(),
+                "% ",
+                getUnderlyingSymbol(token)
+            )
+        );
     }
 
     function getUnderlyingSymbol(address token) internal view returns (string memory) {

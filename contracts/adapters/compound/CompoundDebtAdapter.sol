@@ -37,14 +37,7 @@ contract CompoundDebtAdapter is ProtocolAdapter {
      * @return Amount of debt of the given account for the protocol.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(
-        address token,
-        address account
-    )
-        public
-        override
-        returns (int256)
-    {
+    function getBalance(address token, address account) public override returns (int256) {
         CToken cToken = CToken(CompoundRegistry(REGISTRY).getCToken(token));
 
         return int256(-cToken.borrowBalanceCurrent(account));

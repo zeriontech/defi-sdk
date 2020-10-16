@@ -36,14 +36,7 @@ contract MstableAssetAdapter is ProtocolAdapter {
      * @return Amount of mUSD owned and locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(
-        address,
-        address account
-    )
-        public
-        override
-        returns (int256)
-    {
+    function getBalance(address, address account) public override returns (int256) {
         uint256 credits = SavingsContract(SAVINGS).creditBalances(account);
         uint256 exchangeRate = SavingsContract(SAVINGS).exchangeRate();
 

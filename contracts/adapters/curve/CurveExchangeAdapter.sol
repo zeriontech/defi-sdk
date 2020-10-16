@@ -33,14 +33,7 @@ contract CurveExchangeAdapter is ProtocolAdapter {
      * @notice This function is unavailable for exchange adapter.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(
-        address,
-        address
-    )
-        public
-        override
-        returns (int256)
-    {
+    function getBalance(address, address) public override returns (int256) {
         revert("CEA: no balance");
     }
 }
