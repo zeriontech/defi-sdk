@@ -37,7 +37,7 @@ contract FinNexusDebtAdapter is ProtocolAdapter {
     string public constant override adapterType = "Debt";
     string public constant override tokenType = "ERC20";
 
-    address public constant CollecteralPool = 0x20081862B301C1ef9357BC0a125Aa414db210f2c;
+    address public constant COLLATERAL_POOL = 0x20081862B301C1ef9357BC0a125Aa414db210f2c;
     address internal constant FNX = 0xeF9Cd7882c067686691B6fF49e650b43AFBBCC6B;
     address internal constant FNX_ETH = 0x0000000000000000000000000000000000000000;
     address internal constant USDC= 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
