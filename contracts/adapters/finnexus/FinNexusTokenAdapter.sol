@@ -88,7 +88,7 @@ contract FinNexusTokenAdapter is TokenAdapter {
             underlyingTokens[i] = Component({
                 token: i==0?0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE:underlyingAddress[i],
                 tokenType: "ERC20",
-                rate: tokenPrice/fptWorth
+                rate: tokenPrice / fptWorth
             });
         }
 
