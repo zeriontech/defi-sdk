@@ -34,7 +34,7 @@ import { Core } from "./Core.sol";
 
 
 interface Chi {
-    function freeUpTo(uint256) external;
+    function freeFromUpTo(address, uint256) external;
 }
 
 
@@ -151,7 +151,8 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
             data.inputs,
             data.fee,
             data.requiredOutputs,
-            account
+            account,
+            false
         );
     }
 
@@ -170,7 +171,51 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
             inputs,
             fee,
             requiredOutputs,
-            msg.sender
+            msg.sender,
+            false
+        );
+    }
+
+    function executeWithChi(
+        TransactionData memory data,
+        bytes memory signature
+    )
+        public
+        payable
+        returns (AbsoluteTokenAmount[] memory)
+    {
+        bytes32 hashedData = hashData(data);
+        address payable account = getAccountFromSignature(hashedData, signature);
+
+        markHashUsed(hashedData, account);
+
+        return execute(
+            data.actions,
+            data.inputs,
+            data.fee,
+            data.requiredOutputs,
+            account,
+            true
+        );
+    }
+
+    function executeWithChi(
+        Action[] memory actions,
+        TokenAmount[] memory inputs,
+        Fee memory fee,
+        AbsoluteTokenAmount[] memory requiredOutputs
+    )
+        public
+        payable
+        returns (AbsoluteTokenAmount[] memory)
+    {
+        return execute(
+            actions,
+            inputs,
+            fee,
+            requiredOutputs,
+            msg.sender,
+            true
         );
     }
 
@@ -179,30 +224,32 @@ contract Router is SignatureVerifier("Zerion Router"), Ownable {
         TokenAmount[] memory inputs,
         Fee memory fee,
         AbsoluteTokenAmount[] memory requiredOutputs,
-        address payable account
+        address payable account,
+        bool useChi
     )
         internal
         returns (AbsoluteTokenAmount[] memory)
     {
-        // save initial gas to burn gas token later
+        // Save initial gas to burn gas token later
         uint256 gas = gasleft();
-        // transfer tokens to core_, handle fees (if any), and add these tokens to outputs
+        // Transfer tokens to Core contract, handle fees (if any), and add these tokens to outputs
         transferTokens(inputs, fee, account);
         AbsoluteTokenAmount[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
-        // call Core contract with all provided ETH, actions, expected outputs and account address
+        // Call Core contract with all provided ETH, actions, expected outputs and account address
         AbsoluteTokenAmount[] memory actualOutputs = Core(payable(core_)).executeActions(
             actions,
             modifiedOutputs,
             account
         );
 
-        if (ERC20(CHI).balanceOf(address(this)) > 0) {
-            // try to burn gas token to save some gas
+        if (useChi) {
+            // Try to burn gas token to save some gas
             uint256 gasSpent = 21000 + gas - gasleft() + 16 * msg.data.length;
-            Chi(CHI).freeUpTo((gasSpent + 14154) / 41130);
+            // CHI tokens should be approved prior to calling this function
+            Chi(CHI).freeFromUpTo(msg.sender, (gasSpent + 14154) / 41947);
         }
 
-        // return tokens that were returned to the account address
+        // Return tokens' addresses and amounts that were returned to the account address
         return actualOutputs;
     }
 

@@ -44,8 +44,9 @@ contract SignatureVerifier {
             TOKEN_AMOUNT_ENCODED_TYPE
         )
     );
-    bytes32 internal constant ABSOLUTE_TOKEN_AMOUNT_TYPEHASH =
-        keccak256(ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE);
+    bytes32 internal constant ABSOLUTE_TOKEN_AMOUNT_TYPEHASH = keccak256(
+        ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE
+    );
     bytes32 internal constant ACTION_TYPEHASH = keccak256(
         abi.encodePacked(
             ACTION_ENCODED_TYPE,
@@ -121,7 +122,7 @@ contract SignatureVerifier {
         bytes memory signature
     )
         public
-        view
+        pure
         returns (address payable)
     {
         (uint8 v, bytes32 r, bytes32 s) = splitSignature(signature);
