@@ -46,12 +46,14 @@ interface FNXOracle {
  */
 contract FinNexusTokenAdapter is TokenAdapter {
 
-    address public  constant optManager = 0xfa30ec96De9840A611FcB64e7312f97bdE6e155A;
-    address public  constant oracle = 0x940b491905529542Ba3b56244A06B1EBE11e71F2;
+    address public constant OPT_MANAGER = 0xfa30ec96De9840A611FcB64e7312f97bdE6e155A;
+    address public constant ORACLE = 0x940b491905529542Ba3b56244A06B1EBE11e71F2;
 
-    address[] internal underlyingAddress = [0x0000000000000000000000000000000000000000,0xeF9Cd7882c067686691B6fF49e650b43AFBBCC6B,0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48];
-                                                           //  ,
-                                                           //  ];
+    address[] internal underlyingAddress =[
+        0x0000000000000000000000000000000000000000,
+        0xeF9Cd7882c067686691B6fF49e650b43AFBBCC6B,
+        0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+    ];
     /**
      * @return TokenMetadata struct with ERC20-style token info.
      * @dev Implementation of TokenAdapter interface function.
