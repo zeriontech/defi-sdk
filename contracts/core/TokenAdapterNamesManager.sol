@@ -46,10 +46,11 @@ abstract contract TokenAdapterNamesManager is Ownable {
         onlyOwner
     {
         uint256 length = newTokens.length;
-        require(length != 0, "TANM: empty[2]");
-        require(length == newTokenAdapterNames.length, "TANM: lengths differ[2]");
+        require(length != 0, "TANM: empty[1]");
+        require(length == newTokenAdapterNames.length, "TANM: lengths differ[1]");
 
         for (uint256 i = 0; i < length; i++) {
+            require(newTokens[i] != address(0), "TANM: zero[1]");
             addTokenAdapterName(getTokenHash(newTokens[i]), newTokenAdapterNames[i]);
         }
     }
@@ -66,7 +67,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
         onlyOwner
     {
         uint256 length = tokens.length;
-        require(length != 0, "TANM: empty[4]");
+        require(length != 0, "TANM: empty[2]");
 
         for (uint256 i = 0; i < length; i++) {
             removeTokenAdapterName(getTokenHash(tokens[i]));
@@ -87,8 +88,8 @@ abstract contract TokenAdapterNamesManager is Ownable {
         onlyOwner
     {
         uint256 length = tokens.length;
-        require(length != 0, "TANM: empty[6]");
-        require(length == newTokenAdapterNames.length, "TANM: lengths differ[4]");
+        require(length != 0, "TANM: empty[3]");
+        require(length == newTokenAdapterNames.length, "TANM: lengths differ[2]");
 
         for (uint256 i = 0; i < length; i++) {
             updateTokenAdapterName(getTokenHash(tokens[i]), newTokenAdapterNames[i]);
@@ -137,9 +138,8 @@ abstract contract TokenAdapterNamesManager is Ownable {
     )
         internal
     {
-        require(newHash != bytes32(0), "TANM: zero[1]");
         require(newTokenAdapterName != bytes32(0), "TANM: zero[2]");
-        require(_tokenAdapterName[newHash] == bytes32(0), "TANM: exists[1]");
+        require(_tokenAdapterName[newHash] == bytes32(0), "TANM: exists");
 
         _tokenAdapterName[newHash] = newTokenAdapterName;
     }
@@ -170,8 +170,8 @@ abstract contract TokenAdapterNamesManager is Ownable {
         internal
     {
         bytes32 oldTokenAdapterName = _tokenAdapterName[hash];
-        require(oldTokenAdapterName != bytes32(0), "TANM: does not exist[3]");
-        require(newTokenAdapterName != bytes32(0), "TANM: zero[5]");
+        require(oldTokenAdapterName != bytes32(0), "TANM: does not exist[2]");
+        require(newTokenAdapterName != bytes32(0), "TANM: zero[3]");
         require(oldTokenAdapterName != newTokenAdapterName, "TANM: same name[1]");
 
         _tokenAdapterName[hash] = newTokenAdapterName;
