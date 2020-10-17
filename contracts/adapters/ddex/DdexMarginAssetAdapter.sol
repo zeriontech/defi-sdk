@@ -19,22 +19,7 @@ pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
-/**
- * @dev Hydro contract interface.
- * Only the functions required for DdexMarginAssetAdapter contract are added.
- * The Hydro contract is available here
- * github.com/HydroProtocol/protocol/blob/master/contracts/Hydro.sol.
- */
-interface Hydro {
-    function getAllMarketsCount() external view returns (uint256);
-
-    function marketBalanceOf(
-        uint16,
-        address,
-        address
-    ) external view returns (uint256);
-}
+import { Hydro } from "../../interfaces/Hydro.sol";
 
 /**
  * @title Asset adapter for DDEX protocol (margin account).

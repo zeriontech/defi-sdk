@@ -20,46 +20,9 @@ pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { MKRAdapter } from "./MakerAdapter.sol";
-
-/**
- * @dev Vat contract interface.
- * Only the functions required for MCDDebtAdapter contract are added.
- * The Vat contract is available here
- * github.com/makerdao/dss/blob/master/src/vat.sol.
- */
-interface Vat {
-    function urns(bytes32, address) external view returns (uint256, uint256);
-
-    function ilks(bytes32) external view returns (uint256, uint256);
-}
-
-/**
- * @dev Jug contract interface.
- * Only the functions required for MCDDebtAdapter contract are added.
- * The Jug contract is available here
- * github.com/makerdao/dss/blob/master/src/jug.sol.
- */
-interface Jug {
-    function ilks(bytes32) external view returns (uint256, uint256);
-
-    function base() external view returns (uint256);
-}
-
-/**
- * @dev DssCdpManager contract interface.
- * Only the functions required for MCDDebtAdapter contract are added.
- * The DssCdpManager contract is available here
- * github.com/makerdao/dss-cdp-manager/blob/master/src/DssCdpManager.sol.
- */
-interface DssCdpManager {
-    function first(address) external view returns (uint256);
-
-    function list(uint256) external view returns (uint256, uint256);
-
-    function urns(uint256) external view returns (address);
-
-    function ilks(uint256) external view returns (bytes32);
-}
+import { DssCdpManager } from "../../interfaces/DssCdpManager.sol";
+import { Jug } from "../../interfaces/Jug.sol";
+import { Vat } from "../../interfaces/Vat.sol";
 
 /**
  * @title Debt adapter for MCD protocol.

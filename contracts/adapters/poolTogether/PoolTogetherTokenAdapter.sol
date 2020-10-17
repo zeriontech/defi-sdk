@@ -21,16 +21,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-
-/**
- * @dev BasePool contract interface.
- * Only the functions required for PoolTogetherTokenAdapter contract are added.
- * The BasePool contract is available here
- * github.com/pooltogether/pooltogether-contracts/blob/master/contracts/BasePool.sol.
- */
-interface BasePool {
-    function token() external view returns (address);
-}
+import { BasePool } from "../../interfaces/BasePool.sol";
 
 /**
  * @title Token adapter for PoolTogether pools.

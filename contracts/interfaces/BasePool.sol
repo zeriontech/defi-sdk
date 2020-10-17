@@ -19,13 +19,13 @@ pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 /**
- * @dev Synthetix contract interface.
- * Only the functions required for SynthetixDebtAdapter contract are added.
- * The Synthetix contract is available here
- * github.com/Synthetixio/synthetix/blob/master/contracts/Synthetix.sol.
+ * @dev BasePool contract interface.
+ * Only the functions required for PoolTogether contracts are added.
+ * The BasePool contract is available here
+ * github.com/pooltogether/pooltogether-contracts/blob/master/contracts/BasePool.sol.
  */
-interface Synthetix {
-    function debtBalanceOf(address, bytes32) external view returns (uint256);
+interface BasePool {
+    function totalBalanceOf(address) external view returns (uint256);
 
-    function collateral(address) external view returns (uint256);
+    function token() external view returns (address);
 }

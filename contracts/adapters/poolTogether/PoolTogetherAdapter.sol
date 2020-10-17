@@ -19,16 +19,7 @@ pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
-/**
- * @dev BasePool contract interface.
- * Only the functions required for PoolTogetherAdapter contract are added.
- * The BasePool contract is available here
- * github.com/pooltogether/pooltogether-contracts/blob/master/contracts/BasePool.sol.
- */
-interface BasePool {
-    function totalBalanceOf(address) external view returns (uint256);
-}
+import { BasePool } from "../../interfaces/BasePool.sol";
 
 /**
  * @dev Pod contract interface.

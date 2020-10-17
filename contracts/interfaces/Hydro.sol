@@ -19,13 +19,27 @@ pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 /**
- * @dev Synthetix contract interface.
- * Only the functions required for SynthetixDebtAdapter contract are added.
- * The Synthetix contract is available here
- * github.com/Synthetixio/synthetix/blob/master/contracts/Synthetix.sol.
+ * @dev Hydro contract interface.
+ * Only the functions required for DDEX contracts are added.
+ * The Hydro contract is available here
+ * github.com/HydroProtocol/protocol/blob/master/contracts/Hydro.sol.
  */
-interface Synthetix {
-    function debtBalanceOf(address, bytes32) external view returns (uint256);
+interface Hydro {
+    function balanceOf(address, address) external view returns (uint256);
 
-    function collateral(address) external view returns (uint256);
+    function getAllMarketsCount() external view returns (uint256);
+
+    function getAmountSupplied(address, address) external view returns (uint256);
+
+    function getAmountBorrowed(
+        address,
+        address,
+        uint16
+    ) external view returns (uint256);
+
+    function marketBalanceOf(
+        uint16,
+        address,
+        address
+    ) external view returns (uint256);
 }

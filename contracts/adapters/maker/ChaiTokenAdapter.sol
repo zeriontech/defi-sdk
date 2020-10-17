@@ -22,22 +22,7 @@ import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { MKRAdapter } from "./MakerAdapter.sol";
-
-/**
- * @dev Pot contract interface.
- * Only the functions required for ChaiTokenAdapter contract are added.
- * The Pot contract is available here
- * github.com/makerdao/dss/blob/master/src/pot.sol.
- */
-interface Pot {
-    function pie(address) external view returns (uint256);
-
-    function dsr() external view returns (uint256);
-
-    function rho() external view returns (uint256);
-
-    function chi() external view returns (uint256);
-}
+import { Pot } from "../../interfaces/Pot.sol";
 
 /**
  * @title Token adapter for Chai tokens.

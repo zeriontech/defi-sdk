@@ -19,16 +19,7 @@ pragma solidity 0.7.1;
 pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-
-/**
- * @dev Hydro contract interface.
- * Only the functions required for DdexSpotAssetAdapter contract are added.
- * The Hydro contract is available here
- * github.com/HydroProtocol/protocol/blob/master/contracts/Hydro.sol.
- */
-interface Hydro {
-    function balanceOf(address, address) external view returns (uint256);
-}
+import { Hydro } from "../../interfaces/Hydro.sol";
 
 /**
  * @title Asset adapter for DDEX protocol (spot account).

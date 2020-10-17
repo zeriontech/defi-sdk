@@ -27,7 +27,7 @@ import { StakingRewards } from "../../interfaces/StakingRewards.sol";
  * @dev Implementation of ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract SynthetixAssetAdapter is ProtocolAdapter {
+contract SynthetixStakingAdapter is ProtocolAdapter {
     address internal immutable stakingContract_;
     address internal immutable stakingToken_;
     address internal immutable rewardsToken_;
