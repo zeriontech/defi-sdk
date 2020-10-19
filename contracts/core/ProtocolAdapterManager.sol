@@ -27,11 +27,11 @@ import { Ownable } from "./Ownable.sol";
  */
 abstract contract ProtocolAdapterManager is Ownable {
     // Protocol adapters' names
-    bytes32[] internal _protocolAdapterNames;
+    bytes32[] private _protocolAdapterNames;
     // Protocol adapter's name => protocol adapter's address
-    mapping(bytes32 => address) internal _protocolAdapterAddress;
+    mapping(bytes32 => address) private _protocolAdapterAddress;
     // protocol adapter's name => protocol adapter's supported tokens
-    mapping(bytes32 => address[]) internal _protocolAdapterSupportedTokens;
+    mapping(bytes32 => address[]) private _protocolAdapterSupportedTokens;
 
     /**
      * @notice Adds protocol adapters.
@@ -102,7 +102,7 @@ abstract contract ProtocolAdapterManager is Ownable {
     /**
      * @return Array of protocol adapters' names.
      */
-    function getProtocolAdapterNames() external view returns (bytes32[] memory) {
+    function getProtocolAdapterNames() public view returns (bytes32[] memory) {
         return _protocolAdapterNames;
     }
 
@@ -110,11 +110,7 @@ abstract contract ProtocolAdapterManager is Ownable {
      * @param protocolAdapterName Name of the protocol adapter.
      * @return Address of protocol adapter.
      */
-    function getProtocolAdapterAddress(bytes32 protocolAdapterName)
-        external
-        view
-        returns (address)
-    {
+    function getProtocolAdapterAddress(bytes32 protocolAdapterName) public view returns (address) {
         return _protocolAdapterAddress[protocolAdapterName];
     }
 
@@ -123,7 +119,7 @@ abstract contract ProtocolAdapterManager is Ownable {
      * @return Array of protocol adapter's supported tokens.
      */
     function getSupportedTokens(bytes32 protocolAdapterName)
-        external
+        public
         view
         returns (address[] memory)
     {

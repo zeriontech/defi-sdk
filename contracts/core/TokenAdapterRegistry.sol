@@ -330,9 +330,8 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
     }
 
     function getTokenAdapter(address token) internal view returns (address) {
-        bytes32 hash = getTokenHash(token);
-        bytes32 tokenAdapterName = _tokenAdapterName[hash];
-        address tokenAdapter = _tokenAdapterAddress[tokenAdapterName];
+        bytes32 tokenAdapterName = getTokenAdapterName(token);
+        address tokenAdapter = getTokenAdapterAddress(tokenAdapterName);
 
         return tokenAdapter;
     }

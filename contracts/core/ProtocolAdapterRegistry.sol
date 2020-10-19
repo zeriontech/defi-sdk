@@ -40,7 +40,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
     function getBalances(address account) external returns (AdapterBalance[] memory) {
         // Get balances for all the adapters
         AdapterBalance[] memory adapterBalances = getAdapterBalances(
-            _protocolAdapterNames,
+            getProtocolAdapterNames(),
             account
         );
 
@@ -142,7 +142,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         for (uint256 i = 0; i < length; i++) {
             adapterBalances[i] = getAdapterBalance(
                 protocolAdapterNames[i],
-                _protocolAdapterSupportedTokens[protocolAdapterNames[i]],
+                getSupportedTokens(protocolAdapterNames[i]),
                 account
             );
         }
@@ -161,7 +161,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         address[] memory tokens,
         address account
     ) public returns (AdapterBalance memory) {
-        address adapter = _protocolAdapterAddress[protocolAdapterName];
+        address adapter = getProtocolAdapterAddress(protocolAdapterName);
         require(adapter != address(0), "AR: bad protocolAdapterName");
 
         uint256 length = tokens.length;

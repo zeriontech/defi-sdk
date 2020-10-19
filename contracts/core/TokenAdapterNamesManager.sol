@@ -28,7 +28,7 @@ import { TokenAdapter } from "../adapters/TokenAdapter.sol";
  */
 abstract contract TokenAdapterNamesManager is Ownable {
     // Contract's hash => token adapter's name
-    mapping(bytes32 => bytes32) internal _tokenAdapterName;
+    mapping(bytes32 => bytes32) private _tokenAdapterName;
 
     /**
      * @notice Adds token adapters' names by tokens.

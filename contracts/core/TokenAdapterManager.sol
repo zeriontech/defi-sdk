@@ -27,9 +27,9 @@ import { Ownable } from "./Ownable.sol";
  */
 abstract contract TokenAdapterManager is Ownable {
     // Token adapters' names
-    bytes32[] internal _tokenAdapterNames;
+    bytes32[] private _tokenAdapterNames;
     // Token adapter's name => token adapter's address
-    mapping(bytes32 => address) internal _tokenAdapterAddress;
+    mapping(bytes32 => address) private _tokenAdapterAddress;
 
     /**
      * @notice Adds token adapters.
@@ -86,7 +86,7 @@ abstract contract TokenAdapterManager is Ownable {
     /**
      * @return Array of token adapter's names.
      */
-    function getTokenAdapterNames() external view returns (bytes32[] memory) {
+    function getTokenAdapterNames() public view returns (bytes32[] memory) {
         return _tokenAdapterNames;
     }
 
@@ -94,7 +94,7 @@ abstract contract TokenAdapterManager is Ownable {
      * @param tokenAdapterName Token adapter's name.
      * @return Address of token adapter.
      */
-    function getTokenAdapterAddress(bytes32 tokenAdapterName) external view returns (address) {
+    function getTokenAdapterAddress(bytes32 tokenAdapterName) public view returns (address) {
         return _tokenAdapterAddress[tokenAdapterName];
     }
 
