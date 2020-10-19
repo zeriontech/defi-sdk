@@ -36,6 +36,12 @@ interface IBerezkaTokenAdapterGovernance {
     function getVaults(address _token) external view returns (address[] memory);
 }
 
+interface IBerezkaTokenAdapterStakingGovernance {
+    
+    function listStakings() external view returns (address[] memory);
+
+}
+
 
 /**
  * @title Token adapter for Berezka DAO.
@@ -49,9 +55,11 @@ contract BerezkaTokenAdapter is TokenAdapter {
     string internal constant ERC20_TOKEN = "ERC20";
 
     IBerezkaTokenAdapterGovernance immutable private governance;
+    IBerezkaTokenAdapterStakingGovernance immutable private stakingGovernance;
 
-    constructor(address _governance) public {
+    constructor(address _governance, address _stakingGovernance) public {
         governance = IBerezkaTokenAdapterGovernance(_governance);
+        stakingGovernance = IBerezkaTokenAdapterStakingGovernance(_stakingGovernance);   
     }
 
     /**
@@ -85,6 +93,7 @@ contract BerezkaTokenAdapter is TokenAdapter {
         address[] memory vaults = governance.getVaults(token);
         TypedToken[] memory assets = governance.listTokens();
         address[] memory debtAdapters = governance.listProtocols();
+        address[] memory stakingAdapters = stakingGovernance.listStakings();
         uint256 length = assets.length;
         uint256 totalSupply = ERC20(token).totalSupply();
 
@@ -98,6 +107,7 @@ contract BerezkaTokenAdapter is TokenAdapter {
                     assets[i].tokenType, 
                     vaults, 
                     debtAdapters, 
+                    stakingAdapters,
                     totalSupply
                 );
             underlyingTokens[i] = tokenComponent;
@@ -146,6 +156,7 @@ contract BerezkaTokenAdapter is TokenAdapter {
         string memory _type,
         address[] memory _vaults,
         address[] memory _debtAdapters,
+        address[] memory _stakingAdapters,
         uint256 _totalSupply
     ) 
         internal
@@ -153,6 +164,7 @@ contract BerezkaTokenAdapter is TokenAdapter {
         returns (Component memory)
     {
         uint256 componentBalance = 0;
+        uint256 componentStakingBalance = 0;
         uint256 componentDebt = 0;
 
         // Compute positive amount for a given asset
@@ -160,6 +172,7 @@ contract BerezkaTokenAdapter is TokenAdapter {
         for (uint256 j = 0; j < vaultsLength; j++) {
             address vault = _vaults[j];
             componentBalance += ERC20(_asset).balanceOf(vault);
+            componentStakingBalance += _computeStakingBalance(_stakingAdapters, _asset, vault);
             componentDebt += _computeDebt(_debtAdapters, _asset, vault);
         }
 
@@ -167,7 +180,7 @@ contract BerezkaTokenAdapter is TokenAdapter {
         return(Component({
             token: _asset,
             tokenType: _type,
-            rate: (componentBalance * 1e18 / _totalSupply) - (componentDebt * 1e18 / _totalSupply)
+            rate: (componentBalance * 1e18 / _totalSupply) + (componentStakingBalance * 1e18 / _totalSupply) - (componentDebt * 1e18 / _totalSupply)
         }));
     }
 
@@ -190,5 +203,26 @@ contract BerezkaTokenAdapter is TokenAdapter {
             } catch {} // solhint-disable-line no-empty-blocks
         }
         return componentDebt;
+    }
+
+    function _computeStakingBalance(
+        address[] memory _stakingAdapters,
+        address _asset,
+        address _vault
+    ) 
+        internal
+        view
+        returns (uint256)
+    {
+        // Compute positive staking amount for a given asset using all staking adapters
+        uint256 componentStakingBalance = 0;
+        uint256 stakingsLength = _stakingAdapters.length;
+        for (uint256 k = 0; k < stakingsLength; k++) {
+            ProtocolAdapter stakingAdapter = ProtocolAdapter(_stakingAdapters[k]);
+            try stakingAdapter.getBalance(_asset, _vault) returns (uint256 _amount) {
+                componentStakingBalance += _amount;
+            } catch {} // solhint-disable-line no-empty-blocks
+        }
+        return componentStakingBalance;
     }
 }
