@@ -245,10 +245,10 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
     /**
      * @param tokenBalance TokenBalance struct consisting of
      * token address and absolute amount.
-     * @param counterial Whether the function call is counterial or recursive.
+     * @param initial Whether the function call is initial or recursive.
      * @return Final tokens number by absolute token amount.
      */
-    function getFinalComponentsLength(TokenBalance memory tokenBalance, bool counterial)
+    function getFinalComponentsLength(TokenBalance memory tokenBalance, bool initial)
         internal
         returns (uint256)
     {
@@ -256,7 +256,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
         Component[] memory components = getComponents(tokenBalance);
 
         if (components.length == 0) {
-            return counterial ? uint256(0) : uint256(1);
+            return initial ? uint256(0) : uint256(1);
         }
 
         for (uint256 i = 0; i < components.length; i++) {
