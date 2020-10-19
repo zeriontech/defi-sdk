@@ -57,7 +57,7 @@ struct AbsoluteTokenAmount {
 }
 
 // The struct consists of token address
-// and its absolute amount (mey be negative).
+// and its absolute amount (may be negative).
 struct TokenBalance {
     address token;
     int256 amount;
