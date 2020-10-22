@@ -36,7 +36,7 @@ interface Chi {
     function freeFromUpTo(address, uint256) external;
 }
 
-contract Router is SignatureVerifier("Zerion Router"), Ownable {
+contract Router is SignatureVerifier("Zerion Router (Mainnet, version 2.0)"), Ownable {
     using SafeERC20 for ERC20;
 
     address internal immutable core_;
