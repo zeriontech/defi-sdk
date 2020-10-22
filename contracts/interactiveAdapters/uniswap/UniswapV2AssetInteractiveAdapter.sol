@@ -59,13 +59,7 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
         uint256 amount0 = getAbsoluteAmountDeposit(tokenAmounts[0]);
         uint256 amount1 = getAbsoluteAmountDeposit(tokenAmounts[1]);
 
-        uint256 reserve0;
-        uint256 reserve1;
-        if (tokenAmounts[0].token == UniswapV2Pair(pair).token0()) {
-            (reserve0, reserve1) = UniswapV2Pair(pair).getReserves();
-        } else {
-            (reserve1, reserve0) = UniswapV2Pair(pair).getReserves();
-        }
+        (uint256 reserve0, uint256 reserve1) = UniswapV2Pair(pair).getReserves();
 
         uint256 amount1Optimal = (amount0 * reserve1) / reserve0;
         if (amount1Optimal < amount1) {
