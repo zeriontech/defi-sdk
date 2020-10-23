@@ -14,6 +14,6 @@ jobs:
         with:
           node-version: '10.x'
       - name: install
-        run: npm install
+        run: npm ci
       - name: lint
         run: npm run lint
