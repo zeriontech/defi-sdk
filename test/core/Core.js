@@ -1,7 +1,6 @@
-// import displayToken from './helpers/displayToken';\
-// import convertToShare from '../helpers/convertToShare';
 import expectRevert from '../helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
+import convertToBytes32 from '../helpers/convertToBytes32';
 
 const { BN } = web3.utils;
 
@@ -43,7 +42,7 @@ contract.only('Core + Router', () => {
           protocolAdapterRegistry = result.contract;
         });
       await protocolAdapterRegistry.methods.addProtocolAdapters(
-        [web3.utils.toHex('Weth')],
+        [convertToBytes32('Weth')],
         [
           protocolAdapterAddress,
         ],
@@ -108,7 +107,7 @@ contract.only('Core + Router', () => {
         // actions
         [
           [
-            web3.utils.toHex('Weth'),
+            convertToBytes32('Weth'),
             ACTION_DEPOSIT,
             [
               [ethAddress, web3.utils.toWei('1', 'ether'), 0],
@@ -138,7 +137,7 @@ contract.only('Core + Router', () => {
         // actions
         [
           [
-            web3.utils.toHex('Weth'),
+            convertToBytes32('Weth'),
             ACTION_DEPOSIT,
             [
               [ethAddress, web3.utils.toWei('1.1', 'ether'), AMOUNT_RELATIVE],
@@ -168,7 +167,7 @@ contract.only('Core + Router', () => {
         // actions
         [
           [
-            web3.utils.toHex('Weth'),
+            convertToBytes32('Weth'),
             ACTION_DEPOSIT,
             [
               [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
@@ -200,7 +199,7 @@ contract.only('Core + Router', () => {
         // actions
         [
           [
-            web3.utils.toHex('Weth'),
+            convertToBytes32('Weth'),
             ACTION_WITHDRAW,
             [
               [wethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_RELATIVE],
@@ -233,7 +232,7 @@ contract.only('Core + Router', () => {
         // actions
         [
           [
-            web3.utils.toHex('Weth1'),
+            convertToBytes32('Weth1'),
             ACTION_DEPOSIT,
             [
               [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
@@ -263,7 +262,7 @@ contract.only('Core + Router', () => {
         // actions
         [
           [
-            web3.utils.toHex('Weth'),
+            convertToBytes32('Weth'),
             ACTION_DEPOSIT,
             [
               [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
@@ -295,7 +294,7 @@ contract.only('Core + Router', () => {
         // actions
         [
           [
-            web3.utils.toHex('Weth'),
+            convertToBytes32('Weth'),
             0,
             [
               [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
@@ -319,7 +318,7 @@ contract.only('Core + Router', () => {
         // actions
         [
           [
-            web3.utils.toHex('Weth'),
+            convertToBytes32('Weth'),
             ACTION_DEPOSIT,
             [
               [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],

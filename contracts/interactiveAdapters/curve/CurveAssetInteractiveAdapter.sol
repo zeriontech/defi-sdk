@@ -92,7 +92,14 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
             inputAmounts[i] = i == uint256(tokenIndex) ? amount : 0;
         }
 
-        ERC20(token).safeApprove(callee, amount, "CLIA[1]");
+        uint256 alowance = ERC20(token).allowance(address(this), callee);
+
+        if (allowance < amount) {
+            if (alowance > 0) {
+                ERC20(token).safeApprove(callee, 0, "CLIA[1]");
+            }
+            ERC20(token).safeApprove(callee, type(uint256).max, "CLIA[2]");
+        }
 
         if (totalCoins == 2) {
             // solhint-disable-next-line no-empty-blocks
@@ -153,7 +160,15 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         PoolInfo memory poolInfo = CurveRegistry(REGISTRY).getPoolInfo(token);
         address callee = poolInfo.deposit;
 
-        ERC20(token).safeApprove(callee, amount, "CLIA[2]");
+        uint256 alowance = ERC20(token).allowance(address(this), callee);
+
+        if (allowance < amount) {
+            if (alowance > 0) {
+                ERC20(token).safeApprove(callee, 0, "CLIA[3]");
+            }
+            ERC20(token).safeApprove(callee, type(uint256).max, "CLIA[4]");
+        }
+
         // solhint-disable-next-line no-empty-blocks
         try Deposit(callee).remove_liquidity_one_coin(amount, tokenIndex, 0)  {} catch {
             revert("CLIA: withdraw fail");

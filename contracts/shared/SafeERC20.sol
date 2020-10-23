@@ -65,7 +65,7 @@ library SafeERC20 {
     ) internal {
         require(
             (value == 0) || (token.allowance(address(this), spender) == 0),
-            "SafeERC20: bad approve call"
+            abi.encodePacked("SafeERC20: bad approve call from ", location)
         );
         callOptionalReturn(
             token,

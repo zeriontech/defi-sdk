@@ -1,8 +1,9 @@
 // import displayToken from '../helpers/displayToken';
 import expectRevert from '../helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
+import convertToBytes32 from '../helpers/convertToBytes32';
 
-const YEARN_ADAPTER = web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('yearn.finance')).slice(0, -2);
+const YEARN_ADAPTER = convertToBytes32('yearn.finance').slice(0, -2);
 const ASSET_ADAPTER = '01';
 const YEARN_ASSET_ADAPTER = `${YEARN_ADAPTER}${ASSET_ADAPTER}`;
 

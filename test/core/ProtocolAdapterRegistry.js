@@ -1,4 +1,5 @@
 import expectRevert from '../helpers/expectRevert';
+import convertToBytes32 from '../helpers/convertToBytes32';
 
 const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const ProtocolAdapter = artifacts.require('./MockAdapter');
@@ -35,7 +36,7 @@ contract.only('ProtocolAdapterRegistry', () => {
         protocolAdapterRegistry = result.contract;
       });
     await protocolAdapterRegistry.methods.addProtocolAdapters(
-      [web3.utils.toHex('Mock')],
+      [convertToBytes32('Mock')],
       [
         protocolAdapterAddress,
       ],
@@ -48,7 +49,7 @@ contract.only('ProtocolAdapterRegistry', () => {
         gas: '1000000',
       });
     //    await protocolAdapterRegistry.methods.addTokenAdapters(
-    //      [web3.utils.toHex('ERC20')],
+    //      [convertToBytes32('ERC20')],
     //      [tokenAdapterAddress],
     //    )
     //      .send({
@@ -75,7 +76,7 @@ contract.only('ProtocolAdapterRegistry', () => {
   });
 
   it('should be correct protocol adapters', async () => {
-    await protocolAdapterRegistry.methods.getProtocolAdapterAddress(web3.utils.toHex('Mock'))
+    await protocolAdapterRegistry.methods.getProtocolAdapterAddress(convertToBytes32('Mock'))
       .call()
       .then((result) => {
         assert.equal(result, protocolAdapterAddress);
@@ -83,7 +84,7 @@ contract.only('ProtocolAdapterRegistry', () => {
   });
 
   it('should be correct supported tokens', async () => {
-    await protocolAdapterRegistry.methods.getSupportedTokens(web3.utils.toHex('Mock'))
+    await protocolAdapterRegistry.methods.getSupportedTokens(convertToBytes32('Mock'))
       .call()
       .then((result) => {
         assert.equal(result.length, 2);
@@ -95,7 +96,7 @@ contract.only('ProtocolAdapterRegistry', () => {
   it('should not add protocol adapter not by the owner', async () => {
     await expectRevert(protocolAdapterRegistry.methods.addProtocolAdapters(
       [
-        web3.utils.toHex('Mock2'),
+        convertToBytes32('Mock2'),
       ],
       [
         protocolAdapterAddress,
@@ -113,8 +114,8 @@ contract.only('ProtocolAdapterRegistry', () => {
   it('should not add protocol adapter with bad input (2 names)', async () => {
     await expectRevert(protocolAdapterRegistry.methods.addProtocolAdapters(
       [
-        web3.utils.toHex('Mock2'),
-        web3.utils.toHex('Mock3'),
+        convertToBytes32('Mock2'),
+        convertToBytes32('Mock3'),
       ],
       [
         protocolAdapterAddress,
@@ -132,7 +133,7 @@ contract.only('ProtocolAdapterRegistry', () => {
   it('should not add protocol adapter with bad input (2 addresses)', async () => {
     await expectRevert(protocolAdapterRegistry.methods.addProtocolAdapters(
       [
-        web3.utils.toHex('Mock2'),
+        convertToBytes32('Mock2'),
       ],
       [
         protocolAdapterAddress,
@@ -151,7 +152,7 @@ contract.only('ProtocolAdapterRegistry', () => {
   it('should not add protocol adapter with bad input (2 sets of supported tokens)', async () => {
     await expectRevert(protocolAdapterRegistry.methods.addProtocolAdapters(
       [
-        web3.utils.toHex('Mock2'),
+        convertToBytes32('Mock2'),
       ],
       [
         protocolAdapterAddress,
@@ -201,7 +202,7 @@ contract.only('ProtocolAdapterRegistry', () => {
 
   it('should not add protocol adapter with existing name', async () => {
     await expectRevert(protocolAdapterRegistry.methods.addProtocolAdapters(
-      [web3.utils.toHex('Mock')],
+      [convertToBytes32('Mock')],
       [
         protocolAdapterAddress,
       ],
@@ -217,7 +218,7 @@ contract.only('ProtocolAdapterRegistry', () => {
 
   it('should not add protocol adapter with zero adapter', async () => {
     await expectRevert(protocolAdapterRegistry.methods.addProtocolAdapters(
-      [web3.utils.toHex('Mock2')],
+      [convertToBytes32('Mock2')],
       [
         ZERO,
       ],
@@ -233,7 +234,7 @@ contract.only('ProtocolAdapterRegistry', () => {
 
   it('should add protocol by the owner', async () => {
     await protocolAdapterRegistry.methods.addProtocolAdapters(
-      [web3.utils.toHex('Mock2')],
+      [convertToBytes32('Mock2')],
       [
         ONE,
       ],
@@ -255,7 +256,7 @@ contract.only('ProtocolAdapterRegistry', () => {
 
   it('should not remove protocol not by the owner', async () => {
     await expectRevert(protocolAdapterRegistry.methods.removeProtocolAdapters(
-      [web3.utils.toHex('Mock')],
+      [convertToBytes32('Mock')],
     )
       .send({
         from: accounts[1],
@@ -265,7 +266,7 @@ contract.only('ProtocolAdapterRegistry', () => {
 
   it('should not remove protocol with wrong name', async () => {
     await expectRevert(protocolAdapterRegistry.methods.removeProtocolAdapters(
-      [web3.utils.toHex('Mock1')],
+      [convertToBytes32('Mock1')],
     )
       .send({
         from: accounts[0],
@@ -285,7 +286,7 @@ contract.only('ProtocolAdapterRegistry', () => {
 
   it('should remove protocol by the owner', async () => {
     await protocolAdapterRegistry.methods.removeProtocolAdapters(
-      [web3.utils.toHex('Mock')],
+      [convertToBytes32('Mock')],
     )
       .send({
         from: accounts[0],
@@ -297,7 +298,7 @@ contract.only('ProtocolAdapterRegistry', () => {
         assert.equal(result.length, 0);
       });
     await protocolAdapterRegistry.methods.addProtocolAdapters(
-      [web3.utils.toHex('Mock2')],
+      [convertToBytes32('Mock2')],
       [
         protocolAdapterAddress,
       ],
@@ -310,7 +311,7 @@ contract.only('ProtocolAdapterRegistry', () => {
         gas: '300000',
       });
     await protocolAdapterRegistry.methods.addProtocolAdapters(
-      [web3.utils.toHex('Mock1')],
+      [convertToBytes32('Mock1')],
       [
         protocolAdapterAddress,
       ],
@@ -330,7 +331,7 @@ contract.only('ProtocolAdapterRegistry', () => {
         assert.equal(web3.utils.hexToUtf8(result[1]), 'Mock1');
       });
     await protocolAdapterRegistry.methods.removeProtocolAdapters(
-      [web3.utils.toHex('Mock2')],
+      [convertToBytes32('Mock2')],
     )
       .send({
         from: accounts[0],
@@ -343,7 +344,7 @@ contract.only('ProtocolAdapterRegistry', () => {
         assert.equal(web3.utils.hexToUtf8(result[0]), 'Mock1');
       });
     await protocolAdapterRegistry.methods.addProtocolAdapters(
-      [web3.utils.toHex('Mock2')],
+      [convertToBytes32('Mock2')],
       [
         protocolAdapterAddress,
       ],
@@ -363,7 +364,7 @@ contract.only('ProtocolAdapterRegistry', () => {
         assert.equal(web3.utils.hexToUtf8(result[1]), 'Mock2');
       });
     await protocolAdapterRegistry.methods.removeProtocolAdapters(
-      [web3.utils.toHex('Mock2')],
+      [convertToBytes32('Mock2')],
     )
       .send({
         from: accounts[0],
@@ -379,7 +380,7 @@ contract.only('ProtocolAdapterRegistry', () => {
 
   it('should not update protocol adapter not by the owner', async () => {
     await expectRevert(protocolAdapterRegistry.methods.updateProtocolAdapters(
-      [web3.utils.toHex('Mock')],
+      [convertToBytes32('Mock')],
       [ONE],
       [[]],
     )
@@ -391,7 +392,7 @@ contract.only('ProtocolAdapterRegistry', () => {
 
   it('should not update protocol adapter with wrong protocol name', async () => {
     await expectRevert(protocolAdapterRegistry.methods.updateProtocolAdapters(
-      [web3.utils.toHex('Mock1')],
+      [convertToBytes32('Mock1')],
       [ONE],
       [[]],
     )
@@ -403,7 +404,7 @@ contract.only('ProtocolAdapterRegistry', () => {
 
   it('should not update protocol adapter with zero address', async () => {
     await expectRevert(protocolAdapterRegistry.methods.updateProtocolAdapters(
-      [web3.utils.toHex('Mock')],
+      [convertToBytes32('Mock')],
       [ZERO],
       [[ONE]],
     )
@@ -415,7 +416,7 @@ contract.only('ProtocolAdapterRegistry', () => {
 
   it('should not update protocol adapter with different lengths 1', async () => {
     await expectRevert(protocolAdapterRegistry.methods.updateProtocolAdapters(
-      [web3.utils.toHex('Mock')],
+      [convertToBytes32('Mock')],
       [ZERO, ZERO],
       [[ONE]],
     )
@@ -427,7 +428,7 @@ contract.only('ProtocolAdapterRegistry', () => {
 
   it('should not update protocol adapter with different lengths 2', async () => {
     await expectRevert(protocolAdapterRegistry.methods.updateProtocolAdapters(
-      [web3.utils.toHex('Mock')],
+      [convertToBytes32('Mock')],
       [ZERO],
       [[ONE], [ONE]],
     )
@@ -451,7 +452,7 @@ contract.only('ProtocolAdapterRegistry', () => {
 
   it('should update protocol adapter by the owner', async () => {
     await protocolAdapterRegistry.methods.updateProtocolAdapters(
-      [web3.utils.toHex('Mock')],
+      [convertToBytes32('Mock')],
       [ONE],
       [[]],
     )
@@ -459,13 +460,13 @@ contract.only('ProtocolAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await protocolAdapterRegistry.methods.getProtocolAdapterAddress(web3.utils.toHex('Mock'))
+    await protocolAdapterRegistry.methods.getProtocolAdapterAddress(convertToBytes32('Mock'))
       .call()
       .then((result) => {
         assert.equal(result, ONE);
       });
     await protocolAdapterRegistry.methods.updateProtocolAdapters(
-      [web3.utils.toHex('Mock')],
+      [convertToBytes32('Mock')],
       [ONE],
       [[ONE, ONE]],
     )
@@ -473,13 +474,13 @@ contract.only('ProtocolAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await protocolAdapterRegistry.methods.getSupportedTokens(web3.utils.toHex('Mock'))
+    await protocolAdapterRegistry.methods.getSupportedTokens(convertToBytes32('Mock'))
       .call()
       .then((result) => {
         assert.deepEqual(result, [ONE, ONE]);
       });
     await protocolAdapterRegistry.methods.updateProtocolAdapters(
-      [web3.utils.toHex('Mock')],
+      [convertToBytes32('Mock')],
       [TWO],
       [[TWO, TWO]],
     )
@@ -487,18 +488,18 @@ contract.only('ProtocolAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await protocolAdapterRegistry.methods.getProtocolAdapterAddress(web3.utils.toHex('Mock'))
+    await protocolAdapterRegistry.methods.getProtocolAdapterAddress(convertToBytes32('Mock'))
       .call()
       .then((result) => {
         assert.deepEqual(result, TWO);
       });
-    await protocolAdapterRegistry.methods.getSupportedTokens(web3.utils.toHex('Mock'))
+    await protocolAdapterRegistry.methods.getSupportedTokens(convertToBytes32('Mock'))
       .call()
       .then((result) => {
         assert.deepEqual(result, [TWO, TWO]);
       });
     await protocolAdapterRegistry.methods.updateProtocolAdapters(
-      [web3.utils.toHex('Mock')],
+      [convertToBytes32('Mock')],
       [TWO],
       [[]],
     )
@@ -506,7 +507,7 @@ contract.only('ProtocolAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await protocolAdapterRegistry.methods.getSupportedTokens(web3.utils.toHex('Mock'))
+    await protocolAdapterRegistry.methods.getSupportedTokens(convertToBytes32('Mock'))
       .call()
       .then((result) => {
         assert.deepEqual(result, []);
@@ -566,7 +567,7 @@ contract.only('ProtocolAdapterRegistry', () => {
       .then((result) => {
         assert.equal(
           result[0].protocolAdapterName,
-          web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('Mock')),
+          convertToBytes32('Mock'),
         );
         assert.deepEqual(
           result[0].tokenBalances[0],
@@ -583,7 +584,7 @@ contract.only('ProtocolAdapterRegistry', () => {
       });
     //    await protocolAdapterRegistry.methods.getFullTokenBalances(
     //      [[
-    //        web3.eth.abi.encodeParameter('bytes32', web3.utils.toHex('ERC20')),
+    //        convertToBytes32('ERC20'),
     //        protocolAdapterAddress,
     //        '1000',
     //      ]],
@@ -615,7 +616,7 @@ contract.only('ProtocolAdapterRegistry', () => {
 
   it('should not be correct balances with wrong adapter', async () => {
     await expectRevert(protocolAdapterRegistry.methods.getAdapterBalance(
-      web3.utils.toHex('Mock3'),
+      convertToBytes32('Mock3'),
       [],
       accounts[0],
     )

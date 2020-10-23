@@ -1,4 +1,5 @@
 import expectRevert from '../helpers/expectRevert';
+import convertToBytes32 from '../helpers/convertToBytes32';
 
 const SignatureVerifier = artifacts.require('./Router');
 
@@ -28,12 +29,10 @@ contract.only('SignatureVerifier', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const UNISWAP_EXCHANGE_ADAPTER = `${
-    web3.eth.abi.encodeParameter(
-      'bytes32',
-      web3.utils.toHex('Uniswap V2'),
-    )
-      .slice(0, -2)
-  }${EXCHANGE_ADAPTER}`;
+    convertToBytes32('Uniswap V2').slice(0, -2)
+  }${
+    EXCHANGE_ADAPTER
+  }`;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -75,7 +74,7 @@ contract.only('SignatureVerifier', () => {
               ],
             },
             domain: {
-              name: 'Zerion Router',
+              name: 'Zerion Router (Mainnet, v1.1)',
               verifyingContract: signatureVerifier.options.address,
             },
             primaryType: 'TransactionData',

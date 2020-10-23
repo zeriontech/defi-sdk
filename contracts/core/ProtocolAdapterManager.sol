@@ -45,10 +45,8 @@ abstract contract ProtocolAdapterManager is Ownable {
         address[] calldata newProtocolAdapterAddresses,
         address[][] calldata newSupportedTokens
     ) external onlyOwner {
+        validateInput(newProtocolAdapterNames, newProtocolAdapterAddresses, newSupportedTokens);
         uint256 length = newProtocolAdapterNames.length;
-        require(length != 0, "PAM: empty[1]");
-        require(length == newProtocolAdapterAddresses.length, "PAM: lengths differ[1]");
-        require(length == newSupportedTokens.length, "PAM: lengths differ[2]");
 
         for (uint256 i = 0; i < length; i++) {
             addProtocolAdapter(
@@ -65,8 +63,8 @@ abstract contract ProtocolAdapterManager is Ownable {
      * @param protocolAdapterNames Array of the protocol adapters' names.
      */
     function removeProtocolAdapters(bytes32[] calldata protocolAdapterNames) external onlyOwner {
+        validateInput(protocolAdapterNames);
         uint256 length = protocolAdapterNames.length;
-        require(length != 0, "PAM: empty[2]");
 
         for (uint256 i = 0; i < length; i++) {
             removeProtocolAdapter(protocolAdapterNames[i]);
@@ -85,10 +83,8 @@ abstract contract ProtocolAdapterManager is Ownable {
         address[] calldata newProtocolAdapterAddresses,
         address[][] calldata newSupportedTokens
     ) external onlyOwner {
+        validateInput(protocolAdapterNames, newProtocolAdapterAddresses, newSupportedTokens);
         uint256 length = protocolAdapterNames.length;
-        require(length != 0, "PAM: empty[3]");
-        require(length == newProtocolAdapterAddresses.length, "PAM: lengths differ[3]");
-        require(length == newSupportedTokens.length, "PAM: lengths differ[4]");
 
         for (uint256 i = 0; i < length; i++) {
             updateProtocolAdapter(
@@ -138,8 +134,7 @@ abstract contract ProtocolAdapterManager is Ownable {
         address newProtocolAdapterAddress,
         address[] calldata newSupportedTokens
     ) internal {
-        require(newProtocolAdapterName != bytes32(0), "PAM: zero[1]");
-        require(newProtocolAdapterAddress != address(0), "PAM: zero[2]");
+        require(newProtocolAdapterAddress != address(0), "PAM: zero[1]");
         require(_protocolAdapterAddress[newProtocolAdapterName] == address(0), "PAM: exists");
 
         _protocolAdapterNames.push(newProtocolAdapterName);
@@ -187,7 +182,7 @@ abstract contract ProtocolAdapterManager is Ownable {
     ) internal {
         address oldProtocolAdapterAddress = _protocolAdapterAddress[protocolAdapterName];
         require(oldProtocolAdapterAddress != address(0), "PAM: does not exist[2]");
-        require(newProtocolAdapterAddress != address(0), "PAM: zero[3]");
+        require(newProtocolAdapterAddress != address(0), "PAM: zero[2]");
 
         if (oldProtocolAdapterAddress == newProtocolAdapterAddress) {
             _protocolAdapterSupportedTokens[protocolAdapterName] = newSupportedTokens;
@@ -195,5 +190,30 @@ abstract contract ProtocolAdapterManager is Ownable {
             _protocolAdapterAddress[protocolAdapterName] = newProtocolAdapterAddress;
             _protocolAdapterSupportedTokens[protocolAdapterName] = newSupportedTokens;
         }
+    }
+
+    /**
+     * @notice Checks that arrays' lengths are equal and non-zero.
+     * @param protocolAdapterNames Array of protocol adapters' names.
+     * @param protocolAdapterAddresses Array of protocol adapters' addresses.
+     * @param supportedTokens Array of protocol adapters' supported tokens.
+     */
+    function validateInput(
+        bytes32[] calldata protocolAdapterNames,
+        address[] calldata protocolAdapterAddresses,
+        address[][] calldata supportedTokens
+    ) internal pure {
+        validateInput(protocolAdapterNames);
+        uint256 length = protocolAdapterNames.length;
+        require(length == protocolAdapterAddresses.length, "PAM: lengths differ[1]");
+        require(length == supportedTokens.length, "PAM: lengths differ[2]");
+    }
+
+    /**
+     * @notice Checks that array's length is non-zero.
+     * @param protocolAdapterNames Array of protocol adapters' names.
+     */
+    function validateInput(bytes32[] calldata protocolAdapterNames) internal pure {
+        require(protocolAdapterNames.length != 0, "PAM: empty");
     }
 }

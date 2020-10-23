@@ -27,26 +27,59 @@ import { TokenAdapter } from "../adapters/TokenAdapter.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract TokenAdapterNamesManager is Ownable {
-    // Contract's hash => token adapter's name
+    // Contract's or address hash => token adapter's name
     mapping(bytes32 => bytes32) private _tokenAdapterName;
 
     /**
-     * @notice Adds token adapters' names by tokens.
+     * @notice Adds token adapters' names by tokens' hashes.
      * The function is callable only by the owner.
      * @param newTokens Array of new tokens.
      * @param newTokenAdapterNames Array of new token adapters' names.
      */
-    function addTokenAdapterNames(
+    function addTokenAdapterNamesByHashes(
         address[] calldata newTokens,
         bytes32[] calldata newTokenAdapterNames
     ) external onlyOwner {
+        validateInput(newTokens, newTokenAdapterNames);
         uint256 length = newTokens.length;
-        require(length != 0, "TANM: empty[1]");
-        require(length == newTokenAdapterNames.length, "TANM: lengths differ[1]");
 
         for (uint256 i = 0; i < length; i++) {
-            require(newTokens[i] != address(0), "TANM: zero[1]");
             addTokenAdapterName(getTokenHash(newTokens[i]), newTokenAdapterNames[i]);
+        }
+    }
+
+    /**
+     * @notice Adds token adapters' names by hashes.
+     * The function is callable only by the owner.
+     * @param newTokens Array of new tokens.
+     * @param newTokenAdapterNames Array of new token adapters' names.
+     */
+    function addTokenAdapterNamesByTokens(
+        address[] calldata newTokens,
+        bytes32[] calldata newTokenAdapterNames
+    ) external onlyOwner {
+        validateInput(newTokens, newTokenAdapterNames);
+        uint256 length = newTokens.length;
+
+        for (uint256 i = 0; i < length; i++) {
+            addTokenAdapterName(
+                keccak256(abi.encodePacked(newTokens[i])),
+                newTokenAdapterNames[i]
+            );
+        }
+    }
+
+    /**
+     * @notice Removes token adapters' names by tokens' hashes.
+     * The function is callable only by the owner.
+     * @param tokens Array of tokens.
+     */
+    function removeTokenAdapterNamesByHashes(address[] calldata tokens) external onlyOwner {
+        validateInput(tokens);
+        uint256 length = tokens.length;
+
+        for (uint256 i = 0; i < length; i++) {
+            removeTokenAdapterName(getTokenHash(tokens[i]));
         }
     }
 
@@ -55,12 +88,30 @@ abstract contract TokenAdapterNamesManager is Ownable {
      * The function is callable only by the owner.
      * @param tokens Array of tokens.
      */
-    function removeTokenAdapterNames(address[] calldata tokens) external onlyOwner {
+    function removeTokenAdapterNamesByTokens(address[] calldata tokens) external onlyOwner {
+        validateInput(tokens);
         uint256 length = tokens.length;
-        require(length != 0, "TANM: empty[2]");
 
         for (uint256 i = 0; i < length; i++) {
-            removeTokenAdapterName(getTokenHash(tokens[i]));
+            removeTokenAdapterName(keccak256(abi.encodePacked(tokens[i])));
+        }
+    }
+
+    /**
+     * @notice Updates token adapters' names by tokens' hashes.
+     * The function is callable only by the owner.
+     * @param tokens Array of tokens.
+     * @param newTokenAdapterNames Array of the new token adapters' names.
+     */
+    function updateTokenAdapterNamesByHashes(
+        address[] calldata tokens,
+        bytes32[] calldata newTokenAdapterNames
+    ) external onlyOwner {
+        validateInput(tokens, newTokenAdapterNames);
+        uint256 length = tokens.length;
+
+        for (uint256 i = 0; i < length; i++) {
+            updateTokenAdapterName(getTokenHash(tokens[i]), newTokenAdapterNames[i]);
         }
     }
 
@@ -70,16 +121,18 @@ abstract contract TokenAdapterNamesManager is Ownable {
      * @param tokens Array of tokens.
      * @param newTokenAdapterNames Array of the new token adapters' names.
      */
-    function updateTokenAdapterNames(
+    function updateTokenAdapterNamesByTokens(
         address[] calldata tokens,
         bytes32[] calldata newTokenAdapterNames
     ) external onlyOwner {
+        validateInput(tokens, newTokenAdapterNames);
         uint256 length = tokens.length;
-        require(length != 0, "TANM: empty[3]");
-        require(length == newTokenAdapterNames.length, "TANM: lengths differ[2]");
 
         for (uint256 i = 0; i < length; i++) {
-            updateTokenAdapterName(getTokenHash(tokens[i]), newTokenAdapterNames[i]);
+            updateTokenAdapterName(
+                keccak256(abi.encodePacked(tokens[i])),
+                newTokenAdapterNames[i]
+            );
         }
     }
 
@@ -88,7 +141,13 @@ abstract contract TokenAdapterNamesManager is Ownable {
      * @return Name of token adapter.
      */
     function getTokenAdapterName(address token) public view returns (bytes32) {
-        return _tokenAdapterName[getTokenHash(token)];
+        bytes32 tokenAdapterName = _tokenAdapterName[keccak256(abi.encodePacked(token))];
+
+        if (tokenAdapterName == bytes32(0)) {
+            tokenAdapterName = _tokenAdapterName[getTokenHash(token)];
+        }
+
+        return tokenAdapterName;
     }
 
     function getTokenHash(address token) public view returns (bytes32) {
@@ -108,7 +167,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
      * @param newTokenAdapterName New token adapter's name.
      */
     function addTokenAdapterName(bytes32 newHash, bytes32 newTokenAdapterName) internal {
-        require(newTokenAdapterName != bytes32(0), "TANM: zero[2]");
+        require(newTokenAdapterName != bytes32(0), "TANM: zero[1]");
         require(_tokenAdapterName[newHash] == bytes32(0), "TANM: exists");
 
         _tokenAdapterName[newHash] = newTokenAdapterName;
@@ -132,9 +191,35 @@ abstract contract TokenAdapterNamesManager is Ownable {
     function updateTokenAdapterName(bytes32 hash, bytes32 newTokenAdapterName) internal {
         bytes32 oldTokenAdapterName = _tokenAdapterName[hash];
         require(oldTokenAdapterName != bytes32(0), "TANM: does not exist[2]");
-        require(newTokenAdapterName != bytes32(0), "TANM: zero[3]");
-        require(oldTokenAdapterName != newTokenAdapterName, "TANM: same name[1]");
+        require(newTokenAdapterName != bytes32(0), "TANM: zero[2]");
+        require(oldTokenAdapterName != newTokenAdapterName, "TANM: same name");
 
         _tokenAdapterName[hash] = newTokenAdapterName;
+    }
+
+    /**
+     * @notice Checks that arrays' lengths are equal and non-zero.
+     * @param tokens Array of tokens' addresses.
+     * @param tokenAdapterNames Array of token adapters' names.
+     */
+    function validateInput(address[] calldata tokens, bytes32[] calldata tokenAdapterNames)
+        internal
+        pure
+    {
+        validateInput(tokens);
+        uint256 length = tokens.length;
+        require(length == tokenAdapterNames.length, "TANM: lengths differ");
+
+        for (uint256 i = 0; i < length; i++) {
+            require(tokens[i] != address(0), "TANM: zero[3]");
+        }
+    }
+
+    /**
+     * @notice Checks that array's length is non-zero.
+     * @param tokens Array of tokens' addresses.
+     */
+    function validateInput(address[] calldata tokens) internal pure {
+        require(tokens.length != 0, "TANM: empty");
     }
 }
