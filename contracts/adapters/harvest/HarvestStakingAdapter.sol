@@ -43,7 +43,7 @@ contract HarvestStakingAdapter is ProtocolAdapter {
     string public constant override tokenType = "ERC20";
 
     address internal constant FARM = 0xa0246c9032bC3A600820415aE600c6388619A14D;
-    address internal constant UNI_FARM_USDC = 0xF553E1f826f42716cDFe02bde5ee76b2a52fc7EB;
+    address internal constant UNI_FARM_USDC = 0x514906FC121c7878424a5C928cad1852CC545892;
     address internal constant F_WBTC = 0x5d9d25c7C457dD82fc8668FFC6B9746b674d4EcB;
     address internal constant F_WETH = 0xFE09e53A81Fe2808bc493ea64319109B5bAa573e;
     address internal constant F_DAI = 0xab7FA2B2985BCcfC13c6D86b1D5A17486ab1e04C;
