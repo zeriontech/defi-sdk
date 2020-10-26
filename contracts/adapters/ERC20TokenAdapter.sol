@@ -69,18 +69,7 @@ contract ERC20TokenAdapter is TokenAdapter {
             abi.encodeWithSelector(ERC20(token).name.selector)
         );
 
-        if (returnData.length == 32 || returnData.length == 4096) {
-            bytes32 name;
-            // solhint-disable-next-line no-inline-assembly
-            assembly {
-                let free := mload(0x40)
-                returndatacopy(free, 0, 32)
-                name := mload(free)
-            }
-            return name.toString();
-        } else {
-            return abi.decode(returnData, (string));
-        }
+        return parseReturnData(returnData);
     }
 
     /**
@@ -92,6 +81,10 @@ contract ERC20TokenAdapter is TokenAdapter {
             abi.encodeWithSelector(ERC20(token).symbol.selector)
         );
 
+        return parseReturnData(returnData);
+    }
+
+    function parseReturnData(bytes memory returnData) internal pure returns (string memory) {
         if (returnData.length == 32 || returnData.length == 4096) {
             bytes32 symbol;
             // solhint-disable-next-line no-inline-assembly

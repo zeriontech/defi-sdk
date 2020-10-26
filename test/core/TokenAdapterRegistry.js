@@ -672,6 +672,33 @@ contract.only('TokenAdapterRegistry', () => {
       }));
   });
 
+  it('should not update token adapter name by hash for non-existent name', async () => {
+    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
+      [cDAIAddress],
+      [convertToBytes32('CToken')],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      });
+    await tokenAdapterRegistry.methods.getTokenAdapterName(cDAIAddress)
+      .call()
+      .then((result) => {
+        assert.equal(
+          result,
+          convertToBytes32('CToken'),
+        );
+      });
+    await expectRevert(tokenAdapterRegistry.methods.updateTokenAdapterNamesByHashes(
+      [ZERO],
+      [convertToBytes32('New CToken')],
+    )
+      .send({
+        from: accounts[0],
+        gas: '300000',
+      }));
+  });
+
   it('should not update token adapter name by hash with empty list', async () => {
     await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
       [cDAIAddress],

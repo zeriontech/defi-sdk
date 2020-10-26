@@ -7,8 +7,6 @@ const YEARN_ADAPTER = convertToBytes32('yearn.finance').slice(0, -2);
 const ASSET_ADAPTER = '01';
 const YEARN_ASSET_ADAPTER = `${YEARN_ADAPTER}${ASSET_ADAPTER}`;
 
-console.log(`yVauls adapter ${YEARN_ASSET_ADAPTER}`);
-
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;

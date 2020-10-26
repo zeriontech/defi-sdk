@@ -17,7 +17,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('AaveAssetInteractiveAdapter', () => {
+contract('AaveAssetInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const aethAddress = '0x3a3A65aAb0dd2A17E3F1947bA16138cd37d08c04';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';

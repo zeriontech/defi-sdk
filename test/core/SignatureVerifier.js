@@ -2,6 +2,9 @@ import expectRevert from '../helpers/expectRevert';
 import convertToBytes32 from '../helpers/convertToBytes32';
 
 const SignatureVerifier = artifacts.require('./Router');
+const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
+const InteractiveAdapter = artifacts.require('./WethInteractiveAdapter');
+const Core = artifacts.require('./Core');
 
 async function signTypedData(account, data) {
   return new Promise((resolve, reject) => {
@@ -20,25 +23,57 @@ async function signTypedData(account, data) {
 }
 
 contract.only('SignatureVerifier', () => {
-  let accounts;
-  let signatureVerifier;
-  let sign;
-
-  const EXCHANGE_ADAPTER = '03';
-  const ZERO = '0x0000000000000000000000000000000000000000';
-  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
-  const UNISWAP_EXCHANGE_ADAPTER = `${
-    convertToBytes32('Uniswap V2').slice(0, -2)
-  }${
-    EXCHANGE_ADAPTER
-  }`;
+  const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+  const WETH_ADAPTER = convertToBytes32('WETH');
+  const ZERO = '0x0000000000000000000000000000000000000000';
+
+  let sign;
+  let accounts;
+  let core;
+  let signatureVerifier;
+  let protocolAdapterRegistry;
+  let protocolAdapterAddress;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
-    await SignatureVerifier.new('0x0000000000000000000000000000000000000001', { from: accounts[0] })
+    await InteractiveAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        protocolAdapterAddress = result.address;
+      });
+    await ProtocolAdapterRegistry.new({ from: accounts[0] })
+      .then((result) => {
+        protocolAdapterRegistry = result.contract;
+      });
+    await protocolAdapterRegistry.methods.addProtocolAdapters(
+      [
+        WETH_ADAPTER,
+      ],
+      [
+        protocolAdapterAddress,
+      ],
+      [
+        [],
+      ],
+    )
+      .send({
+        from: accounts[0],
+        gas: '1000000',
+      });
+    await Core.new(
+      protocolAdapterRegistry.options.address,
+      { from: accounts[0] },
+    )
+      .then((result) => {
+        core = result.contract;
+      });
+    await SignatureVerifier.new(
+      core.options.address,
+      { from: accounts[0] },
+    )
       .then((result) => {
         signatureVerifier = result.contract;
+
         sign = async function (transactionData) {
           const typedData = {
             types: {
@@ -91,31 +126,19 @@ contract.only('SignatureVerifier', () => {
       {
         actions: [
           {
-            protocolAdapterName: UNISWAP_EXCHANGE_ADAPTER,
+            protocolAdapterName: WETH_ADAPTER,
             actionType: 1,
             tokenAmounts: [
               {
-                token: daiAddress,
+                token: ethAddress,
                 amount: web3.utils.toWei('1', 'ether'),
                 amountType: 2,
               },
             ],
-            data: web3.eth.abi.encodeParameter(
-              'address[]',
-              [
-                daiAddress,
-                wethAddress,
-              ],
-            ),
+            data: '0x',
           },
         ],
-        inputs: [
-          {
-            token: daiAddress,
-            amount: web3.utils.toWei('1', 'ether'),
-            amountType: 2,
-          },
-        ],
+        inputs: [],
         fee: {
           share: 0,
           beneficiary: ZERO,
@@ -129,27 +152,26 @@ contract.only('SignatureVerifier', () => {
         salt: 0,
       },
     );
-    await signatureVerifier.methods.hashData(
+    const data = [
       [
         [
+          WETH_ADAPTER,
+          1,
           [
-            UNISWAP_EXCHANGE_ADAPTER,
-            1,
-            [
-              [daiAddress, web3.utils.toWei('1', 'ether'), 2],
-            ],
-            web3.eth.abi.encodeParameter('address[]', [daiAddress, wethAddress]),
+            [ethAddress, web3.utils.toWei('1', 'ether'), 2],
           ],
+          '0x',
         ],
-        [
-          [daiAddress, web3.utils.toWei('1', 'ether'), 2],
-        ],
-        [0, ZERO],
-        [
-          [wethAddress, web3.utils.toWei('1', 'ether')],
-        ],
-        0,
       ],
+      [],
+      [0, ZERO],
+      [
+        [wethAddress, web3.utils.toWei('1', 'ether')],
+      ],
+      0,
+    ];
+    await signatureVerifier.methods.hashData(
+      data,
     )
       .call()
       .then(async (hash) => {
@@ -170,6 +192,39 @@ contract.only('SignatureVerifier', () => {
             assert.equal(false, result);
           });
       });
+
+    await signatureVerifier.methods.execute(
+      data,
+      signature,
+    )
+      .send({
+        from: accounts[0],
+        gas: 10000000,
+        value: web3.utils.toWei('1', 'ether'),
+      });
+    await signatureVerifier.methods.hashData(
+      data,
+    )
+      .call()
+      .then(async (hash) => {
+        await signatureVerifier.methods.isHashUsed(
+          hash,
+          accounts[0],
+        )
+          .call()
+          .then((result) => {
+            assert.equal(true, result);
+          });
+      });
+    await expectRevert(signatureVerifier.methods.execute(
+      data,
+      signature,
+    )
+      .send({
+        from: accounts[0],
+        gas: 10000000,
+        value: web3.utils.toWei('1', 'ether'),
+      }));
   });
 
   it('should not recover with too long signature', async () => {
@@ -177,31 +232,19 @@ contract.only('SignatureVerifier', () => {
       {
         actions: [
           {
-            protocolAdapterName: UNISWAP_EXCHANGE_ADAPTER,
+            protocolAdapterName: WETH_ADAPTER,
             actionType: 1,
             tokenAmounts: [
               {
-                token: daiAddress,
+                token: ethAddress,
                 amount: web3.utils.toWei('1', 'ether'),
                 amountType: 2,
               },
             ],
-            data: web3.eth.abi.encodeParameter(
-              'address[]',
-              [
-                daiAddress,
-                wethAddress,
-              ],
-            ),
+            data: '0x',
           },
         ],
-        inputs: [
-          {
-            token: daiAddress,
-            amount: web3.utils.toWei('1', 'ether'),
-            amountType: 2,
-          },
-        ],
+        inputs: [],
         fee: {
           share: 0,
           beneficiary: ZERO,
@@ -215,27 +258,26 @@ contract.only('SignatureVerifier', () => {
         salt: 0,
       },
     );
-    await expectRevert(signatureVerifier.methods.hashData(
+    const data = [
       [
         [
+          WETH_ADAPTER,
+          1,
           [
-            UNISWAP_EXCHANGE_ADAPTER,
-            1,
-            [
-              [daiAddress, web3.utils.toWei('1', 'ether'), 2],
-            ],
-            web3.eth.abi.encodeParameter('address[]', [daiAddress, wethAddress]),
+            [ethAddress, web3.utils.toWei('1', 'ether'), 2],
           ],
+          '0x',
         ],
-        [
-          [daiAddress, web3.utils.toWei('1', 'ether'), 2],
-        ],
-        [0, ZERO],
-        [
-          [wethAddress, web3.utils.toWei('1', 'ether')],
-        ],
-        0,
       ],
+      [],
+      [0, ZERO],
+      [
+        [wethAddress, web3.utils.toWei('1', 'ether')],
+      ],
+      0,
+    ];
+    await expectRevert(signatureVerifier.methods.hashData(
+      data,
     )
       .call()
       .then(async (hash) => {

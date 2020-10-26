@@ -28,7 +28,6 @@ contract.only('Core + Router', () => {
   let protocolAdapterRegistry;
   let protocolAdapterAddress;
   let WETH;
-  let wethAmount;
 
   describe('Core and Router tests using Weth', () => {
     beforeEach(async () => {
@@ -102,15 +101,15 @@ contract.only('Core + Router', () => {
       ));
     });
 
-    it('should not get 1 WETH from 1 ETH with broken amount type', async () => {
-      await expectRevert(router.methods.execute(
+    it('should not get 0.5 ETH from 0.5 WETH with bad amount type', async () => {
+      await router.methods.execute(
         // actions
         [
           [
             convertToBytes32('Weth'),
             ACTION_DEPOSIT,
             [
-              [ethAddress, web3.utils.toWei('1', 'ether'), 0],
+              [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
             ],
             EMPTY_BYTES,
           ],
@@ -129,18 +128,53 @@ contract.only('Core + Router', () => {
           from: accounts[0],
           gas: 10000000,
           value: web3.utils.toWei('1', 'ether'),
+        });
+      await WETH.methods.approve(router.options.address, web3.utils.toWei('1', 'ether'))
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(router.methods.execute(
+        // actions
+        [
+          [
+            convertToBytes32('Weth'),
+            ACTION_WITHDRAW,
+            [
+              [wethAddress, web3.utils.toWei('1', 'ether'), 0],
+            ],
+            EMPTY_BYTES,
+          ],
+        ],
+        // inputs
+        [
+          [wethAddress, convertToShare(0.5), AMOUNT_RELATIVE],
+        ],
+        // fee
+        [
+          0,
+          ZERO,
+        ],
+        // outputs
+        [
+          [ethAddress, 1000],
+        ],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
         }));
     });
 
-    it('should not get 1 WETH from 1 ETH with too large relative amount', async () => {
-      await expectRevert(router.methods.execute(
+    it('should not get 0.5 ETH from 0.5 WETH with too large relative amount', async () => {
+      await router.methods.execute(
         // actions
         [
           [
             convertToBytes32('Weth'),
             ACTION_DEPOSIT,
             [
-              [ethAddress, web3.utils.toWei('1.1', 'ether'), AMOUNT_RELATIVE],
+              [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
             ],
             EMPTY_BYTES,
           ],
@@ -159,6 +193,41 @@ contract.only('Core + Router', () => {
           from: accounts[0],
           gas: 10000000,
           value: web3.utils.toWei('1', 'ether'),
+        });
+      await WETH.methods.approve(router.options.address, web3.utils.toWei('1', 'ether'))
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(router.methods.execute(
+        // actions
+        [
+          [
+            convertToBytes32('Weth'),
+            ACTION_WITHDRAW,
+            [
+              [wethAddress, web3.utils.toWei('1.01', 'ether'), AMOUNT_RELATIVE],
+            ],
+            EMPTY_BYTES,
+          ],
+        ],
+        // inputs
+        [
+          [wethAddress, convertToShare(0.5), AMOUNT_RELATIVE],
+        ],
+        // fee
+        [
+          0,
+          ZERO,
+        ],
+        // outputs
+        [
+          [ethAddress, 1000],
+        ],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
         }));
     });
 
@@ -360,7 +429,7 @@ contract.only('Core + Router', () => {
         });
     });
 
-    it('should return lost tokens', async () => {
+    it('should not return lost tokens', async () => {
       await router.methods.returnLostTokens(ethAddress, accounts[0])
         .send({
           from: accounts[0],
@@ -371,70 +440,6 @@ contract.only('Core + Router', () => {
           from: accounts[0],
           gas: 1000000,
         }));
-    });
-
-    it('should return required allowances', async () => {
-      await WETH.methods.approve(router.options.address, 1)
-        .send({
-          from: accounts[0],
-          gas: 1000000,
-        });
-      await WETH.methods.allowance(accounts[0], router.options.address)
-        .call()
-        .then((result) => {
-          assert.equal(result, 1);
-        });
-      await router.methods.getRequiredAllowances(
-        [
-          [wethAddress, 2, AMOUNT_ABSOLUTE],
-        ],
-        accounts[0],
-      )
-        .call()
-        .then((result) => {
-          assert.equal(result[0].amount, 1);
-        });
-      await router.methods.getRequiredAllowances(
-        [
-          [wethAddress, 1, AMOUNT_ABSOLUTE],
-        ],
-        accounts[0],
-      )
-        .call()
-        .then((result) => {
-          assert.equal(result[0].amount, 0);
-        });
-    });
-
-    it('should return required balances', async () => {
-      await WETH.methods.balanceOf(accounts[0])
-        .call()
-        .then((result) => {
-          wethAmount = result;
-        });
-      await router.methods.getRequiredBalances(
-        [
-          [wethAddress, web3.utils.toWei('100', 'ether'), AMOUNT_ABSOLUTE],
-        ],
-        accounts[0],
-      )
-        .call()
-        .then((result) => {
-          assert.equal(
-            result[0].amount,
-            new BN(web3.utils.toWei('100', 'ether')).sub(new BN(wethAmount)),
-          );
-        });
-      await router.methods.getRequiredBalances(
-        [
-          [wethAddress, 1, AMOUNT_ABSOLUTE],
-        ],
-        accounts[0],
-      )
-        .call()
-        .then((result) => {
-          assert.equal(result[0].amount, 0);
-        });
     });
 
     it('should not handle large fees correctly', async () => {

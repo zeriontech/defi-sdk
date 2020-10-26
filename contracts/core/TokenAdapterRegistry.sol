@@ -174,6 +174,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
      */
     function getFullTokenBalance(TokenBalance memory tokenBalance, Component[] memory components)
         internal
+        view
         returns (FullTokenBalance memory)
     {
         uint256 length = components.length;
