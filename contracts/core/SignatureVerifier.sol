@@ -25,6 +25,7 @@ import {
     Fee,
     TokenAmount
 } from "../shared/Structs.sol";
+import { ECDSA } from "../shared/ECDSA.sol";
 
 contract SignatureVerifier {
     mapping(bytes32 => mapping(address => bool)) internal isHashUsed_;
@@ -107,9 +108,7 @@ contract SignatureVerifier {
         pure
         returns (address payable)
     {
-        (uint8 v, bytes32 r, bytes32 s) = splitSignature(signature);
-
-        return payable(ecrecover(hashedData, v, r, s));
+        return payable(ECDSA.recover(hashedData, signature));
     }
 
     function hashData(TransactionData memory data) public view returns (bytes32) {

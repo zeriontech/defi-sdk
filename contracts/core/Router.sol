@@ -62,52 +62,6 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         }
     }
 
-    function getRequiredAllowances(TokenAmount[] calldata inputs, address account)
-        external
-        view
-        returns (AbsoluteTokenAmount[] memory)
-    {
-        uint256 length = inputs.length;
-        AbsoluteTokenAmount[] memory requiredAllowances = new AbsoluteTokenAmount[](length);
-        uint256 required;
-        uint256 current;
-
-        for (uint256 i = 0; i < length; i++) {
-            required = getAbsoluteAmount(inputs[i], account);
-            current = ERC20(inputs[i].token).allowance(account, address(this));
-
-            requiredAllowances[i] = AbsoluteTokenAmount({
-                token: inputs[i].token,
-                amount: required > current ? required - current : 0
-            });
-        }
-
-        return requiredAllowances;
-    }
-
-    function getRequiredBalances(TokenAmount[] calldata inputs, address account)
-        external
-        view
-        returns (AbsoluteTokenAmount[] memory)
-    {
-        uint256 length = inputs.length;
-        AbsoluteTokenAmount[] memory requiredBalances = new AbsoluteTokenAmount[](length);
-        uint256 required;
-        uint256 current;
-
-        for (uint256 i = 0; i < length; i++) {
-            required = getAbsoluteAmount(inputs[i], account);
-            current = ERC20(inputs[i].token).balanceOf(account);
-
-            requiredBalances[i] = AbsoluteTokenAmount({
-                token: inputs[i].token,
-                amount: required > current ? required - current : 0
-            });
-        }
-
-        return requiredBalances;
-    }
-
     /**
      * @return Address of the Core contract used.
      */
@@ -115,6 +69,17 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         return core_;
     }
 
+    /**
+     * @notice Executes actions and returns tokens to account.
+     * @param data TransactionData struct with the following elements:
+     *     - actions Array of actions to be executed.
+     *     - inputs Array of tokens to be taken from the signer of this data.
+     *     - fee Fee struct with fee details.
+     *     - requiredOutputs Array of requirements for the returned tokens.
+     *     - salt Number that makes this data unique.
+     * @param signature EIP712-compatible signature of data.
+     * @return Array of AbsoluteTokenAmount structs with the returned tokens.
+     */
     function execute(TransactionData memory data, bytes memory signature)
         public
         payable
@@ -128,6 +93,14 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         return execute(data.actions, data.inputs, data.fee, data.requiredOutputs, account, false);
     }
 
+    /**
+     * @notice Executes actions and returns tokens to account.
+     * @param actions Array of actions to be executed.
+     * @param  inputs Array of tokens to be taken from the signer of this data.
+     * @param  fee Fee struct with fee details.
+     * @param  requiredOutputs Array of requirements for the returned tokens.
+     * @return Array of AbsoluteTokenAmount structs with the returned tokens.
+     */
     function execute(
         Action[] memory actions,
         TokenAmount[] memory inputs,
@@ -137,6 +110,18 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         return execute(actions, inputs, fee, requiredOutputs, msg.sender, false);
     }
 
+    /**
+     * @notice Executes actions and returns tokens to account.
+     * @param data TransactionData struct with the following elements:
+     *     - actions Array of actions to be executed.
+     *     - inputs Array of tokens to be taken from the signer of this data.
+     *     - fee Fee struct with fee details.
+     *     - requiredOutputs Array of requirements for the returned tokens.
+     *     - salt Number that makes this data unique.
+     * @param signature EIP712-compatible signature of data.
+     * @return Array of AbsoluteTokenAmount structs with the returned tokens.
+     * @dev This function uses CHI token to refund some gas.
+     */
     function executeWithChi(TransactionData memory data, bytes memory signature)
         public
         payable
@@ -150,6 +135,15 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         return execute(data.actions, data.inputs, data.fee, data.requiredOutputs, account, true);
     }
 
+    /**
+     * @notice Executes actions and returns tokens to account.
+     * @param actions Array of actions to be executed.
+     * @param  inputs Array of tokens to be taken from the signer of this data.
+     * @param  fee Fee struct with fee details.
+     * @param  requiredOutputs Array of requirements for the returned tokens.
+     * @return Array of AbsoluteTokenAmount structs with the returned tokens.
+     * @dev This function uses CHI token to refund some gas.
+     */
     function executeWithChi(
         Action[] memory actions,
         TokenAmount[] memory inputs,
