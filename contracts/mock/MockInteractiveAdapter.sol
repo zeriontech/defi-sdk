@@ -30,34 +30,30 @@ contract WethInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     /**
-     * @notice Wraps Ether in Wrapped Ether.
-     * @param tokenAmounts Array with one element - TokenAmount struct with
-     * ETH address (0xEeee...EEeE), ETH amount to be deposited, and amount type.
-     * @return tokensToBeWithdrawn Array with one element - WETH token address.
+     * @notice Mock deposit function.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata)
+    function deposit(TokenAmount[] calldata, bytes calldata)
         external
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
+    // solhint-disable-next-line no-empty-blocks
     {
-        // solhint-disable-line no-empty-blocks
+
     }
 
     /**
-     * @notice Unwraps Ether from Wrapped Ether.
-     * @param tokenAmounts Array with one element - TokenAmount struct with
-     * WETH token address, WETH token amount to be redeemed, and amount type.
-     * @return tokensToBeWithdrawn Array with one element - ETH address (0xEeee...EEeE).
+     * @notice Mock withdraw function.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
+    function withdraw(TokenAmount[] calldata, bytes calldata)
         external
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
+    // solhint-disable-next-line no-empty-blocks
     {
-        // solhint-disable-line no-empty-blocks
+
     }
 }
