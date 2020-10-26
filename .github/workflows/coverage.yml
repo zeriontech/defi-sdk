@@ -13,6 +13,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '10.x'
+      - name setup-ssh
+        uses: webfactory/ssh-agent@v0.2.0
+        with:
+          ssh-private-key: ${{ secrets.PRIVATE_SSH }}
       - name: install
         run: npm ci
       - name: test+coverage
