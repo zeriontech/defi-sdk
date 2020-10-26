@@ -28,10 +28,8 @@ import {
 } from "../shared/Structs.sol";
 import { ERC20 } from "../shared/ERC20.sol";
 import { Ownable } from "./Ownable.sol";
-import { ProtocolAdapterManager } from "./ProtocolAdapterManager.sol";
 import { TokenAdapterNamesManager } from "./TokenAdapterNamesManager.sol";
 import { TokenAdapterManager } from "./TokenAdapterManager.sol";
-import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
 import { TokenAdapter } from "../adapters/TokenAdapter.sol";
 
 /**

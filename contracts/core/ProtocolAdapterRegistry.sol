@@ -30,8 +30,6 @@ import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
-    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-
     /**
      * @param account Address of the account.
      * @return AdapterBalance array by the given account.
