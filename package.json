@@ -47,7 +47,7 @@
     "@codechecks/client": "0.1.10",
     "eslint": "7.11.0",
     "eslint-config-airbnb-base": "14.2.0",
-    "eslint-plugin-import": "2.22.2",
+    "eslint-plugin-import": "2.22.1",
     "eth-gas-reporter": "0.2.17",
     "ganache-cli": "6.12.0",
     "husky": "4.3.0",
