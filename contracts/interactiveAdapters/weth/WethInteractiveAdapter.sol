@@ -21,18 +21,7 @@ pragma experimental ABIEncoderV2;
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-
-/**
- * @dev WETH9 contract interface.
- * Only the functions required for WethInteractiveAdapter contract are added.
- * The WETH9 contract is available here
- * github.com/0xProject/0x-monorepo/blob/development/contracts/erc20/contracts/src/WETH9.sol.
- */
-interface WETH9 {
-    function deposit() external payable;
-
-    function withdraw(uint256) external;
-}
+import { WETH9 } from "../../interfaces/WETH9.sol";
 
 /**
  * @title Interactive adapter for Wrapped Ether.

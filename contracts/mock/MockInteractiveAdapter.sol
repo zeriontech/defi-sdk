@@ -18,15 +18,15 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { TokenAmount } from "../../shared/Structs.sol";
-import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
-import { InteractiveAdapter } from "../InteractiveAdapter.sol";
+import { TokenAmount } from "../shared/Structs.sol";
+import { ERC20ProtocolAdapter } from "../adapters/ERC20ProtocolAdapter.sol";
+import { InteractiveAdapter } from "../interactiveAdapters/InteractiveAdapter.sol";
 
 /**
- * @title Interactive adapter for Wrapped Ether.
+ * @title Mock interactive adapter.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
-contract WethInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
+contract MockInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     /**
@@ -38,9 +38,9 @@ contract WethInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
-    // solhint-disable-next-line no-empty-blocks
     {
-
+        tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn[0] = ETH;
     }
 
     /**
@@ -52,8 +52,8 @@ contract WethInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
-    // solhint-disable-next-line no-empty-blocks
     {
-
+        tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn[0] = WETH;
     }
 }

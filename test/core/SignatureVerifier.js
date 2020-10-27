@@ -3,7 +3,7 @@ import convertToBytes32 from '../helpers/convertToBytes32';
 
 const SignatureVerifier = artifacts.require('./Router');
 const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
-const InteractiveAdapter = artifacts.require('./WethInteractiveAdapter');
+const InteractiveAdapter = artifacts.require('./MockInteractiveAdapter');
 const Core = artifacts.require('./Core');
 
 async function signTypedData(account, data) {
@@ -22,10 +22,10 @@ async function signTypedData(account, data) {
   });
 }
 
-contract.only('SignatureVerifier', () => {
+contract('SignatureVerifier', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-  const WETH_ADAPTER = convertToBytes32('WETH');
+  const MOCK_ADAPTER = convertToBytes32('Mock');
   const ZERO = '0x0000000000000000000000000000000000000000';
 
   let sign;
@@ -47,7 +47,7 @@ contract.only('SignatureVerifier', () => {
       });
     await protocolAdapterRegistry.methods.addProtocolAdapters(
       [
-        WETH_ADAPTER,
+        MOCK_ADAPTER,
       ],
       [
         protocolAdapterAddress,
@@ -126,7 +126,7 @@ contract.only('SignatureVerifier', () => {
       {
         actions: [
           {
-            protocolAdapterName: WETH_ADAPTER,
+            protocolAdapterName: MOCK_ADAPTER,
             actionType: 1,
             tokenAmounts: [
               {
@@ -135,7 +135,13 @@ contract.only('SignatureVerifier', () => {
                 amountType: 2,
               },
             ],
-            data: '0x',
+            data: web3.eth.abi.encodeParameter(
+              'address[]',
+              [
+                daiAddress,
+                wethAddress,
+              ],
+            ),
           },
         ],
         inputs: [],
@@ -155,12 +161,18 @@ contract.only('SignatureVerifier', () => {
     const data = [
       [
         [
-          WETH_ADAPTER,
+          MOCK_ADAPTER,
           1,
           [
             [ethAddress, web3.utils.toWei('1', 'ether'), 2],
           ],
-          '0x',
+          web3.eth.abi.encodeParameter(
+            'address[]',
+            [
+              daiAddress,
+              wethAddress,
+            ],
+          ),
         ],
       ],
       [],
@@ -232,7 +244,7 @@ contract.only('SignatureVerifier', () => {
       {
         actions: [
           {
-            protocolAdapterName: WETH_ADAPTER,
+            protocolAdapterName: MOCK_ADAPTER,
             actionType: 1,
             tokenAmounts: [
               {
@@ -241,7 +253,13 @@ contract.only('SignatureVerifier', () => {
                 amountType: 2,
               },
             ],
-            data: '0x',
+            data: web3.eth.abi.encodeParameter(
+              'address[]',
+              [
+                daiAddress,
+                wethAddress,
+              ],
+            ),
           },
         ],
         inputs: [],
@@ -261,12 +279,18 @@ contract.only('SignatureVerifier', () => {
     const data = [
       [
         [
-          WETH_ADAPTER,
+          MOCK_ADAPTER,
           1,
           [
             [ethAddress, web3.utils.toWei('1', 'ether'), 2],
           ],
-          '0x',
+          web3.eth.abi.encodeParameter(
+            'address[]',
+            [
+              daiAddress,
+              wethAddress,
+            ],
+          ),
         ],
       ],
       [],
