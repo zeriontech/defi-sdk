@@ -184,22 +184,6 @@ contract.only('ProtocolAdapterRegistry', () => {
       }));
   });
 
-  it('should not add protocol adapter with empty name', async () => {
-    await expectRevert(protocolAdapterRegistry.methods.addProtocolAdapters(
-      ['0x'],
-      [
-        protocolAdapterAddress,
-      ],
-      [
-        [protocolAdapterAddress],
-      ],
-    )
-      .send({
-        from: accounts[0],
-        gas: '300000',
-      }));
-  });
-
   it('should not add protocol adapter with existing name', async () => {
     await expectRevert(protocolAdapterRegistry.methods.addProtocolAdapters(
       [convertToBytes32('Mock')],
