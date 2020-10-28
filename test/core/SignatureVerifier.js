@@ -122,7 +122,7 @@ contract.only('SignatureVerifier', () => {
       });
   });
 
-  it('should be correct signer', async () => {
+  it('should be correct signer for execute', async () => {
     const signature = await sign(
       {
         actions: [
@@ -207,6 +207,124 @@ contract.only('SignatureVerifier', () => {
       });
 
     await signatureVerifier.methods.execute(
+      data,
+      signature,
+    )
+      .send({
+        from: accounts[0],
+        gas: 10000000,
+        value: web3.utils.toWei('1', 'ether'),
+      });
+    await signatureVerifier.methods.hashData(
+      data,
+    )
+      .call()
+      .then(async (hash) => {
+        await signatureVerifier.methods.isHashUsed(
+          hash,
+          accounts[0],
+        )
+          .call()
+          .then((result) => {
+            assert.equal(true, result);
+          });
+      });
+    await expectRevert(signatureVerifier.methods.execute(
+      data,
+      signature,
+    )
+      .send({
+        from: accounts[0],
+        gas: 10000000,
+        value: web3.utils.toWei('1', 'ether'),
+      }));
+  });
+
+  it('should be correct signer for execute with chi', async () => {
+    const signature = await sign(
+      {
+        actions: [
+          {
+            protocolAdapterName: MOCK_ADAPTER,
+            actionType: 1,
+            tokenAmounts: [
+              {
+                token: ethAddress,
+                amount: web3.utils.toWei('1', 'ether'),
+                amountType: 2,
+              },
+            ],
+            data: web3.eth.abi.encodeParameter(
+              'address[]',
+              [
+                daiAddress,
+                wethAddress,
+              ],
+            ),
+          },
+        ],
+        inputs: [],
+        fee: {
+          share: 0,
+          beneficiary: ZERO,
+        },
+        requiredOutputs: [
+          {
+            token: ethAddress,
+            amount: web3.utils.toWei('1', 'ether'),
+          },
+        ],
+        salt: 1,
+      },
+    );
+    const data = [
+      [
+        [
+          MOCK_ADAPTER,
+          1,
+          [
+            [ethAddress, web3.utils.toWei('1', 'ether'), 2],
+          ],
+          web3.eth.abi.encodeParameter(
+            'address[]',
+            [
+              daiAddress,
+              wethAddress,
+            ],
+          ),
+        ],
+      ],
+      [],
+      [0, ZERO],
+      [
+        [ethAddress, web3.utils.toWei('1', 'ether')],
+      ],
+      1,
+    ];
+    await signatureVerifier.methods.hashData(
+      data,
+    )
+      .call()
+      .then(async (hash) => {
+        await signatureVerifier.methods.getAccountFromSignature(
+          hash,
+          signature,
+        )
+          .call()
+          .then((result) => {
+            assert.equal(accounts[0], result);
+          });
+        await signatureVerifier.methods.isHashUsed(
+          hash,
+          accounts[0],
+        )
+          .call()
+          .then((result) => {
+            assert.equal(false, result);
+          });
+      });
+
+    await signatureVerifier.methods.executeWithChi(
       data,
       signature,
     )
