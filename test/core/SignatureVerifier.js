@@ -24,6 +24,7 @@ async function signTypedData(account, data) {
 
 contract.only('SignatureVerifier', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const MOCK_ADAPTER = convertToBytes32('Mock');
   const ZERO = '0x0000000000000000000000000000000000000000';
@@ -151,7 +152,7 @@ contract.only('SignatureVerifier', () => {
         },
         requiredOutputs: [
           {
-            token: wethAddress,
+            token: ethAddress,
             amount: web3.utils.toWei('1', 'ether'),
           },
         ],
@@ -178,7 +179,7 @@ contract.only('SignatureVerifier', () => {
       [],
       [0, ZERO],
       [
-        [wethAddress, web3.utils.toWei('1', 'ether')],
+        [ethAddress, web3.utils.toWei('1', 'ether')],
       ],
       0,
     ];
