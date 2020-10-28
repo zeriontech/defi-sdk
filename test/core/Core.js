@@ -609,18 +609,11 @@ contract.only('Core + Router', () => {
     });
 
     it('should not handle fees to non-receiving address correctly', async () => {
-      await WETH.methods.approve(router.options.address, web3.utils.toWei('1', 'ether'))
-        .send({
-          from: accounts[0],
-          gas: 1000000,
-        });
       await expectRevert(router.methods.execute(
         // actions
         [],
         // inputs
-        [
-          [wethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
-        ],
+        [],
         // fee
         [
           web3.utils.toWei('0.01', 'ether'),
@@ -631,6 +624,7 @@ contract.only('Core + Router', () => {
       )
         .send({
           from: accounts[0],
+          value: web3.utils.toWei('1', 'ether'),
           gas: 10000000,
         }));
     });

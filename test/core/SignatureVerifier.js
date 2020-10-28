@@ -22,7 +22,7 @@ async function signTypedData(account, data) {
   });
 }
 
-contract('SignatureVerifier', () => {
+contract.only('SignatureVerifier', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const MOCK_ADAPTER = convertToBytes32('Mock');
