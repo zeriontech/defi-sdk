@@ -50,6 +50,10 @@ library Helpers {
      * @dev Internal function to convert uint256 to string.
      */
     function toString(uint256 data) internal pure returns (string memory) {
+        if (data == uint256(0)) {
+            return "0";
+        }
+
         uint256 length = 0;
 
         uint256 dataCopy = data;
@@ -68,5 +72,28 @@ library Helpers {
         }
 
         return string(result);
+    }
+
+    /**
+     * @dev Internal function to convert address to string.
+     */
+    function toString(address data) internal pure returns (string memory) {
+        bytes memory bytesData = abi.encodePacked(data);
+
+        bytes memory result = new bytes(42);
+        result[0] = "0";
+        result[1] = "x";
+
+        for (uint256 i = 0; i < 20; i++) {
+            result[i * 2 + 2] = char(bytesData[i] >> 4); // First char of byte
+            result[i * 2 + 3] = char(bytesData[i] & 0x0f); // Second char of byte
+        }
+
+        return string(result);
+    }
+
+    function char(bytes1 byteChar) internal pure returns (bytes1) {
+        uint8 uintChar = uint8(byteChar);
+        return uintChar < 10 ? bytes1(uintChar + 48) : bytes1(uintChar + 87);
     }
 }

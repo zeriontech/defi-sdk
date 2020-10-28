@@ -31,6 +31,8 @@ import { ReentrancyGuard } from "./ReentrancyGuard.sol";
  */
 contract Core is ReentrancyGuard {
     using SafeERC20 for ERC20;
+    using Helpers for uint256;
+    using Helpers for address;
 
     address internal immutable protocolAdapterRegistry_;
 
@@ -166,11 +168,11 @@ contract Core is ReentrancyGuard {
             string(
                 abi.encodePacked(
                     "C: ",
-                    actualAmount,
+                    actualAmount.toString(),
                     " is less than ",
-                    requiredAmount,
+                    requiredAmount.toString(),
                     " for ",
-                    token
+                    token.toString()
                 )
             )
         );
