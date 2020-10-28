@@ -74,7 +74,7 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "CLIA: should be 1 tokenAmount[1]");
+        require(tokenAmounts.length == 1, "CAIA: should be 1 tokenAmount[1]");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
@@ -96,15 +96,15 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
 
         if (allowance < amount) {
             if (allowance > 0) {
-                ERC20(token).safeApprove(callee, 0, "CLIA[1]");
+                ERC20(token).safeApprove(callee, 0, "CAIA[1]");
             }
-            ERC20(token).safeApprove(callee, type(uint256).max, "CLIA[2]");
+            ERC20(token).safeApprove(callee, type(uint256).max, "CAIA[2]");
         }
 
         if (totalCoins == 2) {
             // solhint-disable-next-line no-empty-blocks
             try Deposit(callee).add_liquidity([inputAmounts[0], inputAmounts[1]], 0)  {} catch {
-                revert("CLIA: deposit fail[1]");
+                revert("CAIA: deposit fail[1]");
             }
         } else if (totalCoins == 3) {
             try
@@ -116,7 +116,7 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
             {
 
             } catch {
-                revert("CLIA: deposit fail[2]");
+                revert("CAIA: deposit fail[2]");
             }
         } else if (totalCoins == 4) {
             try
@@ -128,7 +128,7 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
             {
 
             } catch {
-                revert("CLIA: deposit fail[3]");
+                revert("CAIA: deposit fail[3]");
             }
         }
     }
@@ -148,7 +148,7 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "CLIA: should be 1 tokenAmount[2]");
+        require(tokenAmounts.length == 1, "CAIA: should be 1 tokenAmount[2]");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
@@ -164,14 +164,14 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
 
         if (allowance < amount) {
             if (allowance > 0) {
-                ERC20(token).safeApprove(callee, 0, "CLIA[3]");
+                ERC20(token).safeApprove(callee, 0, "CAIA[3]");
             }
-            ERC20(token).safeApprove(callee, type(uint256).max, "CLIA[4]");
+            ERC20(token).safeApprove(callee, type(uint256).max, "CAIA[4]");
         }
 
         // solhint-disable-next-line no-empty-blocks
         try Deposit(callee).remove_liquidity_one_coin(amount, tokenIndex, 0)  {} catch {
-            revert("CLIA: withdraw fail");
+            revert("CAIA: withdraw fail");
         }
     }
 }
