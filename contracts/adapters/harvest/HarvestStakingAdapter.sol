@@ -59,6 +59,7 @@ contract HarvestStakingAdapter is ProtocolAdapter {
     address internal constant F_SUSHI_WBTC_TBTC = 0xF553E1f826f42716cDFe02bde5ee76b2a52fc7EB;
 
     address internal constant FARM_POOL = 0x8f5adC58b32D4e5Ca02EAC0E293D35855999436C;
+    address internal constant FARM_POOL_V2 = 0x25550Cccbd68533Fa04bFD3e3AC4D09f9e00Fc50;
     address internal constant UNI_FARM_USDC_POOL = 0x99b0d6641A63Ce173E6EB063b3d3AED9A35Cf9bf;
     address internal constant F_WBTC_POOL = 0x917d6480Ec60cBddd6CbD0C8EA317Bcc709EA77B;
     address internal constant F_WETH_POOL = 0x3DA9D911301f8144bdF5c3c67886e5373DCdff8e;
@@ -85,6 +86,7 @@ contract HarvestStakingAdapter is ProtocolAdapter {
 
             totalRewards += ERC20(FARM_POOL).balanceOf(account);
             totalRewards += StakingRewards(FARM_POOL).earned(account);
+            totalRewards += ERC20(FARM_POOL_V2).balanceOf(account);
             totalRewards += StakingRewards(UNI_FARM_USDC_POOL).earned(account);
             totalRewards += StakingRewards(F_WBTC_POOL).earned(account);
             totalRewards += StakingRewards(F_WETH_POOL).earned(account);
