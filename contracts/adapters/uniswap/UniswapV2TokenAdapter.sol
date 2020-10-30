@@ -69,19 +69,23 @@ contract UniswapV2TokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        address[] memory tokens = new address[](2);
-        tokens[0] = UniswapV2Pair(token).token0();
-        tokens[1] = UniswapV2Pair(token).token1();
+        token0 = UniswapV2Pair(token).token0();
+        token1 = UniswapV2Pair(token).token1();
         uint256 totalSupply = ERC20(token).totalSupply();
+        (uint256 reserve0, uint256 reserve1) = UniswapV2Pair(token).getReserves();
+
         Component[] memory underlyingTokens = new Component[](2);
 
-        for (uint256 i = 0; i < 2; i++) {
-            underlyingTokens[i] = Component({
-                token: tokens[i],
-                tokenType: getTokenType(tokens[i]),
-                rate: ERC20(tokens[i]).balanceOf(token) * 1e18 / totalSupply
-            });
-        }
+        underlyingTokens[0] = Component({
+            token: token0,
+            tokenType: getTokenType(token0),
+            rate: totalSupply == 0 ? 0 : reserve0 * 1e18 / totalSupply
+        });
+        underlyingTokens[1] = Component({
+            token: token1,
+            tokenType: getTokenType(token1),
+            rate: totalSupply == 0 ? 0 : reserve1 * 1e18 / totalSupply
+        });
 
         return underlyingTokens;
     }
