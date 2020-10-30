@@ -41,6 +41,7 @@ interface CToken {
 interface UniswapV2Pair {
     function token0() external view returns (address);
     function token1() external view returns (address);
+    function getReserves() external view returns (uint256, uint256);
 }
 
 
@@ -69,8 +70,8 @@ contract UniswapV2TokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        token0 = UniswapV2Pair(token).token0();
-        token1 = UniswapV2Pair(token).token1();
+        address token0 = UniswapV2Pair(token).token0();
+        address token1 = UniswapV2Pair(token).token1();
         uint256 totalSupply = ERC20(token).totalSupply();
         (uint256 reserve0, uint256 reserve1) = UniswapV2Pair(token).getReserves();
 
