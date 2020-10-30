@@ -47,7 +47,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         ) = getNonZeroAdapterBalancesAndTokenBalancesNumbers(adapterBalances);
 
         return
-            getNonZeroAdapterBalancesNumbers(
+            getNonZeroAdapterBalances(
                 adapterBalances,
                 nonZeroAdapterBalancesNumber,
                 nonZeroTokenBalancesNumbers
@@ -157,7 +157,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         uint256 counter = 0;
 
         for (uint256 i = 0; i < length; i++) {
-            if (nonZeroTokenBalancesNumber[i] == 0) {
+            if (nonZeroTokenBalancesNumbers[i] == 0) {
                 continue;
             }
 
@@ -172,12 +172,12 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
             counter++;
         }
 
-        return getNonZeroAdapterBalances;
+        return nonZeroAdapterBalances;
     }
 
     function getNonZeroTokenBalances(
         TokenBalance[] memory tokenBalances,
-        uint256 memory nonZeroTokenBalancesNumber
+        uint256 nonZeroTokenBalancesNumber
     ) internal returns (TokenBalance[] memory) {
         TokenBalance[] memory nonZeroTokenBalances = new TokenBalance[](
             nonZeroTokenBalancesNumber
@@ -190,7 +190,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
                 continue;
             }
 
-            nonZeroTokenBalances[counter] = currentTokenBalances[i];
+            nonZeroTokenBalances[counter] = tokenBalances[i];
 
             counter++;
         }

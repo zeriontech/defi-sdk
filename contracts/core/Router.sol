@@ -46,6 +46,9 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
     uint256 internal constant DELIMITER = 1e18; // 100%
     uint256 internal constant FEE_LIMIT = 1e16; // 1%
 
+    event Executed(address indexed account, uint256 indexed share, address indexed beneficiary);
+    event TokenTransfer(address indexed token, address indexed account, uint256 indexed amount);
+
     modifier useCHI {
         uint256 gasStart = gasleft();
         _;
@@ -171,12 +174,16 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         // Transfer tokens to Core contract, handle fees (if any), and add these tokens to outputs
         transferTokens(inputs, fee, account);
         AbsoluteTokenAmount[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
+
         // Call Core contract with all provided ETH, actions, expected outputs and account address
         AbsoluteTokenAmount[] memory actualOutputs = Core(payable(core_)).executeActions(
             actions,
             modifiedOutputs,
             account
         );
+
+        // Emit event so one could track account and fees of this tx.
+        emit Executed(account, fee.share, fee.beneficiary);
 
         // Return tokens' addresses and amounts that were returned to the account address
         return actualOutputs;
@@ -209,6 +216,7 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
             }
 
             ERC20(token).safeTransferFrom(account, core_, absoluteAmount - feeAmount, "R[2]");
+            emit TokenTransfer(token, account, absoluteAmount - feeAmount);
         }
 
         if (msg.value > 0) {
@@ -223,6 +231,7 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
             // solhint-disable-next-line avoid-low-level-calls
             (bool success, ) = core_.call{ value: msg.value - feeAmount }(new bytes(0));
             require(success, "ETH transfer to Core failed");
+            emit TokenTransfer(ETH, account, msg.value - feeAmount);
         }
     }
 

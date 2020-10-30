@@ -18,7 +18,13 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { Action, AbsoluteTokenAmount, ActionType, AmountType } from "../shared/Structs.sol";
+import {
+    Action,
+    TokenAmount,
+    AbsoluteTokenAmount,
+    ActionType,
+    AmountType
+} from "../shared/Structs.sol";
 import { InteractiveAdapter } from "../interactiveAdapters/InteractiveAdapter.sol";
 import { ERC20 } from "../shared/ERC20.sol";
 import { ProtocolAdapterRegistry } from "./ProtocolAdapterRegistry.sol";
@@ -38,7 +44,12 @@ contract Core is ReentrancyGuard {
 
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
-    event ExecutedAction(Action action);
+    event ExecutedAction(
+        bytes32 indexed protocolAdapterName,
+        ActionType indexed actionType,
+        TokenAmount[] tokenAmounts,
+        bytes data
+    );
 
     constructor(address protocolAdapterRegistry) {
         require(protocolAdapterRegistry != address(0), "C: empty protocolAdapterRegistry");
@@ -66,7 +77,12 @@ contract Core is ReentrancyGuard {
 
         for (uint256 i = 0; i < actions.length; i++) {
             tokensToBeWithdrawn[i] = executeAction(actions[i]);
-            emit ExecutedAction(actions[i]);
+            emit ExecutedAction(
+                actions[i].protocolAdapterName,
+                actions[i].actionType,
+                actions[i].tokenAmounts,
+                actions[i].data
+            );
         }
 
         return returnTokens(requiredOutputs, tokensToBeWithdrawn, account);
