@@ -40,6 +40,9 @@ contract CurveStakingAdapter is ProtocolAdapter {
     address internal constant RENBTC_CRV = 0x49849C98ae39Fff122806C06791Fa73784FB3675;
     address internal constant SBTC_CRV = 0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3;
     address internal constant HBTC_CRV = 0xb19059ebb43466C323583928285a49f558E572Fd;
+    address internal constant HUSD_CRV = 0x5B5CFE992AdAC0C9D48E05854B2d91C73a003858;
+    address internal constant USDK_CRV = 0x97E2768e8E73511cA874545DC5Ff8067eB19B787;
+    address internal constant USDN_CRV = 0x4f3E8F405CF5aFC05D68142F3783bDfE13811522;
 
     address internal constant C_GAUGE = 0x7ca5b0a2910B33e9759DC7dDB0413949071D7575;
     address internal constant Y_GAUGE = 0xFA712EE4788C042e2B7BB55E6cb8ec569C4530c1;
@@ -50,6 +53,9 @@ contract CurveStakingAdapter is ProtocolAdapter {
     address internal constant RENBTC_GAUGE = 0xB1F2cdeC61db658F091671F5f199635aEF202CAC;
     address internal constant SBTC_GAUGE = 0x705350c4BcD35c9441419DdD5d2f097d7a55410F;
     address internal constant HBTC_GAUGE = 0x4c18E409Dc8619bFb6a1cB56D114C3f592E0aE79;
+    address internal constant HUSD_GAUGE = 0x2db0E83599a91b508Ac268a6197b8B14F5e72840;
+    address internal constant USDK_GAUGE = 0xC2b1DF84112619D190193E48148000e3990Bf627;
+    address internal constant USDN_GAUGE = 0xF98450B5602fa59CC66e1379DFfB6FDDc724CfC4;
 
     /**
      * @return Amount of staked LP tokens for a given account.
@@ -74,6 +80,12 @@ contract CurveStakingAdapter is ProtocolAdapter {
             return ERC20(SBTC_GAUGE).balanceOf(account);
         } else if (token == HBTC_CRV) {
             return ERC20(HBTC_GAUGE).balanceOf(account);
+        } else if (token == HUSD_CRV) {
+            return ERC20(HUSD_GAUGE).balanceOf(account);
+        } else if (token == USDK_CRV) {
+            return ERC20(USDK_GAUGE).balanceOf(account);
+        } else if (token == USDN_CRV) {
+            return ERC20(USDN_GAUGE).balanceOf(account);
         } else {
             return 0;
         }
