@@ -198,10 +198,10 @@ execute(SlitherInternalTopLevelContract6.TransactionData,bytes) should be declar
         - Router.execute(SlitherInternalTopLevelContract6.TransactionData,bytes) (contracts/core/Router.sol#83-94)
 execute(SlitherInternalTopLevelContract7.Action[],SlitherInternalTopLevelContract8.TokenAmount[],SlitherInternalTopLevelContract9.Fee,SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) should be declared external:
         - Router.execute(SlitherInternalTopLevelContract7.Action[],SlitherInternalTopLevelContract8.TokenAmount[],SlitherInternalTopLevelContract9.Fee,SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) (contracts/core/Router.sol#104-111)
-executeWithChi(SlitherInternalTopLevelContract6.TransactionData,bytes) should be declared external:
-        - Router.executeWithChi(SlitherInternalTopLevelContract6.TransactionData,bytes) (contracts/core/Router.sol#125-136)
-executeWithChi(SlitherInternalTopLevelContract7.Action[],SlitherInternalTopLevelContract8.TokenAmount[],SlitherInternalTopLevelContract9.Fee,SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) should be declared external:
-        - Router.executeWithChi(SlitherInternalTopLevelContract7.Action[],SlitherInternalTopLevelContract8.TokenAmount[],SlitherInternalTopLevelContract9.Fee,SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) (contracts/core/Router.sol#147-154)
+executeWithCHI(SlitherInternalTopLevelContract6.TransactionData,bytes) should be declared external:
+        - Router.executeWithCHI(SlitherInternalTopLevelContract6.TransactionData,bytes) (contracts/core/Router.sol#125-136)
+executeWithCHI(SlitherInternalTopLevelContract7.Action[],SlitherInternalTopLevelContract8.TokenAmount[],SlitherInternalTopLevelContract9.Fee,SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) should be declared external:
+        - Router.executeWithCHI(SlitherInternalTopLevelContract7.Action[],SlitherInternalTopLevelContract8.TokenAmount[],SlitherInternalTopLevelContract9.Fee,SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) (contracts/core/Router.sol#147-154)
 isHashUsed(bytes32,address) should be declared external:
         - SignatureVerifier.isHashUsed(bytes32,address) (contracts/core/SignatureVerifier.sol#102-104)
 

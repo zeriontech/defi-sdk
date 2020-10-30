@@ -36,93 +36,22 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
      * @notice Zero values are filtered out!
      */
     function getBalances(address account) external returns (AdapterBalance[] memory) {
-        // Get balances for all the adapters
         AdapterBalance[] memory adapterBalances = getAdapterBalances(
             getProtocolAdapterNames(),
             account
         );
 
-        // Declare temp variable and counters
-        TokenBalance[] memory currentTokenBalances;
-        TokenBalance[] memory nonZeroTokenBalances;
-        uint256 nonZeroAdaptersCounter;
-        uint256[] memory nonZeroTokensCounters;
-        uint256 adapterBalancesLength;
-        uint256 currentTokenBalancesLength;
+        (
+            uint256 nonZeroAdapterBalancesNumber,
+            uint256[] memory nonZeroTokenBalancesNumbers
+        ) = getNonZeroAdapterBalancesAndTokenBalancesNumbers(adapterBalances);
 
-        // Reset counters
-        nonZeroTokensCounters = new uint256[](adapterBalances.length);
-        nonZeroAdaptersCounter = 0;
-        adapterBalancesLength = adapterBalances.length;
-
-        // Iterate over all the adapters' balances
-        for (uint256 i = 0; i < adapterBalancesLength; i++) {
-            // Fill temp variable
-            currentTokenBalances = adapterBalances[i].tokenBalances;
-
-            // Reset counter
-            nonZeroTokensCounters[i] = 0;
-            currentTokenBalancesLength = currentTokenBalances.length;
-
-            // Increment if token balance is positive
-            for (uint256 j = 0; j < currentTokenBalancesLength; j++) {
-                if (currentTokenBalances[j].amount > 0) {
-                    nonZeroTokensCounters[i]++;
-                }
-            }
-
-            // Increment if at least one positive token balance
-            if (nonZeroTokensCounters[i] > 0) {
-                nonZeroAdaptersCounter++;
-            }
-        }
-
-        // Declare resulting variable
-        AdapterBalance[] memory nonZeroAdapterBalances;
-
-        // Reset resulting variable and counter
-        nonZeroAdapterBalances = new AdapterBalance[](nonZeroAdaptersCounter);
-        nonZeroAdaptersCounter = 0;
-
-        // Iterate over all the adapters' balances
-        for (uint256 i = 0; i < adapterBalancesLength; i++) {
-            // Skip if no positive token balances
-            if (nonZeroTokensCounters[i] == 0) {
-                continue;
-            }
-
-            // Fill temp variable
-            currentTokenBalances = adapterBalances[i].tokenBalances;
-
-            // Reset temp variable and counter
-            nonZeroTokenBalances = new TokenBalance[](nonZeroTokensCounters[i]);
-            nonZeroTokensCounters[i] = 0;
-            currentTokenBalancesLength = currentTokenBalances.length;
-
-            for (uint256 j = 0; j < currentTokenBalancesLength; j++) {
-                // Skip if balance is not positive
-                if (currentTokenBalances[j].amount == 0) {
-                    continue;
-                }
-
-                // Else fill temp variable
-                nonZeroTokenBalances[nonZeroTokensCounters[i]] = currentTokenBalances[j];
-
-                // Increment counter
-                nonZeroTokensCounters[i]++;
-            }
-
-            // Fill resulting variable
-            nonZeroAdapterBalances[nonZeroAdaptersCounter] = AdapterBalance({
-                protocolAdapterName: adapterBalances[i].protocolAdapterName,
-                tokenBalances: nonZeroTokenBalances
-            });
-
-            // Increment counter
-            nonZeroAdaptersCounter++;
-        }
-
-        return nonZeroAdapterBalances;
+        return
+            getNonZeroAdapterBalancesNumbers(
+                adapterBalances,
+                nonZeroAdapterBalancesNumber,
+                nonZeroTokenBalancesNumbers
+            );
     }
 
     /**
@@ -178,5 +107,94 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
                 protocolAdapterName: protocolAdapterName,
                 tokenBalances: tokenBalances
             });
+    }
+
+    function getNonZeroAdapterBalancesAndTokenBalancesNumbers(
+        AdapterBalance[] memory adapterBalances
+    ) internal returns (uint256, uint256[] memory) {
+        uint256 length = adapterBalances.length;
+        uint256 nonZeroAdapterBalancesNumber = 0;
+        uint256[] memory nonZeroTokenBalancesNumbers = new uint256[](length);
+
+        for (uint256 i = 0; i < length; i++) {
+            nonZeroTokenBalancesNumbers[i] = getNonZeroTokenBalancesNumber(
+                adapterBalances[i].tokenBalances
+            );
+
+            if (nonZeroTokenBalancesNumbers[i] > 0) {
+                nonZeroAdapterBalancesNumber++;
+            }
+        }
+
+        return (nonZeroAdapterBalancesNumber, nonZeroTokenBalancesNumbers);
+    }
+
+    function getNonZeroTokenBalancesNumber(TokenBalance[] memory tokenBalances)
+        internal
+        returns (uint256)
+    {
+        uint256 length = tokenBalances.length;
+        uint256 nonZeroTokenBalancesNumber = 0;
+
+        for (uint256 i = 0; i < length; i++) {
+            if (tokenBalances[i].amount > 0) {
+                nonZeroTokenBalancesNumber++;
+            }
+        }
+
+        return nonZeroTokenBalancesNumber;
+    }
+
+    function getNonZeroAdapterBalances(
+        AdapterBalance[] memory adapterBalances,
+        uint256 nonZeroAdapterBalancesNumber,
+        uint256[] memory nonZeroTokenBalancesNumbers
+    ) internal returns (AdapterBalance[] memory) {
+        AdapterBalance[] memory nonZeroAdapterBalances = new AdapterBalance[](
+            nonZeroAdapterBalancesNumber
+        );
+        uint256 length = adapterBalances.length;
+        uint256 counter = 0;
+
+        for (uint256 i = 0; i < length; i++) {
+            if (nonZeroTokenBalancesNumber[i] == 0) {
+                continue;
+            }
+
+            nonZeroAdapterBalances[counter] = AdapterBalance({
+                protocolAdapterName: adapterBalances[i].protocolAdapterName,
+                tokenBalances: getNonZeroTokenBalances(
+                    adapterBalances[i].tokenBalances,
+                    nonZeroTokenBalancesNumbers[i]
+                )
+            });
+
+            counter++;
+        }
+
+        return getNonZeroAdapterBalances;
+    }
+
+    function getNonZeroTokenBalances(
+        TokenBalance[] memory tokenBalances,
+        uint256 memory nonZeroTokenBalancesNumber
+    ) internal returns (TokenBalance[] memory) {
+        TokenBalance[] memory nonZeroTokenBalances = new TokenBalance[](
+            nonZeroTokenBalancesNumber
+        );
+        uint256 length = tokenBalances.length;
+        uint256 counter = 0;
+
+        for (uint256 i = 0; i < length; i++) {
+            if (tokenBalances[i].amount == 0) {
+                continue;
+            }
+
+            nonZeroTokenBalances[counter] = currentTokenBalances[i];
+
+            counter++;
+        }
+
+        return nonZeroTokenBalances;
     }
 }

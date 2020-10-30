@@ -324,7 +324,7 @@ contract.only('SignatureVerifier', () => {
           });
       });
 
-    await signatureVerifier.methods.executeWithChi(
+    await signatureVerifier.methods.executeWithCHI(
       data,
       signature,
     )

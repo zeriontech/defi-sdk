@@ -46,6 +46,13 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
     uint256 internal constant DELIMITER = 1e18; // 100%
     uint256 internal constant FEE_LIMIT = 1e16; // 1%
 
+    modifier useCHI {
+        uint256 gasStart = gasleft();
+        _;
+        uint256 gasSpent = 21000 + gasStart - gasleft() + 7 * msg.data.length;
+        Chi(CHI).freeFromUpTo(msg.sender, (gasSpent + 25171) / 41852);
+    }
+
     constructor(address payable core) {
         require(core != address(0), "R: empty core");
 
@@ -90,7 +97,7 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
 
         markHashUsed(hashedData, account);
 
-        return execute(data.actions, data.inputs, data.fee, data.requiredOutputs, account, false);
+        return execute(data.actions, data.inputs, data.fee, data.requiredOutputs, account);
     }
 
     /**
@@ -107,7 +114,7 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         Fee memory fee,
         AbsoluteTokenAmount[] memory requiredOutputs
     ) public payable returns (AbsoluteTokenAmount[] memory) {
-        return execute(actions, inputs, fee, requiredOutputs, msg.sender, false);
+        return execute(actions, inputs, fee, requiredOutputs, msg.sender);
     }
 
     /**
@@ -122,9 +129,10 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
      * @return Array of AbsoluteTokenAmount structs with the returned tokens.
      * @dev This function uses CHI token to refund some gas.
      */
-    function executeWithChi(TransactionData memory data, bytes memory signature)
+    function executeWithCHI(TransactionData memory data, bytes memory signature)
         public
         payable
+        useCHI
         returns (AbsoluteTokenAmount[] memory)
     {
         bytes32 hashedData = hashData(data);
@@ -132,7 +140,7 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
 
         markHashUsed(hashedData, account);
 
-        return execute(data.actions, data.inputs, data.fee, data.requiredOutputs, account, true);
+        return execute(data.actions, data.inputs, data.fee, data.requiredOutputs, account);
     }
 
     /**
@@ -144,13 +152,13 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
      * @return Array of AbsoluteTokenAmount structs with the returned tokens.
      * @dev This function uses CHI token to refund some gas.
      */
-    function executeWithChi(
+    function executeWithCHI(
         Action[] memory actions,
         TokenAmount[] memory inputs,
         Fee memory fee,
         AbsoluteTokenAmount[] memory requiredOutputs
-    ) public payable returns (AbsoluteTokenAmount[] memory) {
-        return execute(actions, inputs, fee, requiredOutputs, msg.sender, true);
+    ) public payable useCHI returns (AbsoluteTokenAmount[] memory) {
+        return execute(actions, inputs, fee, requiredOutputs, msg.sender);
     }
 
     function execute(
@@ -158,11 +166,8 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         TokenAmount[] memory inputs,
         Fee memory fee,
         AbsoluteTokenAmount[] memory requiredOutputs,
-        address payable account,
-        bool useChi
+        address payable account
     ) internal returns (AbsoluteTokenAmount[] memory) {
-        // Save initial gas to burn gas token later
-        uint256 gas = gasleft();
         // Transfer tokens to Core contract, handle fees (if any), and add these tokens to outputs
         transferTokens(inputs, fee, account);
         AbsoluteTokenAmount[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
@@ -172,13 +177,6 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
             modifiedOutputs,
             account
         );
-
-        if (useChi) {
-            // Try to burn gas token to save some gas
-            uint256 gasSpent = 21000 + gas - gasleft() + 16 * msg.data.length;
-            // CHI tokens should be approved prior to calling this function
-            Chi(CHI).freeFromUpTo(msg.sender, (gasSpent + 14154) / 41947);
-        }
 
         // Return tokens' addresses and amounts that were returned to the account address
         return actualOutputs;

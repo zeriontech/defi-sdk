@@ -230,7 +230,7 @@ contract.only('Core + Router', () => {
           gas: 10000000,
           value: web3.utils.toWei('1', 'ether'),
         });
-      await router.methods.executeWithChi(
+      await router.methods.executeWithCHI(
         // actions
         [
           [
