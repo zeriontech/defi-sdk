@@ -23,9 +23,9 @@ module.exports = {
       provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`, 0),
       network_id: 1,
       gas: 2000000,
-      gasPrice: 20000000000,
-      timeoutBlocks: 200,
-      skipDryRun: true,
+      gasPrice: 20 * 1000000000,
+      timeoutBlocks: 20000,
+      skipDryRun: false,
     },
     kovan: {
       provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://kovan.infura.io/v3/${process.env.INFURA_API_KEY}`, 0),
