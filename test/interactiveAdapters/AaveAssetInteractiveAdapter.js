@@ -2,7 +2,7 @@ import expectRevert from '../helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
 import convertToBytes32 from '../helpers/convertToBytes32';
 
-const AAVE_ASSET_ADAPTER = convertToBytes32('Aave Asset').slice(0, -2);
+const AAVE_ASSET_ADAPTER = convertToBytes32('Aave Asset');
 
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
@@ -203,6 +203,7 @@ contract('AaveAssetInteractiveAdapter', () => {
           [aethAddress, convertToShare(1), AMOUNT_RELATIVE],
         ],
         [0, ZERO],
+        [],
       )
         .send({
           gas: 10000000,
@@ -242,6 +243,7 @@ contract('AaveAssetInteractiveAdapter', () => {
           [aethAddress, convertToShare(1), AMOUNT_RELATIVE],
         ],
         [0, ZERO],
+        [],
       )
         .send({
           gas: 10000000,
