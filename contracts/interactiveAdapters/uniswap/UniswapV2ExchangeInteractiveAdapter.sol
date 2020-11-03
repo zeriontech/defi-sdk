@@ -31,7 +31,7 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
  * github.com/Uniswap/uniswap-v2-periphery/blob/master/contracts/UniswapV2Router01.sol.
  */
 interface UniswapV2Router01 {
-    function swapExactTokensForTokens(
+    function swapExactTokensForTokensSupportingFeeOnTransferTokens(
         uint256,
         uint256,
         address[] calldata,
@@ -56,7 +56,7 @@ interface UniswapV2Router01 {
 contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExchangeAdapter {
     using SafeERC20 for ERC20;
 
-    address internal constant ROUTER = 0xf164fC0Ec4E93095b804a4795bBe1e041497b92a;
+    address internal constant ROUTER = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
 
     /**
      * @notice Exchange tokens using Uniswap pool.
@@ -85,7 +85,7 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         ERC20(token).safeApprove(ROUTER, amount, "UEIA[1]");
 
         try
-            UniswapV2Router01(ROUTER).swapExactTokensForTokens(
+            UniswapV2Router01(ROUTER).swapExactTokensForTokensSupportingFeeOnTransferTokens(
                 amount,
                 0,
                 path,
