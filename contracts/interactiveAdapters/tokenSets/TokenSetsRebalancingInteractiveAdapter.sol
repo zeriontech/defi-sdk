@@ -23,28 +23,9 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
+import { RebalancingSetIssuanceModule } from "../../interfaces/RebalancingSetIssuanceModule.sol";
 import { RebalancingSetToken } from "../../interfaces/RebalancingSetToken.sol";
 import { SetToken } from "../../interfaces/SetToken.sol";
-
-/**
- * @dev RebalancingSetIssuanceModule contract interface.
- * Only the functions required for TokenSetsInteractiveAdapter contract are added.
- * The RebalancingSetIssuanceModule contract is available here
- * github.com/SetProtocol/set-protocol-contracts/blob/master/contracts/core/modules/RebalancingSetIssuanceModule.sol.
- */
-interface RebalancingSetIssuanceModule {
-    function issueRebalancingSet(
-        address,
-        uint256,
-        bool
-    ) external;
-
-    function redeemRebalancingSet(
-        address,
-        uint256,
-        bool
-    ) external;
-}
 
 /**
  * @title Interactive adapter for TokenSets.
