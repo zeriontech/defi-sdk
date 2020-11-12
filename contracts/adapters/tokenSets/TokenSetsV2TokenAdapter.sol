@@ -12,13 +12,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
-import { TokenMetadata, Component } from "../../Structs.sol";
-import { TokenAdapter } from "../TokenAdapter.sol";
+import { ERC20 } from "../../shared/ERC20.sol";
+import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { SetTokenV2 } from "../../interfaces/SetTokenV2.sol";
 
@@ -28,20 +29,6 @@ import { SetTokenV2 } from "../../interfaces/SetTokenV2.sol";
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract TokenSetsV2TokenAdapter is TokenAdapter {
-    /**
-     * @return TokenMetadata struct with ERC20-style token info.
-     * @dev Implementation of TokenAdapter interface function.
-     */
-    function getMetadata(address token) external view override returns (TokenMetadata memory) {
-        return
-            TokenMetadata({
-                token: token,
-                name: ERC20(token).name(),
-                symbol: ERC20(token).symbol(),
-                decimals: ERC20(token).decimals()
-            });
-    }
-
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter interface function.

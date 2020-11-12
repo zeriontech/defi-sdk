@@ -34,7 +34,7 @@ contract MCDDebtAdapter is ProtocolAdapter, MKRAdapter {
      * @return Amount of debt of the given account for the protocol.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(address, address account) public override returns (int256) {
+    function getBalance(address, address account) public view override returns (int256) {
         DssCdpManager manager = DssCdpManager(MANAGER);
         Vat vat = Vat(VAT);
         Jug jug = Jug(JUG);

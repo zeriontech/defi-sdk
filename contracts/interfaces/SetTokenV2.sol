@@ -22,7 +22,7 @@ pragma solidity 0.7.3;
  * The SetToken contract is available here
  * github.com/SetProtocol/set-protocol-contracts/blob/master/contracts/core/tokens/SetToken.sol.
  */
-interface SetToken {
+interface SetTokenV2 {
     function getComponents() external view returns (address[] memory);
 
     function getDefaultPositionRealUnit(address) external view returns (int256);

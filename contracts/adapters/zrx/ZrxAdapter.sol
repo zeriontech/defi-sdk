@@ -43,7 +43,7 @@ contract ZrxAdapter is ProtocolAdapter {
      * @return Amount of ZRX locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(address, address account) public override returns (int256) {
+    function getBalance(address, address account) public view override returns (int256) {
         return int256(Staking(STAKING).getTotalStake(account));
     }
 }

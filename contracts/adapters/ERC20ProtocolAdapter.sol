@@ -31,7 +31,7 @@ contract ERC20ProtocolAdapter is ProtocolAdapter {
      * @return Amount of tokens held by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(address token, address account) public override returns (int256) {
+    function getBalance(address token, address account) public view override returns (int256) {
         return int256(ERC20(token).balanceOf(account));
     }
 }

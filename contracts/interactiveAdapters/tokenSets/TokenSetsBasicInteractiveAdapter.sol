@@ -56,6 +56,7 @@ contract TokenSetsBasicInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = setToken;
 
+        uint256 length = tokenAmounts.length;
         uint256[] memory absoluteAmounts = new uint256[](length);
 
         for (uint256 i = 0; i < length; i++) {
@@ -114,30 +115,28 @@ contract TokenSetsBasicInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
         uint256 length = tokenAmounts.length;
 
         for (uint256 i = 0; i < length; i++) {
-            uint256 allowance = ERC20(token).allowance(address(this), ISSUANCE_MODULE);
-            if (allowance < absoluteAmounts[i]) {
-                if (allowance > 0) {
-                    ERC20(token).safeApprove(ISSUANCE_MODULE, 0, "TSBIA[1]");
-                }
-                ERC20(token).safeApprove(ISSUANCE_MODULE, type(uint256).max, "TSBIA[2]");
-            }
+            ERC20(tokenAmounts[i].token).safeApproveMax(
+                ISSUANCE_MODULE,
+                absoluteAmounts[i],
+                "TSBIA"
+            );
         }
     }
 
-    function getSetAmount(address setToken, TokenAmount[] calldata tokenAmounts)
-        internal
-        view
-        returns (uint256)
-    {
+    function getSetAmount(
+        address setToken,
+        TokenAmount[] calldata tokenAmounts,
+        uint256[] memory absoluteAmounts
+    ) internal view returns (uint256) {
         uint256 length = tokenAmounts.length;
         uint256 setAmount = type(uint256).max;
         uint256 tempAmount;
 
         for (uint256 i = 0; i < length; i++) {
             tempAmount =
-                (mul(getAbsoluteAmountDeposit(tokenAmounts[i]) - 1, 1e18) + 1) /
-                SetTokenV2(setToken).getDefaultPositionRealUnit(tokenAmounts[i].token);
-            if (received < amount) {
+                (mul(absoluteAmounts[i] - 1, 1e18) + 1) /
+                uint256(SetTokenV2(setToken).getDefaultPositionRealUnit(tokenAmounts[i].token));
+            if (tempAmount < setAmount) {
                 setAmount = tempAmount;
             }
         }

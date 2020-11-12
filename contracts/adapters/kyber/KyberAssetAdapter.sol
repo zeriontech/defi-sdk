@@ -41,7 +41,7 @@ contract KyberStakingAdapter is ProtocolAdapter {
      * @return Amount of KNC/ETH locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(address token, address account) public override returns (int256) {
+    function getBalance(address token, address account) public view override returns (int256) {
         if (token == KNC) {
             uint256 stake;
             uint256 delegatedStake;
