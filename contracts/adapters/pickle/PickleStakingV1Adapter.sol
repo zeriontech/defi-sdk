@@ -44,19 +44,28 @@ contract PickleStakingV1Adapter is ProtocolAdapter {
 
     address internal constant PICKLE = 0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5;
     address internal constant S_CRV = 0xC25a3A3b969415c80451098fa907EC722572917F;
-    address internal constant PICKLE_POOL = 0xD86F33388BF0bfDF0cCb1ECB4A48a1579504DC0a;
+    address internal constant PICKLE_POOL_V1 = 0xD86F33388BF0bfDF0cCb1ECB4A48a1579504DC0a;
+    address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    address internal constant PICKLE_POOL_V2 = 0xa17a8883dA1aBd57c690DF9Ebf58fC194eDAb66F;
 
     /**
      * @return Amount of staked tokens / claimable rewards for a given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-      if (token == PICKLE) {
-          return ERC20(PICKLE_POOL).balanceOf(account);
-      } else if (token == S_CRV) {
-          return StakingRewards(PICKLE_POOL).earned(account);
-      } else {
-          return 0;
-      }
+        if (token == PICKLE) {
+            uint256 totalBalance = 0;
+
+            totalBalance += ERC20(PICKLE_POOL_V1).balanceOf(account);
+            totalBalance += ERC20(PICKLE_POOL_V2).balanceOf(account);
+
+            return totalBalance;
+        } else if (token == S_CRV) {
+            return StakingRewards(PICKLE_POOL_V1).earned(account);
+        } else if (token == WETH) {
+            return StakingRewards(PICKLE_POOL_V2).earned(account);
+        } else {
+            return 0;
+        }
     }
-  }
+}
