@@ -50,7 +50,7 @@ contract SynthetixStakingAdapter is ProtocolAdapter {
      * @return Amount of SNX locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(address token, address account) public override returns (int256) {
+    function getBalance(address token, address account) public view override returns (int256) {
         if (token == stakingToken_) {
             return int256(ERC20(stakingContract_).balanceOf(account));
         } else if (token == rewardsToken_) {

@@ -84,7 +84,7 @@ contract BancorTokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address token) external override returns (Component[] memory) {
+    function getComponents(address token) external view override returns (Component[] memory) {
         address formula = ContractRegistry(REGISTRY).addressOf("BancorFormula");
         uint256 totalSupply = SmartToken(token).totalSupply();
         address converter = SmartToken(token).owner();

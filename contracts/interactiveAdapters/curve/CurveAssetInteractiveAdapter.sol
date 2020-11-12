@@ -64,7 +64,8 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * underlying token address, underlying token amount to be deposited, and amount type.
      * @param data ABI-encoded additional parameters:
-     *     - crvToken - curve token address.
+     *     - crvToken - curve pool token address;
+     *     - tokenIndex - index of input token in the pool.
      * @return tokensToBeWithdrawn Array with tokens sent back.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -89,7 +90,7 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
 
         uint256[] memory inputAmounts = new uint256[](totalCoins);
         for (uint256 i = 0; i < totalCoins; i++) {
-            inputAmounts[i] = i == uint256(tokenIndex) ? amount : 0;
+            inputAmounts[i] = i == tokenIndex ? amount : 0;
         }
 
         uint256 allowance = ERC20(token).allowance(address(this), callee);
@@ -138,7 +139,8 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * Curve token address, Curve token amount to be redeemed, and amount type.
      * @param data ABI-encoded additional parameters:
-     *     - toToken - destination token address (one of those used in pool).
+     *     - toToken - destination token address;
+     *     - tokenIndex - index of destination token in the pool.
      * @return tokensToBeWithdrawn Array with one element - destination token address.
      * @dev Implementation of InteractiveAdapter function.
      */

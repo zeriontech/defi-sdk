@@ -33,7 +33,7 @@ contract MakerGovernanceAdapter is ProtocolAdapter {
      * @return Amount of MKR tokens locked on the Governance module by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(address, address account) public override returns (int256) {
+    function getBalance(address, address account) public view override returns (int256) {
         return int256(DSChief(GOVERNANCE).deposits(account));
     }
 }

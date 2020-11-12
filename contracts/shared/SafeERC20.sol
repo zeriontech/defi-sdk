@@ -75,6 +75,21 @@ library SafeERC20 {
         );
     }
 
+    function safeApproveMax(
+        ERC20 token,
+        address spender,
+        uint256 amount,
+        string memory location
+    ) internal {
+        uint256 allowance = ERC20(token).allowance(address(this), spender);
+        if (allowance < amount) {
+            if (allowance > 0) {
+                safeApprove(token, spender, 0, location);
+            }
+            safeApprove(token, spender, type(uint256).max, location);
+        }
+    }
+
     /**
      * @dev Imitates a Solidity high-level call (i.e. a regular function call to a contract),
      * relaxing the requirement on the return value: the return value is optional

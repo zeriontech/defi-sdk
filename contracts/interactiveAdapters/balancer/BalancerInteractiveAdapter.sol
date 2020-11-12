@@ -37,7 +37,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
      * @notice Deposits tokens to the Balancer pool.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * token address, token amount to be deposited, and amount type.
-     * @param data ABI-encoded additional parameters:
+     * @param data ABI-encoded additional parameter:
      *     - pool - pool address.
      * @return tokensToBeWithdrawn Array with one element - pool address.
      * @dev Implementation of InteractiveAdapter function.
@@ -72,7 +72,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
      * @notice Withdraws tokens from the Balancer pool.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * Balancer token address, Balancer token amount to be redeemed, and amount type.
-     * @param data ABI-encoded additional parameters:
+     * @param data ABI-encoded additional parameter:
      *     - toToken - destination token address.
      * @return tokensToBeWithdrawn Array with one element - destination token address.
      * @dev Implementation of InteractiveAdapter function.

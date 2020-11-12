@@ -39,7 +39,7 @@ contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
      * @notice Deposits tokens to the Uniswap pool (pair).
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * underlying tokens addresses, underlying tokens amounts to be deposited, and amount types.
-     * @param data ABI-encoded additional parameters:
+     * @param data ABI-encoded additional parameter:
      *     - pair - pair address.
      * @return tokensToBeWithdrawn Array with one element - UNI-token (pair) address.
      * @dev Implementation of InteractiveAdapter function.

@@ -32,7 +32,7 @@ import { SetToken } from "../../interfaces/SetToken.sol";
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract TokenSetsInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
+contract TokenSetsRebalancingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant TRANSFER_PROXY = 0x882d80D3a191859d64477eb78Cca46599307ec1C;
@@ -53,25 +53,24 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        address set = abi.decode(data, (address));
+        address setToken = abi.decode(data, (address));
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = set;
+        tokensToBeWithdrawn[0] = setToken;
 
-        uint256 amount = getSetAmountAndApprove(set, tokenAmounts);
+        uint256 amount = getSetAmountAndApprove(setToken, tokenAmounts);
 
         try
-            RebalancingSetIssuanceModule(ISSUANCE_MODULE).issueRebalancingSet(set, amount, false)
+            RebalancingSetIssuanceModule(ISSUANCE_MODULE).issueRebalancingSet(
+                setToken,
+                amount,
+                false
+            )
          {} catch Error(string memory reason) {
             //solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
-            revert("TSIA: issue fail");
-        }
-
-        uint256 length = tokenAmounts.length;
-        for (uint256 i = 0; i < length; i++) {
-            ERC20(tokenAmounts[i].token).safeApprove(TRANSFER_PROXY, 0, "TSIA[2]");
+            revert("TSRIA: issue fail");
         }
     }
 
@@ -88,70 +87,63 @@ contract TokenSetsInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "TSIA: should be 1 tokenAmount");
+        require(tokenAmounts.length == 1, "TSRIA: should be 1 tokenAmount");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
-        RebalancingSetIssuanceModule issuanceModule = RebalancingSetIssuanceModule(
-            ISSUANCE_MODULE
-        );
-        RebalancingSetToken rebalancingSetToken = RebalancingSetToken(token);
-        address setToken = rebalancingSetToken.currentSet();
+        address setToken = RebalancingSetToken(token).currentSet();
+        amount = amount - (amount % RebalancingSetToken(token).naturalUnit());
+
         tokensToBeWithdrawn = SetToken(setToken).getComponents();
-        // solhint-disable-next-line no-empty-blocks
-        try issuanceModule.redeemRebalancingSet(token, amount, false)  {} catch Error(
+
+        try
+            RebalancingSetIssuanceModule(ISSUANCE_MODULE).redeemRebalancingSet(token, amount, true)
+         {} catch Error(
+            // solhint-disable-previous-line no-empty-blocks
             string memory reason
         ) {
             revert(reason);
         } catch {
-            revert("TSIA: redeem fail");
+            revert("TSRIA: redeem fail");
         }
     }
 
-    function getSetAmountAndApprove(address set, TokenAmount[] calldata tokenAmounts)
+    function getSetAmountAndApprove(address setToken, TokenAmount[] calldata tokenAmounts)
         internal
-        returns (uint256 amount)
+        returns (uint256)
     {
         uint256 length = tokenAmounts.length;
+        uint256 amount;
         uint256[] memory absoluteAmounts = new uint256[](length);
 
         for (uint256 i = 0; i < length; i++) {
-            absoluteAmounts[i] = getAbsoluteAmountDeposit(tokenAmounts[i]);
-            ERC20(tokenAmounts[i].token).safeApprove(
-                TRANSFER_PROXY,
-                absoluteAmounts[i],
-                "TSIA![1]"
-            );
+            amount = getAbsoluteAmountDeposit(tokenAmounts[i]);
+            absoluteAmounts[i] = amount;
+
+            ERC20(tokenAmounts[i].token).safeApproveMax(TRANSFER_PROXY, amount, "TSRIA");
         }
 
-        RebalancingSetToken rebalancingSetToken = RebalancingSetToken(set);
-        uint256 rUnit = rebalancingSetToken.getUnits()[0];
-        uint256 rNaturalUnit = rebalancingSetToken.naturalUnit();
+        RebalancingSetToken rebalancingSetToken = RebalancingSetToken(setToken);
+        uint256 rebalancingUnit = rebalancingSetToken.getUnits()[0];
+        uint256 rebalancingNaturalUnit = rebalancingSetToken.naturalUnit();
 
         address baseSetToken = rebalancingSetToken.currentSet();
-        uint256[] memory bUnits = SetToken(baseSetToken).getUnits();
-        uint256 bNaturalUnit = SetToken(baseSetToken).naturalUnit();
-        address[] memory components = SetToken(baseSetToken).getComponents();
-        require(components.length == length, "TSIA: bad tokens");
+        uint256[] memory baseUnits = SetToken(baseSetToken).getUnits();
+        uint256 baseNaturalUnit = SetToken(baseSetToken).naturalUnit();
 
-        amount = type(uint256).max;
+        uint256 setAmount = type(uint256).max;
 
-        uint256 received;
-        address token;
+        uint256 tempAmount;
         for (uint256 i = 0; i < length; i++) {
-            token = tokenAmounts[i].token;
-
-            for (uint256 j = 0; j < length; j++) {
-                if (token == components[j]) {
-                    received = mul(
-                        mul(absoluteAmounts[i], bNaturalUnit) / bUnits[j] / rUnit,
-                        rNaturalUnit
-                    );
-                    if (received < amount) {
-                        amount = received;
-                    }
-                }
+            tempAmount = mul(
+                mul(absoluteAmounts[i], baseNaturalUnit) / baseUnits[i] / rebalancingUnit,
+                rebalancingNaturalUnit
+            );
+            if (tempAmount < setAmount) {
+                setAmount = tempAmount;
             }
         }
+
+        return setAmount;
     }
 }

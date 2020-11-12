@@ -33,7 +33,7 @@ contract SynthetixAssetAdapter is ProtocolAdapter {
      * @return Amount of SNX locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter abstract contract function.
      */
-    function getBalance(address token, address account) public override returns (int256) {
+    function getBalance(address token, address account) public view override returns (int256) {
         return int256(Synthetix(Proxy(token).target()).collateral(account));
     }
 }

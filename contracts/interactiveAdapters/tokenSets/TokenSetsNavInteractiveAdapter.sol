@@ -31,7 +31,7 @@ import { SetTokenV2 } from "../../interfaces/SetTokenV2.sol";
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract TokenSetsBasicInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
+contract TokenSetsNavInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant ISSUANCE_MODULE = 0xCd34F1b92C6d0d03430ec4A410F758F7776a3504;
@@ -57,16 +57,12 @@ contract TokenSetsBasicInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = setToken;
 
+        address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
+        uint256 allowance = ERC20(token).allowance(address(this), ISSUANCE_MODULE);
 
-        uint256 allowance = ERC20(token).allowance(address(this), callee);
+        ERC20(token).safeApproveMax(ISSUANCE_MODULE, amount, "TSNIA");
 
-        if (allowance < amount) {
-            if (allowance > 0) {
-                ERC20(token).safeApprove(callee, 0, "TSNIA[1]");
-            }
-            ERC20(token).safeApprove(callee, type(uint256).max, "TSNIA[2]");
-        }
         try
             NavIssuanceModule(ISSUANCE_MODULE).issue(setToken, token, amount, 0, address(this))
          {} catch Error(string memory reason) {
@@ -96,8 +92,11 @@ contract TokenSetsBasicInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
         address toToken = abi.decode(data, (address));
 
+        tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn[0] = toToken;
+
         try
-            NavIssuanceModule(ISSUANCE_MODULE).redeem(token, toToken, setAmount, 0, address(this))
+            NavIssuanceModule(ISSUANCE_MODULE).redeem(token, toToken, amount, 0, address(this))
          {} catch Error(
             // solhint-disable-previous-line no-empty-blocks
             string memory reason

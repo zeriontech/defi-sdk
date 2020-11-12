@@ -207,10 +207,7 @@ contract('UniswapV2AssetInteractiveAdapter', () => {
               [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
               [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameters(
-              ['address'],
-              [wethDaiAddress],
-            ),
+            web3.eth.abi.encodeParameters('address', wethDaiAddress),
           ],
         ],
         [
@@ -297,10 +294,7 @@ contract('UniswapV2AssetInteractiveAdapter', () => {
               [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
               [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameters(
-              ['address'],
-              [wethDaiAddress],
-            ),
+            web3.eth.abi.encodeParameters('address', wethDaiAddress),
           ],
         ],
         [
@@ -328,10 +322,7 @@ contract('UniswapV2AssetInteractiveAdapter', () => {
               [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
               [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameters(
-              ['address'],
-              [wethDaiAddress],
-            ),
+            web3.eth.abi.encodeParameters('address', wethDaiAddress),
           ],
         ],
         [
@@ -359,10 +350,7 @@ contract('UniswapV2AssetInteractiveAdapter', () => {
               [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
               [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameters(
-              ['address'],
-              [wethDaiAddress],
-            ),
+            web3.eth.abi.encodeParameters('address', wethDaiAddress),
           ],
         ],
         [

@@ -39,7 +39,7 @@ contract ERC20TokenAdapter is TokenAdapter {
      * @return Empty Component array.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address) external override returns (Component[] memory) {
+    function getComponents(address) external pure override returns (Component[] memory) {
         return new Component[](0);
     }
 

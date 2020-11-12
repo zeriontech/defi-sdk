@@ -111,7 +111,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
 
     function getNonZeroAdapterBalancesAndTokenBalancesNumbers(
         AdapterBalance[] memory adapterBalances
-    ) internal returns (uint256, uint256[] memory) {
+    ) internal pure returns (uint256, uint256[] memory) {
         uint256 length = adapterBalances.length;
         uint256 nonZeroAdapterBalancesNumber = 0;
         uint256[] memory nonZeroTokenBalancesNumbers = new uint256[](length);
@@ -131,6 +131,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
 
     function getNonZeroTokenBalancesNumber(TokenBalance[] memory tokenBalances)
         internal
+        pure
         returns (uint256)
     {
         uint256 length = tokenBalances.length;
@@ -149,7 +150,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         AdapterBalance[] memory adapterBalances,
         uint256 nonZeroAdapterBalancesNumber,
         uint256[] memory nonZeroTokenBalancesNumbers
-    ) internal returns (AdapterBalance[] memory) {
+    ) internal pure returns (AdapterBalance[] memory) {
         AdapterBalance[] memory nonZeroAdapterBalances = new AdapterBalance[](
             nonZeroAdapterBalancesNumber
         );
@@ -178,7 +179,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
     function getNonZeroTokenBalances(
         TokenBalance[] memory tokenBalances,
         uint256 nonZeroTokenBalancesNumber
-    ) internal returns (TokenBalance[] memory) {
+    ) internal pure returns (TokenBalance[] memory) {
         TokenBalance[] memory nonZeroTokenBalances = new TokenBalance[](
             nonZeroTokenBalancesNumber
         );

@@ -1,22 +1,21 @@
 import convertToShare from '../helpers/convertToShare';
 import convertToBytes32 from '../helpers/convertToBytes32';
-// import expectRevert from '../helpers/expectRevert';
+import expectRevert from '../helpers/expectRevert';
 
 const TOKENSETS_ASSET_ADAPTER = convertToBytes32('TokenSets Basic');
 const UNISWAP_V2_EXCHANGE_ADAPTER = convertToBytes32('Uniswap V2 Exchange');
-const WETH_ASSET_ADAPTER = convertToBytes32('Weth');
+const WETH_ASSET_ADAPTER = convertToBytes32('WETH');
 
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
-// const AMOUNT_ABSOLUTE = 2;
+const AMOUNT_ABSOLUTE = 2;
 const EMPTY_BYTES = '0x';
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
 const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const TokenSetsAdapter = artifacts.require('./TokenSetsBasicInteractiveAdapter');
-const ERC20TokenAdapter = artifacts.require('./ERC20TokenAdapter');
 const WethInteractiveAdapter = artifacts.require('./WethInteractiveAdapter');
 const UniswapV2ExchangeAdapter = artifacts.require('./UniswapV2ExchangeInteractiveAdapter');
 const Core = artifacts.require('./Core');
@@ -25,6 +24,7 @@ const ERC20 = artifacts.require('./ERC20');
 
 contract.only('TokenSetsBasicInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+  const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
   const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
   const uniAddress = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984';
@@ -47,9 +47,9 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
   let tokenSetsAdapterAddress;
   let wethAdapterAddress;
   let uniswapAdapterAddress;
-  let erc20TokenAdapterAddress;
 
   let SET;
+  let WETH;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -64,10 +64,6 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
     await UniswapV2ExchangeAdapter.new({ from: accounts[0] })
       .then((result) => {
         uniswapAdapterAddress = result.address;
-      });
-    await ERC20TokenAdapter.new({ from: accounts[0] })
-      .then((result) => {
-        erc20TokenAdapterAddress = result.address;
       });
     await ProtocolAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
@@ -94,14 +90,6 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
         from: accounts[0],
         gas: '1000000',
       });
-    await protocolAdapterRegistry.methods.addTokenAdapters(
-      [web3.utils.toHex('ERC20')],
-      [erc20TokenAdapterAddress],
-    )
-      .send({
-        from: accounts[0],
-        gas: '1000000',
-      });
     await Core.new(
       protocolAdapterRegistry.options.address,
       { from: accounts[0] },
@@ -120,7 +108,12 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
       .then((result) => {
         SET = result.contract;
       });
+    await ERC20.at(wethAddress)
+      .then((result) => {
+        WETH = result.contract;
+      });
   });
+
   describe('Scenario ETH <-> DPI set', () => {
     it('should buy DPI with existing 1 ETH', async () => {
       await SET.methods['balanceOf(address)'](accounts[0])
@@ -135,7 +128,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             WETH_ASSET_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [ethAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [ethAddress, convertToShare(1), AMOUNT_ABSOLUTE],
             ],
             EMPTY_BYTES,
           ],
@@ -143,7 +136,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(0.1), AMOUNT_RELATIVE],
+              [wethAddress, convertToShare(0.1), AMOUNT_ABSOLUTE],
             ],
             web3.eth.abi.encodeParameter('address[]', [wethAddress, yfiAddress]),
           ],
@@ -151,7 +144,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(0.14), AMOUNT_RELATIVE],
+              [wethAddress, convertToShare(0.14), AMOUNT_ABSOLUTE],
             ],
             web3.eth.abi.encodeParameter('address[]', [wethAddress, uniAddress]),
           ],
@@ -159,7 +152,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(0.03), AMOUNT_RELATIVE],
+              [wethAddress, convertToShare(0.03), AMOUNT_ABSOLUTE],
             ],
             web3.eth.abi.encodeParameter('address[]', [wethAddress, repAddress]),
           ],
@@ -167,7 +160,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(0.08), AMOUNT_RELATIVE],
+              [wethAddress, convertToShare(0.08), AMOUNT_ABSOLUTE],
             ],
             web3.eth.abi.encodeParameter('address[]', [wethAddress, renAddress]),
           ],
@@ -175,7 +168,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(0.11), AMOUNT_RELATIVE],
+              [wethAddress, convertToShare(0.11), AMOUNT_ABSOLUTE],
             ],
             web3.eth.abi.encodeParameter('address[]', [wethAddress, aaveAddress]),
           ],
@@ -183,7 +176,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(0.17), AMOUNT_RELATIVE],
+              [wethAddress, convertToShare(0.17), AMOUNT_ABSOLUTE],
             ],
             web3.eth.abi.encodeParameter('address[]', [wethAddress, mkrAddress]),
           ],
@@ -191,7 +184,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(0.03), AMOUNT_RELATIVE],
+              [wethAddress, convertToShare(0.03), AMOUNT_ABSOLUTE],
             ],
             web3.eth.abi.encodeParameter('address[]', [wethAddress, balAddress]),
           ],
@@ -199,7 +192,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(0.06), AMOUNT_RELATIVE],
+              [wethAddress, convertToShare(0.06), AMOUNT_ABSOLUTE],
             ],
             web3.eth.abi.encodeParameter('address[]', [wethAddress, lrcAddress]),
           ],
@@ -207,7 +200,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(0.12), AMOUNT_RELATIVE],
+              [wethAddress, convertToShare(0.11), AMOUNT_ABSOLUTE],
             ],
             web3.eth.abi.encodeParameter('address[]', [wethAddress, compAddress]),
           ],
@@ -215,7 +208,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(0.12), AMOUNT_RELATIVE],
+              [wethAddress, convertToShare(0.12), AMOUNT_ABSOLUTE],
             ],
             web3.eth.abi.encodeParameter('address[]', [wethAddress, snxAddress]),
           ],
@@ -223,7 +216,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(0.05), AMOUNT_RELATIVE],
+              [wethAddress, convertToShare(0.05), AMOUNT_ABSOLUTE],
             ],
             web3.eth.abi.encodeParameter('address[]', [wethAddress, kncAddress]),
           ],
@@ -232,18 +225,18 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             ACTION_DEPOSIT,
             [
               [yfiAddress, convertToShare(1), AMOUNT_RELATIVE],
-              [uniAddress, convertToShare(1), AMOUNT_RELATIVE],
-              [repAddress, convertToShare(1), AMOUNT_RELATIVE],
-              [renAddress, convertToShare(1), AMOUNT_RELATIVE],
-              [aaveAddress, convertToShare(1), AMOUNT_RELATIVE],
-              [mkrAddress, convertToShare(1), AMOUNT_RELATIVE],
-              [balAddress, convertToShare(1), AMOUNT_RELATIVE],
-              [lrcAddress, convertToShare(1), AMOUNT_RELATIVE],
               [compAddress, convertToShare(1), AMOUNT_RELATIVE],
               [snxAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [mkrAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [renAddress, convertToShare(1), AMOUNT_RELATIVE],
               [kncAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [lrcAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [balAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [repAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [uniAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [aaveAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            EMPTY_BYTES,
+            web3.eth.abi.encodeParameter('address', setAddress),
           ],
         ],
         // inputs
@@ -257,13 +250,71 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
           gas: 10000000,
           value: web3.utils.toWei('1', 'ether'),
           from: accounts[0],
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await SET.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log(`set amount after is      ${web3.utils.fromWei(result, 'ether')}`);
+          console.log(`set amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await WETH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await SET.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await web3.eth.getBalance(core.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
         });
     });
+
+    it('should not sell 50% of DPI with wrong (doubled) tokens', async () => {
+      let setBalance;
+      await SET.methods.balanceOf(accounts[0])
+        .call()
+        .then((result) => {
+          setBalance = result;
+        });
+      await SET.methods.approve(router.options.address, setBalance)
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await expectRevert(router.methods.execute(
+        // actions
+        [
+          [
+            TOKENSETS_ASSET_ADAPTER,
+            ACTION_WITHDRAW,
+            [
+              [setAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [setAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            EMPTY_BYTES,
+          ],
+        ],
+        // inputs
+        [
+          [setAddress, convertToShare(0.5), AMOUNT_RELATIVE],
+        ],
+        // fee
+        [0, ZERO],
+        // outputs
+        [],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        }));
+    });
+
     it('should sell 50% of DPI', async () => {
       let setBalance;
       await SET.methods.balanceOf(accounts[0])
@@ -292,7 +343,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [yfiAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
             web3.eth.abi.encodeParameter('address[]', [yfiAddress, wethAddress]),
           ],
@@ -300,7 +351,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [uniAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
             web3.eth.abi.encodeParameter('address[]', [uniAddress, wethAddress]),
           ],
@@ -308,7 +359,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [repAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
             web3.eth.abi.encodeParameter('address[]', [repAddress, wethAddress]),
           ],
@@ -316,7 +367,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [renAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
             web3.eth.abi.encodeParameter('address[]', [renAddress, wethAddress]),
           ],
@@ -324,7 +375,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [aaveAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
             web3.eth.abi.encodeParameter('address[]', [aaveAddress, wethAddress]),
           ],
@@ -332,7 +383,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [mkrAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
             web3.eth.abi.encodeParameter('address[]', [mkrAddress, wethAddress]),
           ],
@@ -340,7 +391,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [balAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
             web3.eth.abi.encodeParameter('address[]', [balAddress, wethAddress]),
           ],
@@ -348,7 +399,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [lrcAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
             web3.eth.abi.encodeParameter('address[]', [lrcAddress, wethAddress]),
           ],
@@ -356,7 +407,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [compAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
             web3.eth.abi.encodeParameter('address[]', [compAddress, wethAddress]),
           ],
@@ -364,7 +415,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [snxAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
             web3.eth.abi.encodeParameter('address[]', [snxAddress, wethAddress]),
           ],
@@ -372,7 +423,7 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
             UNISWAP_V2_EXCHANGE_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [kncAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
             web3.eth.abi.encodeParameter('address[]', [kncAddress, wethAddress]),
           ],
@@ -397,11 +448,28 @@ contract.only('TokenSetsBasicInteractiveAdapter', () => {
         .send({
           gas: 10000000,
           from: accounts[0],
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
       await SET.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
           console.log(`set amount after is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await WETH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await SET.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await web3.eth.getBalance(core.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
         });
     });
   });

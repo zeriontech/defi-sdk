@@ -39,7 +39,7 @@ contract CurveTokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address token) external override returns (Component[] memory) {
+    function getComponents(address token) external view override returns (Component[] memory) {
         PoolInfo memory poolInfo = CurveRegistry(REGISTRY).getPoolInfo(token);
         address swap = poolInfo.swap;
         uint256 totalCoins = poolInfo.totalCoins;

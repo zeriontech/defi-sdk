@@ -31,7 +31,7 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
  * github.com/Uniswap/uniswap-v2-periphery/blob/master/contracts/UniswapV2Router01.sol.
  */
 interface UniswapV2Router01 {
-    function swapExactTokensForTokensSupportingFeeOnTransferTokens(
+    function swapExactTokensForTokens(
         uint256,
         uint256,
         address[] calldata,
@@ -62,7 +62,8 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
      * @notice Exchange tokens using Uniswap pool.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * "from" token address, "from" token amount, and amount type.
-     * @param data Uniswap exchange path starting from tokens[0] (ABI-encoded).
+     * @param data ABI-encoded additional parameter:
+     *     - path - Uniswap exchange path starting from tokens[0].
      * @return tokensToBeWithdrawn Array with one element - token address to be exchanged to.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -85,7 +86,7 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         ERC20(token).safeApprove(ROUTER, amount, "UEIA[1]");
 
         try
-            UniswapV2Router01(ROUTER).swapExactTokensForTokensSupportingFeeOnTransferTokens(
+            UniswapV2Router01(ROUTER).swapExactTokensForTokens(
                 amount,
                 0,
                 path,
