@@ -59,7 +59,6 @@ contract TokenSetsNavInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdap
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
-        uint256 allowance = ERC20(token).allowance(address(this), ISSUANCE_MODULE);
 
         ERC20(token).safeApproveMax(ISSUANCE_MODULE, amount, "TSNIA");
 
