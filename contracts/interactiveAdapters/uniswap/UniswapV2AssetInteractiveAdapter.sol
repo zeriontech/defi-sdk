@@ -33,8 +33,6 @@ import { UniswapV2Pair } from "../../interfaces/UniswapV2Pair.sol";
 contract UniswapV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
-    address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
-
     /**
      * @notice Deposits tokens to the Uniswap pool (pair).
      * @param tokenAmounts Array with one element - TokenAmount struct with

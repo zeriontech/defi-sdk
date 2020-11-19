@@ -25,17 +25,17 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { AToken } from "../../interfaces/AToken.sol";
 import { LendingPoolAddressesProvider } from "../../interfaces/LendingPoolAddressesProvider.sol";
-import { LendingPool } from "../../interfaces/LendingPool.sol";
-import { LendingPoolCore } from "../../interfaces/LendingPoolCore.sol";
+import { LendingPoolV2 } from "../../interfaces/LendingPoolV2.sol";
 
 /**
- * @title Interactive adapter for Aave protocol.
+ * @title Interactive adapter for Aave protocol (v2).
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
-contract AaveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
+contract AaveV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     address internal constant PROVIDER = 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8;
+    uint16 internal constant ZERION_REFERRAL_CODE = 153;
 
     /**
      * @notice Deposits tokens to the Aave protocol.
@@ -58,14 +58,17 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = LendingPool(pool).getReserveATokenAddress(token);
+        // TODO use AaveProtocolDataProvider contract
+        // tokensToBeWithdrawn[0] = AaveProtocolDataProvider(dataProvider).getReserveTokensAddresses(token);
 
-        ERC20(token).safeApproveMax(core, amount, "AAIAv2");
+        ERC20(token).safeApproveMax(pool, amount, "AAIAv2");
 
-        try LendingPool(pool).deposit(token, amount, address(this), 0)  {} catch Error(
+        try
+            LendingPoolV2(pool).deposit(token, amount, address(this), ZERION_REFERRAL_CODE)
+         {} catch Error(
+            // solhint-disable-previous-line no-empty-blocks
             string memory reason
         ) {
-            // solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
             revert("AAIA: deposit fail[2]");
@@ -95,7 +98,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = underlyingToken;
 
-        try LendingPool(pool).withdraw(underlyingToken, amount, address(this))  {} catch Error(
+        try LendingPoolV2(pool).withdraw(underlyingToken, amount, address(this))  {} catch Error(
             string memory reason
         ) {
             // solhint-disable-previous-line no-empty-blocks

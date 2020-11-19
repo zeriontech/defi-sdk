@@ -36,7 +36,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
 
     address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;
     address internal constant COMP = 0xc00e94Cb662C3520282E6f5717214004A7f26888;
-    address internal constant REGISTRY = 0xE6881a7d699d3A350Ce5bba0dbD59a9C36778Cb7;
+    address internal constant REGISTRY = 0xAc41dB9741F869E432575952748e7064d299614D;
 
     /**
      * @notice Deposits tokens to the Compound protocol.
