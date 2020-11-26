@@ -98,10 +98,10 @@ contract AaveV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = underlyingToken;
 
+        // solhint-disable-next-line no-empty-blocks
         try LendingPoolV2(pool).withdraw(underlyingToken, amount, address(this))  {} catch Error(
             string memory reason
         ) {
-            // solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
             revert("AAIAv2: withdraw fail");
