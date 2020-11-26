@@ -35,6 +35,10 @@ interface BPool {
         uint256
     ) external;
 
+    function joinPool(uint256, uint256[] calldata) external;
+
+    function exitPool(uint256, uint256[] calldata) external;
+
     function getCurrentTokens() external view returns (address[] memory);
 
     function getBalance(address) external view returns (uint256);
