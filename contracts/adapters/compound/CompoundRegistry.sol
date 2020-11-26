@@ -38,11 +38,11 @@ contract CompoundRegistry is Ownable {
         }
     }
 
-    function setCToken(address token, address cToken) internal {
-        cToken_[token] = cToken;
-    }
-
     function getCToken(address token) external view returns (address) {
         return cToken_[token];
+    }
+
+    function setCToken(address token, address cToken) internal {
+        cToken_[token] = cToken;
     }
 }
