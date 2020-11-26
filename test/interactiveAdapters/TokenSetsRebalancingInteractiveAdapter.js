@@ -22,11 +22,13 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('TokenSetsRebalancingInteractiveAdapter', () => {
+contract('TokenSetsRebalancingInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const linkAddress = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const setAddress = '0x542156d51d10db5accb99f9db7e7c91b74e80a2c';
+  const cSetAddress = '0xAC8Ea871e2d5F4Be618905F36f73c760f8cFDC8E';
+  const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
 
   let accounts;
   let core;
@@ -38,7 +40,9 @@ contract.only('TokenSetsRebalancingInteractiveAdapter', () => {
 
   let LINK;
   let WETH;
+  let WBTC;
   let SET;
+  let cSET;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -101,12 +105,100 @@ contract.only('TokenSetsRebalancingInteractiveAdapter', () => {
       .then((result) => {
         WETH = result.contract;
       });
+    await ERC20.at(wbtcAddress)
+      .then((result) => {
+        WBTC = result.contract;
+      });
     await ERC20.at(setAddress)
       .then((result) => {
         SET = result.contract;
       });
+    await ERC20.at(cSetAddress)
+      .then((result) => {
+        cSET = result.contract;
+      });
   });
+
   describe('Scenario ETH <-> WETH/LINK set', () => {
+    it('should buy token sets (with c token inside) for 1 ether', async () => {
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`eth amount before is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await WBTC.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`wbtc amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await cSET.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`cset amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      const actions = [
+        // exchange ETH to LINK
+        [
+          UNISWAP_V1_EXCHANGE_ADAPTER,
+          ACTION_DEPOSIT,
+          [
+            [ethAddress, convertToShare(1), AMOUNT_RELATIVE],
+          ],
+          web3.eth.abi.encodeParameter('address', wbtcAddress),
+        ],
+        [
+          TOKENSETS_ASSET_ADAPTER,
+          ACTION_DEPOSIT,
+          [
+            [wbtcAddress, convertToShare(1), AMOUNT_RELATIVE],
+          ],
+          web3.eth.abi.encodeParameter(
+            'address',
+            cSetAddress,
+          ),
+        ],
+      ];
+      // console.log(actions);
+      await router.methods.execute(
+        actions,
+        [],
+        [0, ZERO],
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 5000000,
+          value: web3.utils.toWei('1', 'ether'),
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`eth amount after is   ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await WBTC.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`wbtc amount after is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await SET.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`cset amount after is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await WBTC.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await SET.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await web3.eth.getBalance(core.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
     it('should buy token sets for 1 ether', async () => {
       await web3.eth.getBalance(accounts[0])
         .then((result) => {
