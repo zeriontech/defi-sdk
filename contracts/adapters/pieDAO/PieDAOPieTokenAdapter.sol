@@ -23,6 +23,7 @@ import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { BPool } from "../../interfaces/BPool.sol";
 import { PBasicSmartPool } from "../../interfaces/PBasicSmartPool.sol";
+import { ExperiPie } from "../../interfaces/ExperiPie.sol";
 
 /**
  * @title Token adapter for Pie pool tokens.
@@ -37,15 +38,25 @@ contract PieDAOPieTokenAdapter is TokenAdapter {
     function getComponents(address token) external view override returns (Component[] memory) {
         address[] memory tokens = PBasicSmartPool(token).getTokens();
         uint256 totalSupply = ERC20(token).totalSupply();
-        address bPool = PBasicSmartPool(token).getBPool();
 
         Component[] memory components = new Component[](tokens.length);
 
-        for (uint256 i = 0; i < tokens.length; i++) {
-            components[i] = Component({
-                token: tokens[i],
-                rate: int256((BPool(bPool).getBalance(tokens[i]) * 1e18) / totalSupply)
-            });
+        try PBasicSmartPool(token).getBPool() returns (address bPool) {
+            // if smart pool
+            for (uint256 i = 0; i < tokens.length; i++) {
+                components[i] = Component({
+                    token: tokens[i],
+                    rate: int256((BPool(bPool).getBalance(tokens[i]) * 1e18) / totalSupply)
+                });
+            }
+        } catch {
+            // if not smart pool
+            for (uint256 i = 0; i > tokens.length; i++) {
+                components[i] = Component({
+                    token: tokens[i],
+                    rate: int256((ExperiPie(token).balance(tokens[i]) * 1e18) / totalSupply)
+                });
+            }
         }
 
         return components;
