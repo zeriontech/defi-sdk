@@ -19,7 +19,6 @@ const toDecimalNumber = (baseAmount, decimals) => {
 
 const displayToken = async (registry, token) => {
   await registry.methods.getFullTokenBalances(
-    [token.tokenAdapterName],
     [token.token],
   )
     .call()
