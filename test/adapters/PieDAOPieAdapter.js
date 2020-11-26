@@ -1,6 +1,8 @@
 import displayToken from '../helpers/displayToken';
+import convertToBytes32 from '../helpers/convertToBytes32';
 
-const ASSET_ADAPTER = '01';
+const PIE_DAO_ASSET_ADAPTER = convertToBytes32('PeiDAO Pie Adapter');
+const EMPTY_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
 const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
@@ -15,7 +17,8 @@ contract('PieDAOPieAdapter', () => {
   const testAddress = '0x7d2F4bcB767eB190Aed0f10713fe4D9c07079ee8';
 
   let accounts;
-  let adapterRegistry;
+  let protocolAdapterRegistry;
+  let tokenAdapterRegistry;
   let protocolAdapterAddress;
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
@@ -57,19 +60,15 @@ contract('PieDAOPieAdapter', () => {
       });
     await ProtocolAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
-        adapterRegistry = result.contract;
+        protocolAdapterRegistry = result.contract;
       });
     await TokenAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
         tokenAdapterRegistry = result.contract;
       });
-    await adapterRegistry.methods.addProtocolAdapters(
+    await protocolAdapterRegistry.methods.addProtocolAdapters(
       [
-        `${web3.eth.abi.encodeParameter(
-          'bytes32',
-          web3.utils.toHex('PieDAO'),
-        )
-          .slice(0, -2)}${ASSET_ADAPTER}`,
+        PIE_DAO_ASSET_ADAPTER,
       ],
       [
         protocolAdapterAddress,
@@ -84,8 +83,16 @@ contract('PieDAOPieAdapter', () => {
         gas: '1000000',
       });
     await tokenAdapterRegistry.methods.addTokenAdapters(
-      [web3.utils.toHex('ERC20'), web3.utils.toHex('PieDAO Pie Token')],
+      [EMPTY_BYTES32, convertToBytes32('PieDAO Pie Token')],
       [erc20TokenAdapterAddress, tokenAdapterAddress],
+    )
+      .send({
+        from: accounts[0],
+        gas: '1000000',
+      });
+    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
+      [BTCPPAddress],
+      [convertToBytes32('PieDAO Pie Token')],
     )
       .send({
         from: accounts[0],
@@ -94,16 +101,16 @@ contract('PieDAOPieAdapter', () => {
   });
 
   it('should return correct balances', async () => {
-    await adapterRegistry.methods['getBalances(address)'](testAddress)
+    await protocolAdapterRegistry.methods['getBalances(address)'](testAddress)
       .call()
       .then(async (result) => {
-        await displayToken(adapterRegistry, result[0].tokenBalances[0]);
-        await displayToken(adapterRegistry, result[0].tokenBalances[1]);
+        await displayToken(tokenAdapterRegistry, result[0].tokenBalances[0]);
+        await displayToken(tokenAdapterRegistry, result[0].tokenBalances[1]);
       });
-    await adapterRegistry.methods.getFullTokenBalances(
-      [
-        web3.utils.toHex('PieDAO Pie Token'),
-      ],
+  });
+
+  it('should return correct underlying tokens', async () => {
+    await tokenAdapterRegistry.methods.getFullTokenBalances(
       [
         BTCPPAddress,
       ],
