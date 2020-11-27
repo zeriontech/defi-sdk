@@ -38,8 +38,8 @@ contract BalancerMultiinputInteractiveAdapter is InteractiveAdapter, ERC20Protoc
      * @param tokenAmounts Array with TokenAmount structs with
      * underlying tokens addresses, underlying tokens amounts to be deposited, and amount types.
      * @param data ABI-encoded additional parameters:
-     *     - set - rebalancing set (v2) address.
-     * @return tokensToBeWithdrawn Array with one element - rebalancing set address.
+     *     - pool - Balancer pool address.
+     * @return tokensToBeWithdrawn Array with one element - pool address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
@@ -64,7 +64,7 @@ contract BalancerMultiinputInteractiveAdapter is InteractiveAdapter, ERC20Protoc
 
         uint256 poolAmount = getPoolAmount(pool, tokenAmounts, absoluteAmounts);
 
-        try BPool(pool).joinPool(poolAmount, absoluteAmounts)  {} catch Error(
+        try BPool(pool).joinPool(poolAmount, absoluteAmounts) {} catch Error(
             string memory reason
         ) {
             //solhint-disable-previous-line no-empty-blocks
@@ -77,8 +77,8 @@ contract BalancerMultiinputInteractiveAdapter is InteractiveAdapter, ERC20Protoc
     /**
      * @notice Withdraws tokens from the TokenSet.
      * @param tokenAmounts Array with one element - TokenAmount struct with
-     * rebalancing set (v2) address, rebalancing set amount to be redeemed, and amount type.
-     * @return tokensToBeWithdrawn Array with set token components.
+     * pool address, pool amount to be redeemed, and amount type.
+     * @return tokensToBeWithdrawn Array with pool token components.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
@@ -96,7 +96,7 @@ contract BalancerMultiinputInteractiveAdapter is InteractiveAdapter, ERC20Protoc
 
         try
             BPool(pool).exitPool(poolAmount, new uint256[](tokensToBeWithdrawn.length))
-         {} catch Error(
+        {} catch Error(
             // solhint-disable-previous-line no-empty-blocks
             string memory reason
         ) {
