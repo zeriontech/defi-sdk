@@ -69,8 +69,8 @@ contract MushroomsFarmingAdapter is ProtocolAdapter {
 
     string public constant override tokenType = "ERC20";
 
-    address internal constant MM = 0xa283aa7cfbb27ef0cfbcb2493dd9f4330e0fd304;
-    address internal constant MASTER_CHEF = 0xf8873a6080e8dbf41ada900498de0951074af577;
+    address internal constant MM = 0xa283aA7CfBB27EF0cfBcb2493dD9F4330E0fd304;
+    address internal constant MASTER_CHEF = 0xf8873a6080e8dbF41ADa900498DE0951074af577;
 
     /**
      * @return Amount of staked tokens / claimable rewards for a given account.
