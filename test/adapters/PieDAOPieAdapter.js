@@ -13,6 +13,7 @@ const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 contract('PieDAOPieAdapter', () => {
   const BTCPPAddress = '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd';
   const USDPPAddress = '0x9A48BD0EC040ea4f1D3147C025cd4076A2e71e3e';
+  const DXYAddress = '0x992e9f1d29e2fdb57a9e09a78e122fafe3720cc5';
   // Balancer BTC++ / USD++ Pool
   const testAddress = '0x7d2F4bcB767eB190Aed0f10713fe4D9c07079ee8';
 
@@ -76,6 +77,7 @@ contract('PieDAOPieAdapter', () => {
       [[
         BTCPPAddress,
         USDPPAddress,
+        DXYAddress,
       ]],
     )
       .send({
@@ -92,6 +94,14 @@ contract('PieDAOPieAdapter', () => {
       });
     await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
       [BTCPPAddress],
+      [convertToBytes32('PieDAO Pie Token')],
+    )
+      .send({
+        from: accounts[0],
+        gas: '1000000',
+      });
+    await tokenAdapterRegistry.methods.addTokenAdapterNamesByHashes(
+      [DXYAddress],
       [convertToBytes32('PieDAO Pie Token')],
     )
       .send({
@@ -122,5 +132,14 @@ contract('PieDAOPieAdapter', () => {
         assert.deepEqual(result[0].underlying[2].erc20metadata, imbtc);
         assert.deepEqual(result[0].underlying[3].erc20metadata, sbtc);
       });
+  });
+  it('should return correct underlying tokens for experiPie', async () => {
+    const result = await tokenAdapterRegistry.methods.getFullTokenBalances([DXYAddress]).call();
+    console.log(JSON.stringify(result[0]));
+    console.log(result);
+    // result[0].underlying.map((item) => {
+    //   console.log((item));
+    //   return null;
+    // });
   });
 });
