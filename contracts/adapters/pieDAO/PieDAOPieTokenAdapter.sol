@@ -41,7 +41,9 @@ contract PieDAOPieTokenAdapter is TokenAdapter {
 
         Component[] memory components = new Component[](tokens.length);
 
-        try PBasicSmartPool(token).getBPool() returns (address bPool) {
+        address bPool = PBasicSmartPool(token).getBPool();
+
+        if (bPool != address(0)) {
             // if smart pool
             for (uint256 i = 0; i < tokens.length; i++) {
                 components[i] = Component({
@@ -49,8 +51,8 @@ contract PieDAOPieTokenAdapter is TokenAdapter {
                     rate: int256((BPool(bPool).getBalance(tokens[i]) * 1e18) / totalSupply)
                 });
             }
-        } catch {
-            // if not smart pool
+        } else {
+            // if not smart pool but ExperiPie
             for (uint256 i = 0; i > tokens.length; i++) {
                 components[i] = Component({
                     token: tokens[i],
