@@ -40,7 +40,7 @@ struct PoolInfo {
     uint256 allocPoint;
     uint256 lastRewardBlock;
     uint256 accSushiPerShare;
-	uint256 amount;
+    uint256 amount;
 }
 
 
@@ -86,12 +86,12 @@ contract MushroomsFarmingAdapter is ProtocolAdapter {
                 totalRewards += MasterChef(MASTER_CHEF).pendingMM(i, account);
             }
 			
-			for(uint256 i = 0; i < length; i++) {
+            for(uint256 i = 0; i < length; i++) {
                 pool = MasterChef(MASTER_CHEF).poolInfo(i);
 
                 if (pool.lpToken == token) {
                     totalRewards += MasterChef(MASTER_CHEF).userInfo(i, account).amount;
-					break;
+                    break;
                 }
             }
 
