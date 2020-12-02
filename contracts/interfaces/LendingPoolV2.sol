@@ -18,8 +18,35 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
+struct Map {
+    uint256 data;
+}
+struct ReserveData {
+    //stores the reserve configuration
+    Map configuration;
+    //the liquidity index. Expressed in ray
+    uint128 liquidityIndex;
+    //variable borrow index. Expressed in ray
+    uint128 variableBorrowIndex;
+    //the current supply rate. Expressed in ray
+    uint128 currentLiquidityRate;
+    //the current variable borrow rate. Expressed in ray
+    uint128 currentVariableBorrowRate;
+    //the current stable borrow rate. Expressed in ray
+    uint128 currentStableBorrowRate;
+    uint40 lastUpdateTimestamp;
+    //tokens addresses
+    address aTokenAddress;
+    address stableDebtTokenAddress;
+    address variableDebtTokenAddress;
+    //address of the interest rate strategy
+    address interestRateStrategyAddress;
+    //the id of the reserve. Represents the position in the list of the active reserves
+    uint8 id;
+}
+
 /**
- * @dev LendingPoolV2 contract interface.
+ * @dev LendingPool contract interface (V2).
  */
 interface LendingPoolV2 {
     function deposit(
@@ -34,4 +61,6 @@ interface LendingPoolV2 {
         uint256,
         address
     ) external payable;
+
+    function getReserveData(address) external view returns (ReserveData memory);
 }

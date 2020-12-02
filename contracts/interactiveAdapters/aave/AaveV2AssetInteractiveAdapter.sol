@@ -23,22 +23,23 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
-import { AToken } from "../../interfaces/AToken.sol";
+import { ATokenV2 } from "../../interfaces/ATokenV2.sol";
 import { LendingPoolAddressesProvider } from "../../interfaces/LendingPoolAddressesProvider.sol";
 import { LendingPoolV2 } from "../../interfaces/LendingPoolV2.sol";
 
 /**
- * @title Interactive adapter for Aave protocol (v2).
+ * @title Interactive adapter for Aave protocol (V2).
  * @dev Implementation of InteractiveAdapter abstract contract.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract AaveV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
-    address internal constant PROVIDER = 0x24a42fD28C976A61Df5D00D0599C34c4f90748c8;
+    address internal constant PROVIDER = 0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5;
     uint16 internal constant ZERION_REFERRAL_CODE = 153;
 
     /**
-     * @notice Deposits tokens to the Aave protocol.
+     * @notice Deposits tokens to the Aave protocol (V2).
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * underlying token address, underlying token amount to be deposited, and amount type.
      * @return tokensToBeWithdrawn Array with ane element - aToken.
@@ -53,30 +54,28 @@ contract AaveV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         require(tokenAmounts.length == 1, "AAIAv2: should be 1 tokenAmount[1]");
 
         address pool = LendingPoolAddressesProvider(PROVIDER).getLendingPool();
-
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
-        // TODO use AaveProtocolDataProvider contract
-        // tokensToBeWithdrawn[0] = AaveProtocolDataProvider(dataProvider).getReserveTokensAddresses(token);
+        tokensToBeWithdrawn[0] = LendingPoolV2(pool).getReserveData(token).aTokenAddress;
 
         ERC20(token).safeApproveMax(pool, amount, "AAIAv2");
 
         try
             LendingPoolV2(pool).deposit(token, amount, address(this), ZERION_REFERRAL_CODE)
-         {} catch Error(
+        {} catch Error(
             // solhint-disable-previous-line no-empty-blocks
             string memory reason
         ) {
             revert(reason);
         } catch {
-            revert("AAIA: deposit fail[2]");
+            revert("AAIAv2: deposit fail");
         }
     }
 
     /**
-     * @notice Withdraws tokens from the Aave protocol.
+     * @notice Withdraws tokens from the Aave protocol (V2).
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * aToken address, aToken amount to be redeemed, and amount type.
      * @return tokensToBeWithdrawn Array with one element - underlying token.
@@ -92,14 +91,14 @@ contract AaveV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
 
         address pool = LendingPoolAddressesProvider(PROVIDER).getLendingPool();
 
-        address underlyingToken = AToken(tokenAmounts[0].token).underlyingAssetAddress();
+        address underlyingToken = ATokenV2(tokenAmounts[0].token).UNDERLYING_ASSET_ADDRESS();
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = underlyingToken;
 
         // solhint-disable-next-line no-empty-blocks
-        try LendingPoolV2(pool).withdraw(underlyingToken, amount, address(this))  {} catch Error(
+        try LendingPoolV2(pool).withdraw(underlyingToken, amount, address(this)) {} catch Error(
             string memory reason
         ) {
             revert(reason);
