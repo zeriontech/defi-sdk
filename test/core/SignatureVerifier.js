@@ -125,6 +125,103 @@ contract.only('SignatureVerifier', () => {
       });
   });
 
+  it('should not be correct signer for data with wrong account', async () => {
+    const signature = await sign(
+      {
+        actions: [
+          {
+            protocolAdapterName: MOCK_ADAPTER,
+            actionType: 1,
+            tokenAmounts: [
+              {
+                token: ethAddress,
+                amount: web3.utils.toWei('1', 'ether'),
+                amountType: 2,
+              },
+            ],
+            data: web3.eth.abi.encodeParameter(
+              'address[]',
+              [
+                daiAddress,
+                wethAddress,
+              ],
+            ),
+          },
+        ],
+        inputs: [],
+        fee: {
+          share: 0,
+          beneficiary: ZERO,
+        },
+        requiredOutputs: [
+          {
+            token: ethAddress,
+            amount: web3.utils.toWei('1', 'ether'),
+          },
+        ],
+        account: accounts[1],
+        salt: 0,
+      },
+    );
+    const data = [
+      [
+        [
+          MOCK_ADAPTER,
+          1,
+          [
+            [ethAddress, web3.utils.toWei('1', 'ether'), 2],
+          ],
+          web3.eth.abi.encodeParameter(
+            'address[]',
+            [
+              daiAddress,
+              wethAddress,
+            ],
+          ),
+        ],
+      ],
+      [],
+      [0, ZERO],
+      [
+        [ethAddress, web3.utils.toWei('1', 'ether')],
+      ],
+      accounts[1],
+      0,
+    ];
+    await signatureVerifier.methods.hashData(
+      data,
+    )
+      .call()
+      .then(async (hash) => {
+        await signatureVerifier.methods.getAccountFromSignature(
+          hash,
+          signature,
+        )
+          .call()
+          .then((result) => {
+            assert.equal(accounts[0], result);
+          });
+        await signatureVerifier.methods.isHashUsed(
+          hash,
+          accounts[0],
+        )
+          .call()
+          .then((result) => {
+            assert.equal(false, result);
+          });
+      });
+
+    await expectRevert(signatureVerifier.methods.execute(
+      data,
+      signature,
+    )
+      .send({
+        from: accounts[0],
+        gas: 10000000,
+        value: web3.utils.toWei('1', 'ether'),
+      }));
+  });
+
   it('should be correct signer for execute', async () => {
     const signature = await sign(
       {
