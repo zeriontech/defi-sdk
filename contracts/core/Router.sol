@@ -160,7 +160,14 @@ contract Router is SignatureVerifier("Zerion Router v1.1"), Ownable {
 
         markHashUsed(hashedData, data.account);
 
-        return execute(data.actions, data.inputs, data.fee, data.requiredOutputs, data.account);
+        return
+            execute(
+                data.actions,
+                data.inputs,
+                data.fee,
+                data.requiredOutputs,
+                payable(data.account)
+            );
     }
 
     /**
