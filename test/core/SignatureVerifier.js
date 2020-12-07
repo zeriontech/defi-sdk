@@ -80,6 +80,7 @@ contract.only('SignatureVerifier', () => {
             types: {
               EIP712Domain: [
                 { name: 'name', type: 'string' },
+                { name: 'chainId', type: 'uint256' },
                 { name: 'verifyingContract', type: 'address' },
               ],
               TransactionData: [
@@ -110,7 +111,8 @@ contract.only('SignatureVerifier', () => {
               ],
             },
             domain: {
-              name: 'Zerion Router (Mainnet, v1.1)',
+              name: 'Zerion Router v1.1',
+              chainId: 1,
               verifyingContract: signatureVerifier.options.address,
             },
             primaryType: 'TransactionData',

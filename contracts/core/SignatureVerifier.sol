@@ -34,7 +34,13 @@ contract SignatureVerifier {
 
     bytes32 internal constant DOMAIN_SEPARATOR_TYPEHASH =
         keccak256(
-            abi.encodePacked("EIP712Domain(", "string name,", "address verifyingContract", ")")
+            abi.encodePacked(
+                "EIP712Domain(",
+                "string name,",
+                "uint256 chainId,",
+                "address verifyingContract",
+                ")"
+            )
         );
     bytes32 internal constant TX_DATA_TYPEHASH =
         keccak256(
@@ -87,7 +93,12 @@ contract SignatureVerifier {
 
     constructor(string memory name) {
         domainSeparator_ = keccak256(
-            abi.encode(DOMAIN_SEPARATOR_TYPEHASH, keccak256(abi.encodePacked(name)), address(this))
+            abi.encode(
+                DOMAIN_SEPARATOR_TYPEHASH,
+                keccak256(abi.encodePacked(name)),
+                getChainId(),
+                address(this)
+            )
         );
     }
 
@@ -239,5 +250,15 @@ contract SignatureVerifier {
         }
 
         return keccak256(absoluteTokenAmountsData);
+    }
+
+    function getChainId() internal pure returns (uint256) {
+        uint256 chainId;
+
+        assembly {
+            chainId := chainid()
+        }
+
+        return chainId;
     }
 }
