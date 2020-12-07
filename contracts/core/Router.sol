@@ -36,7 +36,7 @@ interface Chi {
     function freeFromUpTo(address, uint256) external;
 }
 
-contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
+contract Router is SignatureVerifier("Zerion Router v1.1"), Ownable {
     using SafeERC20 for ERC20;
 
     address internal immutable core_;
@@ -176,11 +176,8 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         AbsoluteTokenAmount[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
 
         // Call Core contract with all provided ETH, actions, expected outputs and account address
-        AbsoluteTokenAmount[] memory actualOutputs = Core(payable(core_)).executeActions(
-            actions,
-            modifiedOutputs,
-            account
-        );
+        AbsoluteTokenAmount[] memory actualOutputs =
+            Core(payable(core_)).executeActions(actions, modifiedOutputs, account);
 
         // Emit event so one could track account and fees of this tx.
         emit Executed(account, fee.share, fee.beneficiary);
@@ -266,9 +263,8 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         TokenAmount[] memory inputs
     ) internal view returns (AbsoluteTokenAmount[] memory) {
         uint256 ethInput = msg.value > 0 ? 1 : 0;
-        AbsoluteTokenAmount[] memory modifiedOutputs = new AbsoluteTokenAmount[](
-            requiredOutputs.length + inputs.length + ethInput
-        );
+        AbsoluteTokenAmount[] memory modifiedOutputs =
+            new AbsoluteTokenAmount[](requiredOutputs.length + inputs.length + ethInput);
 
         for (uint256 i = 0; i < requiredOutputs.length; i++) {
             modifiedOutputs[i] = requiredOutputs[i];
