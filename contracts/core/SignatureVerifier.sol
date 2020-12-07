@@ -32,67 +32,73 @@ contract SignatureVerifier {
 
     bytes32 internal immutable domainSeparator_;
 
-    bytes32 internal constant DOMAIN_SEPARATOR_TYPEHASH = keccak256(
-        abi.encodePacked("EIP712Domain(", "string name,", "address verifyingContract", ")")
-    );
-    bytes32 internal constant TX_DATA_TYPEHASH = keccak256(
-        abi.encodePacked(
-            TX_DATA_ENCODED_TYPE,
-            ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE,
-            ACTION_ENCODED_TYPE,
-            FEE_ENCODED_TYPE,
-            TOKEN_AMOUNT_ENCODED_TYPE
-        )
-    );
-    bytes32 internal constant ABSOLUTE_TOKEN_AMOUNT_TYPEHASH = keccak256(
-        ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE
-    );
-    bytes32 internal constant ACTION_TYPEHASH = keccak256(
-        abi.encodePacked(ACTION_ENCODED_TYPE, TOKEN_AMOUNT_ENCODED_TYPE)
-    );
+    bytes32 internal constant DOMAIN_SEPARATOR_TYPEHASH =
+        keccak256(
+            abi.encodePacked(
+                "EIP712Domain(",
+                "string name,",
+                "uint256 chainId,",
+                "address verifyingContract",
+                ")"
+            )
+        );
+    bytes32 internal constant TX_DATA_TYPEHASH =
+        keccak256(
+            abi.encodePacked(
+                TX_DATA_ENCODED_TYPE,
+                ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE,
+                ACTION_ENCODED_TYPE,
+                FEE_ENCODED_TYPE,
+                TOKEN_AMOUNT_ENCODED_TYPE
+            )
+        );
+    bytes32 internal constant ABSOLUTE_TOKEN_AMOUNT_TYPEHASH =
+        keccak256(ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE);
+    bytes32 internal constant ACTION_TYPEHASH =
+        keccak256(abi.encodePacked(ACTION_ENCODED_TYPE, TOKEN_AMOUNT_ENCODED_TYPE));
     bytes32 internal constant FEE_TYPEHASH = keccak256(FEE_ENCODED_TYPE);
     bytes32 internal constant TOKEN_AMOUNT_TYPEHASH = keccak256(TOKEN_AMOUNT_ENCODED_TYPE);
 
-    bytes internal constant TX_DATA_ENCODED_TYPE = abi.encodePacked(
-        "TransactionData(",
-        "Action[] actions,",
-        "TokenAmount[] inputs,",
-        "Fee fee,",
-        "AbsoluteTokenAmount[] requiredOutputs,",
-        "uint256 salt",
-        ")"
-    );
-    bytes internal constant ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE = abi.encodePacked(
-        "AbsoluteTokenAmount(",
-        "address token,",
-        "uint256 amount",
-        ")"
-    );
-    bytes internal constant ACTION_ENCODED_TYPE = abi.encodePacked(
-        "Action(",
-        "bytes32 protocolAdapterName,",
-        "uint8 actionType,",
-        "TokenAmount[] tokenAmounts,",
-        "bytes data",
-        ")"
-    );
-    bytes internal constant FEE_ENCODED_TYPE = abi.encodePacked(
-        "Fee(",
-        "uint256 share,",
-        "address beneficiary",
-        ")"
-    );
-    bytes internal constant TOKEN_AMOUNT_ENCODED_TYPE = abi.encodePacked(
-        "TokenAmount(",
-        "address token,",
-        "uint256 amount,",
-        "uint8 amountType",
-        ")"
-    );
+    bytes internal constant TX_DATA_ENCODED_TYPE =
+        abi.encodePacked(
+            "TransactionData(",
+            "Action[] actions,",
+            "TokenAmount[] inputs,",
+            "Fee fee,",
+            "AbsoluteTokenAmount[] requiredOutputs,",
+            "uint256 salt",
+            ")"
+        );
+    bytes internal constant ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE =
+        abi.encodePacked("AbsoluteTokenAmount(", "address token,", "uint256 amount", ")");
+    bytes internal constant ACTION_ENCODED_TYPE =
+        abi.encodePacked(
+            "Action(",
+            "bytes32 protocolAdapterName,",
+            "uint8 actionType,",
+            "TokenAmount[] tokenAmounts,",
+            "bytes data",
+            ")"
+        );
+    bytes internal constant FEE_ENCODED_TYPE =
+        abi.encodePacked("Fee(", "uint256 share,", "address beneficiary", ")");
+    bytes internal constant TOKEN_AMOUNT_ENCODED_TYPE =
+        abi.encodePacked(
+            "TokenAmount(",
+            "address token,",
+            "uint256 amount,",
+            "uint8 amountType",
+            ")"
+        );
 
     constructor(string memory name) {
         domainSeparator_ = keccak256(
-            abi.encode(DOMAIN_SEPARATOR_TYPEHASH, keccak256(abi.encodePacked(name)), address(this))
+            abi.encode(
+                DOMAIN_SEPARATOR_TYPEHASH,
+                keccak256(abi.encodePacked(name)),
+                getChainId(),
+                address(this)
+            )
         );
     }
 
@@ -205,5 +211,15 @@ contract SignatureVerifier {
         }
 
         return keccak256(absoluteTokenAmountsData);
+    }
+
+    function getChainId() internal pure returns (uint256) {
+        uint256 chainId;
+
+        assembly {
+            chainId := chainid()
+        }
+
+        return chainId;
     }
 }
