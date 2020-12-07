@@ -28,13 +28,10 @@ import {
 } from "../shared/Structs.sol";
 import { ERC20 } from "../shared/ERC20.sol";
 import { SafeERC20 } from "../shared/SafeERC20.sol";
+import { ChiToken } from "../interface/ChiToken.sol";
 import { SignatureVerifier } from "./SignatureVerifier.sol";
 import { Ownable } from "./Ownable.sol";
 import { Core } from "./Core.sol";
-
-interface Chi {
-    function freeFromUpTo(address, uint256) external;
-}
 
 contract Router is SignatureVerifier("Zerion Router v1.1"), Ownable {
     using SafeERC20 for ERC20;
@@ -65,7 +62,7 @@ contract Router is SignatureVerifier("Zerion Router v1.1"), Ownable {
         uint256 gasStart = gasleft();
         _;
         uint256 gasSpent = 21000 + gasStart - gasleft() + 7 * msg.data.length;
-        Chi(CHI).freeFromUpTo(msg.sender, (gasSpent + 25171) / 41852);
+        ChiToken(CHI).freeFromUpTo(msg.sender, (gasSpent + 25171) / 41852);
     }
 
     constructor(address payable core) {
@@ -97,6 +94,7 @@ contract Router is SignatureVerifier("Zerion Router v1.1"), Ownable {
 
     /**
      * @notice Executes actions and returns tokens to account.
+     * Uses CHI tokens previously approved by the msg.sender.
      * @param data TransactionData struct with the following elements:
      *     - actions Array of actions to be executed.
      *     - inputs Array of tokens to be taken from the signer of this data.
@@ -119,6 +117,7 @@ contract Router is SignatureVerifier("Zerion Router v1.1"), Ownable {
 
     /**
      * @notice Executes actions and returns tokens to account.
+     * Uses CHI tokens previously approved by the msg.sender.
      * @param actions Array of actions to be executed.
      * @param inputs Array of tokens to be taken from the msg.sender.
      * @param fee Fee struct with fee details.
