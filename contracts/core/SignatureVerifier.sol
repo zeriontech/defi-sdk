@@ -252,6 +252,9 @@ contract SignatureVerifier {
         return keccak256(absoluteTokenAmountsData);
     }
 
+    /**
+     * @return Current chain ID.
+     */
     function getChainId() internal pure returns (uint256) {
         uint256 chainId;
 
