@@ -103,12 +103,19 @@ contract SignatureVerifier {
     }
 
     /**
-     * @return Address of the Core contract used.
+     * @param hash Hash to be checked.
+     * @param account Address of the hash will be checked for.
+     * @return True if hash has already been used by this account address.
      */
     function isHashUsed(bytes32 hash, address account) public view returns (bool) {
         return isHashUsed_[hash][account];
     }
 
+    /**
+     * @param hashedData Hash to be checked.
+     * @param signature EIP-712 signature.
+     * @return Account that signed the hashed data.
+     */
     function getAccountFromSignature(bytes32 hashedData, bytes memory signature)
         public
         pure
@@ -117,17 +124,29 @@ contract SignatureVerifier {
         return payable(ECDSA.recover(hashedData, signature));
     }
 
+    /**
+     * @param data TransactionData struct to be hashed.
+     * @return TransactionData struct hashed with domainSeparator_.
+     */
     function hashData(TransactionData memory data) public view returns (bytes32) {
         return
             keccak256(abi.encodePacked(bytes1(0x19), bytes1(0x01), domainSeparator_, hash(data)));
     }
 
+    /**
+     * @dev Marks hash as used by the given account.
+     * @param hash Hash to be marked is used.
+     * @param account Account using the hash.
+     */
     function markHashUsed(bytes32 hash, address account) internal {
         require(!isHashUsed_[hash][account], "SV: used hash!");
         isHashUsed_[hash][account] = true;
     }
 
-    /// @return Hash to be signed by tokens supplier.
+    /**
+     * @param data TransactionData struct to be hashed.
+     * @return Hashed TransactionData struct.
+     */
     function hash(TransactionData memory data) internal pure returns (bytes32) {
         return
             keccak256(
@@ -142,6 +161,11 @@ contract SignatureVerifier {
             );
     }
 
+    /**
+     * @dev Hashes Action structs list.
+     * @param actions Action structs list to be hashed.
+     * @return Hashed Action structs list.
+     */
     function hash(Action[] memory actions) internal pure returns (bytes32) {
         bytes memory actionsData = new bytes(0);
 
@@ -164,6 +188,11 @@ contract SignatureVerifier {
         return keccak256(actionsData);
     }
 
+    /**
+     * @dev Hashes TokenAmount structs list.
+     * @param tokenAmounts TokenAmount structs list to be hashed.
+     * @return Hashed TokenAmount structs list.
+     */
     function hash(TokenAmount[] memory tokenAmounts) internal pure returns (bytes32) {
         bytes memory tokenAmountsData = new bytes(0);
 
@@ -185,10 +214,20 @@ contract SignatureVerifier {
         return keccak256(tokenAmountsData);
     }
 
+    /**
+     * @dev Hashes Fee struct.
+     * @param fee Fee struct to be hashed.
+     * @return Hashed Fee struct.
+     */
     function hash(Fee memory fee) internal pure returns (bytes32) {
         return keccak256(abi.encode(FEE_TYPEHASH, fee.share, fee.beneficiary));
     }
 
+    /**
+     * @dev Hashes AbsoluteTokenAmount structs list.
+     * @param absoluteTokenAmounts AbsoluteTokenAmount structs list to be hashed.
+     * @return Hashed AbsoluteTokenAmount structs list.
+     */
     function hash(AbsoluteTokenAmount[] memory absoluteTokenAmounts)
         internal
         pure
@@ -213,6 +252,9 @@ contract SignatureVerifier {
         return keccak256(absoluteTokenAmountsData);
     }
 
+    /**
+     * @return Current chain ID.
+     */
     function getChainId() internal pure returns (uint256) {
         uint256 chainId;
 

@@ -135,7 +135,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
     }
 
     /**
-     * @notice Fills in FullTokenBalance struct with underlying components.
+     * @dev Fills in FullTokenBalance struct with underlying components.
      * @param tokenBalance TokenBalance struct consisting of
      * token address and its absolute amount.
      * @return Full absolute token amount by token address and absolute amount.
@@ -150,7 +150,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
     }
 
     /**
-     * @notice Fills in FullTokenBalance struct with final underlying components.
+     * @dev Fills in FullTokenBalance struct with final underlying components.
      * @param tokenBalance TokenBalance struct consisting of
      * token address and its absolute amount.
      * @return Final full absolute token amount by token address and absolute amount.
@@ -165,7 +165,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
     }
 
     /**
-     * @notice Fills in FullTokenBalance struct with underlying components.
+     * @dev Fills in FullTokenBalance struct with underlying components.
      * @param tokenBalance TokenBalance struct consisting of
      * token address and its absolute amount.
      * @param components Component struct consisting of
@@ -296,7 +296,7 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
     }
 
     /**
-     * @notice Fills in TokenBalanceMeta for TokenBalance struct.
+     * @dev Fills in TokenBalanceMeta for TokenBalance struct.
      * @param tokenBalance Struct consisting of
      * token address and absolute amount.
      * @return TokenBalanceMeta struct by token address and absolute amount.
@@ -328,6 +328,11 @@ contract TokenAdapterRegistry is Ownable, TokenAdapterManager, TokenAdapterNames
         return TokenBalanceMeta({ tokenBalance: tokenBalance, erc20metadata: erc20metadata });
     }
 
+    /**
+     * @dev Gets token adapter address for the given token address.
+     * @param token Address of the token.
+     * @return Token adapter address.
+     */
     function getTokenAdapter(address token) internal view returns (address) {
         bytes32 tokenAdapterName = getTokenAdapterName(token);
         address tokenAdapter = getTokenAdapterAddress(tokenAdapterName);
