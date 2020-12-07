@@ -66,6 +66,7 @@ contract SignatureVerifier {
             "TokenAmount[] inputs,",
             "Fee fee,",
             "AbsoluteTokenAmount[] requiredOutputs,",
+            "address account,",
             "uint256 salt",
             ")"
         );
@@ -156,6 +157,7 @@ contract SignatureVerifier {
                     hash(data.inputs),
                     hash(data.fee),
                     hash(data.requiredOutputs),
+                    data.account,
                     data.salt
                 )
             );

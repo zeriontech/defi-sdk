@@ -102,6 +102,7 @@ contract Router is SignatureVerifier("Zerion Router v1.1"), Ownable {
      *     - inputs Array of tokens to be taken from the signer of this data.
      *     - fee Fee struct with fee details.
      *     - requiredOutputs Array of requirements for the returned tokens.
+     *     - account Address of the account that will receive the returned tokens.
      *     - salt Number that makes this data unique.
      * @param signature EIP712-compatible signature of data.
      * @return Array of AbsoluteTokenAmount structs with the returned tokens.
@@ -141,6 +142,7 @@ contract Router is SignatureVerifier("Zerion Router v1.1"), Ownable {
      *     - inputs Array of tokens to be taken from the signer of this data.
      *     - fee Fee struct with fee details.
      *     - requiredOutputs Array of requirements for the returned tokens.
+     *     - account Address of the account that will receive the returned tokens.
      *     - salt Number that makes this data unique.
      * @param signature EIP712-compatible signature of data.
      * @return Array of AbsoluteTokenAmount structs with the returned tokens.
@@ -151,11 +153,14 @@ contract Router is SignatureVerifier("Zerion Router v1.1"), Ownable {
         returns (AbsoluteTokenAmount[] memory)
     {
         bytes32 hashedData = hashData(data);
-        address payable account = getAccountFromSignature(hashedData, signature);
+        require(
+            data.account == getAccountFromSignature(hashedData, signature),
+            "R: wrong account"
+        );
 
-        markHashUsed(hashedData, account);
+        markHashUsed(hashedData, data.account);
 
-        return execute(data.actions, data.inputs, data.fee, data.requiredOutputs, account);
+        return execute(data.actions, data.inputs, data.fee, data.requiredOutputs, data.account);
     }
 
     /**

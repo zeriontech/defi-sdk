@@ -88,6 +88,7 @@ contract.only('SignatureVerifier', () => {
                 { name: 'inputs', type: 'TokenAmount[]' },
                 { name: 'fee', type: 'Fee' },
                 { name: 'requiredOutputs', type: 'AbsoluteTokenAmount[]' },
+                { name: 'account', type: 'address' },
                 { name: 'salt', type: 'uint256' },
               ],
               Action: [
@@ -158,6 +159,7 @@ contract.only('SignatureVerifier', () => {
             amount: web3.utils.toWei('1', 'ether'),
           },
         ],
+        account: accounts[0],
         salt: 0,
       },
     );
@@ -183,6 +185,7 @@ contract.only('SignatureVerifier', () => {
       [
         [ethAddress, web3.utils.toWei('1', 'ether')],
       ],
+      accounts[0],
       0,
     ];
     await signatureVerifier.methods.hashData(
@@ -276,6 +279,7 @@ contract.only('SignatureVerifier', () => {
             amount: web3.utils.toWei('1', 'ether'),
           },
         ],
+        account: accounts[0],
         salt: 1,
       },
     );
@@ -301,6 +305,7 @@ contract.only('SignatureVerifier', () => {
       [
         [ethAddress, web3.utils.toWei('1', 'ether')],
       ],
+      accounts[0],
       1,
     ];
     await signatureVerifier.methods.hashData(
@@ -394,6 +399,7 @@ contract.only('SignatureVerifier', () => {
             amount: web3.utils.toWei('1', 'ether'),
           },
         ],
+        account: accounts[0],
         salt: 0,
       },
     );
@@ -419,6 +425,7 @@ contract.only('SignatureVerifier', () => {
       [
         [wethAddress, web3.utils.toWei('1', 'ether')],
       ],
+      accounts[0],
       0,
     ];
     await expectRevert(signatureVerifier.methods.hashData(
