@@ -67,8 +67,8 @@ struct Component {
 
 //=============================== Interactive Adapters Structs ====================================
 
-// The struct consists of array of actions,
-// array of inputs, fee, required outputs,
+// The struct consists of array of actions, array of inputs,
+// fee, array of required outputs, account,
 // and salt parameter used to protect users from double spends.
 struct TransactionData {
     Action[] actions;
