@@ -36,15 +36,11 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
      * @notice Zero values are filtered out!
      */
     function getBalances(address account) external returns (AdapterBalance[] memory) {
-        AdapterBalance[] memory adapterBalances = getAdapterBalances(
-            getProtocolAdapterNames(),
-            account
-        );
+        AdapterBalance[] memory adapterBalances =
+            getAdapterBalances(getProtocolAdapterNames(), account);
 
-        (
-            uint256 nonZeroAdapterBalancesNumber,
-            uint256[] memory nonZeroTokenBalancesNumbers
-        ) = getNonZeroAdapterBalancesAndTokenBalancesNumbers(adapterBalances);
+        (uint256 nonZeroAdapterBalancesNumber, uint256[] memory nonZeroTokenBalancesNumbers) =
+            getNonZeroAdapterBalancesAndTokenBalancesNumbers(adapterBalances);
 
         return
             getNonZeroAdapterBalances(
@@ -109,6 +105,10 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
             });
     }
 
+    /**
+     * @param adapterBalances List of AdapterBalance structs.
+     * @return Numbers of non-empty AdapterBalance and non-zero TokenBalance structs.
+     */
     function getNonZeroAdapterBalancesAndTokenBalancesNumbers(
         AdapterBalance[] memory adapterBalances
     ) internal returns (uint256, uint256[] memory) {
@@ -129,6 +129,10 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         return (nonZeroAdapterBalancesNumber, nonZeroTokenBalancesNumbers);
     }
 
+    /**
+     * @param tokenBalances List of TokenBalance structs.
+     * @return Number of non-zero TokenBalance structs.
+     */
     function getNonZeroTokenBalancesNumber(TokenBalance[] memory tokenBalances)
         internal
         returns (uint256)
@@ -145,14 +149,19 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         return nonZeroTokenBalancesNumber;
     }
 
+    /**
+     * @param adapterBalances List of AdapterBalance structs.
+     * @param nonZeroAdapterBalancesNumber Number of non-empty AdapterBalance structs.
+     * @param nonZeroTokenBalancesNumbers List of non-zero TokenBalance structs numbers.
+     * @return Non-empty AdapterBalance structs with non-zero TokenBalance structs.
+     */
     function getNonZeroAdapterBalances(
         AdapterBalance[] memory adapterBalances,
         uint256 nonZeroAdapterBalancesNumber,
         uint256[] memory nonZeroTokenBalancesNumbers
     ) internal returns (AdapterBalance[] memory) {
-        AdapterBalance[] memory nonZeroAdapterBalances = new AdapterBalance[](
-            nonZeroAdapterBalancesNumber
-        );
+        AdapterBalance[] memory nonZeroAdapterBalances =
+            new AdapterBalance[](nonZeroAdapterBalancesNumber);
         uint256 length = adapterBalances.length;
         uint256 counter = 0;
 
@@ -175,13 +184,17 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         return nonZeroAdapterBalances;
     }
 
+    /**
+     * @param tokenBalances List of TokenBalance structs.
+     * @param nonZeroTokenBalancesNumber Number of non-zero TokenBalance structs.
+     * @return Non-zero TokenBalance structs.
+     */
     function getNonZeroTokenBalances(
         TokenBalance[] memory tokenBalances,
         uint256 nonZeroTokenBalancesNumber
     ) internal returns (TokenBalance[] memory) {
-        TokenBalance[] memory nonZeroTokenBalances = new TokenBalance[](
-            nonZeroTokenBalancesNumber
-        );
+        TokenBalance[] memory nonZeroTokenBalances =
+            new TokenBalance[](nonZeroTokenBalancesNumber);
         uint256 length = tokenBalances.length;
         uint256 counter = 0;
 

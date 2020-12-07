@@ -51,6 +51,7 @@ struct AdapterBalance {
 
 // The struct consists of token address
 // and its absolute amount (may be negative).
+// 0xEeee...EEeE is used for Ether
 struct TokenBalance {
     address token;
     int256 amount;
@@ -58,6 +59,7 @@ struct TokenBalance {
 
 // The struct consists of token address,
 // and price per full share (1e18).
+// 0xEeee...EEeE is used for Ether
 struct Component {
     address token;
     int256 rate;
@@ -73,6 +75,7 @@ struct TransactionData {
     TokenAmount[] inputs;
     Fee fee;
     AbsoluteTokenAmount[] requiredOutputs;
+    address account;
     uint256 salt;
 }
 
@@ -88,6 +91,7 @@ struct Action {
 
 // The struct consists of token address
 // its amount and amount type.
+// 0xEeee...EEeE is used for Ether
 struct TokenAmount {
     address token;
     uint256 amount;
@@ -103,6 +107,7 @@ struct Fee {
 
 // The struct consists of token address
 // and its absolute amount.
+// 0xEeee...EEeE is used for Ether
 struct AbsoluteTokenAmount {
     address token;
     uint256 amount;
