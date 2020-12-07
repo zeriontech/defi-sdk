@@ -49,6 +49,18 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
     event Executed(address indexed account, uint256 indexed share, address indexed beneficiary);
     event TokenTransfer(address indexed token, address indexed account, uint256 indexed amount);
 
+    /**
+     * @dev The amount used as second parameter of freeFromUpTo() function
+     * is the solution of the following equation:
+     * 21000 + calldataCost + executionCost + constBurnCost + n * perTokenBurnCost =
+     * 2 * (24000 * n + otherRefunds)
+     * Here,
+     *     calldataCost = 7 * msg.data.length
+     *     executionCost = 21000 + gasStart - gasleft()
+     *     constBurnCost = 25171
+     *     perTokenBurnCost = 6148
+     *     otherRefunds = 0
+     */
     modifier useCHI {
         uint256 gasStart = gasleft();
         _;
@@ -62,6 +74,10 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         core_ = core;
     }
 
+    /**
+     * @notice Returns tokens mistakenly sent to this contract.
+     * @dev Can be called only by this contract's owner.
+     */
     function returnLostTokens(address token, address payable beneficiary) external onlyOwner {
         if (token == ETH) {
             // solhint-disable-next-line avoid-low-level-calls
@@ -77,6 +93,45 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
      */
     function core() external view returns (address) {
         return core_;
+    }
+
+    /**
+     * @notice Executes actions and returns tokens to account.
+     * @param data TransactionData struct with the following elements:
+     *     - actions Array of actions to be executed.
+     *     - inputs Array of tokens to be taken from the signer of this data.
+     *     - fee Fee struct with fee details.
+     *     - requiredOutputs Array of requirements for the returned tokens.
+     *     - salt Number that makes this data unique.
+     * @param signature EIP712-compatible signature of data.
+     * @return Array of AbsoluteTokenAmount structs with the returned tokens.
+     * @dev This function uses CHI token to refund some gas.
+     */
+    function executeWithCHI(TransactionData memory data, bytes memory signature)
+        public
+        payable
+        useCHI
+        returns (AbsoluteTokenAmount[] memory)
+    {
+        return execute(data, signature);
+    }
+
+    /**
+     * @notice Executes actions and returns tokens to account.
+     * @param actions Array of actions to be executed.
+     * @param inputs Array of tokens to be taken from the msg.sender.
+     * @param fee Fee struct with fee details.
+     * @param requiredOutputs Array of requirements for the returned tokens.
+     * @return Array of AbsoluteTokenAmount structs with the returned tokens.
+     * @dev This function uses CHI token to refund some gas.
+     */
+    function executeWithCHI(
+        Action[] memory actions,
+        TokenAmount[] memory inputs,
+        Fee memory fee,
+        AbsoluteTokenAmount[] memory requiredOutputs
+    ) public payable useCHI returns (AbsoluteTokenAmount[] memory) {
+        return execute(actions, inputs, fee, requiredOutputs);
     }
 
     /**
@@ -106,9 +161,9 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
     /**
      * @notice Executes actions and returns tokens to account.
      * @param actions Array of actions to be executed.
-     * @param  inputs Array of tokens to be taken from the signer of this data.
-     * @param  fee Fee struct with fee details.
-     * @param  requiredOutputs Array of requirements for the returned tokens.
+     * @param inputs Array of tokens to be taken from the msg.sender.
+     * @param fee Fee struct with fee details.
+     * @param requiredOutputs Array of requirements for the returned tokens.
      * @return Array of AbsoluteTokenAmount structs with the returned tokens.
      */
     function execute(
@@ -121,49 +176,14 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
     }
 
     /**
-     * @notice Executes actions and returns tokens to account.
-     * @param data TransactionData struct with the following elements:
-     *     - actions Array of actions to be executed.
-     *     - inputs Array of tokens to be taken from the signer of this data.
-     *     - fee Fee struct with fee details.
-     *     - requiredOutputs Array of requirements for the returned tokens.
-     *     - salt Number that makes this data unique.
-     * @param signature EIP712-compatible signature of data.
-     * @return Array of AbsoluteTokenAmount structs with the returned tokens.
-     * @dev This function uses CHI token to refund some gas.
-     */
-    function executeWithCHI(TransactionData memory data, bytes memory signature)
-        public
-        payable
-        useCHI
-        returns (AbsoluteTokenAmount[] memory)
-    {
-        bytes32 hashedData = hashData(data);
-        address payable account = getAccountFromSignature(hashedData, signature);
-
-        markHashUsed(hashedData, account);
-
-        return execute(data.actions, data.inputs, data.fee, data.requiredOutputs, account);
-    }
-
-    /**
-     * @notice Executes actions and returns tokens to account.
+     * @dev Executes actions and returns tokens to account.
      * @param actions Array of actions to be executed.
-     * @param  inputs Array of tokens to be taken from the signer of this data.
-     * @param  fee Fee struct with fee details.
-     * @param  requiredOutputs Array of requirements for the returned tokens.
+     * @param inputs Array of tokens to be taken from the account address.
+     * @param fee Fee struct with fee details.
+     * @param requiredOutputs Array of requirements for the returned tokens.
+     * @param account Address of the account that will receive the returned tokens.
      * @return Array of AbsoluteTokenAmount structs with the returned tokens.
-     * @dev This function uses CHI token to refund some gas.
      */
-    function executeWithCHI(
-        Action[] memory actions,
-        TokenAmount[] memory inputs,
-        Fee memory fee,
-        AbsoluteTokenAmount[] memory requiredOutputs
-    ) public payable useCHI returns (AbsoluteTokenAmount[] memory) {
-        return execute(actions, inputs, fee, requiredOutputs, msg.sender);
-    }
-
     function execute(
         Action[] memory actions,
         TokenAmount[] memory inputs,
@@ -176,11 +196,8 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         AbsoluteTokenAmount[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
 
         // Call Core contract with all provided ETH, actions, expected outputs and account address
-        AbsoluteTokenAmount[] memory actualOutputs = Core(payable(core_)).executeActions(
-            actions,
-            modifiedOutputs,
-            account
-        );
+        AbsoluteTokenAmount[] memory actualOutputs =
+            Core(payable(core_)).executeActions(actions, modifiedOutputs, account);
 
         // Emit event so one could track account and fees of this tx.
         emit Executed(account, fee.share, fee.beneficiary);
@@ -189,6 +206,13 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         return actualOutputs;
     }
 
+    /**
+     * @dev Transfers tokens from account address to the core_ contract
+     * and takes fees if needed.
+     * @param inputs Array of tokens to be taken from the account address.
+     * @param fee Fee struct with fee details.
+     * @param account Address of the account tokens will be transferred from.
+     */
     function transferTokens(
         TokenAmount[] memory inputs,
         Fee memory fee,
@@ -235,6 +259,12 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         }
     }
 
+    /**
+     * @dev Returns the absolute token amount given the TokenAmount struct.
+     * @param tokenAmount TokenAmount struct with token address, amount, and amount type.
+     * @param account Address of the account absolute token amount will be calculated for.
+     * @return Absolute token amount.
+     */
     function getAbsoluteAmount(TokenAmount memory tokenAmount, address account)
         internal
         view
@@ -261,14 +291,17 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         }
     }
 
+    /**
+     * @dev Appends tokens from inputs to the requiredOutputs list.
+     * @return Array of AbsoluteTokenAmount structs with the resulting tokens.
+     */
     function modifyOutputs(
         AbsoluteTokenAmount[] memory requiredOutputs,
         TokenAmount[] memory inputs
     ) internal view returns (AbsoluteTokenAmount[] memory) {
         uint256 ethInput = msg.value > 0 ? 1 : 0;
-        AbsoluteTokenAmount[] memory modifiedOutputs = new AbsoluteTokenAmount[](
-            requiredOutputs.length + inputs.length + ethInput
-        );
+        AbsoluteTokenAmount[] memory modifiedOutputs =
+            new AbsoluteTokenAmount[](requiredOutputs.length + inputs.length + ethInput);
 
         for (uint256 i = 0; i < requiredOutputs.length; i++) {
             modifiedOutputs[i] = requiredOutputs[i];
@@ -291,6 +324,9 @@ contract Router is SignatureVerifier("Zerion Router (Mainnet, v1.1)"), Ownable {
         return modifiedOutputs;
     }
 
+    /**
+     * @dev Safe multiplication operation.
+     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
         if (a == 0) {
             return 0;

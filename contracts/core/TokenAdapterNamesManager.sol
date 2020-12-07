@@ -150,6 +150,10 @@ abstract contract TokenAdapterNamesManager is Ownable {
         return tokenAdapterName;
     }
 
+    /**
+     * @param token Address of token.
+     * @return Hash of token's bytecode.
+     */
     function getTokenHash(address token) public view returns (bytes32) {
         bytes32 hash;
 
@@ -162,7 +166,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
     }
 
     /**
-     * @notice Adds a token adapters' name by hash.
+     * @dev Adds a token adapters' name by hash.
      * @param newHash New hash.
      * @param newTokenAdapterName New token adapter's name.
      */
@@ -174,7 +178,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
     }
 
     /**
-     * @notice Removes a token adapters' name by hash.
+     * @dev Removes a token adapters' name by hash.
      * @param hash Hash.
      */
     function removeTokenAdapterName(bytes32 hash) internal {
@@ -184,7 +188,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
     }
 
     /**
-     * @notice Updates a token adapters' name by hash.
+     * @dev Updates a token adapters' name by hash.
      * @param hash Hash.
      * @param newTokenAdapterName New token adapter's name.
      */
@@ -198,7 +202,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
     }
 
     /**
-     * @notice Checks that arrays' lengths are equal and non-zero.
+     * @dev Checks that arrays' lengths are equal and non-zero.
      * @param tokens Array of tokens' addresses.
      * @param tokenAdapterNames Array of token adapters' names.
      */
@@ -216,7 +220,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
     }
 
     /**
-     * @notice Checks that array's length is non-zero.
+     * @dev Checks that array's length is non-zero.
      * @param tokens Array of tokens' addresses.
      */
     function validateInput(address[] calldata tokens) internal pure {
