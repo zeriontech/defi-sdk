@@ -97,7 +97,7 @@ abstract contract TokenAdapterManager is Ownable {
     }
 
     /**
-     * @notice Adds a token adapter.
+     * @dev Adds a token adapter.
      * @param newTokenAdapterName New token adapter's name.
      * @param newTokenAdapterAddress New token adapter's address.
      */
@@ -112,7 +112,7 @@ abstract contract TokenAdapterManager is Ownable {
     }
 
     /**
-     * @notice Removes a token adapter.
+     * @dev Removes a token adapter.
      * @param tokenAdapterName Token adapter's name.
      */
     function removeTokenAdapter(bytes32 tokenAdapterName) internal {
@@ -134,7 +134,7 @@ abstract contract TokenAdapterManager is Ownable {
     }
 
     /**
-     * @notice Updates a token adapter.
+     * @dev Updates a token adapter.
      * @param tokenAdapterName Token adapter's name.
      * @param newTokenAdapterAddress Token adapter's new address.
      */
@@ -150,7 +150,7 @@ abstract contract TokenAdapterManager is Ownable {
     }
 
     /**
-     * @notice Checks that arrays' lengths are equal and non-zero.
+     * @dev Checks that arrays' lengths are equal and non-zero.
      * @param tokenAdapterNames Array of token adapters' names.
      * @param tokenAdapterAddresses Array of token adapters' addresses.
      */
@@ -163,7 +163,7 @@ abstract contract TokenAdapterManager is Ownable {
     }
 
     /**
-     * @notice Checks that array's length is non-zero.
+     * @dev Checks that array's length is non-zero.
      * @param tokenAdapterNames Array of token adapters' names.
      */
     function validateInput(bytes32[] calldata tokenAdapterNames) internal pure {

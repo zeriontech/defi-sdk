@@ -123,7 +123,7 @@ abstract contract ProtocolAdapterManager is Ownable {
     }
 
     /**
-     * @notice Adds a protocol adapter.
+     * @dev Adds a protocol adapter.
      * @param newProtocolAdapterName New protocol adapter's protocolAdapterName.
      * @param newProtocolAdapterAddress New protocol adapter's address.
      * @param newSupportedTokens Array of the new protocol adapter's supported tokens.
@@ -143,7 +143,7 @@ abstract contract ProtocolAdapterManager is Ownable {
     }
 
     /**
-     * @notice Removes a protocol adapter.
+     * @dev Removes a protocol adapter.
      * @param protocolAdapterName Protocol adapter's protocolAdapterName.
      */
     function removeProtocolAdapter(bytes32 protocolAdapterName) internal {
@@ -169,7 +169,7 @@ abstract contract ProtocolAdapterManager is Ownable {
     }
 
     /**
-     * @notice Updates a protocol adapter.
+     * @dev Updates a protocol adapter.
      * @param protocolAdapterName Protocol adapter's protocolAdapterName.
      * @param newProtocolAdapterAddress Protocol adapter's new address.
      * @param newSupportedTokens Array of the protocol adapter's new supported tokens.
@@ -193,7 +193,7 @@ abstract contract ProtocolAdapterManager is Ownable {
     }
 
     /**
-     * @notice Checks that arrays' lengths are equal and non-zero.
+     * @dev Checks that arrays' lengths are equal and non-zero.
      * @param protocolAdapterNames Array of protocol adapters' names.
      * @param protocolAdapterAddresses Array of protocol adapters' addresses.
      * @param supportedTokens Array of protocol adapters' supported tokens.
@@ -210,7 +210,7 @@ abstract contract ProtocolAdapterManager is Ownable {
     }
 
     /**
-     * @notice Checks that array's length is non-zero.
+     * @dev Checks that array's length is non-zero.
      * @param protocolAdapterNames Array of protocol adapters' names.
      */
     function validateInput(bytes32[] calldata protocolAdapterNames) internal pure {
