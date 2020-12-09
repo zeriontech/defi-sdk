@@ -23,30 +23,8 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount, AmountType } from "../../shared/Structs.sol";
 import { UniswapExchangeAdapter } from "../../adapters/uniswap/UniswapExchangeAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-
-/**
- * @dev UniswapV2Router01 contract interface.
- * Only the functions required for UniswapV2ExchangeInteractiveAdapter contract are added.
- * The UniswapV2Router01 contract is available here
- * github.com/Uniswap/uniswap-v2-periphery/blob/master/contracts/UniswapV2Router01.sol.
- */
-interface UniswapV2Router01 {
-    function swapExactTokensForTokens(
-        uint256,
-        uint256,
-        address[] calldata,
-        address,
-        uint256
-    ) external returns (uint256[] memory);
-
-    function swapTokensForExactTokens(
-        uint256,
-        uint256,
-        address[] calldata,
-        address,
-        uint256
-    ) external returns (uint256[] memory);
-}
+import { UniswapV2Library } from "./UniswapV2Library.sol";
+import { UniswapV2Pair } from "../../interfaces/UniswapV2Pair.sol";
 
 /**
  * @title Interactive adapter for Uniswap V2 protocol (exchange).
@@ -56,7 +34,7 @@ interface UniswapV2Router01 {
 contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExchangeAdapter {
     using SafeERC20 for ERC20;
 
-    address internal constant ROUTER = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
+    address internal constant FACTORY = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
 
     /**
      * @notice Exchange tokens using Uniswap pool.
@@ -73,33 +51,19 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount");
+        require(tokenAmounts.length == 1, "Uv2EIA: should be 1 tokenAmount");
 
         address[] memory path = abi.decode(data, (address[]));
         address token = tokenAmounts[0].token;
-        require(token == path[0], "UEIA: bad path[0]");
+        require(token == path[0], "Uv2EIA: bad path[0]");
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = path[path.length - 1];
 
-        ERC20(token).safeApprove(ROUTER, amount, "UEIA[1]");
+        uint256[] memory amounts = UniswapV2Library.getAmountsOut(FACTORY, amount, path);
 
-        try
-            UniswapV2Router01(ROUTER).swapExactTokensForTokens(
-                amount,
-                0,
-                path,
-                address(this),
-                // solhint-disable-next-line not-rely-on-time
-                block.timestamp
-            )
-        returns (uint256[] memory) {} catch Error(string memory reason) {
-            //solhint-disable-previous-line no-empty-blocks
-            revert(reason);
-        } catch {
-            revert("UEIA: deposit fail");
-        }
+        _swap(amounts, path);
     }
 
     /**
@@ -116,35 +80,44 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "UEIA: should be 1 tokenAmount");
-        require(tokenAmounts[0].amountType == AmountType.Absolute, "UEIA: bad type");
+        require(tokenAmounts.length == 1, "Uv2EIA: should be 1 tokenAmount");
+        require(tokenAmounts[0].amountType == AmountType.Absolute, "Uv2EIA: bad type");
 
         address[] memory path = abi.decode(data, (address[]));
         address token = tokenAmounts[0].token;
-        require(token == path[path.length - 1], "UEIA: bad path[path.length - 1]");
+        require(token == path[path.length - 1], "Uv2EIA: bad path[path.length - 1]");
         uint256 amount = tokenAmounts[0].amount;
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = token;
 
-        ERC20(path[0]).safeApprove(ROUTER, ERC20(path[0]).balanceOf(address(this)), "UEIA[2]");
+        uint256[] memory amounts = UniswapV2Library.getAmountsIn(FACTORY, amount, path);
 
-        try
-            UniswapV2Router01(ROUTER).swapTokensForExactTokens(
-                amount,
-                type(uint256).max,
-                path,
-                address(this),
-                // solhint-disable-next-line not-rely-on-time
-                block.timestamp
-            )
-        returns (uint256[] memory) {} catch Error(string memory reason) {
-            //solhint-disable-previous-line no-empty-blocks
-            revert(reason);
-        } catch {
-            revert("UEIA: withdraw fail");
+        _swap(amounts, path);
+    }
+
+    function _swap(uint256[] memory amounts, address[] memory path) internal {
+        ERC20(path[0]).safeTransfer(
+            UniswapV2Library.pairFor(FACTORY, path[0], path[1]),
+            amounts[0],
+            "Uv2EIA"
+        );
+
+        for (uint256 i = 0; i < path.length - 1; i++) {
+            (address input, address output) = (path[i], path[i + 1]);
+            (address token0, ) = UniswapV2Library.sortTokens(input, output);
+            uint256 amountOut = amounts[i + 1];
+            (uint256 amount0Out, uint256 amount1Out) =
+                input == token0 ? (uint256(0), amountOut) : (amountOut, uint256(0));
+
+            UniswapV2Pair(UniswapV2Library.pairFor(FACTORY, input, output)).swap(
+                amount0Out,
+                amount1Out,
+                i < path.length - 2
+                    ? UniswapV2Library.pairFor(FACTORY, output, path[i + 2])
+                    : address(this),
+                new bytes(0)
+            );
         }
-
-        ERC20(path[0]).safeApprove(ROUTER, 0, "UEIA[3]");
     }
 }

@@ -30,7 +30,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('UniswapV2ExchangeInteractiveAdapter', () => {
+contract.only('UniswapV2ExchangeInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';

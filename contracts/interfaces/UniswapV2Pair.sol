@@ -27,6 +27,13 @@ interface UniswapV2Pair {
 
     function burn(address) external returns (uint256, uint256);
 
+    function swap(
+        uint256,
+        uint256,
+        address,
+        bytes calldata
+    ) external;
+
     function getReserves() external view returns (uint112, uint112);
 
     function token0() external view returns (address);

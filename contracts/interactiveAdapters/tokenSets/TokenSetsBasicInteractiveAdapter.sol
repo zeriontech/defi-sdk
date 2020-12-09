@@ -69,7 +69,7 @@ contract TokenSetsBasicInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
 
         try
             BasicIssuanceModule(ISSUANCE_MODULE).issue(setToken, setAmount, address(this))
-         {} catch Error(string memory reason) {
+        {} catch Error(string memory reason) {
             //solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
@@ -99,7 +99,7 @@ contract TokenSetsBasicInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
 
         try
             BasicIssuanceModule(ISSUANCE_MODULE).redeem(setToken, setAmount, address(this))
-         {} catch Error(
+        {} catch Error(
             // solhint-disable-previous-line no-empty-blocks
             string memory reason
         ) {
@@ -134,7 +134,7 @@ contract TokenSetsBasicInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
 
         for (uint256 i = 0; i < length; i++) {
             tempAmount =
-                (mul(absoluteAmounts[i] - 1, 1e18) + 1) /
+                (mul_(absoluteAmounts[i] - 1, 1e18) + 1) /
                 uint256(SetTokenV2(setToken).getDefaultPositionRealUnit(tokenAmounts[i].token));
             if (tempAmount < setAmount) {
                 setAmount = tempAmount;

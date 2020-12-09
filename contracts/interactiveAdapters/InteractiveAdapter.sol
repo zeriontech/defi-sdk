@@ -79,7 +79,7 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
             if (amount == DELIMITER) {
                 return balance;
             } else {
-                return mul(balance, amount) / DELIMITER;
+                return mul_(balance, amount) / DELIMITER;
             }
         } else {
             return amount;
@@ -107,14 +107,14 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
             if (amount == DELIMITER) {
                 return balance;
             } else {
-                return mul(balance, amount) / DELIMITER;
+                return mul_(balance, amount) / DELIMITER;
             }
         } else {
             return amount;
         }
     }
 
-    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+    function mul_(uint256 a, uint256 b) internal pure returns (uint256) {
         if (a == 0) {
             return 0;
         }
