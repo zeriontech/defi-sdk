@@ -18,57 +18,33 @@ pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
-import { Ownable } from "../../Ownable.sol";
 
 
-struct Gauge {
-    address gaugeAddress;
-    address stakingToken;
+interface EarlyRewards {
+    function rewards(address) external view returns (uint256);
 }
 
 
 /**
- * @title Adapter for Curve protocol (liquidity gauges).
+ * @title Adapter for idle.finance protocol (IDLE early rewards).
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CurveStakingAdapter is ProtocolAdapter, Ownable {
+contract IdleRewardsAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
     string public constant override tokenType = "ERC20";
 
-    // Returns the gauge where the given token is a staking token
-    mapping(address => address) internal gauge_;
-
-    event GaugeSet(
-        address indexed gaugeAddress,
-        address indexed stakingToken
-    );
-
-    function setGauges(Gauge[] calldata gauges) external onlyOwner {
-        uint256 length = gauges.length;
-
-        for (uint256 i = 0; i < length; i++) {
-            setGauge(gauges[i]);
-        }
-    }
+    address internal constant IDLE = 0x875773784Af8135eA0ef43b5a374AaD105c5D39e;
+    address internal constant EARLY_REWARDS = 0xa1F71ED24ABA6c8Da8ca8C046bBc9804625d88Fc;
 
     /**
-     * @return Amount of staked tokens for a given account.
+     * @return Amount of IDLE early rewards by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address token, address account) external view override returns (uint256) {
-        return ERC20(gauge_[token]).balanceOf(account);
-    }
-
-    function getGaugeAddress(address token) external view returns (address) {
-        return gauge_[token];
-    }
-
-    function setGauge(Gauge memory gauge) internal {
-        gauge_[gauge.stakingToken] = gauge.gaugeAddress;
-
-        emit GaugeSet(gauge.gaugeAddress, gauge.stakingToken);
+    function getBalance(address, address account) external view override returns (uint256) {
+        uint256 reward = EarlyRewards(EARLY_REWARDS).rewards(account);
+        return ERC20(IDLE).balanceOf(EARLY_REWARDS) >= reward ? reward : 0;
     }
 }

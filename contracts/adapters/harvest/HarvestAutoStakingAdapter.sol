@@ -21,36 +21,36 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { Ownable } from "../../Ownable.sol";
 
 
-struct Gauge {
-    address gaugeAddress;
+struct Pool {
+    address poolAddress;
     address stakingToken;
 }
 
 
 /**
- * @title Adapter for Curve protocol (liquidity gauges).
+ * @title Adapter for Harvest protocol (auto staking pools).
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CurveStakingAdapter is ProtocolAdapter, Ownable {
+contract HarvestAutoStakingAdapter is ProtocolAdapter, Ownable {
 
     string public constant override adapterType = "Asset";
 
     string public constant override tokenType = "ERC20";
 
-    // Returns the gauge where the given token is a staking token
-    mapping(address => address) internal gauge_;
+    // Returns the pool where the given token is a staking token
+    mapping(address => address) internal pool_;
 
-    event GaugeSet(
-        address indexed gaugeAddress,
+    event PoolSet(
+        address indexed poolAddress,
         address indexed stakingToken
     );
 
-    function setGauges(Gauge[] calldata gauges) external onlyOwner {
-        uint256 length = gauges.length;
+    function setPools(Pool[] calldata pools) external onlyOwner {
+        uint256 length = pools.length;
 
         for (uint256 i = 0; i < length; i++) {
-            setGauge(gauges[i]);
+            setPool(pools[i]);
         }
     }
 
@@ -59,16 +59,16 @@ contract CurveStakingAdapter is ProtocolAdapter, Ownable {
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        return ERC20(gauge_[token]).balanceOf(account);
+        return ERC20(pool_[token]).balanceOf(account);
     }
 
-    function getGaugeAddress(address token) external view returns (address) {
-        return gauge_[token];
+    function getPoolAddress(address token) external view returns (address) {
+        return pool_[token];
     }
 
-    function setGauge(Gauge memory gauge) internal {
-        gauge_[gauge.stakingToken] = gauge.gaugeAddress;
+    function setPool(Pool memory pool) internal {
+        pool_[pool.stakingToken] = pool.poolAddress;
 
-        emit GaugeSet(gauge.gaugeAddress, gauge.stakingToken);
+        emit PoolSet(pool.poolAddress, pool.stakingToken);
     }
 }
