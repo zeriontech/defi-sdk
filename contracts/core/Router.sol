@@ -28,7 +28,7 @@ import {
 } from "../shared/Structs.sol";
 import { ERC20 } from "../shared/ERC20.sol";
 import { SafeERC20 } from "../shared/SafeERC20.sol";
-import { ChiToken } from "../interface/ChiToken.sol";
+import { ChiToken } from "../interfaces/ChiToken.sol";
 import { SignatureVerifier } from "./SignatureVerifier.sol";
 import { Ownable } from "./Ownable.sol";
 import { Core } from "./Core.sol";
