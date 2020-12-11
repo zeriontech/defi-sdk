@@ -24,7 +24,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('TokenSetsRebalancingInteractiveAdapter', () => {
+contract('TokenSetsRebalancingInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const linkAddress = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
@@ -191,7 +191,6 @@ contract.only('TokenSetsRebalancingInteractiveAdapter', () => {
         ],
       ];
       // console.log(actions);
-      console.log(router.methods.execute(actions, [], [0, ZERO], []).encodeABI());
       await router.methods.execute(
         actions,
         [],
