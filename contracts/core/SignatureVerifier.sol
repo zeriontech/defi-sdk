@@ -30,7 +30,7 @@ import { ECDSA } from "../shared/ECDSA.sol";
 contract SignatureVerifier {
     mapping(bytes32 => mapping(address => bool)) internal isHashUsed_;
 
-    bytes32 internal immutable domainSeparator_;
+    bytes32 internal immutable nameHash_;
 
     bytes32 internal constant DOMAIN_SEPARATOR_TYPEHASH =
         keccak256(
@@ -93,14 +93,7 @@ contract SignatureVerifier {
         );
 
     constructor(string memory name) {
-        domainSeparator_ = keccak256(
-            abi.encode(
-                DOMAIN_SEPARATOR_TYPEHASH,
-                keccak256(abi.encodePacked(name)),
-                getChainId(),
-                address(this)
-            )
-        );
+        nameHash_ = keccak256(abi.encodePacked(name));
     }
 
     /**
@@ -127,11 +120,16 @@ contract SignatureVerifier {
 
     /**
      * @param data TransactionData struct to be hashed.
-     * @return TransactionData struct hashed with domainSeparator_.
+     * @return TransactionData struct hashed with domainSeparator.
      */
     function hashData(TransactionData memory data) public view returns (bytes32) {
+        bytes32 domainSeparator =
+            keccak256(
+                abi.encode(DOMAIN_SEPARATOR_TYPEHASH, nameHash_, getChainId(), address(this))
+            );
+
         return
-            keccak256(abi.encodePacked(bytes1(0x19), bytes1(0x01), domainSeparator_, hash(data)));
+            keccak256(abi.encodePacked(bytes1(0x19), bytes1(0x01), domainSeparator, hash(data)));
     }
 
     /**
