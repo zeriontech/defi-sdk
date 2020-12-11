@@ -67,7 +67,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
             address cToken = CompoundRegistry(REGISTRY).getCToken(token);
             tokensToBeWithdrawn[1] = cToken;
 
-            ERC20(token).safeApprove(cToken, amount, "CAIA");
+            ERC20(token).safeApproveMax(cToken, amount, "CAIA");
             require(CToken(cToken).mint(amount) == 0, "CAIA: deposit failed");
         }
     }
