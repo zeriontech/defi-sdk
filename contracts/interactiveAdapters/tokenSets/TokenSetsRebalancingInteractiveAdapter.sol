@@ -64,7 +64,7 @@ contract TokenSetsRebalancingInteractiveAdapter is InteractiveAdapter, ERC20Prot
             RebalancingSetIssuanceModule(ISSUANCE_MODULE).issueRebalancingSet(
                 setToken,
                 amount,
-                false
+                true
             )
         {} catch Error(string memory reason) {
             //solhint-disable-previous-line no-empty-blocks
@@ -136,7 +136,7 @@ contract TokenSetsRebalancingInteractiveAdapter is InteractiveAdapter, ERC20Prot
         uint256 tempAmount;
         for (uint256 i = 0; i < length; i++) {
             tempAmount = mul_(
-                mul_(absoluteAmounts[i], baseNaturalUnit) / baseUnits[i] / rebalancingUnit,
+                mul_(absoluteAmounts[i] / baseUnits[i] - 1, baseNaturalUnit) / rebalancingUnit,
                 rebalancingNaturalUnit
             );
             if (tempAmount < setAmount) {
