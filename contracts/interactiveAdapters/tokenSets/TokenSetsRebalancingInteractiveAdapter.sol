@@ -36,7 +36,7 @@ contract TokenSetsRebalancingInteractiveAdapter is InteractiveAdapter, ERC20Prot
     using SafeERC20 for ERC20;
 
     address internal constant TRANSFER_PROXY = 0x882d80D3a191859d64477eb78Cca46599307ec1C;
-    address internal constant ISSUANCE_MODULE = 0xDA6786379FF88729264d31d472FA917f5E561443;
+    address internal constant ISSUANCE_MODULE = 0xcEDA8318522D348f1d1aca48B24629b8FbF09020;
 
     /**
      * @notice Deposits tokens to the TokenSet.
