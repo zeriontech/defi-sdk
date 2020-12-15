@@ -18,7 +18,7 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 import { SavingsContract } from "../../interfaces/SavingsContract.sol";
 

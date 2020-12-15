@@ -20,7 +20,7 @@ pragma experimental ABIEncoderV2;
 
 import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
 import { TokenAmount, AmountType } from "../shared/Structs.sol";
-import { ERC20 } from "../shared/ERC20.sol";
+import { ERC20 } from "../interfaces/ERC20.sol";
 
 /**
  * @title Base contract for interactive protocol adapters.

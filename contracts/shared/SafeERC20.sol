@@ -17,7 +17,7 @@
 
 pragma solidity 0.7.3;
 
-import "./ERC20.sol";
+import "../interfaces/ERC20.sol";
 
 /**
  * @title SafeERC20

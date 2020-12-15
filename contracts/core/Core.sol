@@ -26,7 +26,7 @@ import {
     AmountType
 } from "../shared/Structs.sol";
 import { InteractiveAdapter } from "../interactiveAdapters/InteractiveAdapter.sol";
-import { ERC20 } from "../shared/ERC20.sol";
+import { ERC20 } from "../interfaces/ERC20.sol";
 import { ProtocolAdapterRegistry } from "./ProtocolAdapterRegistry.sol";
 import { SafeERC20 } from "../shared/SafeERC20.sol";
 import { Helpers } from "../shared/Helpers.sol";
@@ -167,7 +167,11 @@ contract Core is ReentrancyGuard {
             token = requiredOutputs[i].token;
             actualOutputs[i] = AbsoluteTokenAmount({
                 token: token,
-                amount: checkRequirementAndTransfer(token, requiredOutputs[i].amount, account)
+                absoluteAmount: checkRequirementAndTransfer(
+                    token,
+                    requiredOutputs[i].absoluteAmount,
+                    account
+                )
             });
         }
 

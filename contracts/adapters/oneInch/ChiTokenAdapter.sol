@@ -18,10 +18,9 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-import { IOneSplit } from "../../interfaces/IOneSplit.sol";
+import { OneSplit } from "../../interfaces/OneSplit.sol";
 
 /**
  * @title Token adapter for Chi Gastoken by 1inch.
@@ -30,20 +29,14 @@ import { IOneSplit } from "../../interfaces/IOneSplit.sol";
  */
 contract ChiTokenAdapter is TokenAdapter {
     address private constant ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-    IOneSplit private constant ONE_SPLIT = IOneSplit(0xC586BeF4a0992C495Cf22e1aeEE4E446CECDee0E);
+    OneSplit private constant ONE_SPLIT = OneSplit(0xC586BeF4a0992C495Cf22e1aeEE4E446CECDee0E);
 
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        (uint256 returnAmount, ) = ONE_SPLIT.getExpectedReturn(
-            ERC20(token),
-            ERC20(ETH_ADDRESS),
-            1,
-            1,
-            0
-        );
+        (uint256 returnAmount, ) = ONE_SPLIT.getExpectedReturn(token, ETH_ADDRESS, 1, 1, 0);
 
         Component[] memory components = new Component[](1);
 

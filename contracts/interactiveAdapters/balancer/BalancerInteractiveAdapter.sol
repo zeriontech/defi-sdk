@@ -18,7 +18,7 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
@@ -59,7 +59,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
         ERC20(token).safeApprove(pool, amount, "BIA");
         // solhint-disable-next-line no-empty-blocks
-        try BPool(pool).joinswapExternAmountIn(token, amount, 0)  {} catch Error(
+        try BPool(pool).joinswapExternAmountIn(token, amount, 0) {} catch Error(
             string memory reason
         ) {
             revert(reason);
@@ -93,7 +93,7 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
         // solhint-disable-next-line no-empty-blocks
-        try BPool(token).exitswapPoolAmountIn(toToken, amount, 0)  {} catch Error(
+        try BPool(token).exitswapPoolAmountIn(toToken, amount, 0) {} catch Error(
             string memory reason
         ) {
             revert(reason);

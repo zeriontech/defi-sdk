@@ -18,7 +18,7 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../shared/ERC20.sol";
+import { ERC20 } from "../interfaces/ERC20.sol";
 import { ERC20Metadata, Component } from "../shared/Structs.sol";
 import { TokenAdapter } from "./TokenAdapter.sol";
 import { Helpers } from "../shared/Helpers.sol";
@@ -65,9 +65,8 @@ contract ERC20TokenAdapter is TokenAdapter {
      */
     function getName(address token) internal view override returns (string memory) {
         // solhint-disable-next-line avoid-low-level-calls
-        (, bytes memory returnData) = token.staticcall(
-            abi.encodeWithSelector(ERC20(token).name.selector)
-        );
+        (, bytes memory returnData) =
+            token.staticcall(abi.encodeWithSelector(ERC20(token).name.selector));
 
         return parseReturnData(returnData);
     }
@@ -77,9 +76,8 @@ contract ERC20TokenAdapter is TokenAdapter {
      */
     function getSymbol(address token) internal view override returns (string memory) {
         // solhint-disable-next-line avoid-low-level-calls
-        (, bytes memory returnData) = token.staticcall(
-            abi.encodeWithSelector(ERC20(token).symbol.selector)
-        );
+        (, bytes memory returnData) =
+            token.staticcall(abi.encodeWithSelector(ERC20(token).symbol.selector));
 
         return parseReturnData(returnData);
     }

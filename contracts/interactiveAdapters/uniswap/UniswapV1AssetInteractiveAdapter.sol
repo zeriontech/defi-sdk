@@ -18,7 +18,7 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
@@ -112,7 +112,7 @@ contract UniswapV1AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
                 // solhint-disable-next-line not-rely-on-time
                 block.timestamp + 1
             )
-         {} catch Error(string memory reason) {
+        {} catch Error(string memory reason) {
             //solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {

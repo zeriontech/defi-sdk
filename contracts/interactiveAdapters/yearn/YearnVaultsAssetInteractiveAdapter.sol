@@ -18,7 +18,7 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
@@ -59,7 +59,7 @@ contract YearnAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
 
         ERC20(token).safeApprove(yVault, amount, "YVAIA");
         // solhint-disable-next-line no-empty-blocks
-        try YVault(yVault).deposit(amount)  {} catch Error(string memory reason) {
+        try YVault(yVault).deposit(amount) {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("YVAIA: deposit fail");
@@ -88,7 +88,7 @@ contract YearnAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         tokensToBeWithdrawn[0] = YVault(token).token();
 
         // solhint-disable-next-line no-empty-blocks
-        try YVault(token).withdraw(amount)  {} catch Error(string memory reason) {
+        try YVault(token).withdraw(amount) {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("YVAIA: withdraw fail");

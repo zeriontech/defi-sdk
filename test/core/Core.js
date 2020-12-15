@@ -19,7 +19,7 @@ const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 const WETH9 = artifacts.require('./WETH9');
 
-contract('Core + Router', () => {
+contract.only('Core + Router', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
@@ -275,7 +275,10 @@ contract('Core + Router', () => {
         ],
         // inputs
         [
-          [wethAddress, 1, AMOUNT_ABSOLUTE],
+          [
+            [wethAddress, 1, AMOUNT_ABSOLUTE],
+            [0, EMPTY_BYTES],
+          ],
         ],
         // fee
         [
@@ -315,7 +318,10 @@ contract('Core + Router', () => {
         ],
         // inputs
         [
-          [wethAddress, web3.utils.toWei('1.1', 'ether'), AMOUNT_RELATIVE],
+          [
+            [wethAddress, web3.utils.toWei('1.1', 'ether'), AMOUNT_RELATIVE],
+            [0, EMPTY_BYTES],
+          ],
         ],
         // fee
         [
@@ -355,7 +361,10 @@ contract('Core + Router', () => {
         ],
         // inputs
         [
-          [wethAddress, web3.utils.toWei('1', 'ether'), 0],
+          [
+            [wethAddress, web3.utils.toWei('1', 'ether'), 0],
+            [0, EMPTY_BYTES],
+          ],
         ],
         // fee
         [
@@ -419,9 +428,12 @@ contract('Core + Router', () => {
         // inputs
         [
           [
-            wethAddress,
-            web3.utils.toWei('1', 'ether'),
-            AMOUNT_ABSOLUTE,
+            [
+              wethAddress,
+              web3.utils.toWei('1', 'ether'),
+              AMOUNT_ABSOLUTE,
+            ],
+            [0, EMPTY_BYTES],
           ],
         ],
         // fee
@@ -443,13 +455,7 @@ contract('Core + Router', () => {
         // actions
         [],
         // inputs
-        [
-          [
-            ethAddress,
-            web3.utils.toWei('1', 'ether'),
-            AMOUNT_ABSOLUTE,
-          ],
-        ],
+        [],
         // fee
         [
           web3.utils.toWei('0.011', 'ether'),
@@ -472,9 +478,12 @@ contract('Core + Router', () => {
         // inputs
         [
           [
-            ethAddress,
-            0,
-            AMOUNT_ABSOLUTE,
+            [
+              daiAddress,
+              0,
+              AMOUNT_ABSOLUTE,
+            ],
+            [0, ZERO_BYTES],
           ],
         ],
         // fee
@@ -492,15 +501,29 @@ contract('Core + Router', () => {
     });
 
     it('should accept full share input', async () => {
-      await expectRevert(router.methods.execute(
+      let daiAmount;
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+        });
+      await DAI.methods.approve(router.options.address, daiAmount)
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        });
+      await router.methods.execute(
         // actions
         [],
         // inputs
         [
           [
-            ethAddress,
-            convertToShare(1),
-            AMOUNT_RELATIVE,
+            [
+              daiAddress,
+              convertToShare(1),
+              AMOUNT_RELATIVE,
+            ],
+            [0, ZERO_BYTES],
           ],
         ],
         // fee
@@ -513,21 +536,34 @@ contract('Core + Router', () => {
       )
         .send({
           from: accounts[0],
-          value: web3.utils.toWei('1', 'ether'),
           gas: 10000000,
-        }));
+        });
     });
 
     it('should accept not full share input', async () => {
-      await expectRevert(router.methods.execute(
+      let daiAmount;
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+        });
+      await DAI.methods.approve(router.options.address, daiAmount)
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        });
+      await router.methods.execute(
         // actions
         [],
         // inputs
         [
           [
-            ethAddress,
-            convertToShare(0.99),
-            AMOUNT_RELATIVE,
+            [
+              ethAddress,
+              convertToShare(0.99),
+              AMOUNT_RELATIVE,
+            ],
+            [0, ZERO_BYTES],
           ],
         ],
         // fee
@@ -542,7 +578,7 @@ contract('Core + Router', () => {
           from: accounts[0],
           value: web3.utils.toWei('1', 'ether'),
           gas: 10000000,
-        }));
+        });
     });
 
     it('should handle eth fee correctly', async () => {
@@ -555,13 +591,7 @@ contract('Core + Router', () => {
         // actions
         [],
         // inputs
-        [
-          [
-            ethAddress,
-            web3.utils.toWei('1', 'ether'),
-            AMOUNT_ABSOLUTE,
-          ],
-        ],
+        [],
         // fee
         [
           web3.utils.toWei('0.01', 'ether'),
@@ -591,9 +621,7 @@ contract('Core + Router', () => {
         // actions
         [],
         // inputs
-        [
-          [wethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
-        ],
+        [],
         // fee
         [
           web3.utils.toWei('0.01', 'ether'),
@@ -644,15 +672,24 @@ contract('Core + Router', () => {
           from: accounts[0],
           gas: 1000000,
         });
+      let wethBalance;
+      await WETH.methods.balanceOf(accounts[1])
+        .call()
+        .then((result) => {
+          wethBalance = new BN(result);
+        });
       await router.methods.execute(
         // actions
         [],
         // inputs
         [
           [
-            wethAddress,
-            web3.utils.toWei('0.1', 'ether'),
-            AMOUNT_ABSOLUTE,
+            [
+              wethAddress,
+              web3.utils.toWei('0.1', 'ether'),
+              AMOUNT_ABSOLUTE,
+            ],
+            [0, EMPTY_BYTES],
           ],
         ],
         // fee
@@ -670,7 +707,7 @@ contract('Core + Router', () => {
       await WETH.methods.balanceOf(accounts[1])
         .call()
         .then((result) => {
-          assert.equal(result, web3.utils.toWei('0.001', 'ether'));
+          assert.equal(wethBalance.sub(new BN(result)), web3.utils.toWei('0.001', 'ether'));
         });
     });
   });

@@ -18,36 +18,12 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
+import { OneSplit } from "../../interfaces/OneSplit.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-
-/**
- * @dev OneSplit contract interface.
- * Only the functions required for OneSplitInteractiveAdapter contract are added.
- * The OneSplit contract is available here
- * github.com/CryptoManiacsZone/1split/blob/master/contracts/OneSplit.sol.
- */
-interface OneSplit {
-    function swap(
-        address,
-        address,
-        uint256,
-        uint256,
-        uint256[] calldata,
-        uint256
-    ) external payable;
-
-    function getExpectedReturn(
-        address,
-        address,
-        uint256,
-        uint256,
-        uint256
-    ) external view returns (uint256, uint256[] memory);
-}
 
 /**
  * @title Interactive adapter for OneSplit exchange.
@@ -142,7 +118,7 @@ contract OneSplitInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
                 distribution,
                 uint256(0x040df0) // 0x040dfc to enable curve; 0x04fdf0 to enable base exchanges;
             )
-         {} catch Error(string memory reason) {
+        {} catch Error(string memory reason) {
             //solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {

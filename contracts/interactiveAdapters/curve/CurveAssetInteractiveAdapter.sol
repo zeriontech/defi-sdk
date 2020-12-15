@@ -18,7 +18,7 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
@@ -104,7 +104,7 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
 
         if (totalCoins == 2) {
             // solhint-disable-next-line no-empty-blocks
-            try Deposit(callee).add_liquidity([inputAmounts[0], inputAmounts[1]], 0)  {} catch {
+            try Deposit(callee).add_liquidity([inputAmounts[0], inputAmounts[1]], 0) {} catch {
                 revert("CAIA: deposit fail[1]");
             }
         } else if (totalCoins == 3) {
@@ -113,7 +113,7 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
                     [inputAmounts[0], inputAmounts[1], inputAmounts[2]],
                     0
                 )
-             // solhint-disable-next-line no-empty-blocks
+            // solhint-disable-next-line no-empty-blocks
             {
 
             } catch {
@@ -125,7 +125,7 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
                     [inputAmounts[0], inputAmounts[1], inputAmounts[2], inputAmounts[3]],
                     0
                 )
-             // solhint-disable-next-line no-empty-blocks
+            // solhint-disable-next-line no-empty-blocks
             {
 
             } catch {
@@ -172,7 +172,7 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         }
 
         // solhint-disable-next-line no-empty-blocks
-        try Deposit(callee).remove_liquidity_one_coin(amount, tokenIndex, 0)  {} catch {
+        try Deposit(callee).remove_liquidity_one_coin(amount, tokenIndex, 0) {} catch {
             revert("CAIA: withdraw fail");
         }
     }

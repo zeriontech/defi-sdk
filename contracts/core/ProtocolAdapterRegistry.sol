@@ -19,7 +19,7 @@ pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
 import { AdapterBalance, TokenBalance } from "../shared/Structs.sol";
-import { ERC20 } from "../shared/ERC20.sol";
+import { ERC20 } from "../interfaces/ERC20.sol";
 import { Ownable } from "./Ownable.sol";
 import { ProtocolAdapterManager } from "./ProtocolAdapterManager.sol";
 import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
@@ -65,7 +65,7 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         for (uint256 i = 0; i < length; i++) {
             adapterBalances[i] = getAdapterBalance(
                 protocolAdapterNames[i],
-                getSupportedTokens(protocolAdapterNames[i]),
+                getProtocolAdapterSupportedTokens(protocolAdapterNames[i]),
                 account
             );
         }

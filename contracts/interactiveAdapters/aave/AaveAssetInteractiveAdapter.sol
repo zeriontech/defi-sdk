@@ -18,7 +18,7 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
@@ -64,7 +64,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
 
         if (token == ETH) {
             // solhint-disable-next-line no-empty-blocks
-            try LendingPool(pool).deposit{ value: amount }(ETH, amount, 0)  {} catch Error(
+            try LendingPool(pool).deposit{ value: amount }(ETH, amount, 0) {} catch Error(
                 string memory reason
             ) {
                 revert(reason);
@@ -74,7 +74,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
         } else {
             ERC20(token).safeApprove(core, amount, "AAIA");
             // solhint-disable-next-line no-empty-blocks
-            try LendingPool(pool).deposit(token, amount, 0)  {} catch Error(string memory reason) {
+            try LendingPool(pool).deposit(token, amount, 0) {} catch Error(string memory reason) {
                 revert(reason);
             } catch {
                 revert("AAIA: deposit fail[2]");
@@ -104,7 +104,7 @@ contract AaveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
         tokensToBeWithdrawn[0] = AToken(token).underlyingAssetAddress();
 
         // solhint-disable-next-line no-empty-blocks
-        try AToken(token).redeem(amount)  {} catch Error(string memory reason) {
+        try AToken(token).redeem(amount) {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("AAIA: withdraw fail");

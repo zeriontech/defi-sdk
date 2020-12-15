@@ -114,7 +114,7 @@ abstract contract ProtocolAdapterManager is Ownable {
      * @param protocolAdapterName Name of the protocol adapter.
      * @return Array of protocol adapter's supported tokens.
      */
-    function getSupportedTokens(bytes32 protocolAdapterName)
+    function getProtocolAdapterSupportedTokens(bytes32 protocolAdapterName)
         public
         view
         returns (address[] memory)

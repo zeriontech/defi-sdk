@@ -18,7 +18,7 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
@@ -64,7 +64,7 @@ contract TokenSetsNavInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdap
 
         try
             NavIssuanceModule(ISSUANCE_MODULE).issue(setToken, token, amount, 0, address(this))
-         {} catch Error(string memory reason) {
+        {} catch Error(string memory reason) {
             // solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
@@ -96,7 +96,7 @@ contract TokenSetsNavInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdap
 
         try
             NavIssuanceModule(ISSUANCE_MODULE).redeem(token, toToken, amount, 0, address(this))
-         {} catch Error(
+        {} catch Error(
             // solhint-disable-previous-line no-empty-blocks
             string memory reason
         ) {

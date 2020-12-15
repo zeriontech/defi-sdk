@@ -84,7 +84,7 @@ contract('ProtocolAdapterRegistry', () => {
   });
 
   it('should be correct supported tokens', async () => {
-    await protocolAdapterRegistry.methods.getSupportedTokens(convertToBytes32('Mock'))
+    await protocolAdapterRegistry.methods.getProtocolAdapterSupportedTokens(convertToBytes32('Mock'))
       .call()
       .then((result) => {
         assert.equal(result.length, 2);
@@ -458,7 +458,7 @@ contract('ProtocolAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await protocolAdapterRegistry.methods.getSupportedTokens(convertToBytes32('Mock'))
+    await protocolAdapterRegistry.methods.getProtocolAdapterSupportedTokens(convertToBytes32('Mock'))
       .call()
       .then((result) => {
         assert.deepEqual(result, [ONE, ONE]);
@@ -477,7 +477,7 @@ contract('ProtocolAdapterRegistry', () => {
       .then((result) => {
         assert.deepEqual(result, TWO);
       });
-    await protocolAdapterRegistry.methods.getSupportedTokens(convertToBytes32('Mock'))
+    await protocolAdapterRegistry.methods.getProtocolAdapterSupportedTokens(convertToBytes32('Mock'))
       .call()
       .then((result) => {
         assert.deepEqual(result, [TWO, TWO]);
@@ -491,7 +491,7 @@ contract('ProtocolAdapterRegistry', () => {
         from: accounts[0],
         gas: '300000',
       });
-    await protocolAdapterRegistry.methods.getSupportedTokens(convertToBytes32('Mock'))
+    await protocolAdapterRegistry.methods.getProtocolAdapterSupportedTokens(convertToBytes32('Mock'))
       .call()
       .then((result) => {
         assert.deepEqual(result, []);

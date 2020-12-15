@@ -18,7 +18,7 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 import { Helpers } from "../../shared/Helpers.sol";
@@ -100,9 +100,8 @@ contract BalancerTokenAdapter is TokenAdapter {
     }
 
     function getUnderlyingSymbol(address token) internal view returns (string memory) {
-        (, bytes memory returnData) = token.staticcall(
-            abi.encodeWithSelector(ERC20(token).symbol.selector)
-        );
+        (, bytes memory returnData) =
+            token.staticcall(abi.encodeWithSelector(ERC20(token).symbol.selector));
 
         if (returnData.length == 32) {
             return abi.decode(returnData, (bytes32)).toString();

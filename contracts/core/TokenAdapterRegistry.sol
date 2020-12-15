@@ -26,7 +26,7 @@ import {
     TokenBalance,
     Component
 } from "../shared/Structs.sol";
-import { ERC20 } from "../shared/ERC20.sol";
+import { ERC20 } from "../interfaces/ERC20.sol";
 import { Ownable } from "./Ownable.sol";
 import { TokenAdapterNamesManager } from "./TokenAdapterNamesManager.sol";
 import { TokenAdapterManager } from "./TokenAdapterManager.sol";

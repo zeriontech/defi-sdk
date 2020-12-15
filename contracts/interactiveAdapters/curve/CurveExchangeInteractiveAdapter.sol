@@ -18,7 +18,7 @@
 pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { CurveExchangeAdapter } from "../../adapters/curve/CurveExchangeAdapter.sol";
@@ -58,10 +58,8 @@ contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAda
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
-        (address toToken, address swap, int128 i, int128 j, bool useUnderlying) = abi.decode(
-            data,
-            (address, address, int128, int128, bool)
-        );
+        (address toToken, address swap, int128 i, int128 j, bool useUnderlying) =
+            abi.decode(data, (address, address, int128, int128, bool));
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = toToken;
@@ -76,7 +74,7 @@ contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAda
 
         if (useUnderlying) {
             // solhint-disable-next-line no-empty-blocks
-            try Stableswap(swap).exchange_underlying(i, j, amount, 0)  {} catch Error(
+            try Stableswap(swap).exchange_underlying(i, j, amount, 0) {} catch Error(
                 string memory reason
             ) {
                 revert(reason);
@@ -85,7 +83,7 @@ contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAda
             }
         } else {
             // solhint-disable-next-line no-empty-blocks
-            try Stableswap(swap).exchange(i, j, amount, 0)  {} catch Error(string memory reason) {
+            try Stableswap(swap).exchange(i, j, amount, 0) {} catch Error(string memory reason) {
                 revert(reason);
             } catch {
                 revert("CEIA: deposit fail[2]");

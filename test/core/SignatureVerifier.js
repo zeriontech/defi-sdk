@@ -85,7 +85,7 @@ contract('SignatureVerifier', () => {
               ],
               TransactionData: [
                 { name: 'actions', type: 'Action[]' },
-                { name: 'inputs', type: 'TokenAmount[]' },
+                { name: 'inputs', type: 'TokenAmountPermit[]' },
                 { name: 'fee', type: 'Fee' },
                 { name: 'requiredOutputs', type: 'AbsoluteTokenAmount[]' },
                 { name: 'account', type: 'address' },
@@ -101,6 +101,13 @@ contract('SignatureVerifier', () => {
                 { name: 'token', type: 'address' },
                 { name: 'amount', type: 'uint256' },
                 { name: 'amountType', type: 'uint8' },
+              ],
+              TokenAmountPermit: [
+                { name: 'token', type: 'address' },
+                { name: 'amount', type: 'uint256' },
+                { name: 'amountType', type: 'uint8' },
+                { name: 'permitType', type: 'uint8' },
+                { name: 'permitCallData', type: 'bytes' },
               ],
               Fee: [
                 { name: 'share', type: 'uint256' },
