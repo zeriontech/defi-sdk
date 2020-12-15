@@ -73,21 +73,27 @@ contract CompoundGovernanceAdapter is ProtocolAdapter {
     string public constant override tokenType = "ERC20";
 
     address internal constant COMPTROLLER = 0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B;
+    
+    address internal constant COMP = 0xc00e94Cb662C3520282E6f5717214004A7f26888;
 
     /**
      * @return Amount of unclaimed COMP by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address, address account) external view override returns (uint256) {
-        uint256 balance = Comptroller(COMPTROLLER).compAccrued(account);
-        address[] memory allMarkets = Comptroller(COMPTROLLER).getAllMarkets();
+    function getBalance(address token, address account) external view override returns (uint256) {
+        if (token != COMP) {
+            return 0;
+        } else {
+            uint256 balance = Comptroller(COMPTROLLER).compAccrued(account);
+            address[] memory allMarkets = Comptroller(COMPTROLLER).getAllMarkets();
 
-        for (uint256 i = 0; i < allMarkets.length; i++) {
-            balance += borrowerComp(account, allMarkets[i]);
-            balance += supplierComp(account, allMarkets[i]);
+            for (uint256 i = 0; i < allMarkets.length; i++) {
+                balance += borrowerComp(account, allMarkets[i]);
+                balance += supplierComp(account, allMarkets[i]);
+            }
+
+            return balance;
         }
-
-        return balance;
     }
 
     function borrowerComp(address account, address cToken) internal view returns (uint256) {
