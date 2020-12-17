@@ -4,7 +4,6 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('YearnStakingV1Adapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-
 contract('YearnStakingV1Adapter', () => {
   const yfiAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
   const testAddress = '0xCa845A71d1ff53E7DB7769Ae3f356AF53Fb43000';

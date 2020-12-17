@@ -27,13 +27,13 @@ contract MockAdapter is ProtocolAdapter {
 
     mapping(address => uint256) internal balanceOf;
 
-    constructor() public {
-        balanceOf[msg.sender] = 1000;
-    }
-
     string public constant override adapterType = "Asset";
 
     string public constant override tokenType = "ERC20";
+
+    constructor() public {
+        balanceOf[msg.sender] = 1000;
+    }
 
     /**
      * @return Mock balance.

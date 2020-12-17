@@ -19,25 +19,6 @@ pragma experimental ABIEncoderV2;
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
-interface TheProtocol {
-    function getUserLoans(
-        address user,
-        uint256 start,
-        uint256 count,
-        LoanType loanType,
-        bool isLender,
-        bool unsafeOnly)
-        external
-        view
-        returns (LoanReturnData[] memory loansData);
-
-    function getActiveLoansCount()
-        external
-        view
-        returns (uint256);
-}
-
-
 enum LoanType {
     All,
     Margin,
@@ -62,7 +43,26 @@ struct LoanReturnData {
     uint256 maxLiquidatable;
     uint256 maxSeizable;
 }
- 
+
+
+interface TheProtocol {
+    function getUserLoans(
+        address user,
+        uint256 start,
+        uint256 count,
+        LoanType loanType,
+        bool isLender,
+        bool unsafeOnly)
+        external
+        view
+        returns (LoanReturnData[] memory loansData);
+
+    function getActiveLoansCount()
+        external
+        view
+        returns (uint256);
+}
+
 
 /**
  * @title Debt adapter for bZx protocol.
@@ -84,11 +84,11 @@ contract BzxDebtAdapter is ProtocolAdapter {
     function getBalance(address token, address account) external view override returns (uint256) {
         LoanReturnData[] memory loans;
         loans = TheProtocol(bZxContract).getUserLoans(
-            account, 
-            0, 
-            TheProtocol(bZxContract).getActiveLoansCount(), 
-            LoanType.All, 
-            false, 
+            account,
+            0,
+            TheProtocol(bZxContract).getActiveLoansCount(),
+            LoanType.All,
+            false,
             false
         );
 

@@ -78,10 +78,10 @@ contract BancorLiquidityProtectionAdapter is ProtocolAdapter {
                 ids[i]
             );
             if (smartToken == token) {
-                // solhint-disable-next-line not-rely-on-time
                 (, uint256 actualAmount,) = liquidityProtection.removeLiquidityReturn(
                     ids[i],
                     1000000,
+                    // solhint-disable-next-line not-rely-on-time
                     now
                 );
 

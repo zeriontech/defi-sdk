@@ -199,7 +199,7 @@ const creamCreamUsdcAddress = '0x4Fd2d9d6eF05E13Bf0B167509151A4EC3D4d4b93';
 const creamCreamWethAddress = '0xa49b3c7C260ce8A7C665e20Af8aA6E099A86cf8A';
 const creamCrCreamCrYfiAddress = '0xA65405e0dD378C65308deAE51dA9e3BcEBb81261';
 const creamCrYEthCrYYCrvAddress = '0xB3284F2F22563F27cEF2912637b6A00F162317c4';
-const creamCrYEth_WethAddrvess = '0x6a3B875854f5518E85Ef97620c5e7de75bbc3fA0';
+const creamCrYEthWethAddrvess = '0x6a3B875854f5518E85Ef97620c5e7de75bbc3fA0';
 const creamYYCrvUsdcAddress = '0x661b94d96ADb18646e791A06576F7905a8d1BEF6';
 const creamYfiUsdcAddress = '0x7350c6D00D63AB5988250aea347f277c19BEA785';
 const creamAddress = '0x2ba592F78dB6436527729929AAf6c908497cB200';
@@ -357,12 +357,6 @@ const UniDaiFDai = '0x007E383BF3c3Ffa12A5De06a53BAb103335eFF28';
 const UniWbtcFWbtc = '0xaebfeA924DE4080C14DF5C432cECe261934457E0';
 const UniWbtcFRenbtc = '0x007F74c5C82d68A138Cc3Bc623E51270279fa525';
 const UniWbtcFCrvWbtc = '0xb6A6a3D8EF31D9FAeb1AB1487aCe79Fe1f5df1BB';
-const UniWethFWeth = '0x24b34098F6950a5d5B6BbE1358AD79B609B924fB';
-const balancerFarm20Usdc80 = '0x0126CfA7EC6B6d4A960b5979943c06a9742af55E';
-const fWbtc = '0xc07EB91961662D275E2D285BdC21885A4Db136B0';
-const fRenbtc = '0xfBe122D0ba3c75e1F7C80bd27613c9f35B81FEeC';
-const fCrvRenbtc = '0x192E9d29D43db385063799BC239E772c3b6888F3';
-const fWeth = '0x8e298734681adbfC41ee5d17FF8B0d6d803e7098';
 
 const swUsdAddress = '0x77C6E4a580c0dCE4E5c7a17d0bc077188a83A059';
 
@@ -563,7 +557,7 @@ creamStakingAdapterTokens = [
   creamCreamWethAddress,
   creamCrCreamCrYfiAddress,
   creamCrYEthCrYYCrvAddress,
-  creamCrYEth_WethAddrvess,
+  creamCrYEthWethAddrvess,
   creamYYCrvUsdcAddress,
   creamYfiUsdcAddress,
   crCreamAddress,
@@ -743,12 +737,10 @@ const pickleAssetAdapterTokens = [
   pickleUniswapWethUsdtJarV2Address,
   pickleUniswapWethWbtcJarAddress,
 ];
-console.log(pickleAssetAdapterTokens);
 const pickleStakingV1AdapterTokens = [
   pickleAddress,
   sCrvAddress,
 ];
-console.log(pickleStakingV1AdapterTokens)
 const pickleStakingV2AdapterTokens = [
   pickleAddress,
   uniswapWethPickleAddress,
@@ -765,7 +757,6 @@ const pickleStakingV2AdapterTokens = [
   pickleUniswapWethUsdcJarV2Address,
   pickleUniswapWethUsdtJarV2Address,
 ];
-console.log(pickleStakingV2AdapterTokens)
 const pieDAOPieAdapterTokens = [
   BTCPPAddress,
   USDPPAddress,
@@ -840,7 +831,7 @@ const uniswapV2StakingAdapterTokens = [
   uniUsdcWethAddress,
   uniUsdcWethAddress,
   uniWbtcWethAddress,
-]
+];
 const yearnStakingV1AdapterTokens = [
   yfiAddress,
   yCrvAddress,
@@ -981,7 +972,7 @@ module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(CurveStakingAdapter, { from: accounts[0] });
   await deployer.deploy(CurveVestingAdapter, { from: accounts[0] });
   adapters.push([CurveAdapter.address, CurveStakingAdapter.address, CurveVestingAdapter.address]);
-  tokens.push([curveAdapterTokens, curveStakingAdapterTokens, CurveVestingAdapterTokens]);
+  tokens.push([curveAdapterTokens, curveStakingAdapterTokens, curveVestingAdapterTokens]);
   protocolNames.push('Curve');
   metadata.push([
     'Curve',
@@ -1301,7 +1292,7 @@ module.exports = async (deployer, network, accounts) => {
     pickleAssetAdapterTokens,
     pickleStakingV1AdapterTokens,
     pickleStakingV2AdapterTokens,
-    ]);
+  ]);
   protocolNames.push('Pickle Finance');
   metadata.push([
     'Pickle Finance',

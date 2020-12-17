@@ -1,6 +1,6 @@
 const ProtocolAdapter = artifacts.require('BancorLiquidityProtectionAdapter');
 
-contract('BancorLiquidityProtectionAdapter', () => {
+contract.only('BancorLiquidityProtectionAdapter', () => {
   const bntBethPoolAddress = '0xb1CD6e4153B2a390Cf00A6556b0fC1458C4A5533';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 

@@ -28,8 +28,10 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  * github.com/DODOEX/dodo-smart-contract/blob/master/contracts/impl/DODOLpToken.sol.
  */
 interface DODOLpToken {
+    // solhint-disable func-name-mixedcase
     function _OWNER_() external view returns (address);
     function originToken() external view returns (address);
+    // solhint-enable func-name-mixedcase
 }
 
 
@@ -40,10 +42,12 @@ interface DODOLpToken {
  * github.com/DODOEX/dodo-smart-contract/blob/master/contracts/dodo.sol.
  */
 interface DODO {
+    // solhint-disable func-name-mixedcase
     function _BASE_TOKEN_() external view returns (address);
     function _BASE_CAPITAL_TOKEN_() external view returns (address);
     function _QUOTE_TOKEN_() external view returns (address);
     function getExpectedTarget() external view returns (uint256, uint256);
+    // solhint-enable func-name-mixedcase
 }
 
 

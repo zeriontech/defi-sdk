@@ -9,3 +9,4 @@ node_modules
 ./contracts/ProtocolManager.sol
 ./contracts/TokenAdapterManager.sol
 ./contracts/adapters/dydx
+./contracts/adapters/berezka/lib
