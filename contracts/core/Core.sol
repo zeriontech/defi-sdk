@@ -123,9 +123,9 @@ contract Core is ReentrancyGuard {
         );
         bytes4 selector;
         if (action.actionType == ActionType.Deposit) {
-            selector = InteractiveAdapter(adapter).deposit.selector;
+            selector = InteractiveAdapter.deposit.selector;
         } else {
-            selector = InteractiveAdapter(adapter).withdraw.selector;
+            selector = InteractiveAdapter.withdraw.selector;
         }
 
         // solhint-disable-next-line avoid-low-level-calls

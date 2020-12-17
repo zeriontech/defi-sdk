@@ -71,7 +71,7 @@ contract UniswapV2TokenAdapter is TokenAdapter {
 
     function getUnderlyingSymbol(address token) internal view returns (string memory) {
         (, bytes memory returnData) =
-            token.staticcall(abi.encodeWithSelector(ERC20(token).symbol.selector));
+            token.staticcall(abi.encodeWithSelector(ERC20.symbol.selector));
 
         if (returnData.length == 32) {
             return abi.decode(returnData, (bytes32)).toString();

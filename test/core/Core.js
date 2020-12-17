@@ -19,15 +19,17 @@ const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 const WETH9 = artifacts.require('./WETH9');
 
-contract.only('Core + Router', () => {
+contract('Core + Router', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+  const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 
   let accounts;
   let core;
   let router;
   let protocolAdapterRegistry;
   let protocolAdapterAddress;
+  let DAI;
   let WETH;
 
   describe('Core and Router tests using Mock', async () => {
@@ -69,6 +71,10 @@ contract.only('Core + Router', () => {
       await ERC20.at(wethAddress)
         .then((result) => {
           WETH = result.contract;
+        });
+      await ERC20.at(daiAddress)
+        .then((result) => {
+          DAI = result.contract;
         });
     });
 
@@ -483,7 +489,7 @@ contract.only('Core + Router', () => {
               0,
               AMOUNT_ABSOLUTE,
             ],
-            [0, ZERO_BYTES],
+            [0, EMPTY_BYTES],
           ],
         ],
         // fee
@@ -523,7 +529,7 @@ contract.only('Core + Router', () => {
               convertToShare(1),
               AMOUNT_RELATIVE,
             ],
-            [0, ZERO_BYTES],
+            [0, EMPTY_BYTES],
           ],
         ],
         // fee
@@ -559,11 +565,11 @@ contract.only('Core + Router', () => {
         [
           [
             [
-              ethAddress,
+              daiAddress,
               convertToShare(0.99),
               AMOUNT_RELATIVE,
             ],
-            [0, ZERO_BYTES],
+            [0, EMPTY_BYTES],
           ],
         ],
         // fee
@@ -707,7 +713,7 @@ contract.only('Core + Router', () => {
       await WETH.methods.balanceOf(accounts[1])
         .call()
         .then((result) => {
-          assert.equal(wethBalance.sub(new BN(result)), web3.utils.toWei('0.001', 'ether'));
+          assert.equal((new BN(result)).sub(wethBalance).toString(), web3.utils.toWei('0.001', 'ether'));
         });
     });
   });

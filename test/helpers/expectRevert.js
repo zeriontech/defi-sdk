@@ -2,6 +2,7 @@ const expectRevert = async (promise) => {
   try {
     await promise;
   } catch (error) {
+    console.log(error.message);
     // TODO: Check jump destination to destinguish between a throw and an actual invalid jump.
     const invalidOpcode = error.message.search('revert') >= 0
       || error.message.search('invalid opcode') > -1;
