@@ -51,7 +51,7 @@ interface LiquidityProtection {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract BancorAdapter is ProtocolAdapter {
+contract BancorLiquidityProtectionAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
