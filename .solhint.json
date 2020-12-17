@@ -24,8 +24,13 @@
     ],
     "func-visibility": [
       "warn",
-      { "ignoreConstructors": true }
+      {
+        "ignoreConstructors": true
+      }
     ],
-    "prettier/prettier": "warn"
+    "prettier/prettier": "warn",
+    "comprehensive-interface": [
+      "off"
+    ]
   }
 }

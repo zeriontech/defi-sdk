@@ -52,7 +52,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         tokensToBeWithdrawn[0] = WETH;
 
         // solhint-disable-next-line no-empty-blocks
-        try WETH9(WETH).deposit{ value: amount }()  {} catch Error(string memory reason) {
+        try WETH9(WETH).deposit{ value: amount }() {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("WIA: deposit fail");
@@ -81,7 +81,7 @@ contract WethInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         tokensToBeWithdrawn[0] = ETH;
 
         // solhint-disable-next-line no-empty-blocks
-        try WETH9(WETH).withdraw(amount)  {} catch Error(string memory reason) {
+        try WETH9(WETH).withdraw(amount) {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("WIA: withdraw fail");

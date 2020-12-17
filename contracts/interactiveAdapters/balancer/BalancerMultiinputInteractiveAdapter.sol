@@ -64,10 +64,10 @@ contract BalancerMultiinputInteractiveAdapter is InteractiveAdapter, ERC20Protoc
 
         uint256 poolAmount = getPoolAmount(pool, tokenAmounts, absoluteAmounts);
 
+        //solhint-disable-next-line no-empty-blocks
         try BPool(pool).joinPool(poolAmount, absoluteAmounts) {} catch Error(
             string memory reason
         ) {
-            //solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
             revert("BMIA: issue fail");

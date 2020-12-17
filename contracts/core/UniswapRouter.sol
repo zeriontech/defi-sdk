@@ -211,8 +211,10 @@ contract UniswapRouter {
 
     function _swap(RouterType routerType, bytes memory callData) internal {
         address callee = routerType == RouterType.Uniswap ? UNISWAP_ROUTER : SUSHISWAP_ROUTER;
+        // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory returnData) = callee.delegatecall(callData);
 
+        // solhint-disable-next-line no-inline-assembly
         assembly {
             if eq(success, 0) {
                 revert(add(returnData, 32), returndatasize())

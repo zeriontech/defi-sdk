@@ -35,10 +35,8 @@ abstract contract DyDxAdapter is ProtocolAdapter {
     address internal constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
 
     function getBalance(address token, address account) public view override returns (int256) {
-        Wei memory accountWei = SoloMargin(SOLO).getAccountWei(
-            Info(account, 0),
-            getMarketId(token)
-        );
+        Wei memory accountWei =
+            SoloMargin(SOLO).getAccountWei(Info(account, 0), getMarketId(token));
 
         return accountWei.sign ? int256(accountWei.value) : int256(-accountWei.value);
     }

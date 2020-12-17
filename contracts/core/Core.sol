@@ -128,8 +128,8 @@ contract Core is ReentrancyGuard {
             selector = InteractiveAdapter.withdraw.selector;
         }
 
-        // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory returnData) =
+            // solhint-disable-next-line avoid-low-level-calls
             adapter.delegatecall(
                 abi.encodeWithSelector(selector, action.tokenAmounts, action.data)
             );

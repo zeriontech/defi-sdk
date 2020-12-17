@@ -21,5 +21,6 @@ pragma solidity 0.7.3;
  * @dev AToken contract interface (V2).
  */
 interface ATokenV2 {
+    // solhint-disable-next-line func-name-mixedcase
     function UNDERLYING_ASSET_ADDRESS() external view returns (address);
 }

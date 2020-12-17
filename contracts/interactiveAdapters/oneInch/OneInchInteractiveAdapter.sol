@@ -61,6 +61,7 @@ contract OneInchInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = toToken;
 
+        // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory returnData) = oneInch.call{ value: msg.value }(callData);
 
         // assembly revert opcode is used here as `returnData`
