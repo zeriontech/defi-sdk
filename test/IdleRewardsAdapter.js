@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('IdleRewardsAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('IdleRewardsAdapter', () => {
+contract('IdleRewardsAdapter', () => {
   const idleAddress = '0x875773784Af8135eA0ef43b5a374AaD105c5D39e';
   // Random address with positive balances
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';

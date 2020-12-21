@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('DODOAdapter');
 const TokenAdapter = artifacts.require('DODOTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('DODOAdapter', () => {
+contract('DODOAdapter', () => {
   const dodoWethUsdcWethAddress = '0xc11eCCDee225d644f873776A68A02eCD8c015697';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';

@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('AdelStakingAdapter');
 const TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('AdelAdapter', () => {
-  const adelAddress = '0x1A547c3dd03c39Fb2b5aEaFC524033879bD28F13';
+  const adelAddress = '0x94d863173EE77439E4292284fF13fAD54b3BA182';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
