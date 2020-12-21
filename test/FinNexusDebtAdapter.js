@@ -15,19 +15,6 @@ contract('FinNexusDebtAdapter', () => {
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
 
-  const fnx = [
-    fnxAddress,
-    'FinNexus coin',
-    'FNX',
-    '18',
-  ];
-  const usdc = [
-    usdcAddress,
-    'USDC coin',
-    'USDC',
-    '6',
-  ];
-
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
     await ProtocolAdapter.new({ from: accounts[0] })

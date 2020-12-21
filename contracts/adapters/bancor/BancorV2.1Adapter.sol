@@ -16,29 +16,27 @@
 pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
-import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
+import {ERC20} from "../../ERC20.sol";
+import {ProtocolAdapter} from "../ProtocolAdapter.sol";
 
 
 /**
- * @notice Mock protocol adapter for tests.
+ * @title Adapter for Bancor protocol.
+ * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract MockAdapter is ProtocolAdapter {
+contract BancorAdapter is ProtocolAdapter {
 
-    mapping(address => uint256) internal balanceOf;
+string public constant override adapterType = "Asset";
 
-    string public constant override adapterType = "Asset";
+string public constant override tokenType = "SmartToken";
 
-    string public constant override tokenType = "ERC20";
-
-    constructor() public {
-        balanceOf[msg.sender] = 1000;
-    }
-
-    /**
-     * @return Mock balance.
-     */
-    function getBalance(address, address account) external view override returns (uint256) {
-        return balanceOf[account];
-    }
+/**
+ * @return Amount of SmartTokens held by the given account.
+ * @param token Address of the pool!
+ * @dev Implementation of ProtocolAdapter interface function.
+ */
+function getBalance(address token, address account) external view override returns (uint256) {
+return ERC20(token).balanceOf(account);
+}
 }

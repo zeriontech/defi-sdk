@@ -5,7 +5,6 @@ const ProtocolAdapter = artifacts.require('FinNexusAssetAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('FinNexusDebtAdapter', () => {
-
   const fptAddress = '0xA072EA1a2a75047908e68e0B1a2baC3a7190CE58';
   const testAddress = '0xBA096024056bB653c6E28f53C8889BFC3553bAD8';
 
@@ -13,14 +12,6 @@ contract('FinNexusDebtAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
-
-  const fpt = [
-    fptAddress,
-    'FinNexus coin',
-    'FNX',
-    '18',
-  ];
-
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -49,7 +40,7 @@ contract('FinNexusDebtAdapter', () => {
         protocolAdapterAddress,
       ]],
       [[[
-          fptAddress,
+        fptAddress,
       ]]],
     )
       .send({

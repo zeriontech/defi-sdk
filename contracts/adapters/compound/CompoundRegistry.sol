@@ -42,11 +42,11 @@ contract CompoundRegistry is Ownable {
         cTokens[0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984] = 0x35A18000230DA775CAc24873d00Ff85BccdeD550;
     }
 
-    function getCToken(address token) external view returns (address) {
-        return cTokens[token];
-    }
-
     function setCToken(address token, address cToken) external onlyOwner returns (address) {
         return cTokens[token] = cToken;
+    }
+
+    function getCToken(address token) external view returns (address) {
+        return cTokens[token];
     }
 }

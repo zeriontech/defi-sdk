@@ -13,12 +13,6 @@ contract('AmpleforthAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
-  const ampl = [
-    amplAddress,
-    'Ampleforth',
-    'AMPL',
-    '9',
-  ];
   const amplUni = [
     amplUniAddress,
     'Uniswap V2',
