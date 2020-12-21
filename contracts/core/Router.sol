@@ -35,16 +35,23 @@ import { ChiToken } from "../interfaces/ChiToken.sol";
 import { SignatureVerifier } from "./SignatureVerifier.sol";
 import { Ownable } from "./Ownable.sol";
 import { Core } from "./Core.sol";
+import { Logger } from "./Logger.sol";
+import { Ownable } from "./Ownable.sol";
+import { SignatureVerifier } from "./SignatureVerifier.sol";
 import { UniswapRouter } from "./UniswapRouter.sol";
 
-contract Router is SignatureVerifier("Zerion Router v1.1"), Ownable {
+contract Router is
+    Logger,
+    Ownable,
+    UniswapRouter,
+    SignatureVerifier("Zerion Router v1.1")
+{
     using SafeERC20 for ERC20;
     using Helpers for address;
 
     address internal immutable core_;
 
     address internal constant CHI = 0x0000000000004946c0e9F43F4Dee607b0eF1fA1c;
-    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     uint256 internal constant DELIMITER = 1e18; // 100%
     uint256 internal constant FEE_LIMIT = 1e16; // 1%
     // Constants of non-value type not yet implemented,
@@ -61,9 +68,6 @@ contract Router is SignatureVerifier("Zerion Router v1.1"), Ownable {
     //        0x53ab5ce3
     //    ];
     bytes12 internal constant PERMIT_SELECTORS = 0x8fcbaf0cd505accf53ab5ce3;
-
-    event Executed(address indexed account, uint256 indexed share, address indexed beneficiary);
-    event TokenTransfer(address indexed token, address indexed account, uint256 indexed amount);
 
     /**
      * @dev The amount used as second parameter of freeFromUpTo() function

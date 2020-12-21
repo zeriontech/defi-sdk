@@ -16,11 +16,10 @@ const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 const WETH9 = artifacts.require('./WETH9');
 
-contract.only('UniswapRouter', () => {
+contract('UniswapRouter', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 
-  let wethAmount;
   let daiAmount;
 
   let accounts;
@@ -166,71 +165,6 @@ contract.only('UniswapRouter', () => {
         });
     });
 
-    it('should not swapTokensForExactTokens with old deadline', async () => {
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-        });
-      await WETH.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          wethAmount = result;
-          console.log(`weth amount before is ${web3.utils.fromWei(result, 'ether')}`);
-        });
-      await expectRevert(router.methods.swapTokensForExactTokens(
-        UNISWAP_ROUTER,
-        web3.utils.toWei('1', 'ether'),
-        wethAmount,
-        [wethAddress, daiAddress],
-        accounts[0],
-        PAST_TIMESTAMP,
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-        }));
-    });
-
-    it('should swapTokensForExactTokens', async () => {
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-        });
-      await WETH.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          wethAmount = result;
-          console.log(`weth amount before is ${web3.utils.fromWei(result, 'ether')}`);
-        });
-      await router.methods.swapTokensForExactTokens(
-        UNISWAP_ROUTER,
-        web3.utils.toWei('1', 'ether'),
-        wethAmount,
-        [wethAddress, daiAddress],
-        accounts[0],
-        FUTURE_TIMESTAMP,
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-        })
-        .then((receipt) => {
-          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
-        });
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`dai amount after is   ${web3.utils.fromWei(result, 'ether')}`);
-        });
-      await WETH.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`weth amount after is  ${web3.utils.fromWei(result, 'ether')}`);
-        });
-    });
-
     it('should not swapExactTokensForETH with old deadline', async () => {
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -322,106 +256,6 @@ contract.only('UniswapRouter', () => {
         .send({
           from: accounts[0],
           value: web3.utils.toWei('0.1', 'ether'),
-          gas: 10000000,
-        })
-        .then((receipt) => {
-          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
-        });
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`dai amount after is   ${web3.utils.fromWei(result, 'ether')}`);
-        });
-    });
-
-    it('should not swapTokensForExactETH with old deadline', async () => {
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          daiAmount = result;
-          console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-        });
-      await expectRevert(router.methods.swapTokensForExactETH(
-        UNISWAP_ROUTER,
-        web3.utils.toWei('0.0001', 'ether'),
-        daiAmount,
-        [daiAddress, wethAddress],
-        accounts[0],
-        PAST_TIMESTAMP,
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-        }));
-    });
-
-    it('should swapTokensForExactETH', async () => {
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          daiAmount = result;
-          console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-        });
-      await router.methods.swapTokensForExactETH(
-        UNISWAP_ROUTER,
-        web3.utils.toWei('0.0001', 'ether'),
-        daiAmount,
-        [daiAddress, wethAddress],
-        accounts[0],
-        FUTURE_TIMESTAMP,
-      )
-        .send({
-          from: accounts[0],
-          gas: 10000000,
-        })
-        .then((receipt) => {
-          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
-        });
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`dai amount after is   ${web3.utils.fromWei(result, 'ether')}`);
-        });
-    });
-
-    it('should not swapETHForExactTokens with old deadline', async () => {
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          daiAmount = result;
-          console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-        });
-      await expectRevert(router.methods.swapETHForExactTokens(
-        UNISWAP_ROUTER,
-        web3.utils.toWei('1', 'ether'),
-        [wethAddress, daiAddress],
-        accounts[0],
-        PAST_TIMESTAMP,
-      )
-        .send({
-          from: accounts[0],
-          value: web3.utils.toWei('1', 'ether'),
-          gas: 10000000,
-        }));
-    });
-
-    it('should swapETHForExactTokens', async () => {
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          daiAmount = result;
-          console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-        });
-      await router.methods.swapETHForExactTokens(
-        UNISWAP_ROUTER,
-        web3.utils.toWei('1', 'ether'),
-        [wethAddress, daiAddress],
-        accounts[0],
-        FUTURE_TIMESTAMP,
-      )
-        .send({
-          from: accounts[0],
-          value: web3.utils.toWei('1', 'ether'),
           gas: 10000000,
         })
         .then((receipt) => {

@@ -17,27 +17,7 @@
 
 pragma solidity 0.7.3;
 
-interface UniswapV2Router02 {
-    function swapExactTokensForTokens(
-        uint256 amountIn,
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external returns (uint256[] memory amounts);
-
-    function swapExactETHForTokens(
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external payable returns (uint256[] memory amounts);
-
-    function swapExactTokensForETH(
-        uint256 amountIn,
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external returns (uint256[] memory amounts);
+abstract contract Logger {
+    event Executed(address indexed account, uint256 indexed share, address indexed beneficiary);
+    event TokenTransfer(address indexed token, address indexed account, uint256 indexed amount);
 }

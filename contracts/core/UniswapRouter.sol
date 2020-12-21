@@ -19,12 +19,14 @@ pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
 import { UniswapV2Router02 } from "../interfaces/UniswapV2Router02.sol";
+import { Logger } from "./Logger.sol";
 
 enum RouterType { Uniswap, SushiSwap }
 
-contract UniswapRouter {
+contract UniswapRouter is Logger {
     address internal constant UNISWAP_ROUTER = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
     address internal constant SUSHISWAP_ROUTER = 0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F;
+    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     function swapExactTokensForTokens(
         RouterType routerType,
@@ -34,33 +36,13 @@ contract UniswapRouter {
         address to,
         uint256 deadline
     ) external {
-        _swap(
+        emit TokenTransfer(path[0], msg.sender, amountIn);
+        swap(
             routerType,
             abi.encodeWithSelector(
                 UniswapV2Router02.swapExactTokensForTokens.selector,
                 amountIn,
                 amountOutMin,
-                path,
-                to,
-                deadline
-            )
-        );
-    }
-
-    function swapTokensForExactTokens(
-        RouterType routerType,
-        uint256 amountOut,
-        uint256 amountInMax,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external {
-        _swap(
-            routerType,
-            abi.encodeWithSelector(
-                UniswapV2Router02.swapTokensForExactTokens.selector,
-                amountOut,
-                amountInMax,
                 path,
                 to,
                 deadline
@@ -75,32 +57,12 @@ contract UniswapRouter {
         address to,
         uint256 deadline
     ) external payable {
-        _swap(
+        emit TokenTransfer(ETH, msg.sender, msg.value);
+        swap(
             routerType,
             abi.encodeWithSelector(
                 UniswapV2Router02.swapExactETHForTokens.selector,
                 amountOutMin,
-                path,
-                to,
-                deadline
-            )
-        );
-    }
-
-    function swapTokensForExactETH(
-        RouterType routerType,
-        uint256 amountOut,
-        uint256 amountInMax,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external {
-        _swap(
-            routerType,
-            abi.encodeWithSelector(
-                UniswapV2Router02.swapTokensForExactETH.selector,
-                amountOut,
-                amountInMax,
                 path,
                 to,
                 deadline
@@ -116,7 +78,8 @@ contract UniswapRouter {
         address to,
         uint256 deadline
     ) external {
-        _swap(
+        emit TokenTransfer(path[0], msg.sender, amountIn);
+        swap(
             routerType,
             abi.encodeWithSelector(
                 UniswapV2Router02.swapExactTokensForETH.selector,
@@ -129,91 +92,13 @@ contract UniswapRouter {
         );
     }
 
-    function swapETHForExactTokens(
-        RouterType routerType,
-        uint256 amountOut,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external payable {
-        _swap(
-            routerType,
-            abi.encodeWithSelector(
-                UniswapV2Router02.swapETHForExactTokens.selector,
-                amountOut,
-                path,
-                to,
-                deadline
-            )
-        );
-    }
-
-    function swapExactTokensForTokensSupportingFeeOnTransferTokens(
-        RouterType routerType,
-        uint256 amountIn,
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external {
-        _swap(
-            routerType,
-            abi.encodeWithSelector(
-                UniswapV2Router02.swapExactTokensForTokensSupportingFeeOnTransferTokens.selector,
-                amountIn,
-                amountOutMin,
-                path,
-                to,
-                deadline
-            )
-        );
-    }
-
-    function swapExactETHForTokensSupportingFeeOnTransferTokens(
-        RouterType routerType,
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external payable {
-        _swap(
-            routerType,
-            abi.encodeWithSelector(
-                UniswapV2Router02.swapExactETHForTokensSupportingFeeOnTransferTokens.selector,
-                amountOutMin,
-                path,
-                to,
-                deadline
-            )
-        );
-    }
-
-    function swapExactTokensForETHSupportingFeeOnTransferTokens(
-        RouterType routerType,
-        uint256 amountIn,
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external {
-        _swap(
-            routerType,
-            abi.encodeWithSelector(
-                UniswapV2Router02.swapExactTokensForETHSupportingFeeOnTransferTokens.selector,
-                amountIn,
-                amountOutMin,
-                path,
-                to,
-                deadline
-            )
-        );
-    }
-
-    function _swap(RouterType routerType, bytes memory callData) internal {
-        address callee = routerType == RouterType.Uniswap ? UNISWAP_ROUTER : SUSHISWAP_ROUTER;
+    function swap(RouterType routerType, bytes memory callData) internal {
+        address router = routerType == RouterType.Uniswap ? UNISWAP_ROUTER : SUSHISWAP_ROUTER;
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, bytes memory returnData) = callee.delegatecall(callData);
+        (bool success, bytes memory returnData) = router.delegatecall(callData);
 
+        // assembly revert opcode is used here as `returnData`
+        // is already bytes array generated by the callee's revert()
         // solhint-disable-next-line no-inline-assembly
         assembly {
             if eq(success, 0) {
