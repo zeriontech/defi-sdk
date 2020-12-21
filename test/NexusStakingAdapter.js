@@ -4,7 +4,7 @@ const AdapterRegistry = artifacts.require('AdapterRegistry');
 const ProtocolAdapter = artifacts.require('NexusStakingAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('NexusStakingAdapter', () => {
+contract('NexusStakingAdapter', () => {
   const nxmAddress = '0xd7c49CEE7E9188cCa6AD8FF264C1DA2e69D4Cf3B';
   // Random address with positive balance
   const testAddress = '0x37b376924ffcce0b3e74004000ead546e299e3c6';

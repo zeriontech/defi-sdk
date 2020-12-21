@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('AkroStakingAdapter');
 const TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('AkroAdapter', () => {
-  const akroAddress = '0x3501Ec11d205fa249f2C42f5470e137b529b35D0';
+  const akroAddress = '0x8Ab7404063Ec4DBcfd4598215992DC3F8EC853d7';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
