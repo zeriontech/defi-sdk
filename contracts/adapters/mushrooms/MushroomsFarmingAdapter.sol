@@ -77,9 +77,10 @@ contract MushroomsFarmingAdapter is ProtocolAdapter {
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        uint256 length = MasterChef(MASTER_CHEF).poolLength();
+uint256 length = MasterChef(MASTER_CHEF).poolLength();
+PoolInfo memory pool;
 
-        if (token == MM) {
+if (token == MM) {
             uint256 totalRewards = 0;
 
             for(uint256 i = 0; i < length; i++) {
@@ -97,7 +98,6 @@ contract MushroomsFarmingAdapter is ProtocolAdapter {
 
             return totalRewards;
         } else {
-            PoolInfo memory pool;
             for(uint256 i = 0; i < length; i++) {
                 pool = MasterChef(MASTER_CHEF).poolInfo(i);
 
