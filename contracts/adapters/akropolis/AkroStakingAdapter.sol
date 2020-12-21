@@ -32,7 +32,7 @@ interface Staking {
 /**
  * @title Adapter for Akropolis Staking protocol.
  * @dev Implementation of ProtocolAdapter interface.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @author Alexander Mazaletskiy <am@akropolis.io>
  */
 contract AkroStakingAdapter is ProtocolAdapter {
 
