@@ -1,28 +1,13 @@
 import expectRevert from '../helpers/expectRevert';
 import convertToBytes32 from '../helpers/convertToBytes32';
+import signTypedData from '../helpers/signTypedData';
 
 const SignatureVerifier = artifacts.require('./Router');
 const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const InteractiveAdapter = artifacts.require('./MockInteractiveAdapter');
 const Core = artifacts.require('./Core');
 
-async function signTypedData(account, data) {
-  return new Promise((resolve, reject) => {
-    web3.currentProvider.send({
-      jsonrpc: '2.0',
-      method: 'eth_signTypedData',
-      params: [account, data],
-      id: new Date().getTime(),
-    }, (err, response) => {
-      if (err) {
-        return reject(err);
-      }
-      return resolve(response.result);
-    });
-  });
-}
-
-contract('SignatureVerifier', () => {
+contract.only('SignatureVerifier', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -83,9 +68,9 @@ contract('SignatureVerifier', () => {
                 { name: 'chainId', type: 'uint256' },
                 { name: 'verifyingContract', type: 'address' },
               ],
-              TransactionData: [
+              Execute: [
                 { name: 'actions', type: 'Action[]' },
-                { name: 'inputs', type: 'TokenAmountPermit[]' },
+                { name: 'inputs', type: 'Input[]' },
                 { name: 'fee', type: 'Fee' },
                 { name: 'requiredOutputs', type: 'AbsoluteTokenAmount[]' },
                 { name: 'account', type: 'address' },
@@ -102,10 +87,11 @@ contract('SignatureVerifier', () => {
                 { name: 'amount', type: 'uint256' },
                 { name: 'amountType', type: 'uint8' },
               ],
-              TokenAmountPermit: [
-                { name: 'token', type: 'address' },
-                { name: 'amount', type: 'uint256' },
-                { name: 'amountType', type: 'uint8' },
+              Input: [
+                { name: 'tokenAmount', type: 'TokenAmount' },
+                { name: 'permit', type: 'Permit' },
+              ],
+              Permit: [
                 { name: 'permitType', type: 'uint8' },
                 { name: 'permitCallData', type: 'bytes' },
               ],
@@ -115,7 +101,7 @@ contract('SignatureVerifier', () => {
               ],
               AbsoluteTokenAmount: [
                 { name: 'token', type: 'address' },
-                { name: 'amount', type: 'uint256' },
+                { name: 'absoluteAmount', type: 'uint256' },
               ],
             },
             domain: {
@@ -123,7 +109,7 @@ contract('SignatureVerifier', () => {
               chainId: 1,
               verifyingContract: signatureVerifier.options.address,
             },
-            primaryType: 'TransactionData',
+            primaryType: 'Execute',
             message: transactionData,
           };
 
@@ -260,7 +246,7 @@ contract('SignatureVerifier', () => {
         requiredOutputs: [
           {
             token: ethAddress,
-            amount: web3.utils.toWei('1', 'ether'),
+            absoluteAmount: web3.utils.toWei('1', 'ether'),
           },
         ],
         account: accounts[0],
@@ -293,7 +279,7 @@ contract('SignatureVerifier', () => {
       0,
     ];
     await signatureVerifier.methods.hashData(
-      data,
+      data[0], data[1], data[2], data[3], data[4],
     )
       .call()
       .then(async (hash) => {
@@ -316,7 +302,7 @@ contract('SignatureVerifier', () => {
       });
 
     await signatureVerifier.methods.execute(
-      data,
+      data[0], data[1], data[2], data[3], data[4],
       signature,
     )
       .send({
@@ -325,7 +311,7 @@ contract('SignatureVerifier', () => {
         value: web3.utils.toWei('1', 'ether'),
       });
     await signatureVerifier.methods.hashData(
-      data,
+      data[0], data[1], data[2], data[3], data[4],
     )
       .call()
       .then(async (hash) => {
@@ -339,7 +325,7 @@ contract('SignatureVerifier', () => {
           });
       });
     await expectRevert(signatureVerifier.methods.execute(
-      data,
+      data[0], data[1], data[2], data[3], data[4],
       signature,
     )
       .send({
@@ -380,7 +366,7 @@ contract('SignatureVerifier', () => {
         requiredOutputs: [
           {
             token: ethAddress,
-            amount: web3.utils.toWei('1', 'ether'),
+            absoluteAmount: web3.utils.toWei('1', 'ether'),
           },
         ],
         account: accounts[0],
@@ -413,7 +399,7 @@ contract('SignatureVerifier', () => {
       1,
     ];
     await signatureVerifier.methods.hashData(
-      data,
+      data[0], data[1], data[2], data[3], data[4],
     )
       .call()
       .then(async (hash) => {
@@ -436,7 +422,7 @@ contract('SignatureVerifier', () => {
       });
 
     await signatureVerifier.methods.executeWithCHI(
-      data,
+      data[0], data[1], data[2], data[3], data[4],
       signature,
     )
       .send({
@@ -445,7 +431,7 @@ contract('SignatureVerifier', () => {
         value: web3.utils.toWei('1', 'ether'),
       });
     await signatureVerifier.methods.hashData(
-      data,
+      data[0], data[1], data[2], data[3], data[4],
     )
       .call()
       .then(async (hash) => {
@@ -459,7 +445,7 @@ contract('SignatureVerifier', () => {
           });
       });
     await expectRevert(signatureVerifier.methods.execute(
-      data,
+      data[0], data[1], data[2], data[3], data[4],
       signature,
     )
       .send({
@@ -500,7 +486,7 @@ contract('SignatureVerifier', () => {
         requiredOutputs: [
           {
             token: wethAddress,
-            amount: web3.utils.toWei('1', 'ether'),
+            absoluteAmount: web3.utils.toWei('1', 'ether'),
           },
         ],
         account: accounts[0],
@@ -533,7 +519,7 @@ contract('SignatureVerifier', () => {
       0,
     ];
     await expectRevert(signatureVerifier.methods.hashData(
-      data,
+      data[0], data[1], data[2], data[3], data[4],
     )
       .call()
       .then(async (hash) => {

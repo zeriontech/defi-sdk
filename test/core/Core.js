@@ -1,6 +1,7 @@
 import expectRevert from '../helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
 import convertToBytes32 from '../helpers/convertToBytes32';
+import signTypedData from '../helpers/signTypedData';
 
 const { BN } = web3.utils;
 
@@ -17,6 +18,7 @@ const InteractiveAdapter = artifacts.require('./MockInteractiveAdapter');
 const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
+const IDAI = artifacts.require('./DAI');
 const WETH9 = artifacts.require('./WETH9');
 
 contract('Core + Router', () => {
@@ -29,6 +31,9 @@ contract('Core + Router', () => {
   let router;
   let protocolAdapterRegistry;
   let protocolAdapterAddress;
+  let sign;
+  let signature;
+  let daiAmount;
   let DAI;
   let WETH;
 
@@ -507,7 +512,6 @@ contract('Core + Router', () => {
     });
 
     it('should accept full share input', async () => {
-      let daiAmount;
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
@@ -547,7 +551,6 @@ contract('Core + Router', () => {
     });
 
     it('should accept not full share input', async () => {
-      let daiAmount;
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
@@ -714,6 +717,100 @@ contract('Core + Router', () => {
         .call()
         .then((result) => {
           assert.equal((new BN(result)).sub(wethBalance).toString(), web3.utils.toWei('0.001', 'ether'));
+        });
+    });
+
+    it.only('should tranfer DAI with permit', async () => {
+      sign = async function (permitData) {
+        const typedData = {
+          types: {
+            EIP712Domain: [
+              { name: 'name', type: 'string' },
+              { name: 'version', type: 'string' },
+              { name: 'chainId', type: 'uint256' },
+              { name: 'verifyingContract', type: 'address' },
+            ],
+            Permit: [
+              { name: 'holder', type: 'address' },
+              { name: 'spender', type: 'address' },
+              { name: 'nonce', type: 'uint256' },
+              { name: 'expiry', type: 'uint256' },
+              { name: 'allowed', type: 'bool' },
+            ],
+          },
+          domain: {
+            name: 'Dai Stablecoin',
+            version: '1',
+            chainId: '1',
+            verifyingContract: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+          },
+          primaryType: 'Permit',
+          message: permitData,
+        };
+
+        return signTypedData(accounts[0], typedData);
+      };
+      signature = await sign(
+        {
+          holder: accounts[0],
+          spender: router.options.address,
+          nonce: '0',
+          expiry: '0',
+          allowed: 'true',
+        },
+      );
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+          console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await IDAI.at(daiAddress)
+        .then((result) => {
+          DAI = result.contract;
+        });
+      await router.methods.execute(
+        // actions
+        [],
+        // inputs
+        [
+          [
+            [
+              daiAddress,
+              daiAmount,
+              AMOUNT_ABSOLUTE,
+            ],
+            [
+              1,
+              `0x${
+                DAI.methods.permit(
+                  accounts[0],
+                  router.options.address,
+                  0,
+                  0,
+                  true,
+                  web3.utils.hexToNumber(`0x${signature.slice(130, 132)}`),
+                  `0x${signature.slice(2, 66)}`,
+                  `0x${signature.slice(66, 130)}`,
+                ).encodeABI().slice(10) // slice '0x' and first 4 bytes
+              }`,
+            ],
+          ],
+        ],
+        // fee
+        [
+          0,
+          ZERO,
+        ],
+        // outputs
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
     });
   });

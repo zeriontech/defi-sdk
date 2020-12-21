@@ -19,7 +19,6 @@ pragma solidity 0.7.3;
 pragma experimental ABIEncoderV2;
 
 import {
-    TransactionData,
     Action,
     Input,
     TokenAmount,
@@ -35,78 +34,58 @@ contract SignatureVerifier {
     bytes32 internal immutable nameHash_;
 
     bytes32 internal constant DOMAIN_SEPARATOR_TYPEHASH =
+        keccak256("EIP712Domain(string name,address verifyingContract)");
+    bytes32 internal constant EXECUTE_TYPEHASH =
         keccak256(
             abi.encodePacked(
-                "EIP712Domain(",
-                "string name,",
-                "uint256 chainId,",
-                "address verifyingContract",
-                ")"
-            )
-        );
-    bytes32 internal constant TX_DATA_TYPEHASH =
-        keccak256(
-            abi.encodePacked(
-                TX_DATA_ENCODED_TYPE,
-                ACTION_ENCODED_TYPE,
-                FEE_ENCODED_TYPE,
-                INPUT_ENCODED_TYPE,
-                TOKEN_AMOUNT_ENCODED_TYPE
+                "Execute(",
+                "Action[] actions,",
+                "Input[] inputs,",
+                "Fee fee,",
+                "AbsoluteTokenAmount[] requiredOutputs,",
+                "address account",
+                "uint256 salt",
+                ")",
+                "AbsoluteTokenAmount(address token,uint256 absoluteAmount)",
+                "Action(",
+                "bytes32 protocolAdapterName,",
+                "uint8 actionType,",
+                "TokenAmount[] tokenAmounts,",
+                "bytes data",
+                ")",
+                "Fee(uint256 share,address beneficiary)",
+                "Input(TokenAmount tokenAmount,Permit permit)",
+                "Permit(uint8 permitType,bytes permitCallData)",
+                "TokenAmount(address token,uint256 amount,uint8 amountType)"
             )
         );
     bytes32 internal constant ABSOLUTE_TOKEN_AMOUNT_TYPEHASH =
-        keccak256(ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE);
+        keccak256(abi.encodePacked("AbsoluteTokenAmount(address token,uint256 absoluteAmount)"));
     bytes32 internal constant INPUT_TYPEHASH =
-    keccak256(
-        abi.encodePacked(INPUT_ENCODED_TYPE, TOKEN_AMOUNT_ENCODED_TYPE, PERMIT_ENCODED_TYPE)
-    );
+        keccak256(
+            abi.encodePacked(
+                "Input(TokenAmount tokenAmount,Permit permit)",
+                "Permit(uint8 permitType,bytes permitCallData)",
+                "TokenAmount(address token,uint256 amount,uint8 amountType)"
+            )
+        );
+    bytes32 internal constant TOKEN_AMOUNT_TYPEHASH =
+        keccak256(abi.encodePacked("TokenAmount(address token,uint256 amount,uint8 amountType)"));
+    bytes32 internal constant PERMIT_TYPEHASH =
+        keccak256(abi.encodePacked("Permit(uint8 permitType,bytes permitCallData)"));
+    bytes32 internal constant FEE_TYPEHASH =
+        keccak256(abi.encodePacked("Fee(uint256 share,address beneficiary)"));
     bytes32 internal constant ACTION_TYPEHASH =
-        keccak256(abi.encodePacked(ACTION_ENCODED_TYPE, TOKEN_AMOUNT_ENCODED_TYPE));
-    bytes32 internal constant FEE_TYPEHASH = keccak256(FEE_ENCODED_TYPE);
-    bytes32 internal constant TOKEN_AMOUNT_TYPEHASH = keccak256(TOKEN_AMOUNT_ENCODED_TYPE);
-    bytes32 internal constant PERMIT_TYPEHASH = keccak256(PERMIT_ENCODED_TYPE);
-
-    bytes internal constant TX_DATA_ENCODED_TYPE = abi.encodePacked(
-        "TransactionData(",
-        "Action[] actions,",
-        "Input[] inputs,",
-        "Fee fee,",
-        "AbsoluteTokenAmount[] requiredOutputs,",
-        "address account,",
-        "uint256 salt",
-        ")"
-    );
-    bytes internal constant ABSOLUTE_TOKEN_AMOUNT_ENCODED_TYPE = abi.encodePacked(
-        "AbsoluteTokenAmount(",
-        "address token,",
-        "uint256 amount",
-        ")"
-    );
-    bytes internal constant ACTION_ENCODED_TYPE = abi.encodePacked(
-        "Action(",
-        "bytes32 protocolAdapterName,",
-        "uint8 actionType,",
-        "TokenAmount[] tokenAmounts,",
-        "bytes data",
-        ")"
-    );
-    bytes internal constant FEE_ENCODED_TYPE = abi.encodePacked(
-        "Fee(",
-        "uint256 share,",
-        "address beneficiary",
-        ")"
-    );
-    bytes internal constant INPUT_ENCODED_TYPE =
-        abi.encodePacked("Input(", "TokenAmount tokenAmount,", "Permit permit", ")");
-    bytes internal constant PERMIT_ENCODED_TYPE =
-        abi.encodePacked("Permit(", "uint8 permitType,", "bytes permitCallData", ")");
-    bytes internal constant TOKEN_AMOUNT_ENCODED_TYPE = abi.encodePacked(
-        "TokenAmount(",
-        "address token,",
-        "uint256 amount,",
-        "uint8 amountType",
-        ")"
-    );
+        keccak256(
+            abi.encodePacked(
+                "Action(",
+                "bytes32 protocolAdapterName,",
+                "uint8 actionType,",
+                "TokenAmount[] tokenAmounts,",
+                "bytes data)",
+                "TokenAmount(address token,uint256 amount,uint8 amountType)"
+            )
+        );
 
     constructor(string memory name) {
         nameHash_ = keccak256(abi.encodePacked(name));
@@ -135,17 +114,31 @@ contract SignatureVerifier {
     }
 
     /**
-     * @param data TransactionData struct to be hashed.
-     * @return TransactionData struct hashed with domainSeparator.
+     * @param actions Action structs list to be hashed.
+     * @param inputs Input structs list to be hashed.
+     * @param fee Fee struct to be hashed.
+     * @param requiredOutputs AbsoluteTokenAmount structs list to be hashed.
+     * @param account Account address to be hashed.
+     * @param salt Salt parameter preventing double-spending to be hashed.
+     * @return Execute data hashed with domainSeparator.
      */
-    function hashData(TransactionData memory data) public view returns (bytes32) {
-        bytes32 domainSeparator =
-            keccak256(
-                abi.encode(DOMAIN_SEPARATOR_TYPEHASH, nameHash_, getChainId(), address(this))
-            );
-
+    function hashData(
+        Action[] memory actions,
+        Input[] memory inputs,
+        Fee memory fee,
+        AbsoluteTokenAmount[] memory requiredOutputs,
+        address account,
+        uint256 salt
+    ) public view returns (bytes32) {
         return
-            keccak256(abi.encodePacked(bytes1(0x19), bytes1(0x01), domainSeparator, hash(data)));
+            keccak256(
+                abi.encodePacked(
+                    bytes1(0x19),
+                    bytes1(0x01),
+                    domainSeparator_,
+                    hash(actions, inputs, fee, requiredOutputs, account, salt)
+                )
+            );
     }
 
     /**
@@ -159,22 +152,33 @@ contract SignatureVerifier {
     }
 
     /**
-     * @param data TransactionData struct to be hashed.
-     * @return Hashed TransactionData struct.
+     * @param actions Action structs list to be hashed.
+     * @param inputs Input structs list to be hashed.
+     * @param fee Fee struct to be hashed.
+     * @param requiredOutputs AbsoluteTokenAmount structs list to be hashed.
+     * @param account Account address to be hashed.
+     * @param salt Salt parameter preventing double-spending to be hashed.
+     * @return Execute data hashed.
      */
-    function hash(TransactionData memory data) internal pure returns (bytes32) {
-        return
-            keccak256(
-                abi.encode(
-                    TX_DATA_TYPEHASH,
-                    hash(data.actions),
-                    hash(data.inputs),
-                    hash(data.fee),
-                    hash(data.requiredOutputs),
-                    data.account,
-                    data.salt
-                )
-            );
+    function hash(
+        Action[] memory actions,
+        Input[] memory inputs,
+        Fee memory fee,
+        AbsoluteTokenAmount[] memory requiredOutputs,
+        address account,
+        uint256 salt
+    ) internal pure returns (bytes32) {
+        return keccak256(
+            abi.encode(
+                EXECUTE_TYPEHASH,
+                hash(actions),
+                hash(inputs),
+                hash(fee),
+                hash(requiredOutputs),
+                account,
+                salt
+            )
+        );
     }
 
     /**
