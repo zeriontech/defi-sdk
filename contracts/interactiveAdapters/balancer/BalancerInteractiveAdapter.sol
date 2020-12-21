@@ -57,7 +57,8 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
-        ERC20(token).safeApprove(pool, amount, "BIA");
+        ERC20(token).safeApproveMax(pool, amount, "BIA");
+
         // solhint-disable-next-line no-empty-blocks
         try BPool(pool).joinswapExternAmountIn(token, amount, 0) {} catch Error(
             string memory reason
