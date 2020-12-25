@@ -31,10 +31,10 @@ interface KToken {
 
 
 /**
- * @dev LiquidityPoolV1 contract interface.
+ * @dev LiquidityPoolV2 contract interface.
  * Only the functions required for KeeperDaoTokenAdapter contract are added.
  */
-interface LiquidityPoolV1 {
+interface LiquidityPoolV2 {
     function borrowableBalance(address) external view returns (uint256);
 }
 
@@ -46,7 +46,7 @@ interface LiquidityPoolV1 {
  */
 contract KeeperDaoTokenAdapter is TokenAdapter {
 
-    address internal constant POOL = 0xEB7e15B4E38CbEE57a98204D05999C3230d36348;
+    address internal constant POOL = 0x53463cd0b074E5FDafc55DcE7B1C82ADF1a43B2E;
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -68,7 +68,7 @@ contract KeeperDaoTokenAdapter is TokenAdapter {
     function getComponents(address token) external view override returns (Component[] memory) {
         Component[] memory underlyingTokens = new Component[](1);
         address underlyingToken = KToken(token).underlying();
-        uint256 borrowableBalance = LiquidityPoolV1(POOL).borrowableBalance(underlyingToken);
+        uint256 borrowableBalance = LiquidityPoolV2(POOL).borrowableBalance(underlyingToken);
 
         underlyingTokens[0] = Component({
             token: underlyingToken,

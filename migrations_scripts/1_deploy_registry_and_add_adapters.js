@@ -1,53 +1,79 @@
 const AragonStakingAdapter = artifacts.require('AragonStakingAdapter');
 const AaveAssetAdapter = artifacts.require('AaveAssetAdapter');
+const BzxAssetAdapter = artifacts.require('BzxAssetAdapter');
+const BzxDebtAdapter = artifacts.require('BzxDebtAdapter');
 const AaveDebtAdapter = artifacts.require('AaveDebtAdapter');
 const AaveUniswapAssetAdapter = artifacts.require('AaveUniswapAssetAdapter');
 const AaveUniswapDebtAdapter = artifacts.require('AaveUniswapDebtAdapter');
+const AaveStakingAdapter = artifacts.require('AaveStakingAdapter');
 const BalancerAdapter = artifacts.require('BalancerAdapter');
 const BancorAdapter = artifacts.require('BancorAdapter');
 const CompoundAssetAdapter = artifacts.require('CompoundAssetAdapter');
 const CompoundDebtAdapter = artifacts.require('CompoundDebtAdapter');
+const CreamAssetAdapter = artifacts.require('CreamAssetAdapter');
+const CreamDebtAdapter = artifacts.require('CreamDebtAdapter');
+const CreamStakingAdapter = artifacts.require('CreamStakingAdapter');
 const CurveAdapter = artifacts.require('CurveAdapter');
 const CurveStakingAdapter = artifacts.require('CurveStakingAdapter');
+const CurveVestingAdapter = artifacts.require('CurveVestingAdapter');
 const DdexLendingAssetAdapter = artifacts.require('DdexLendingAssetAdapter');
 const DdexMarginAssetAdapter = artifacts.require('DdexMarginAssetAdapter');
 const DdexMarginDebtAdapter = artifacts.require('DdexMarginDebtAdapter');
 const DdexSpotAssetAdapter = artifacts.require('DdexSpotAssetAdapter');
 const DmmAssetAdapter = artifacts.require('DmmAssetAdapter');
+const DodoAdapter = artifacts.require('DodoAdapter');
+const DodoStakingAdapter = artifacts.require('DodoStakingAdapter');
 const DyDxAssetAdapter = artifacts.require('DyDxAssetAdapter');
 const DyDxDebtAdapter = artifacts.require('DyDxDebtAdapter');
 const GnosisProtocolAdapter = artifacts.require('GnosisProtocolAdapter');
+const HarvestStakingAdapter = artifacts.require('HarvestStakingAdapter');
+const HarvestStakingV2Adapter = artifacts.require('HarvestStakingV2Adapter');
 const IdleAdapter = artifacts.require('IdleAdapter');
 const IearnAdapter = artifacts.require('IearnAdapter');
 const KeeperDaoAssetAdapter = artifacts.require('KeeperDaoAssetAdapter');
+const KimchiStakingAdapter = artifacts.require('KimchiStakingAdapter');
 const KyberAdapter = artifacts.require('KyberAdapter');
 const ChaiAdapter = artifacts.require('ChaiAdapter');
 const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
 const MCDAssetAdapter = artifacts.require('MCDAssetAdapter');
 const MCDDebtAdapter = artifacts.require('MCDDebtAdapter');
+const MaticStakingAdapter = artifacs.require('MaticStakingAdapter');
 const MelonAssetAdapter = artifacs.require('MelonAssetAdapter');
 const MstableAssetAdapter = artifacts.require('MstableAssetAdapter');
+const NexusStakingAdapter = artifacts.require('NexusStakingAdapter');
 const MstableStakingAdapter = artifacts.require('MstableStakingAdapter');
 const ChiAdapter = artifacts.require('ChiAdapter');
+const PickleAssetAdapter = artifacts.require('PickleAssetAdapter');
+const PickleStakingV1Adapter = artifacts.require('PickleStakingV1Adapter');
+const PickleStakingV2Adapter = artifacts.require('PickleStakingV2Adapter');
 const PieDAOPieAdapter = artifacts.require('PieDAOPieAdapter');
+const PieDAOStakingAdapter = artifacts.require('PieDAOStakingAdapter');
 const PoolTogetherAdapter = artifacts.require('PoolTogetherAdapter');
+const SashimiStakingAdapter = artifacts.require('SashimiStakingAdapter');
+const SushiStakingAdapter = artifacts.require('SushiStakingAdapter');
+const SwerveAdapter = artifacts.require('SwerveAdapter');
+const SwerveStakingAdapter = artifacts.require('SwerveStakingAdapter');
 const SynthetixAssetAdapter = artifacts.require('SynthetixAssetAdapter');
 const SynthetixDebtAdapter = artifacts.require('SynthetixDebtAdapter');
 const TokenSetsAdapter = artifacts.require('TokenSetsAdapter');
+const TokenSetsV2Adapter = artifacts.require('TokenSetsV2Adapter');
 const UniswapV1Adapter = artifacts.require('UniswapV1Adapter');
 const UniswapV2Adapter = artifacts.require('UniswapV2Adapter');
+const UniswapV2StakingAdapter = artifacts.require('UniswapV2StakingAdapter');
 const YearnStakingV1Adapter = artifacts.require('YearnStakingV1Adapter');
 const YearnStakingV2Adapter = artifacts.require('YearnStakingV2Adapter');
 const ZrxAdapter = artifacts.require('ZrxAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const AaveTokenAdapter = artifacts.require('AaveTokenAdapter');
+const BzxTokenAdapter = artifacts.require('BzxTokenAdapter');
 const AaveUniswapTokenAdapter = artifacts.require('AaveUniswapTokenAdapter');
 const BalancerTokenAdapter = artifacts.require('BalancerTokenAdapter');
 const BancorTokenAdapter = artifacts.require('BancorTokenAdapter');
 const CompoundTokenAdapter = artifacts.require('CompoundTokenAdapter');
 const CurveTokenAdapter = artifacts.require('CurveTokenAdapter');
 const DmmTokenAdapter = artifacts.require('DmmTokenAdapter');
+const DodoTokenAdapter = artifacts.require('DodoTokenAdapter');
 const IdleTokenAdapter = artifacts.require('IdleTokenAdapter');
 const IearnTokenAdapter = artifacts.require('IearnTokenAdapter');
 const KeeperDaoTokenAdapter = artifacts.require('IearnTokenAdapter');
@@ -55,15 +81,39 @@ const ChaiTokenAdapter = artifacts.require('ChaiTokenAdapter');
 const MelonTokenAdapter = artifacts.require('MelonTokenAdapter');
 const MstableTokenAdapter = artifacts.require('MstableTokenAdapter');
 const ChiTokenAdapter = artifacts.require('ChiTokenAdapter');
+const PickleTokenAdapter = artifacts.require('PickleTokenAdapter');
 const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
+const TokenSetsV2TokenAdapter = artifacts.require('TokenSetsV2TokenAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 
 const antAddress = '0x960b236A07cf122663c4303350609A66A7B288C0';
 const uniAntWethAddress = '0xfa19de406e8F5b9100E4dD5CaD8a503a6d686Efe';
+
+const iDaiAddress = '0x6b093998d36f2c7f0cc359441fbb24cc629d5ff0';
+const iEthAddress = '0xb983e01458529665007ff7e0cddecdb74b967eb6';
+const iUSDCAddress = '0x32e4c68b3a4a813b710595aeba7f6b7604ab9c15';
+const iWBTCAddress = '0x2ffa85f655752fb2acb210287c60b9ef335f5b6e';
+const iLENDAddress = '0xab45bf58c6482b87da85d6688c4d9640e093be98';
+const iKNCAddress = '0x687642347a9282be8fd809d8309910a3f984ac5a';
+const iMKRAddress = '0x9189c499727f88f8ecc7dc4eea22c828e6aac015';
+const iLINKAddress = '0x463538705e7d22aa7f03ebf8ab09b067e1001b54';
+const iYFIAddress = '0x7f3fe9d492a9a60aebb06d82cba23c6f32cad10b';
+const iUSDTAddress = '0x7e9997a38a439b2be7ed9c9c4628391d3e055d48';
+
+const bzxDaiAddress = '0x6b175474e89094c44da98b954eedeac495271d0f';
+const bzxEthAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+const bzxUSDCAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+const bzxWBTCAddress = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
+const bzxLENDAddress = '0x80fB784B7eD66730e8b1DBd9820aFD29931aab03';
+const bzxKNCAddress = '0xdd974d5c2e2928dea5f71b9825b8b646686bd200';
+const bzxMKRAddress = '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2';
+const bzxLINKAddress = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
+const bzxYFIAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
+const bzxUSDTAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 
 const aDaiAddress = '0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d';
 const aTusdAddress = '0x4DA9b813057D04BAef4e5800E36083717b4a0341';
@@ -121,6 +171,38 @@ const cZRXAddress = '0xB3319f5D18Bc0D84dD1b4825Dcde5d5f7266d407';
 const cUSDCAddress = '0x39AA39c021dfbaE8faC545936693aC917d5E7563';
 const cWBTCAddress = '0xC11b1268C1A384e55C48c2391d8d480264A3A7F4';
 const cUSDTAddress = '0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9';
+const cUNIAddress = '0x35a18000230da775cac24873d00ff85bccded550';
+
+const crEthAddress = '0xD06527D5e56A3495252A528C4987003b712860eE';
+const crUsdtAddress = '0x797AAB1ce7c01eB727ab980762bA88e7133d2157';
+const crUsdcAddress = '0x44fbeBd2F576670a6C33f6Fc0B00aA8c5753b322';
+const crCompAddress = '0x19D1666f543D42ef17F66E376944A22aEa1a8E46';
+const crBalAddress = '0xcE4Fe9b4b8Ff61949DCfeB7e03bc9FAca59D2Eb3';
+const crYfiAddress = '0xCbaE0A83f4f9926997c8339545fb8eE32eDc6b76';
+const crYCrvAddress = '0x9baF8a5236d44AC410c0186Fe39178d5AAD0Bb87';
+const crLinkAddress = '0x697256CAA3cCaFD62BB6d3Aa1C7C5671786A5fD9';
+const crCreamAddress = '0x892B14321a4FCba80669aE30Bd0cd99a7ECF6aC0';
+const crLendAddress = '0x8B86e0598616a8d4F1fdAE8b59E55FB5Bc33D0d6';
+const crCrvAddress = '0xc7Fd8Dcee4697ceef5a2fd4608a7BD6A94C77480';
+const crRenBtcAddress = '0x17107f40d70f4470d20CB3f138a052cAE8EbD4bE';
+const crBusdAddress = '0x1FF8CDB51219a8838b52E9cAc09b71e591BC998e';
+const crMtaAddress = '0x3623387773010d9214B10C551d6e7fc375D31F58';
+const crYYCrvAddress = '0x4EE15f44c6F0d8d1136c83EfD2e8E4AC768954c6';
+const crSushiAddress = '0x338286C0BC081891A4Bda39C7667ae150bf5D206';
+const crFttAddress = '0x10FDBD1e48eE2fD9336a482D746138AE19e649Db';
+const crYEthAddress = '0x01da76DEa59703578040012357b81ffE62015C2d';
+const crSrmAddress = '0xef58b2d5A1b8D3cDE67b8aB054dC5C831E9Bc025';
+
+const balancerCream80Weth20Address = '0x5a82503652d05B21780f33178FDF53d31c29B916';
+const uniCreamWethAddress = '0xddF9b7a31b32EBAF5c064C80900046C9e5b7C65F';
+const creamCreamUsdcAddress = '0x4Fd2d9d6eF05E13Bf0B167509151A4EC3D4d4b93';
+const creamCreamWethAddress = '0xa49b3c7C260ce8A7C665e20Af8aA6E099A86cf8A';
+const creamCrCreamCrYfiAddress = '0xA65405e0dD378C65308deAE51dA9e3BcEBb81261';
+const creamCrYEthCrYYCrvAddress = '0xB3284F2F22563F27cEF2912637b6A00F162317c4';
+const creamCrYEthWethAddrvess = '0x6a3B875854f5518E85Ef97620c5e7de75bbc3fA0';
+const creamYYCrvUsdcAddress = '0x661b94d96ADb18646e791A06576F7905a8d1BEF6';
+const creamYfiUsdcAddress = '0x7350c6D00D63AB5988250aea347f277c19BEA785';
+const creamAddress = '0x2ba592F78dB6436527729929AAf6c908497cB200';
 
 const mDAIAddress = '0x06301057D77D54B6e14c7FafFB11Ffc7Cab4eaa7';
 const mETHAddress = '0xdF9307DFf0a1B57660F60f9457D32027a55ca0B2';
@@ -140,16 +222,16 @@ const yUSDCv3 = '0x26EA744E5B887E5205727f55dFBE8685e3b21951';
 const yUSDTv3 = '0xE6354ed5bC4b393a5Aad09f21c46E101e692d447';
 const yBUSDv3 = '0x04bC0Ab673d88aE9dbC9DA2380cB6B79C4BCa9aE';
 
-const idleBestYieldDAI = '0x78751B12Da02728F467A44eAc40F5cbc16Bd7934';
-const idleBestYieldUSDC = '0x12B98C621E8754Ae70d0fDbBC73D6208bC3e3cA6';
-const idleBestYieldUSDT = '0x63D27B3DA94A9E871222CB0A32232674B02D2f2D';
-const idleBestYieldSUSD = '0xb39ca0261a1b2986a6a9Fe38d344B56374963dE5';
-const idleBestYieldTUSD = '0x7DB7A4a50b26602E56536189Aa94678C80F8E5b6';
-const idleBestYieldWBTC = '0xD6f279B7ccBCD70F8be439d25B9Df93AEb60eC55';
+const idleBestYieldDAI = '0x3fE7940616e5Bc47b0775a0dccf6237893353bB4';
+const idleBestYieldUSDC = '0x5274891bEC421B39D23760c04A6755eCB444797C';
+const idleBestYieldUSDT = '0xF34842d05A1c888Ca02769A633DF37177415C2f8';
+const idleBestYieldSUSD = '0xf52cdcd458bf455aed77751743180ec4a595fd3f';
+const idleBestYieldTUSD = '0xc278041fDD8249FE4c1Aad1193876857EEa3D68c';
+const idleBestYieldWBTC = '0x8C81121B15197fA0eEaEE1DC75533419DcfD3151';
 
-const idleRiskAdjustedDAI = '0x1846bdfDB6A0f5c473dEc610144513bd071999fB';
-const idleRiskAdjustedUSDC = '0xcDdB1Bceb7a1979C6caa0229820707429dd3Ec6C';
-const idleRiskAdjustedUSDT = '0x42740698959761BAF1B06baa51EfBD88CB1D862B';
+const idleRiskAdjustedDAI = '0xa14eA0E11121e6E951E87c66AFe460A00BCD6A16';
+const idleRiskAdjustedUSDC = '0x3391bc034f2935ef0e1e41619445f998b2680d35';
+const idleRiskAdjustedUSDT = '0x28fAc5334C9f7262b3A3Fe707e250E01053e07b5';
 
 const kETHAddress = '0xC4c43C78fb32F2c7F8417AF5af3B85f090F1d327';
 const kWETHAddress = '0xac19815455C2c438af8A8b4623F65f091364be10';
@@ -188,6 +270,9 @@ const chiAddress = '0x0000000000004946c0e9F43F4Dee607b0eF1fA1c';
 
 const BTCPPAddress = '0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd';
 const USDPPAddress = '0x9A48BD0EC040ea4f1D3147C025cd4076A2e71e3e';
+const DEFIPLAddress = '0x24d1917c1ae6c085e6b68b6c1a41b8f9de5bd441';
+const DEFIPSAddress = '0xad6a626ae2b43dcb1b39430ce496d2fa0365ba9c';
+const DEFIPPAddress = '0x880873a96ce38c7fd39dc714592902b069bde048';
 
 const mtaAddress = '0xa3BeD4E1c75D00fa6f4E5E6922DB7261B5E9AcD2';
 const balAddress = '0xba100000625a3754423978a60c9317c58a424e3D';
@@ -199,6 +284,111 @@ const uniswapMtaWethAddress = '0x0d0d65E7A7dB277d3E0F5E1676325E75f3340455';
 
 const amplAddress = '0xD46bA6D942050d489DBd938a2C909A5d5039A161';
 const uniAmplWethAddress = '0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c';
+
+const maticAddress = '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0';
+
+const nxmAddress = '0xd7c49CEE7E9188cCa6AD8FF264C1DA2e69D4Cf3B';
+
+const sashimiAddress = '0xC28E27870558cF22ADD83540d2126da2e4b464c2';
+const uniSashimiWethAddress = '0x4b618087DaE7765823BC47fFbF38C8Ee8489F5CA';
+const uniSashimiElfAddress = '0x1629B0259E6E5c315B8Eea09fd1a4D0A26291F98';
+const uniElfWethAddress = '0xA6be7F7C6c454B364cDA446ea39Be9e5E4369DE8';
+const uniWbtcWethAddress = '0xBb2b8038a1640196FbE3e38816F3e67Cba72D940';
+
+const sushiAddress = '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2';
+const uniUsdtWethAddress = '0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852';
+const uniUsdcWethAddress = '0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc';
+const uniDaiWethAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
+const uniSusdWethAddress = '0xf80758aB42C3B07dA84053Fd88804bCB6BAA4b5c';
+const uniBandWethAddress = '0xf421c3f2e695c2d4c0765379ccace8ade4a480d9';
+const uniLinkWethAddress = '0xa2107FA5B38d9bbd2C461D6EDf11B11A50F6b974';
+const uniLendWethAddress = '0xaB3F9bF1D81ddb224a2014e98B238638824bCf20';
+const uniSnxWethAddress = '0x43AE24960e5534731Fc831386c07755A2dc33D47';
+const uniYfiWethAddress = '0x2fDbAdf3C4D5A8666Bc06645B8358ab803996E28';
+
+const sushiSushiWethAddress = '0x795065dCc9f64b5614C407a6EFDC400DA6221FB0';
+const sushiUsdtWethAddress = '0x06da0fd433C1A5d7a4faa01111c044910A184553';
+const sushiUsdcWethAddress = '0x397FF1542f962076d0BFE58eA045FfA2d347ACa0';
+const sushiDaiWethAddress = '0xC3D03e4F041Fd4cD388c549Ee2A29a9E5075882f';
+const sushiSusdWethAddress = '0xF1F85b2C54a2bD284B1cf4141D64fD171Bd85539';
+const sushiUmaWethAddress = '0x001b6450083e531a5a7bf310bd2c1af4247e23d4';
+const sushiBandWethAddress = '0xA75F7c2F025f470355515482BdE9EFA8153536A8';
+const sushiLinkWethAddress = '0xC40D16476380e4037e6b1A2594cAF6a6cc8Da967';
+const sushiAmplWethAddress = '0xCb2286d9471cc185281c4f763d34A962ED212962';
+const sushiCompWethAddress = '0x31503dcb60119a812fee820bb7042752019f2355';
+const sushiLendWethAddress = '0x5E63360E891BD60C69445970256C260b0A6A54c6';
+const sushiSnxWethAddress = '0xA1d7b2d891e3A1f9ef4bBC5be20630C2FEB1c470';
+const sushiYfiWethAddress = '0x088ee5007C98a9677165D78dD2109AE4a3D04d0C';
+const sushiRenWethAddress = '0x611CDe65deA90918c0078ac0400A72B0D25B9bb1';
+const sushiBaseSusdAddress = '0xaAD22f5543FCDaA694B68f94Be177B561836AE57';
+const sushiSrmWethAddress = '0x117d4288B3635021a3D612FE05a3Cbf5C717fEf2';
+const sushiYam2WethAddress = '0x95b54C8Da12BB23F7A5F6E26C38D04aCC6F81820';
+const sushiCrvWethAddress = '0x58Dc5a51fE44589BEb22E8CE67720B5BC5378009';
+
+const kimchiAddress = '0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0';
+const uniKimchiWeth = '0xC4da39E646e7F5D233B89CA0F7B75344e7ddB2cc';
+const uniKimchiSushi = '0xC8d02f2669eF9aABE6B3b75E2813695AeD63748d';
+const uniKimchiTend = '0x1F4e87F70002867ab5df276d6A09A94E3eDa4f9A';
+
+const farmAddress = '0xa0246c9032bC3A600820415aE600c6388619A14D';
+const fDaiAddress = '0xe85C8581e60D7Cd32Bbfd86303d2A4FA6a951Dac';
+const fUsdcAddress = '0xc3F7ffb5d5869B3ade9448D094d81B0521e8326f';
+const fUsdtAddress = '0xc7EE21406BB581e741FBb8B21f213188433D9f2F';
+const balancerUsdc95Farm5Address = '0x0395e4A17fF11D36DaC9959f2D7c8Eca10Fe89c9';
+const uniUsdcFarmAddress = '0x514906FC121c7878424a5C928cad1852CC545892';
+const yfvAddress = '0x45f24BaEef268BB6d63AEe5129015d69702BCDfa';
+const yfiiAddress = '0xa1d0E215a23d7030842FC67cE582a6aFa3CCaB83';
+const ognAddress = '0x8207c1FfC5B6804F6024322CcF34F29c3541Ae26';
+const uniBasedSusdAddress = '0xaAD22f5543FCDaA694B68f94Be177B561836AE57';
+const uniPastaWethAddress = '0xE92346d9369Fe03b735Ed9bDeB6bdC2591b8227E';
+
+const balancerCrv90Farm10 = '0xac6bac9Dc3de2c14b420E287De8ECB330d96E492';
+const balancerSwrv90Farm10 = '0xf9F2dF6e0e369145481a32Fcd260E353AA20c1a6';
+const balancerUniSusdBased90Farm10 = '0xf76206115617f090f5a49961a78BCf99BB91cFeE';
+const balancerUniAmplWeth90Farm10 = '0xdFb341093ea062a74Bd19a222c74Abdcb97C067b';
+const balancerYFV90Farm10 = '0x97cD8E51cd6C888567c6c620188B8Fb264EE8E91';
+const balancerSUSHI90Farm10 = '0xB39Ce7fa5953beBC6697112e88cd11579CBCA579';
+const balancerLINK90Farm10 = '0x418d3DfcA5099923Cd57e0Bf9Ed1e9994f515152';
+const balancerUniPastaWeth90Farm10 = '0xa3e69eBCE417eE0508d6996340126aD60078fCDd';
+const balancerPYLON90Farm10 = '0x1e2dA0aa71155726C5C0E39AF76Ac0c2e8F74bEF';
+const UniUsdtFUsdt = '0x713f62ccf8545Ff1Df19E5d7Ab94887cFaf95677';
+const UniUsdcFUsdc = '0x4161Fa43eaA1Ac3882aeeD12C5FC05249e533e67';
+const UniDaiFDai = '0x007E383BF3c3Ffa12A5De06a53BAb103335eFF28';
+const UniWbtcFWbtc = '0xaebfeA924DE4080C14DF5C432cECe261934457E0';
+const UniWbtcFRenbtc = '0x007F74c5C82d68A138Cc3Bc623E51270279fa525';
+const UniWbtcFCrvWbtc = '0xb6A6a3D8EF31D9FAeb1AB1487aCe79Fe1f5df1BB';
+
+const swUsdAddress = '0x77C6E4a580c0dCE4E5c7a17d0bc077188a83A059';
+
+const compAddress = '0xc00e94Cb662C3520282E6f5717214004A7f26888';
+const renBtcAddress = '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D';
+const yYCrvAddress = '0x5dbcF33D8c2E976c6b560249878e6F1491Bca25c';
+const fttAddress = '0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9';
+const yEthAddress = '0xe1237aA7f535b0CC33Fd973D66cBf830354D16c7';
+const srmAddress = '0x476c5E26a75bd202a9683ffD34359C0CC15be0fF';
+
+const uniAddress = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984';
+const aaveAddress = '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9';
+
+const goughAddress = '0xad32A8e6220741182940c5aBF610bDE99E737b2D';
+const balancerWeth20Dough80Address = '0xFAE2809935233d4BfE8a56c2355c4A2e7d1fFf1A';
+const uniswapDaiDefiSAddress = '0x7aeFaF3ea1b465dd01561B0548c9FD969e3F76BA';
+const balancerDefiS70Weth30Address = '0x35333CF3Db8e334384EC6D2ea446DA6e445701dF';
+
+const pickleAddress = '0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5';
+const pickleSCrvJarAddress = '0x68d14d66B2B0d6E157c06Dc8Fefa3D8ba0e66a89';
+const pickleRenbtcCrvJarAddress = '0x2E35392F4c36EBa7eCAFE4de34199b2373Af22ec';
+const pickleThreeCrvJarV2Address = '0x1BB74b5DdC1f4fC91D6f9E7906cf68bc93538e33';
+const pickleUniswapWethDaiJarV2Address = '0xCffA068F1E44D98D3753966eBd58D4CFe3BB5162';
+const pickleUniswapWethUsdcJarV2Address = '0x53Bf2E62fA20e2b4522f05de3597890Ec1b352C6';
+const pickleUniswapWethUsdtJarV2Address = '0x09FC573c502037B149ba87782ACC81cF093EC6ef';
+const pickleUniswapWethWbtcJarAddress = '0xc80090AA05374d336875907372EE4ee636CBC562';
+
+const uniswapWethPickleAddress = '0xdc98556Ce24f007A5eF6dC1CE96322d65832A819';
+const pickleUniswapWethDaiJarAddress = '0xf79Ae82DCcb71ca3042485c85588a3E0C395D55b';
+const pickleUniswapWethUsdcJarAddress = '0x46206E9BDaf534d057be5EcF231DaD2A1479258B';
+const pickleUniswapWethUsdtJarAddress = '0x3a41AB1e362169974132dEa424Fb8079Fd0E94d8';
+const pickleThreeCrvJarAddress = '0x2385D31f1EB3736bE0C3629E6f03C4b3cd997Ffd';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -256,6 +446,9 @@ const aaveUniswapDebtAdapterTokens = [
   usdtAddress,
   ethAddress,
 ];
+const aaveStakingAdapterTokens = [
+  aaveAddress,
+];
 const ampleforthAdapterTokens = [
   amplAddress,
   uniAmplWethAddress,
@@ -263,6 +456,30 @@ const ampleforthAdapterTokens = [
 const aragonStakingAdapterTokens = [
   antAddress,
   uniAntWethAddress,
+];
+const bzxAssetAdapterTokens = [
+  iDaiAddress,
+  iEthAddress,
+  iUSDCAddress,
+  iWBTCAddress,
+  iLENDAddress,
+  iKNCAddress,
+  iMKRAddress,
+  iLINKAddress,
+  iYFIAddress,
+  iUSDTAddress,
+];
+const bzxDebtAdapterTokens = [
+  bzxDaiAddress,
+  bzxEthAddress,
+  bzxUSDCAddress,
+  bzxWBTCAddress,
+  bzxLENDAddress,
+  bzxKNCAddress,
+  bzxMKRAddress,
+  bzxLINKAddress,
+  bzxYFIAddress,
+  bzxUSDTAddress,
 ];
 const compoundAssetAdapterTokens = [
   cDAIAddress,
@@ -274,6 +491,7 @@ const compoundAssetAdapterTokens = [
   cUSDCAddress,
   cWBTCAddress,
   cUSDTAddress,
+  cUNIAddress,
 ];
 const compoundDebtAdapterTokens = [
   daiAddress,
@@ -285,7 +503,67 @@ const compoundDebtAdapterTokens = [
   usdcAddress,
   wbtcAddress,
   usdtAddress,
+  uniAddress,
 ];
+
+creamAssetAdapterTokens = [
+  crEthAddress,
+  crUsdtAddress,
+  crUsdcAddress,
+  crCompAddress,
+  crBalAddress,
+  crYfiAddress,
+  crYCrvAddress,
+  crLinkAddress,
+  crCreamAddress,
+  crLendAddress,
+  crCrvAddress,
+  crRenBtcAddress,
+  crBusdAddress,
+  crMtaAddress,
+  crYYCrvAddress,
+  crSushiAddress,
+  crFttAddress,
+  crYEthAddress,
+  crSrmAddress,
+];
+
+creamDebtAdapterTokens = [
+  ethAddress,
+  usdtAddress,
+  usdcAddress,
+  compAddress,
+  balAddress,
+  yfiAddress,
+  yCrvAddress,
+  linkAddress,
+  creamAddress,
+  lendAddress,
+  crvAddress,
+  renBtcAddress,
+  busdAddress,
+  mtaAddress,
+  yYCrvAddress,
+  sushiAddress,
+  fttAddress,
+  yEthAddress,
+  srmAddress,
+];
+
+creamStakingAdapterTokens = [
+  balancerCream80Weth20Address,
+  uniCreamWethAddress,
+  creamCreamUsdcAddress,
+  creamCreamWethAddress,
+  creamCrCreamCrYfiAddress,
+  creamCrYEthCrYYCrvAddress,
+  creamCrYEthWethAddrvess,
+  creamYYCrvUsdcAddress,
+  creamYfiUsdcAddress,
+  crCreamAddress,
+  creamAddress,
+];
+
 const curveAdapterTokens = [
   cCrvAddress,
   tCrvAddress,
@@ -306,6 +584,9 @@ const curveStakingAdapterTokens = [
   pCrvAddress,
   renCrvAddress,
   sbtcCrvAddress,
+];
+const curveVestingAdapterTokens = [
+  crvAddress,
 ];
 const ddexAdapterTokens = [
   busdAddress,
@@ -355,9 +636,56 @@ const iearn3AdapterTokens = [
   yUSDTv3,
   yBUSDv3,
 ];
+const harvestStakingAdapterTokens = [
+  farmAddress,
+  fDaiAddress,
+  fUsdcAddress,
+  fUsdtAddress,
+  balancerUsdc95Farm5Address,
+  uniUsdcFarmAddress,
+  daiAddress,
+  wethAddress,
+  linkAddress,
+  yfiAddress,
+  sushiAddress,
+  yfvAddress,
+  yfiiAddress,
+  ognAddress,
+  uniBasedSusdAddress,
+  uniPastaWethAddress,
+];
+const harvestStakingV2AdapterTokens = [
+  farmAddress,
+  balancerCrv90Farm10,
+  balancerSwrv90Farm10,
+  balancerUniSusdBased90Farm10,
+  balancerUniAmplWeth90Farm10,
+  balancerYFV90Farm10,
+  balancerSUSHI90Farm10,
+  balancerLINK90Farm10,
+  balancerUniPastaWeth90Farm10,
+  balancerPYLON90Farm10,
+  UniUsdtFUsdt,
+  UniUsdcFUsdc,
+  UniDaiFDai,
+  UniWbtcFWbtc,
+  UniWbtcFRenbtc,
+  UniWbtcFCrvWbtc,
+];
 const keeperDaoAdapterTokens = [
   kETHAddress,
   kWETHAddress,
+];
+const kimchiStakingAdapterTokens = [
+  kimchiAddress,
+  uniKimchiWeth,
+  uniKimchiSushi,
+  uniKimchiTend,
+  uniUsdtWethAddress,
+  uniUsdcWethAddress,
+  uniSusdWethAddress,
+  uniBandWethAddress,
+  uniYfiWethAddress,
 ];
 const kyberAdapterTokens = [
   kncAddress,
@@ -379,8 +707,14 @@ const mcdAssetAdapterTokens = [
 const mcdDebtAdapterTokens = [
   daiAddress,
 ];
+const maticStakingAdapterTokens = [
+  maticAddress,
+];
 const mstableAssetAdapterTokens = [
   mUsdAddress,
+];
+const nexusStakingAdapterTokens = [
+  nxmAddress,
 ];
 const mstableStakingAdapterTokens = [
   mtaAddress,
@@ -394,14 +728,93 @@ const mstableStakingAdapterTokens = [
 const chiAdapterTokens = [
   chiAddress,
 ];
+const pickleAssetAdapterTokens = [
+  pickleSCrvJarAddress,
+  pickleRenbtcCrvJarAddress,
+  pickleThreeCrvJarV2Address,
+  pickleUniswapWethDaiJarV2Address,
+  pickleUniswapWethUsdcJarV2Address,
+  pickleUniswapWethUsdtJarV2Address,
+  pickleUniswapWethWbtcJarAddress,
+];
+const pickleStakingV1AdapterTokens = [
+  pickleAddress,
+  sCrvAddress,
+];
+const pickleStakingV2AdapterTokens = [
+  pickleAddress,
+  uniswapWethPickleAddress,
+  uniUsdtWethAddress,
+  uniUsdcWethAddress,
+  uniDaiWethAddress,
+  uniSusdWethAddress,
+  pickleUniswapWethDaiJarAddress,
+  pickleUniswapWethUsdcJarAddress,
+  pickleUniswapWethUsdtJarAddress,
+  pickleThreeCrvJarAddress,
+  pickleSCrvJarAddress,
+  pickleUniswapWethDaiJarV2Address,
+  pickleUniswapWethUsdcJarV2Address,
+  pickleUniswapWethUsdtJarV2Address,
+];
 const pieDAOPieAdapterTokens = [
   BTCPPAddress,
   USDPPAddress,
+  DEFIPLAddress,
+  DEFIPSAddress,
+  DEFIPPAddress,
+];
+const pieDAOStakingAdapterTokens = [
+  goughAddress,
+  balancerWeth20Dough80Address,
+  uniswapDaiDefiSAddress,
+  balancerDefiS70Weth30Address,
 ];
 const poolTogetherAdapterTokens = [
   saiPoolAddress,
   daiPoolAddress,
   usdcPoolAddress,
+];
+const sashimiStakingAdapterTokens = [
+  sashimiAddress,
+  uniSashimiWethAddress,
+  uniSashimiElfAddress,
+  uniElfWethAddress,
+  uniWbtcWethAddress,
+  uniUsdtWethAddress,
+  uniUsdcWethAddress,
+  uniDaiWethAddress,
+  uniLinkWethAddress,
+  uniLendWethAddress,
+  uniSnxWethAddress,
+  uniYfiWethAddress,
+];
+const sushiStakingAdapterTokens = [
+  sushiAddress,
+  sushiSushiWethAddress,
+  sushiUsdtWethAddress,
+  sushiUsdcWethAddress,
+  sushiDaiWethAddress,
+  sushiSusdWethAddress,
+  sushiUmaWethAddress,
+  sushiBandWethAddress,
+  sushiLinkWethAddress,
+  sushiAmplWethAddress,
+  sushiCompWethAddress,
+  sushiLendWethAddress,
+  sushiSnxWethAddress,
+  sushiYfiWethAddress,
+  sushiRenWethAddress,
+  sushiBaseSusdAddress,
+  sushiSrmWethAddress,
+  sushiYam2WethAddress,
+  sushiCrvWethAddress,
+];
+const swerveAdapterTokens = [
+  swUsdAddress,
+];
+const swerveStakingAdapterTokens = [
+  swUsdAddress,
 ];
 const synthetixAssetAdapterTokens = [
   snxAddress,
@@ -411,6 +824,13 @@ const synthetixAssetAdapterTokens = [
 ];
 const synthetixDebtAdapterTokens = [
   susdAddress,
+];
+const uniswapV2StakingAdapterTokens = [
+  uniAddress,
+  uniDaiWethAddress,
+  uniUsdcWethAddress,
+  uniUsdcWethAddress,
+  uniWbtcWethAddress,
 ];
 const yearnStakingV1AdapterTokens = [
   yfiAddress,
@@ -435,8 +855,9 @@ let tokenAdapters = [];
 module.exports = async (deployer, network, accounts) => {
   await deployer.deploy(AaveAssetAdapter, { from: accounts[0] });
   await deployer.deploy(AaveDebtAdapter, { from: accounts[0] });
-  adapters.push([AaveAssetAdapter.address, AaveDebtAdapter.address]);
-  tokens.push([aaveAssetAdapterTokens, aaveDebtAdapterTokens]);
+  await deployer.deploy(AaveStakingAdapter, { from: accounts[0] });
+  adapters.push([AaveAssetAdapter.address, AaveDebtAdapter.address, AaveStakingAdapter.address]);
+  tokens.push([aaveAssetAdapterTokens, aaveDebtAdapterTokens, aaveStakingAdapterTokens]);
   protocolNames.push('Aave');
   metadata.push([
     'Aave',
@@ -507,6 +928,19 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(BzxAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(BzxDebtAdapter, { from: accounts[0] });
+  adapters.push([BzxAssetAdapter.address, BzxDebtAdapter.address]);
+  tokens.push([bzxAssetAdapterTokens, bzxDebtAdapterTokens]);
+  protocolNames.push('bZx');
+  metadata.push([
+    'bZx',
+    'Margin trading/lending and borrowing with bZx',
+    'bzx.network',
+    'protocol-icons.s3.amazonaws.com/TODO.png', // TODO
+    '0',
+  ]);
+
   await deployer.deploy(CompoundAssetAdapter, { from: accounts[0] });
   await deployer.deploy(CompoundDebtAdapter, { from: accounts[0] });
   adapters.push([CompoundAssetAdapter.address, CompoundDebtAdapter.address]);
@@ -520,10 +954,25 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(CreamAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(CreamDebtAdapter, { from: accounts[0] });
+  await deployer.deploy(CreamStakingAdapter, { from: accounts[0] });
+  adapters.push([CreamAssetAdapter.address, CreamDebtAdapter.address, CreamStakingAdapter.address]);
+  tokens.push([creamAssetAdapterTokens, creamDebtAdapterTokens, creamStakingAdapterTokens]);
+  protocolNames.push('C.R.E.A.M.');
+  metadata.push([
+    'C.R.E.A.M.',
+    'A lending platform based on Compound Finance and exchange platform based on Balancer Labs',
+    'cream.finance',
+    'protocol-icons.s3.amazonaws.com/cream.png',
+    '0',
+  ]);
+
   await deployer.deploy(CurveAdapter, { from: accounts[0] });
   await deployer.deploy(CurveStakingAdapter, { from: accounts[0] });
-  adapters.push([CurveAdapter.address, CurveStakingAdapter.address]);
-  tokens.push([curveAdapterTokens, curveStakingAdapterTokens]);
+  await deployer.deploy(CurveVestingAdapter, { from: accounts[0] });
+  adapters.push([CurveAdapter.address, CurveStakingAdapter.address, CurveVestingAdapter.address]);
+  tokens.push([curveAdapterTokens, curveStakingAdapterTokens, curveVestingAdapterTokens]);
   protocolNames.push('Curve');
   metadata.push([
     'Curve',
@@ -579,6 +1028,19 @@ module.exports = async (deployer, network, accounts) => {
     'Earn interest on crypto through revenue-producing real world assets',
     'defimoneymarket.com',
     'protocol-icons.s3.amazonaws.com/DMM.png',
+    '0',
+  ]);
+
+  await deployer.deploy(DodoAdapter, { from: accounts[0] });
+  await deployer.deploy(DodoStakingAdapter, { from: accounts[0] });
+  adapters.push([DodoAdapter.address, DodoStakingAdapter.address]);
+  tokens.push([[], []]);
+  protocolNames.push('DODO');
+  metadata.push([
+    'DODO',
+    'Your on-chain liquidity provider',
+    'dodoex.io',
+    'protocol-icons.s3.amazonaws.com/dodo.png',
     '0',
   ]);
 
@@ -659,6 +1121,19 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(HarvestStakingAdapter, { from: accounts[0] });
+  await deployer.deploy(HarvestStakingV2Adapter, { from: accounts[0] });
+  adapters.push([HarvestStakingAdapter.address, HarvestStakingV2Adapter.address]);
+  tokens.push([harvestStakingAdapterTokens, harvestStakingV2AdapterTokens]);
+  protocolNames.push('Harvest');
+  metadata.push([
+    'Harvest',
+    'Your hard work is about to become easier with Harvest',
+    'harvest.finance',
+    'protocol-icons.s3.amazonaws.com/harvest.png',
+    '0',
+  ]);
+
   await deployer.deploy(KeeperDaoAssetAdapter, { from: accounts[0] });
   adapters.push([KeeperDaoAssetAdapter.address]);
   tokens.push([keeperDaoAdapterTokens]);
@@ -668,6 +1143,18 @@ module.exports = async (deployer, network, accounts) => {
     'An on-chain liquidity underwriter for DeFi',
     'keeperdao.com',
     'protocol-icons.s3.amazonaws.com/keeperDAO.png',
+    '0',
+  ]);
+
+  await deployer.deploy(KimchiStakingAdapter, { from: accounts[0] });
+  adapters.push([KimchiStakingAdapter.address]);
+  tokens.push([[kimchiStakingAdapterTokens]]);
+  protocolNames.push('KIMCHI');
+  metadata.push([
+    'KIMCHI',
+    'Farm KIMCHI by staking LP tokens',
+    'kimchi.finance',
+    'protocol-icons.s3.amazonaws.com/kimchi.png',
     '0',
   ]);
 
@@ -744,6 +1231,18 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(MaticStakingAdapter, { from: accounts[0] });
+  adapters.push([MaticStakingAdapter.address]);
+  tokens.push([maticStakingAdapterTokens]);
+  protocolNames.push('Matic');
+  metadata.push([
+    'Matic',
+    'A scaling solution for public blockchains',
+    'matic.network',
+    'protocol-icons.s3.amazonaws.com/matic.png',
+    '0',
+  ]);
+
   await deployer.deploy(MstableAssetAdapter, { from: accounts[0] });
   await deployer.deploy(MstableStakingAdapter, { from: accounts[0] });
   adapters.push([MstableAssetAdapter.address, MstableStakingAdapter.address]);
@@ -754,6 +1253,18 @@ module.exports = async (deployer, network, accounts) => {
     'mStable unifies stablecoins, lending and swapping into one standard',
     'mstable.org',
     'protocol-icons.s3.amazonaws.com/mstable.png',
+    '0',
+  ]);
+
+  await deployer.deploy(NexusStakingAdapter, { from: accounts[0] });
+  adapters.push([NexusStakingAdapter.address]);
+  tokens.push([nexusStakingAdapterTokens]);
+  protocolNames.push('Nexus Mutual');
+  metadata.push([
+    'Nexus Mutual',
+    'A people-powered alternative to insurance',
+    'nexusmutual.io',
+    'protocol-icons.s3.amazonaws.com/nexusmutual.png',
     '0',
   ]);
 
@@ -769,9 +1280,32 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(PickleAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(PickleStakingV1Adapter, { from: accounts[0] });
+  await deployer.deploy(PickleStakingV2Adapter, { from: accounts[0] });
+  adapters.push([
+    PickleAssetAdapter.address,
+    PickleStakingV1Adapter.address,
+    PickleStakingV2Adapter.address,
+  ]);
+  tokens.push([
+    pickleAssetAdapterTokens,
+    pickleStakingV1AdapterTokens,
+    pickleStakingV2AdapterTokens,
+  ]);
+  protocolNames.push('Pickle Finance');
+  metadata.push([
+    'Pickle Finance',
+    'Off peg bad, on peg good',
+    'pickle.finance',
+    'protocol-icons.s3.us-east-1.amazonaws.com/pickle.png',
+    '0',
+  ]);
+
   await deployer.deploy(PieDAOPieAdapter, { from: accounts[0] });
-  adapters.push([PieDAOPieAdapter.address]);
-  tokens.push([pieDAOPieAdapterTokens]);
+  await deployer.deploy(PieDAOStakingAdapter, { from: accounts[0] });
+  adapters.push([PieDAOPieAdapter.address, PieDAOStakingAdapter.address]);
+  tokens.push([pieDAOPieAdapterTokens, pieDAOStakingAdapterTokens]);
   protocolNames.push('PieDAO');
   metadata.push([
     'PieDAO',
@@ -793,6 +1327,43 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(SashimiStakingAdapter, { from: accounts[0] });
+  adapters.push([SashimiStakingAdapter.address]);
+  tokens.push([[sashimiStakingAdapterTokens]]);
+  protocolNames.push('SashimiSwap');
+  metadata.push([
+    'SashimiSwap',
+    'Earn SASHIMI tokens by staking Uniswap V2 LP Tokens',
+    'sashimi.cool',
+    'protocol-icons.s3.amazonaws.com/sashimi.png',
+    '0',
+  ]);
+
+  await deployer.deploy(SushiStakingAdapter, { from: accounts[0] });
+  adapters.push([SushiStakingAdapter.address]);
+  tokens.push([[sushiStakingAdapterTokens]]);
+  protocolNames.push('SushiSwap');
+  metadata.push([
+    'SushiSwap',
+    'Stake Uniswap LP tokens to claim your very own yummy SUSHI!',
+    'sushiswap.org',
+    'protocol-icons.s3.amazonaws.com/sushi.png',
+    '0',
+  ]);
+
+  await deployer.deploy(SwerveAdapter, { from: accounts[0] });
+  await deployer.deploy(SwerveStakingAdapter, { from: accounts[0] });
+  adapters.push([SwerveAdapter.address, SwerveStakingAdapter.address]);
+  tokens.push([[swerveAdapterTokens, swerveStakingAdapterTokens]]);
+  protocolNames.push('Swerve');
+  metadata.push([
+    'Swerve',
+    'A fork that\'s 100% community owned and governed',
+    'swerve.fi',
+    'protocol-icons.s3.amazonaws.com/swerve.png',
+    '0',
+  ]);
+
   await deployer.deploy(SynthetixAssetAdapter, { from: accounts[0] });
   await deployer.deploy(SynthetixDebtAdapter, { from: accounts[0] });
   adapters.push([SynthetixAssetAdapter.address, SynthetixDebtAdapter.address]);
@@ -807,8 +1378,9 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(TokenSetsAdapter, { from: accounts[0] });
-  adapters.push([TokenSetsAdapter.address]);
-  tokens.push([[]]);
+  await deployer.deploy(TokenSetsV2Adapter, { from: accounts[0] });
+  adapters.push([TokenSetsAdapter.address, TokenSetsV2Adapter.address]);
+  tokens.push([[], []]);
   protocolNames.push('TokenSets');
   metadata.push([
     'TokenSets',
@@ -831,8 +1403,9 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(UniswapV2Adapter, { from: accounts[0] });
-  adapters.push([UniswapV2Adapter.address]);
-  tokens.push([[]]);
+  await deployer.deploy(UniswapV2StakingAdapter, { from: accounts[0] });
+  adapters.push([UniswapV2Adapter.address, UniswapV2StakingAdapter.address]);
+  tokens.push([[], uniswapV2StakingAdapterTokens]);
   protocolNames.push('Uniswap V2');
   metadata.push([
     'Uniswap V2',
@@ -884,6 +1457,12 @@ module.exports = async (deployer, network, accounts) => {
         BancorTokenAdapter.address,
       );
     });
+  await deployer.deploy(BzxTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        BzxTokenAdapter.address,
+      );
+    });
   await deployer.deploy(CompoundTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -900,6 +1479,12 @@ module.exports = async (deployer, network, accounts) => {
     .then(() => {
       tokenAdapters.push(
         DmmTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(DodoTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        DodoTokenAdapter.address,
       );
     });
   await deployer.deploy(IdleTokenAdapter, { from: accounts[0] })
@@ -950,6 +1535,12 @@ module.exports = async (deployer, network, accounts) => {
         PieDAOPieTokenAdapter.address,
       );
     });
+  await deployer.deploy(PickleTokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        PickleTokenAdapter.address,
+      );
+    });
   await deployer.deploy(PoolTogetherTokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -960,6 +1551,12 @@ module.exports = async (deployer, network, accounts) => {
     .then(() => {
       tokenAdapters.push(
         TokenSetsTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(TokenSetsV2TokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        TokenSetsV2TokenAdapter.address,
       );
     });
   await deployer.deploy(UniswapV1TokenAdapter, { from: accounts[0] })
@@ -993,9 +1590,11 @@ module.exports = async (deployer, network, accounts) => {
           'AToken Uniswap Market',
           'Balancer pool token',
           'SmartToken',
+          'iToken',
           'CToken',
           'Curve pool token',
           'MToken',
+          'DODO pool token',
           'IdleToken',
           'YToken',
           'KToken',
@@ -1003,9 +1602,11 @@ module.exports = async (deployer, network, accounts) => {
           'MelonToken',
           'Masset',
           'Chi token',
+          'PickleJar',
           'PieDAO Pie Token',
           'PoolTogether pool',
           'SetToken',
+          'SetToken V2',
           'Uniswap V1 pool token',
           'Uniswap V2 pool token',
         ],

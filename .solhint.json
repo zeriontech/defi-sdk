@@ -20,6 +20,9 @@
     ],
     "const-name-snakecase": [
       "off"
+    ],
+    "comprehensive-interface": [
+      "off"
     ]
   }
 }

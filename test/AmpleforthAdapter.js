@@ -13,12 +13,6 @@ contract('AmpleforthAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let erc20TokenAdapterAddress;
-  const ampl = [
-    amplAddress,
-    'Ampleforth',
-    'AMPL',
-    '9',
-  ];
   const amplUni = [
     amplUniAddress,
     'Uniswap V2',
@@ -76,11 +70,8 @@ contract('AmpleforthAdapter', () => {
       .call()
       .then((result) => {
         displayToken(result[0].adapterBalances[0].balances[0].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, ampl);
+        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, amplUni);
         assert.equal(result[0].adapterBalances[0].balances[0].underlying.length, 0);
-        displayToken(result[0].adapterBalances[0].balances[1].base);
-        assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, amplUni);
-        assert.equal(result[0].adapterBalances[0].balances[1].underlying.length, 0);
       });
   });
 });

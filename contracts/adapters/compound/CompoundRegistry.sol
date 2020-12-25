@@ -15,6 +15,8 @@
 
 pragma solidity 0.6.5;
 
+import { Ownable } from "../../Ownable.sol";
+
 
 /**
  * @title Registry for Compound contracts.
@@ -23,7 +25,7 @@ pragma solidity 0.6.5;
  * of CToken contract for the given token address.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract CompoundRegistry {
+contract CompoundRegistry is Ownable {
 
     mapping(address => address) internal cTokens;
 
@@ -37,6 +39,11 @@ contract CompoundRegistry {
         cTokens[0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48] = 0x39AA39c021dfbaE8faC545936693aC917d5E7563;
         cTokens[0xE41d2489571d322189246DaFA5ebDe1F4699F498] = 0xB3319f5D18Bc0D84dD1b4825Dcde5d5f7266d407;
         cTokens[0xdAC17F958D2ee523a2206206994597C13D831ec7] = 0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9;
+        cTokens[0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984] = 0x35A18000230DA775CAc24873d00Ff85BccdeD550;
+    }
+
+    function setCToken(address token, address cToken) external onlyOwner returns (address) {
+        return cTokens[token] = cToken;
     }
 
     function getCToken(address token) external view returns (address) {
