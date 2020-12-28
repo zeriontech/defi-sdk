@@ -224,7 +224,7 @@ contract Core is ReentrancyGuard {
             if (token == ETH) {
                 // solhint-disable-next-line avoid-low-level-calls
                 (bool success, ) = account.call{ value: actualAmount }(new bytes(0));
-                require(success, "ETH transfer to account failed");
+                require(success, "C: bad account");
             } else {
                 ERC20(token).safeTransfer(account, actualAmount, "C");
             }

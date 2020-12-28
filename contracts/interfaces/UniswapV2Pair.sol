@@ -34,7 +34,14 @@ interface UniswapV2Pair {
         bytes calldata
     ) external;
 
-    function getReserves() external view returns (uint112, uint112);
+    function getReserves()
+        external
+        view
+        returns (
+            uint112,
+            uint112,
+            uint32
+        );
 
     function token0() external view returns (address);
 
