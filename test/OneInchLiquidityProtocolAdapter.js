@@ -10,7 +10,7 @@ contract('OneInchLiquidityProtocolAdapter', () => {
   const usdcEthAddress = '0xc88d0510ac90ba00471c21bbb74ee966a25257a4';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-  const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
+  const testAddress = '0xCC6c1D21e8474b3578E69eB036C712AB08fFdfBb';
 
   let accounts;
   let adapterRegistry;

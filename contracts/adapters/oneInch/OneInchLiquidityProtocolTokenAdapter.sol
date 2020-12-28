@@ -22,17 +22,6 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 
 
 /**
- * @dev CToken contract interface.
- * Only the functions required for OneInchLiquidityProtocol contract are added.
- * The CToken contract is available here
- * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
- */
-interface CToken {
-    function isCToken() external view returns (bool);
-}
-
-
-/**
  * @dev OneInchLiquidityProtocol contract interface.
  * Only the functions required for OneInchLiquidityProtocolTokenAdapter contract are added.
  */
@@ -73,28 +62,12 @@ contract OneInchLiquidityProtocolTokenAdapter is TokenAdapter {
         for (uint256 i = 0; i < 2; i++) {
             underlyingTokens[i] = Component({
                 token: isETH(ERC20(tokens[i])) ? 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE : tokens[i],
-                tokenType: getTokenType(tokens[i]),
+                tokenType: "ERC20",
                 rate: uniBalanceOf(ERC20(tokens[i]), token) * 1e18 / totalSupply
             });
         }
 
         return underlyingTokens;
-    }
-
-    function getTokenType(address token) internal view returns (string memory) {
-        (bool success, bytes memory returnData) = token.staticcall{gas: 2000}(
-            abi.encodeWithSelector(CToken(token).isCToken.selector)
-        );
-
-        if (success) {
-            if (returnData.length == 32) {
-                return abi.decode(returnData, (bool)) ? "CToken" : "ERC20";
-            } else {
-                return "ERC20";
-            }
-        } else {
-            return "ERC20";
-        }
     }
 
     function uniBalanceOf(ERC20 token, address account) internal view returns (uint256) {
