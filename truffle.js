@@ -22,10 +22,9 @@ module.exports = {
     mainnet: {
       provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`, 0),
       network_id: 1,
-      gas: 8000000,
-      gasPrice: 1100000000,
-      timeoutBlocks: 200,
-      skipDryRun: true,
+      gas: 2000000,
+      gasPrice: 10100000000,
+      timeoutBlocks: 2000,
     },
     kovan: {
       provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://kovan.infura.io/v3/${process.env.INFURA_API_KEY}`, 0),
