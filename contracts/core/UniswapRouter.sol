@@ -33,6 +33,10 @@ contract UniswapRouter is BaseRouter {
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     address internal constant UNISWAP_FACTORY = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
     address internal constant SUSHISWAP_FACTORY = 0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac;
+    bytes32 internal constant UNISWAP_CODE_HASH =
+        0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f;
+    bytes32 internal constant SUSHISWAP_CODE_HASH =
+        0xe18a34eb0e04b04f7a0ac29a6e80748dca96319b42c54d679cb821dca90c6303;
 
     modifier ensure(uint256 deadline) {
         // solhint-disable-next-line not-rely-on-time
@@ -49,6 +53,7 @@ contract UniswapRouter is BaseRouter {
         address to,
         uint256 deadline
     ) external ensure(deadline) {
+        require(path.length >= 2, "UR: short path");
         require(path[0] == input.tokenAmount.token, "UR: bad path");
 
         address factory = getFactory(factoryType);
@@ -69,6 +74,7 @@ contract UniswapRouter is BaseRouter {
         address to,
         uint256 deadline
     ) external payable ensure(deadline) {
+        require(path.length >= 2, "UR: short path");
         require(path[0] == WETH, "UR: bad path");
 
         address factory = getFactory(factoryType);
@@ -92,6 +98,7 @@ contract UniswapRouter is BaseRouter {
         address to,
         uint256 deadline
     ) external ensure(deadline) {
+        require(path.length >= 2, "UR: short path");
         require(path[0] == input.tokenAmount.token, "UR: bad path[1]");
         require(path[path.length - 1] == WETH, "UR: bad path[2]");
 
@@ -143,7 +150,8 @@ contract UniswapRouter is BaseRouter {
                         hex"ff",
                         factory,
                         keccak256(abi.encodePacked(token0, token1)),
-                        hex"96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f" // init code hash
+                        // init code hash
+                        getCodeHash(factory)
                     )
                 )
             )
@@ -181,7 +189,6 @@ contract UniswapRouter is BaseRouter {
         uint256 amountIn,
         address[] memory path
     ) internal view returns (uint256[] memory) {
-        require(path.length >= 2, "UR: bad path");
         uint256[] memory amounts = new uint256[](path.length);
         amounts[0] = amountIn;
 
@@ -206,5 +213,9 @@ contract UniswapRouter is BaseRouter {
 
     function getFactory(FactoryType factoryType) internal pure returns (address) {
         return factoryType == FactoryType.Uniswap ? UNISWAP_FACTORY : SUSHISWAP_FACTORY;
+    }
+
+    function getCodeHash(address factory) internal pure returns (bytes32) {
+        return factory == UNISWAP_FACTORY ? UNISWAP_CODE_HASH : SUSHISWAP_CODE_HASH;
     }
 }

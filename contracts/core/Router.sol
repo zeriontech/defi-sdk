@@ -81,9 +81,6 @@ contract Router is
         core_ = core;
     }
 
-    // solhint-disable-next-line no-empty-blocks
-    receive() external payable {}
-
     /**
      * @notice Returns tokens mistakenly sent to this contract.
      * @dev Can be called only by this contract's owner.

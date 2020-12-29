@@ -32,6 +32,9 @@ abstract contract BaseRouter {
     event Executed(address indexed account, uint256 indexed share, address indexed beneficiary);
     event TokenTransfer(address indexed account, address indexed token, uint256 indexed amount);
 
+    // solhint-disable-next-line no-empty-blocks
+    receive() external payable {}
+
     function callPermit(address token, Permit memory permit) internal {
         (bool success, bytes memory returnData) =
             // solhint-disable-next-line avoid-low-level-calls
@@ -80,8 +83,8 @@ abstract contract BaseRouter {
         uint256 feeAmount = handleETHFee(fee);
         uint256 inputAmount = msg.value - feeAmount;
 
-        transferEther(destination, msg.value - feeAmount, "UR: bad destination");
-        emit TokenTransfer(account, ETH, msg.value - feeAmount);
+        transferEther(destination, inputAmount, "UR: bad destination");
+        emit TokenTransfer(account, ETH, inputAmount);
 
         return inputAmount;
     }

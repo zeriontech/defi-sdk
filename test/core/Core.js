@@ -729,7 +729,7 @@ contract('Core + Router', () => {
         });
     });
 
-    it.only('should tranfer DAI with permit', async () => {
+    it('should tranfer DAI with permit', async () => {
       sign = async function (permitData) {
         const typedData = {
           types: {
