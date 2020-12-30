@@ -57,38 +57,47 @@ contract BancorLiquidityProtectionAdapter is ProtocolAdapter {
 
     string public constant override tokenType = "ERC20";
 
-    address internal constant override LPS = 0xf5FAB5DBD2f3bf675dE4cB76517d4767013cfB55;
+address internal constant override LPS = 0xf5FAB5DBD2f3bf675dE4cB76517d4767013cfB55;
+address internal constant override BNT = 0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C;
 
-    /**
-     * @return Amount of SmartTokens locked in LiquidityProtection.
-     * @param token Address of the smart token.
-     * @dev Implementation of ProtocolAdapter interface function.
-     */
-    function getBalance(address token, address account) external view override returns (uint256) {
-        LiquidityProtectionStore liquidityProtectionStore = LiquidityProtectionStore(LPS);
-        LiquidityProtection liquidityProtection = LiquidityProtection(
-            liquidityProtectionStore.owner()
-        );
-        uint256[] memory ids = liquidityProtectionStore.protectedLiquidityIds(account);
+/**
+ * @return Amount of SmartTokens locked in LiquidityProtection.
+ * @param token Address of the smart token.
+ * @dev Implementation of ProtocolAdapter interface function.
+ */
+function getBalance(address token, address account) external view override returns (uint256) {
+LiquidityProtectionStore liquidityProtectionStore = LiquidityProtectionStore(LPS);
+LiquidityProtection liquidityProtection = LiquidityProtection(
+liquidityProtectionStore.owner()
+);
+uint256[] memory ids = liquidityProtectionStore.protectedLiquidityIds(account);
 
-        uint256 totalAmount = 0;
-        uint256 length = ids.length;
-        for (uint256 i = 0; i < length; i++) {
-            (, address smartToken,,,,,, ) = liquidityProtectionStore.protectedLiquidity(
-                ids[i]
-            );
-            if (smartToken == token) {
-                (, uint256 actualAmount,) = liquidityProtection.removeLiquidityReturn(
-                    ids[i],
-                    1000000,
-                    // solhint-disable-next-line not-rely-on-time
-                    now
-                );
+address reserveToken;
+uint256 actualAmount;
+uint256 bntAmount;
+uint256 totalAmount = 0;
+uint256 length = ids.length;
+for (uint256 i = 0; i < length; i++) {
+(,, reserveToken,,,,,) = liquidityProtectionStore.protectedLiquidity(
+ids[i]
+);
 
-                totalAmount += actualAmount;
-            }
-        }
+(, actualAmount, bntAmount) = liquidityProtection.removeLiquidityReturn(
+ids[i],
+1000000,
+// solhint-disable-next-line not-rely-on-time
+now
+);
 
-        return totalAmount;
+if (token == reserveToken) {
+totalAmount += actualAmount;
+}
+
+if (token == BNT) {
+totalAmount += bntAmount;
+}
+}
+
+return totalAmount;
     }
 }

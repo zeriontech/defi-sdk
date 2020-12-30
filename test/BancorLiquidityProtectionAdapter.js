@@ -1,7 +1,8 @@
 const ProtocolAdapter = artifacts.require('BancorLiquidityProtectionAdapter');
 
 contract.only('BancorLiquidityProtectionAdapter', () => {
-  const bntBethPoolAddress = '0xb1CD6e4153B2a390Cf00A6556b0fC1458C4A5533';
+  const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+  const bntAddress = '0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C';
   const testAddress = '0x42b9dF65B219B3dD36FF330A4dD8f327A6Ada990';
 
   let accounts;
@@ -15,8 +16,16 @@ contract.only('BancorLiquidityProtectionAdapter', () => {
       });
   });
 
-  it('should return correct balances', async () => {
-    await protocolAdapterContract.methods['getBalance(address,address)'](bntBethPoolAddress, testAddress)
+  it('should return correct balances for bnt', async () => {
+    await protocolAdapterContract.methods['getBalance(address,address)'](bntAddress, testAddress)
+      .call()
+      .then((result) => {
+        console.log(result);
+      });
+  });
+
+  it('should return correct balances for eth', async () => {
+    await protocolAdapterContract.methods['getBalance(address,address)'](ethAddress, testAddress)
       .call()
       .then((result) => {
         console.log(result);

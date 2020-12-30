@@ -63,7 +63,7 @@ contract OneInchLiquidityProtocolTokenAdapter is TokenAdapter {
             underlyingTokens[i] = Component({
                 token: isETH(ERC20(tokens[i])) ? 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE : tokens[i],
                 tokenType: "ERC20",
-                rate: uniBalanceOf(ERC20(tokens[i]), token) * 1e18 / totalSupply
+                rate: totalSupply == 0 ? 0 : uniBalanceOf(ERC20(tokens[i]), token) * 1e18 / totalSupply
             });
         }
 
