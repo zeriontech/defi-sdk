@@ -7,7 +7,7 @@ const CompoundTokenAdapter = artifacts.require('CompoundTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
 contract('OneInchLiquidityProtocolAdapter', () => {
-  const usdcEthAddress = '0xc88d0510ac90ba00471c21bbb74ee966a25257a4';
+  const usdcEthAddress = '0xbbcaf4dc53befcb85deb56edd9ff37efaeb00e74';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const testAddress = '0xCC6c1D21e8474b3578E69eB036C712AB08fFdfBb';
@@ -16,6 +16,7 @@ contract('OneInchLiquidityProtocolAdapter', () => {
   let adapterRegistry;
   let protocolAdapterAddress;
   let tokenAdapterAddress;
+  let tokenAdapter;
   let cTokenAdapterAddress;
   let erc20TokenAdapterAddress;
   const usdcEthMooni = [
@@ -46,6 +47,7 @@ contract('OneInchLiquidityProtocolAdapter', () => {
     await TokenAdapter.new({ from: accounts[0] })
       .then((result) => {
         tokenAdapterAddress = result.address;
+        tokenAdapter = result.contract;
       });
     await CompoundTokenAdapter.new({ from: accounts[0] })
       .then((result) => {
@@ -55,50 +57,13 @@ contract('OneInchLiquidityProtocolAdapter', () => {
       .then((result) => {
         erc20TokenAdapterAddress = result.address;
       });
-    await AdapterRegistry.new({ from: accounts[0] })
-      .then((result) => {
-        adapterRegistry = result.contract;
-      });
-    await adapterRegistry.methods.addProtocols(
-      ['OneInchLiquidityProtocol'],
-      [[
-        'Mock Protocol Name',
-        'Mock protocol description',
-        'Mock website',
-        'Mock icon',
-        '0',
-      ]],
-      [[
-        protocolAdapterAddress,
-      ]],
-      [[[
-        usdcEthAddress,
-      ]]],
-    )
-      .send({
-        from: accounts[0],
-        gas: '1000000',
-      });
-    await adapterRegistry.methods.addTokenAdapters(
-      ['ERC20', '1inch liquidity protocol token', 'CToken'],
-      [erc20TokenAdapterAddress, tokenAdapterAddress, cTokenAdapterAddress],
-    )
-      .send({
-        from: accounts[0],
-        gas: '1000000',
-      });
   });
 
   it('should return correct balances', async () => {
-    await adapterRegistry.methods['getBalances(address)'](testAddress)
+    await tokenAdapter.methods['getComponents(address)'](usdcEthAddress)
       .call()
       .then((result) => {
-        displayToken(result[0].adapterBalances[0].balances[0].base);
-        displayToken(result[0].adapterBalances[0].balances[0].underlying[0]);
-        displayToken(result[0].adapterBalances[0].balances[0].underlying[1]);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, usdcEthMooni);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, eth);
-        assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[1].metadata, usdc);
+        console.dir(result, { depth: null })
       });
   });
 });
