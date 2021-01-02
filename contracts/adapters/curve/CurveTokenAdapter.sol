@@ -104,7 +104,7 @@ contract CurveTokenAdapter is TokenAdapter {
         address underlyingToken;
         if (token == C_CRV || token == T_CRV || token == Y_CRV || token == B_CRV ||
             token == S_CRV || token == P_CRV || token == RENBTC_CRV || token == SBTC_CRV ||
-            token == BBTC_CRV) {
+            token == USDN_3CRV) {
             for (uint256 i = 0; i < totalCoins; i++) {
                 underlyingToken = stableswap(swap).coins(int128(i));
                 underlyingComponents[i] = Component({
