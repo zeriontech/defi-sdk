@@ -35,6 +35,12 @@ interface Staking {
 }
 
 /**
+ * @title Interactive Adapter for Akropolis Staking protocol.
+ * @dev Implementation of ProtocolAdapter interface.
+ * @author Alexander Mazaletskiy <am@akropolis.io>
+ */
+
+/**
  * @title Interactive adapter for Compound protocol.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
