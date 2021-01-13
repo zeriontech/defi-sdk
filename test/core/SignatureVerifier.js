@@ -149,13 +149,14 @@ contract('SignatureVerifier', () => {
         requiredOutputs: [
           {
             token: ethAddress,
-            amount: web3.utils.toWei('1', 'ether'),
+            absoluteAmount: web3.utils.toWei('1', 'ether'),
           },
         ],
         account: accounts[1],
         salt: 0,
       },
     );
+
     const data = [
       [
         [
@@ -181,8 +182,9 @@ contract('SignatureVerifier', () => {
       accounts[1],
       0,
     ];
+
     await signatureVerifier.methods.hashData(
-      data,
+      data[0], data[1], data[2], data[3], data[4], data[5],
     )
       .call()
       .then(async (hash) => {
@@ -192,7 +194,7 @@ contract('SignatureVerifier', () => {
         )
           .call()
           .then((result) => {
-            assert.equal(accounts[0], result);
+            assert.equal(result, accounts[0]);
           });
         await signatureVerifier.methods.isHashUsed(
           hash,
@@ -200,12 +202,12 @@ contract('SignatureVerifier', () => {
         )
           .call()
           .then((result) => {
-            assert.equal(false, result);
+            assert.equal(result, false);
           });
       });
 
     await expectRevert(signatureVerifier.methods.execute(
-      data,
+      data[0], data[1], data[2], data[3], data[4], data[5],
       signature,
     )
       .send({
@@ -253,6 +255,7 @@ contract('SignatureVerifier', () => {
         salt: 0,
       },
     );
+
     const data = [
       [
         [
@@ -278,8 +281,9 @@ contract('SignatureVerifier', () => {
       accounts[0],
       0,
     ];
+
     await signatureVerifier.methods.hashData(
-      data[0], data[1], data[2], data[3], data[4],
+      data[0], data[1], data[2], data[3], data[4], data[5],
     )
       .call()
       .then(async (hash) => {
@@ -289,7 +293,7 @@ contract('SignatureVerifier', () => {
         )
           .call()
           .then((result) => {
-            assert.equal(accounts[0], result);
+            assert.equal(result, accounts[0]);
           });
         await signatureVerifier.methods.isHashUsed(
           hash,
@@ -297,12 +301,12 @@ contract('SignatureVerifier', () => {
         )
           .call()
           .then((result) => {
-            assert.equal(false, result);
+            assert.equal(result, false);
           });
       });
 
     await signatureVerifier.methods.execute(
-      data[0], data[1], data[2], data[3], data[4],
+      data[0], data[1], data[2], data[3], data[4], data[5],
       signature,
     )
       .send({
@@ -310,8 +314,9 @@ contract('SignatureVerifier', () => {
         gas: 10000000,
         value: web3.utils.toWei('1', 'ether'),
       });
+
     await signatureVerifier.methods.hashData(
-      data[0], data[1], data[2], data[3], data[4],
+      data[0], data[1], data[2], data[3], data[4], data[5],
     )
       .call()
       .then(async (hash) => {
@@ -321,11 +326,12 @@ contract('SignatureVerifier', () => {
         )
           .call()
           .then((result) => {
-            assert.equal(true, result);
+            assert.equal(result, true);
           });
       });
+
     await expectRevert(signatureVerifier.methods.execute(
-      data[0], data[1], data[2], data[3], data[4],
+      data[0], data[1], data[2], data[3], data[4], data[5],
       signature,
     )
       .send({
@@ -373,6 +379,7 @@ contract('SignatureVerifier', () => {
         salt: 1,
       },
     );
+
     const data = [
       [
         [
@@ -398,8 +405,9 @@ contract('SignatureVerifier', () => {
       accounts[0],
       1,
     ];
+
     await signatureVerifier.methods.hashData(
-      data[0], data[1], data[2], data[3], data[4],
+      data[0], data[1], data[2], data[3], data[4], data[5],
     )
       .call()
       .then(async (hash) => {
@@ -409,7 +417,7 @@ contract('SignatureVerifier', () => {
         )
           .call()
           .then((result) => {
-            assert.equal(accounts[0], result);
+            assert.equal(result, accounts[0]);
           });
         await signatureVerifier.methods.isHashUsed(
           hash,
@@ -417,12 +425,12 @@ contract('SignatureVerifier', () => {
         )
           .call()
           .then((result) => {
-            assert.equal(false, result);
+            assert.equal(result, false);
           });
       });
 
     await signatureVerifier.methods.executeWithCHI(
-      data[0], data[1], data[2], data[3], data[4],
+      data[0], data[1], data[2], data[3], data[4], data[5],
       signature,
     )
       .send({
@@ -430,8 +438,9 @@ contract('SignatureVerifier', () => {
         gas: 10000000,
         value: web3.utils.toWei('1', 'ether'),
       });
+
     await signatureVerifier.methods.hashData(
-      data[0], data[1], data[2], data[3], data[4],
+      data[0], data[1], data[2], data[3], data[4], data[5],
     )
       .call()
       .then(async (hash) => {
@@ -441,11 +450,12 @@ contract('SignatureVerifier', () => {
         )
           .call()
           .then((result) => {
-            assert.equal(true, result);
+            assert.equal(result, true);
           });
       });
+
     await expectRevert(signatureVerifier.methods.execute(
-      data[0], data[1], data[2], data[3], data[4],
+      data[0], data[1], data[2], data[3], data[4], data[5],
       signature,
     )
       .send({
@@ -493,6 +503,7 @@ contract('SignatureVerifier', () => {
         salt: 0,
       },
     );
+
     const data = [
       [
         [
@@ -518,8 +529,9 @@ contract('SignatureVerifier', () => {
       accounts[0],
       0,
     ];
+
     await expectRevert(signatureVerifier.methods.hashData(
-      data[0], data[1], data[2], data[3], data[4],
+      data[0], data[1], data[2], data[3], data[4], data[5],
     )
       .call()
       .then(async (hash) => {
@@ -529,7 +541,7 @@ contract('SignatureVerifier', () => {
         )
           .call()
           .then((result) => {
-            assert.equal(accounts[0], result);
+            assert.equal(result, accounts[0]);
           });
       }));
   });

@@ -45,8 +45,8 @@ contract UniswapRouter is BaseRouter {
     }
 
     function swapExactTokensForTokens(
-        Input memory input,
-        Fee memory fee,
+        Input calldata input,
+        Fee calldata fee,
         FactoryType factoryType,
         uint256 amountOutMin,
         address[] calldata path,
@@ -67,7 +67,7 @@ contract UniswapRouter is BaseRouter {
     }
 
     function swapExactETHForTokens(
-        Fee memory fee,
+        Fee calldata fee,
         FactoryType factoryType,
         uint256 amountOutMin,
         address[] calldata path,
@@ -90,8 +90,8 @@ contract UniswapRouter is BaseRouter {
     }
 
     function swapExactTokensForETH(
-        Input memory input,
-        Fee memory fee,
+        Input calldata input,
+        Fee calldata fee,
         FactoryType factoryType,
         uint256 amountOutMin,
         address[] calldata path,
@@ -118,16 +118,17 @@ contract UniswapRouter is BaseRouter {
     function _swap(
         address factory,
         uint256[] memory amounts,
-        address[] memory path,
+        address[] calldata path,
         address _to
     ) internal {
-        for (uint256 i = 0; i < path.length - 1; i++) {
+        uint256 length = path.length - 1;
+        for (uint256 i = 0; i < length; i++) {
             (address input, address output) = (path[i], path[i + 1]);
             (address token0, ) = sortTokens(input, output);
             uint256 amountOut = amounts[i + 1];
             (uint256 amount0Out, uint256 amount1Out) =
                 input == token0 ? (uint256(0), amountOut) : (amountOut, uint256(0));
-            address to = i < path.length - 2 ? pairFor(factory, output, path[i + 2]) : _to;
+            address to = i < length - 1 ? pairFor(factory, output, path[i + 2]) : _to;
             UniswapV2Pair(pairFor(factory, input, output)).swap(
                 amount0Out,
                 amount1Out,
@@ -187,7 +188,7 @@ contract UniswapRouter is BaseRouter {
     function getAmountsOut(
         address factory,
         uint256 amountIn,
-        address[] memory path
+        address[] calldata path
     ) internal view returns (uint256[] memory) {
         uint256[] memory amounts = new uint256[](path.length);
         amounts[0] = amountIn;

@@ -100,7 +100,7 @@ contract('Core + Router', () => {
     });
 
     it('should be correct core', async () => {
-      await router.methods.core()
+      await router.methods.getCore()
         .call()
         .then((result) => {
           assert.equal(result, core.options.address);
@@ -108,7 +108,7 @@ contract('Core + Router', () => {
     });
 
     it('should be correct adapter registry', async () => {
-      await core.methods.protocolAdapterRegistry()
+      await core.methods.getProtocolAdapterRegistry()
         .call()
         .then((result) => {
           assert.equal(result, protocolAdapterRegistry.options.address);
@@ -278,6 +278,7 @@ contract('Core + Router', () => {
     });
 
     it('should execute withdraw action', async () => {
+      await web3.eth.sendTransaction({ to: wethAddress, from: accounts[0], value: 1 });
       await WETH.methods.approve(router.options.address, 1)
         .send({
           from: accounts[0],
@@ -401,6 +402,7 @@ contract('Core + Router', () => {
     });
 
     it('should return lost tokens', async () => {
+      await web3.eth.sendTransaction({ to: wethAddress, from: accounts[0], value: 1 });
       await WETH.methods.transfer(router.options.address, 1)
         .send({
           from: accounts[0],
@@ -429,7 +431,7 @@ contract('Core + Router', () => {
           from: accounts[0],
           gas: 1000000,
         });
-      await expectRevert(router.methods.returnLostTokens(ethAddress, router.options.address)
+      await expectRevert(router.methods.returnLostTokens(ethAddress, protocolAdapterAddress)
         .send({
           from: accounts[0],
           gas: 1000000,
@@ -663,7 +665,7 @@ contract('Core + Router', () => {
         // fee
         [
           web3.utils.toWei('0.01', 'ether'),
-          router.options.address,
+          protocolAdapterAddress,
         ],
         // outputs
         [],

@@ -94,102 +94,102 @@ contract Router is
     }
 
     /**
+     * @notice Executes actions and returns tokens to account.
+     * Uses CHI tokens previously approved by the msg.sender.
+     * @param actions Array of actions to be executed.
+     * @param inputs Array of tokens to be taken from the signer of this data.
+     * @param fee Fee share and beneficiary address.
+     * @param requiredOutputs Array of requirements for the returned tokens.
+     * @param account Address of the account that will receive the returned tokens.
+     * @param salt Number that makes this data unique.
+     * @param signature EIP712-compatible signature of data.
+     * @return Array of the returned tokens addresses and absolute amounts.
+     */
+    function executeWithCHI(
+        Action[] calldata actions,
+        Input[] calldata inputs,
+        Fee calldata fee,
+        AbsoluteTokenAmount[] calldata requiredOutputs,
+        address account,
+        uint256 salt,
+        bytes calldata signature
+    ) external payable useCHI returns (AbsoluteTokenAmount[] memory) {
+        bytes32 hashedData = hashData(actions, inputs, fee, requiredOutputs, account, salt);
+        require(account == getAccountFromSignature(hashedData, signature), "R: wrong account");
+
+        markHashUsed(hashedData, account);
+
+        return execute(actions, inputs, fee, requiredOutputs, account);
+    }
+
+    /**
+     * @notice Executes actions and returns tokens to account.
+     * Uses CHI tokens previously approved by the msg.sender.
+     * @param actions Array of actions to be executed.
+     * @param inputs Array of tokens to be taken from the msg.sender.
+     * @param fee Fee share and beneficiary address.
+     * @param requiredOutputs Array of requirements for the returned tokens.
+     * @return Array of the returned tokens addresses and absolute amounts.
+     */
+    function executeWithCHI(
+        Action[] calldata actions,
+        Input[] calldata inputs,
+        Fee calldata fee,
+        AbsoluteTokenAmount[] calldata requiredOutputs
+    ) external payable useCHI returns (AbsoluteTokenAmount[] memory) {
+        return execute(actions, inputs, fee, requiredOutputs, msg.sender);
+    }
+
+    /**
+     * @notice Executes actions and returns tokens to account.
+     * @param actions Array of actions to be executed.
+     * @param inputs Array of tokens to be taken from the signer of this data.
+     * @param fee Fee share and beneficiary address.
+     * @param requiredOutputs Array of requirements for the returned tokens.
+     * @param account Address of the account that will receive the returned tokens.
+     * @param salt Number that makes this data unique.
+     * @param signature EIP712-compatible signature of data.
+     * @return Array of the returned tokens addresses and absolute amounts.
+     */
+    function execute(
+        Action[] calldata actions,
+        Input[] calldata inputs,
+        Fee calldata fee,
+        AbsoluteTokenAmount[] calldata requiredOutputs,
+        address account,
+        uint256 salt,
+        bytes calldata signature
+    ) external payable returns (AbsoluteTokenAmount[] memory) {
+        bytes32 hashedData = hashData(actions, inputs, fee, requiredOutputs, account, salt);
+        require(account == getAccountFromSignature(hashedData, signature), "R: wrong account");
+
+        markHashUsed(hashedData, account);
+
+        return execute(actions, inputs, fee, requiredOutputs, account);
+    }
+
+    /**
+     * @notice Executes actions and returns tokens to account.
+     * @param actions Array of actions to be executed.
+     * @param inputs Array of tokens to be taken from the msg.sender.
+     * @param fee Fee share and beneficiary address.
+     * @param requiredOutputs Array of requirements for the returned tokens.
+     * @return Array of the returned tokens addresses and absolute amounts.
+     */
+    function execute(
+        Action[] calldata actions,
+        Input[] calldata inputs,
+        Fee calldata fee,
+        AbsoluteTokenAmount[] calldata requiredOutputs
+    ) external payable returns (AbsoluteTokenAmount[] memory) {
+        return execute(actions, inputs, fee, requiredOutputs, msg.sender);
+    }
+
+    /**
      * @return Address of the Core contract used.
      */
     function getCore() external view returns (address) {
         return core_;
-    }
-
-    /**
-     * @notice Executes actions and returns tokens to account.
-     * Uses CHI tokens previously approved by the msg.sender.
-     * @param actions Array of actions to be executed.
-     * @param inputs Array of tokens to be taken from the signer of this data.
-     * @param fee Fee share and beneficiary address.
-     * @param requiredOutputs Array of requirements for the returned tokens.
-     * @param account Address of the account that will receive the returned tokens.
-     * @param salt Number that makes this data unique.
-     * @param signature EIP712-compatible signature of data.
-     * @return Array of the returned tokens addresses and absolute amounts.
-     */
-    function executeWithCHI(
-        Action[] memory actions,
-        Input[] memory inputs,
-        Fee memory fee,
-        AbsoluteTokenAmount[] memory requiredOutputs,
-        address account,
-        uint256 salt,
-        bytes memory signature
-    ) public payable useCHI returns (AbsoluteTokenAmount[] memory) {
-        bytes32 hashedData = hashData(actions, inputs, fee, requiredOutputs, account, salt);
-        require(account == getAccountFromSignature(hashedData, signature), "R: wrong account");
-
-        markHashUsed(hashedData, account);
-
-        return execute(actions, inputs, fee, requiredOutputs, account);
-    }
-
-    /**
-     * @notice Executes actions and returns tokens to account.
-     * Uses CHI tokens previously approved by the msg.sender.
-     * @param actions Array of actions to be executed.
-     * @param inputs Array of tokens to be taken from the msg.sender.
-     * @param fee Fee share and beneficiary address.
-     * @param requiredOutputs Array of requirements for the returned tokens.
-     * @return Array of the returned tokens addresses and absolute amounts.
-     */
-    function executeWithCHI(
-        Action[] memory actions,
-        Input[] memory inputs,
-        Fee memory fee,
-        AbsoluteTokenAmount[] memory requiredOutputs
-    ) public payable useCHI returns (AbsoluteTokenAmount[] memory) {
-        return execute(actions, inputs, fee, requiredOutputs, msg.sender);
-    }
-
-    /**
-     * @notice Executes actions and returns tokens to account.
-     * @param actions Array of actions to be executed.
-     * @param inputs Array of tokens to be taken from the signer of this data.
-     * @param fee Fee share and beneficiary address.
-     * @param requiredOutputs Array of requirements for the returned tokens.
-     * @param account Address of the account that will receive the returned tokens.
-     * @param salt Number that makes this data unique.
-     * @param signature EIP712-compatible signature of data.
-     * @return Array of the returned tokens addresses and absolute amounts.
-     */
-    function execute(
-        Action[] memory actions,
-        Input[] memory inputs,
-        Fee memory fee,
-        AbsoluteTokenAmount[] memory requiredOutputs,
-        address account,
-        uint256 salt,
-        bytes memory signature
-    ) public payable returns (AbsoluteTokenAmount[] memory) {
-        bytes32 hashedData = hashData(actions, inputs, fee, requiredOutputs, account, salt);
-        require(account == getAccountFromSignature(hashedData, signature), "R: wrong account");
-
-        markHashUsed(hashedData, account);
-
-        return execute(actions, inputs, fee, requiredOutputs, account);
-    }
-
-    /**
-     * @notice Executes actions and returns tokens to account.
-     * @param actions Array of actions to be executed.
-     * @param inputs Array of tokens to be taken from the msg.sender.
-     * @param fee Fee share and beneficiary address.
-     * @param requiredOutputs Array of requirements for the returned tokens.
-     * @return Array of the returned tokens addresses and absolute amounts.
-     */
-    function execute(
-        Action[] memory actions,
-        Input[] memory inputs,
-        Fee memory fee,
-        AbsoluteTokenAmount[] memory requiredOutputs
-    ) public payable returns (AbsoluteTokenAmount[] memory) {
-        return execute(actions, inputs, fee, requiredOutputs, msg.sender);
     }
 
     /**
@@ -202,10 +202,10 @@ contract Router is
      * @return Array of AbsoluteTokenAmount structs with the returned tokens.
      */
     function execute(
-        Action[] memory actions,
-        Input[] memory inputs,
-        Fee memory fee,
-        AbsoluteTokenAmount[] memory requiredOutputs,
+        Action[] calldata actions,
+        Input[] calldata inputs,
+        Fee calldata fee,
+        AbsoluteTokenAmount[] calldata requiredOutputs,
         address account
     ) internal returns (AbsoluteTokenAmount[] memory) {
         // Transfer tokens to Core contract, handle fees (if any), and add these tokens to outputs
@@ -231,8 +231,8 @@ contract Router is
      * @param account Address of the account tokens will be transferred from.
      */
     function transferTokens(
-        Input[] memory inputs,
-        Fee memory fee,
+        Input[] calldata inputs,
+        Fee calldata fee,
         address account
     ) internal {
         if (fee.share > 0) {
@@ -256,7 +256,7 @@ contract Router is
      * @dev Appends tokens from inputs to the requiredOutputs list.
      * @return Array of AbsoluteTokenAmount structs with the resulting tokens.
      */
-    function modifyOutputs(AbsoluteTokenAmount[] memory requiredOutputs, Input[] memory inputs)
+    function modifyOutputs(AbsoluteTokenAmount[] calldata requiredOutputs, Input[] calldata inputs)
         internal
         view
         returns (AbsoluteTokenAmount[] memory)

@@ -36,7 +36,7 @@ abstract contract BaseRouter is Base {
      * @param token Address of the token to be called.
      * @param permit Permit type and calldata.
      */
-    function callPermit(address token, Permit memory permit) internal {
+    function callPermit(address token, Permit calldata permit) internal {
         (bool success, bytes memory returnData) =
             // solhint-disable-next-line avoid-low-level-calls
             token.call(
@@ -67,8 +67,8 @@ abstract contract BaseRouter is Base {
     function handleTokenInput(
         address account,
         address destination,
-        Input memory input,
-        Fee memory fee
+        Input calldata input,
+        Fee calldata fee
     ) internal returns (uint256) {
         uint256 absoluteAmount = getAbsoluteAmount(account, input.tokenAmount);
         require(absoluteAmount > 0, "BR: zero token amount");
@@ -82,7 +82,7 @@ abstract contract BaseRouter is Base {
         uint256 feeAmount = handleTokenFee(account, token, absoluteAmount, fee);
         uint256 inputAmount = absoluteAmount - feeAmount;
 
-        ERC20(token).safeTransferFrom(account, destination, inputAmount, "BR: bad token input");
+        ERC20(token).safeTransferFrom(account, destination, inputAmount, "BR: input");
         emit TokenTransfer(account, token, inputAmount);
 
         return inputAmount;
@@ -99,7 +99,7 @@ abstract contract BaseRouter is Base {
     function handleETHInput(
         address account,
         address destination,
-        Fee memory fee
+        Fee calldata fee
     ) internal returns (uint256) {
         require(msg.value > 0, "BR: zero ETH amount");
 
@@ -124,17 +124,12 @@ abstract contract BaseRouter is Base {
         address account,
         address token,
         uint256 absoluteAmount,
-        Fee memory fee
+        Fee calldata fee
     ) internal returns (uint256) {
         uint256 feeAmount = mul_(absoluteAmount, fee.share) / DELIMITER;
 
         if (feeAmount > 0) {
-            ERC20(token).safeTransferFrom(
-                account,
-                fee.beneficiary,
-                feeAmount,
-                "BR: bad token fee"
-            );
+            ERC20(token).safeTransferFrom(account, fee.beneficiary, feeAmount, "BR: fee");
         }
 
         return feeAmount;
@@ -145,7 +140,7 @@ abstract contract BaseRouter is Base {
      * @param fee Fee share and beneficiary address.
      * @return Fee amount.
      */
-    function handleETHFee(Fee memory fee) internal returns (uint256) {
+    function handleETHFee(Fee calldata fee) internal returns (uint256) {
         uint256 feeAmount = mul_(msg.value, fee.share) / DELIMITER;
 
         if (feeAmount > 0) {
@@ -160,7 +155,7 @@ abstract contract BaseRouter is Base {
      * @param tokenAmount Token address, its amount, and amount type.
      * @return Absolute token amount.
      */
-    function getAbsoluteAmount(address account, TokenAmount memory tokenAmount)
+    function getAbsoluteAmount(address account, TokenAmount calldata tokenAmount)
         internal
         view
         returns (uint256)

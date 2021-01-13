@@ -43,15 +43,20 @@ contract SignatureVerifier {
                 "Input[] inputs,",
                 "Fee fee,",
                 "AbsoluteTokenAmount[] requiredOutputs,",
-                "address account",
+                "address account,",
                 "uint256 salt",
                 ")",
-                ABSOLUTE_TOKEN_AMOUNT_TYPEHASH,
-                ACTION_TYPEHASH,
-                FEE_TYPEHASH,
-                INPUT_TYPEHASH,
-                PERMIT_TYPEHASH,
-                TOKEN_AMOUNT_TYPEHASH
+                "AbsoluteTokenAmount(address token,uint256 absoluteAmount)",
+                "Action(",
+                "bytes32 protocolAdapterName,",
+                "uint8 actionType,",
+                "TokenAmount[] tokenAmounts,",
+                "bytes data",
+                ")",
+                "Fee(uint256 share,address beneficiary)",
+                "Input(TokenAmount tokenAmount,Permit permit)",
+                "Permit(uint8 permitType,bytes permitCallData)",
+                "TokenAmount(address token,uint256 amount,uint8 amountType)"
             )
         );
     bytes32 internal constant ABSOLUTE_TOKEN_AMOUNT_TYPEHASH =
@@ -64,7 +69,7 @@ contract SignatureVerifier {
                 "uint8 actionType,",
                 "TokenAmount[] tokenAmounts,",
                 "bytes data)",
-                TOKEN_AMOUNT_TYPEHASH
+                "TokenAmount(address token,uint256 amount,uint8 amountType)"
             )
         );
     bytes32 internal constant FEE_TYPEHASH =
@@ -73,8 +78,8 @@ contract SignatureVerifier {
         keccak256(
             abi.encodePacked(
                 "Input(TokenAmount tokenAmount,Permit permit)",
-                PERMIT_TYPEHASH,
-                TOKEN_AMOUNT_TYPEHASH
+                "Permit(uint8 permitType,bytes permitCallData)",
+                "TokenAmount(address token,uint256 amount,uint8 amountType)"
             )
         );
     bytes32 internal constant PERMIT_TYPEHASH =
