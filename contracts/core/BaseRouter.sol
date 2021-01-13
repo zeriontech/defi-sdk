@@ -20,11 +20,10 @@ pragma solidity 0.7.3;
 import { Input, Fee, Permit, TokenAmount, AmountType, PermitType } from "../shared/Structs.sol";
 import { ERC20 } from "../interfaces/ERC20.sol";
 import { SafeERC20 } from "../shared/SafeERC20.sol";
+import { Base } from "./Base.sol";
 
-abstract contract BaseRouter {
+abstract contract BaseRouter is Base {
     using SafeERC20 for ERC20;
-
-    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     uint256 internal constant FEE_LIMIT = 1e16; // 1%
     uint256 internal constant DELIMITER = 1e18; // 100%
@@ -32,9 +31,11 @@ abstract contract BaseRouter {
     event Executed(address indexed account, uint256 indexed share, address indexed beneficiary);
     event TokenTransfer(address indexed account, address indexed token, uint256 indexed amount);
 
-    // solhint-disable-next-line no-empty-blocks
-    receive() external payable {}
-
+    /**
+     * @dev Calls the chosen permit() function.
+     * @param token Address of the token to be called.
+     * @param permit Permit type and calldata.
+     */
     function callPermit(address token, Permit memory permit) internal {
         (bool success, bytes memory returnData) =
             // solhint-disable-next-line avoid-low-level-calls
@@ -52,15 +53,27 @@ abstract contract BaseRouter {
         }
     }
 
+    /**
+     * @dev Transfers token from the accound address to the destination address.
+     * Calls permit() function if allowance is not enough.
+     * Handles fee if required.
+     * @param account Address of the account to transfer tokens from.
+     * @param destination Address of the destination to transfer tokens to.
+     * @param input Token address, its amount, and amount type,
+     *     as well as permit type and calldata.
+     * @param fee Fee share and beneficiary address.
+     * @return Amount after fee was charged.
+     */
     function handleTokenInput(
         address account,
         address destination,
         Input memory input,
         Fee memory fee
     ) internal returns (uint256) {
-        address token = input.tokenAmount.token;
         uint256 absoluteAmount = getAbsoluteAmount(account, input.tokenAmount);
-        require(absoluteAmount > 0, "BR: zero amount");
+        require(absoluteAmount > 0, "BR: zero token amount");
+
+        address token = input.tokenAmount.token;
 
         if (absoluteAmount > ERC20(token).allowance(account, address(this))) {
             callPermit(token, input.permit);
@@ -69,26 +82,44 @@ abstract contract BaseRouter {
         uint256 feeAmount = handleTokenFee(account, token, absoluteAmount, fee);
         uint256 inputAmount = absoluteAmount - feeAmount;
 
-        ERC20(token).safeTransferFrom(account, destination, inputAmount, "BR");
+        ERC20(token).safeTransferFrom(account, destination, inputAmount, "BR: bad token input");
         emit TokenTransfer(account, token, inputAmount);
 
         return inputAmount;
     }
 
+    /**
+     * @dev Transfers Ether from the accound address to the destination address.
+     * Handles fee if required.
+     * @param account Address of the account to transfer tokens from.
+     * @param destination Address of the destination to transfer tokens to.
+     * @param fee Fee share and beneficiary address.
+     * @return Amount after fee was charged.
+     */
     function handleETHInput(
         address account,
         address destination,
         Fee memory fee
     ) internal returns (uint256) {
+        require(msg.value > 0, "BR: zero ETH amount");
+
         uint256 feeAmount = handleETHFee(fee);
         uint256 inputAmount = msg.value - feeAmount;
 
-        transferEther(destination, inputAmount, "UR: bad destination");
+        transferEther(destination, inputAmount, "UR: bad ETH input");
         emit TokenTransfer(account, ETH, inputAmount);
 
         return inputAmount;
     }
 
+    /**
+     * @dev Handles token fee if required.
+     * @param account Address of the account to transfer fee from.
+     * @param token Address of the token to be transfered.
+     * @param absoluteAmount Absolute token amount to be transfered.
+     * @param fee Fee share and beneficiary address.
+     * @return Fee amount.
+     */
     function handleTokenFee(
         address account,
         address token,
@@ -98,22 +129,37 @@ abstract contract BaseRouter {
         uint256 feeAmount = mul_(absoluteAmount, fee.share) / DELIMITER;
 
         if (feeAmount > 0) {
-            ERC20(token).safeTransferFrom(account, fee.beneficiary, feeAmount, "BR");
+            ERC20(token).safeTransferFrom(
+                account,
+                fee.beneficiary,
+                feeAmount,
+                "BR: bad token fee"
+            );
         }
 
         return feeAmount;
     }
 
+    /**
+     * @dev Handles token fee if required.
+     * @param fee Fee share and beneficiary address.
+     * @return Fee amount.
+     */
     function handleETHFee(Fee memory fee) internal returns (uint256) {
         uint256 feeAmount = mul_(msg.value, fee.share) / DELIMITER;
 
         if (feeAmount > 0) {
-            transferEther(fee.beneficiary, feeAmount, "BR: bad beneficiary");
+            transferEther(fee.beneficiary, feeAmount, "BR: bad ETH fee");
         }
 
         return feeAmount;
     }
 
+    /**
+     * @param account Address of the account to transfer token from.
+     * @param tokenAmount Token address, its amount, and amount type.
+     * @return Absolute token amount.
+     */
     function getAbsoluteAmount(address account, TokenAmount memory tokenAmount)
         internal
         view
@@ -140,6 +186,10 @@ abstract contract BaseRouter {
         }
     }
 
+    /**
+     * @param permitType PermitType enum variable with permit type.
+     * @return permit() function signature corresponding to the given permit type.
+     */
     function getPermitSelector(PermitType permitType) internal pure returns (bytes4) {
         require(
             permitType == PermitType.EIP2612 ||
@@ -173,16 +223,9 @@ abstract contract BaseRouter {
         }
     }
 
-    function transferEther(
-        address to,
-        uint256 amount,
-        string memory error
-    ) internal {
-        // solhint-disable-next-line avoid-low-level-calls
-        (bool success, ) = to.call{ value: amount }(new bytes(0));
-        require(success, error);
-    }
-
+    /**
+     * @dev Safe multiplication operation.
+     */
     function mul_(uint256 a, uint256 b) internal pure returns (uint256) {
         if (a == 0) {
             return 0;
@@ -194,6 +237,9 @@ abstract contract BaseRouter {
         return c;
     }
 
+    /**
+     * @dev Safe addition operation.
+     */
     function add_(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
         require(c >= a, "BR: add_ overflow");

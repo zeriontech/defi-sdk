@@ -167,6 +167,6 @@ abstract contract TokenAdapterManager is Ownable {
      * @param tokenAdapterNames Array of token adapters' names.
      */
     function validateInput(bytes32[] calldata tokenAdapterNames) internal pure {
-        require(tokenAdapterNames.length != 0, "PAM: empty");
+        require(tokenAdapterNames.length != 0, "TAM: empty");
     }
 }

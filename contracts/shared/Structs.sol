@@ -67,18 +67,6 @@ struct Component {
 
 //=============================== Interactive Adapters Structs ====================================
 
-// The struct consists of array of actions, array of inputs,
-// fee, array of required outputs, account,
-// and salt parameter used to protect users from double spends.
-struct TransactionData {
-    Action[] actions;
-    Input[] inputs;
-    Fee fee;
-    AbsoluteTokenAmount[] requiredOutputs;
-    address account;
-    uint256 salt;
-}
-
 // The struct consists of name of the protocol adapter,
 // action type, array of token amounts,
 // and some additional data (depends on the protocol).
@@ -104,8 +92,8 @@ struct Permit {
     bytes permitCallData;
 }
 
-// The struct consists of token address
-// its amount and amount type.
+// The struct consists of token address,
+// its amount, and amount type.
 // 0xEeee...EEeE is used for Ether
 struct TokenAmount {
     address token;

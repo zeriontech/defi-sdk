@@ -31,18 +31,17 @@ import { ProtocolAdapterRegistry } from "./ProtocolAdapterRegistry.sol";
 import { SafeERC20 } from "../shared/SafeERC20.sol";
 import { Helpers } from "../shared/Helpers.sol";
 import { ReentrancyGuard } from "./ReentrancyGuard.sol";
+import { Base } from "./Base.sol";
 
 /**
  * @title Main contract executing actions.
  */
-contract Core is ReentrancyGuard {
+contract Core is ReentrancyGuard, Base {
     using SafeERC20 for ERC20;
     using Helpers for uint256;
     using Helpers for address;
 
     address internal immutable protocolAdapterRegistry_;
-
-    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     event ExecutedAction(
         bytes32 indexed protocolAdapterName,
@@ -56,9 +55,6 @@ contract Core is ReentrancyGuard {
 
         protocolAdapterRegistry_ = protocolAdapterRegistry;
     }
-
-    // solhint-disable-next-line no-empty-blocks
-    receive() external payable {}
 
     /**
      * @notice Executes actions and returns tokens to account.
@@ -121,6 +117,7 @@ contract Core is ReentrancyGuard {
             action.actionType == ActionType.Deposit || action.actionType == ActionType.Withdraw,
             "C: bad action type"
         );
+
         bytes4 selector;
         if (action.actionType == ActionType.Deposit) {
             selector = InteractiveAdapter.deposit.selector;
@@ -222,9 +219,7 @@ contract Core is ReentrancyGuard {
 
         if (actualAmount > 0) {
             if (token == ETH) {
-                // solhint-disable-next-line avoid-low-level-calls
-                (bool success, ) = account.call{ value: actualAmount }(new bytes(0));
-                require(success, "C: bad account");
+                transferEther(account, actualAmount, "C: bad account");
             } else {
                 ERC20(token).safeTransfer(account, actualAmount, "C");
             }

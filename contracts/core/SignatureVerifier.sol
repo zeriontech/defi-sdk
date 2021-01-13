@@ -34,7 +34,7 @@ contract SignatureVerifier {
     bytes32 internal immutable nameHash_;
 
     bytes32 internal constant DOMAIN_SEPARATOR_TYPEHASH =
-        keccak256("EIP712Domain(string name,address verifyingContract)");
+        keccak256("EIP712Domain(string name,uint256 chainId,address verifyingContract)");
     bytes32 internal constant EXECUTE_TYPEHASH =
         keccak256(
             abi.encodePacked(
@@ -46,35 +46,16 @@ contract SignatureVerifier {
                 "address account",
                 "uint256 salt",
                 ")",
-                "AbsoluteTokenAmount(address token,uint256 absoluteAmount)",
-                "Action(",
-                "bytes32 protocolAdapterName,",
-                "uint8 actionType,",
-                "TokenAmount[] tokenAmounts,",
-                "bytes data",
-                ")",
-                "Fee(uint256 share,address beneficiary)",
-                "Input(TokenAmount tokenAmount,Permit permit)",
-                "Permit(uint8 permitType,bytes permitCallData)",
-                "TokenAmount(address token,uint256 amount,uint8 amountType)"
+                ABSOLUTE_TOKEN_AMOUNT_TYPEHASH,
+                ACTION_TYPEHASH,
+                FEE_TYPEHASH,
+                INPUT_TYPEHASH,
+                PERMIT_TYPEHASH,
+                TOKEN_AMOUNT_TYPEHASH
             )
         );
     bytes32 internal constant ABSOLUTE_TOKEN_AMOUNT_TYPEHASH =
         keccak256(abi.encodePacked("AbsoluteTokenAmount(address token,uint256 absoluteAmount)"));
-    bytes32 internal constant INPUT_TYPEHASH =
-        keccak256(
-            abi.encodePacked(
-                "Input(TokenAmount tokenAmount,Permit permit)",
-                "Permit(uint8 permitType,bytes permitCallData)",
-                "TokenAmount(address token,uint256 amount,uint8 amountType)"
-            )
-        );
-    bytes32 internal constant TOKEN_AMOUNT_TYPEHASH =
-        keccak256(abi.encodePacked("TokenAmount(address token,uint256 amount,uint8 amountType)"));
-    bytes32 internal constant PERMIT_TYPEHASH =
-        keccak256(abi.encodePacked("Permit(uint8 permitType,bytes permitCallData)"));
-    bytes32 internal constant FEE_TYPEHASH =
-        keccak256(abi.encodePacked("Fee(uint256 share,address beneficiary)"));
     bytes32 internal constant ACTION_TYPEHASH =
         keccak256(
             abi.encodePacked(
@@ -83,9 +64,23 @@ contract SignatureVerifier {
                 "uint8 actionType,",
                 "TokenAmount[] tokenAmounts,",
                 "bytes data)",
-                "TokenAmount(address token,uint256 amount,uint8 amountType)"
+                TOKEN_AMOUNT_TYPEHASH
             )
         );
+    bytes32 internal constant FEE_TYPEHASH =
+        keccak256(abi.encodePacked("Fee(uint256 share,address beneficiary)"));
+    bytes32 internal constant INPUT_TYPEHASH =
+        keccak256(
+            abi.encodePacked(
+                "Input(TokenAmount tokenAmount,Permit permit)",
+                PERMIT_TYPEHASH,
+                TOKEN_AMOUNT_TYPEHASH
+            )
+        );
+    bytes32 internal constant PERMIT_TYPEHASH =
+        keccak256(abi.encodePacked("Permit(uint8 permitType,bytes permitCallData)"));
+    bytes32 internal constant TOKEN_AMOUNT_TYPEHASH =
+        keccak256(abi.encodePacked("TokenAmount(address token,uint256 amount,uint8 amountType)"));
 
     constructor(string memory name) {
         nameHash_ = keccak256(abi.encodePacked(name));
@@ -114,10 +109,10 @@ contract SignatureVerifier {
     }
 
     /**
-     * @param actions Action structs list to be hashed.
-     * @param inputs Input structs list to be hashed.
+     * @param actions Action structs array to be hashed.
+     * @param inputs Input structs array to be hashed.
      * @param fee Fee struct to be hashed.
-     * @param requiredOutputs AbsoluteTokenAmount structs list to be hashed.
+     * @param requiredOutputs AbsoluteTokenAmount structs array to be hashed.
      * @param account Account address to be hashed.
      * @param salt Salt parameter preventing double-spending to be hashed.
      * @return Execute data hashed with domainSeparator.
@@ -130,12 +125,17 @@ contract SignatureVerifier {
         address account,
         uint256 salt
     ) public view returns (bytes32) {
+        bytes32 domainSeparator =
+            keccak256(
+                abi.encode(DOMAIN_SEPARATOR_TYPEHASH, nameHash_, getChainId(), address(this))
+            );
+
         return
             keccak256(
                 abi.encodePacked(
                     bytes1(0x19),
                     bytes1(0x01),
-                    domainSeparator_,
+                    domainSeparator,
                     hash(actions, inputs, fee, requiredOutputs, account, salt)
                 )
             );
@@ -152,10 +152,10 @@ contract SignatureVerifier {
     }
 
     /**
-     * @param actions Action structs list to be hashed.
-     * @param inputs Input structs list to be hashed.
+     * @param actions Action structs array to be hashed.
+     * @param inputs Input structs array to be hashed.
      * @param fee Fee struct to be hashed.
-     * @param requiredOutputs AbsoluteTokenAmount structs list to be hashed.
+     * @param requiredOutputs AbsoluteTokenAmount structs array to be hashed.
      * @param account Account address to be hashed.
      * @param salt Salt parameter preventing double-spending to be hashed.
      * @return Execute data hashed.
@@ -168,23 +168,23 @@ contract SignatureVerifier {
         address account,
         uint256 salt
     ) internal pure returns (bytes32) {
-        return keccak256(
-            abi.encode(
-                EXECUTE_TYPEHASH,
-                hash(actions),
-                hash(inputs),
-                hash(fee),
-                hash(requiredOutputs),
-                account,
-                salt
-            )
-        );
+        return
+            keccak256(
+                abi.encode(
+                    EXECUTE_TYPEHASH,
+                    hash(actions),
+                    hash(inputs),
+                    hash(fee),
+                    hash(requiredOutputs),
+                    account,
+                    salt
+                )
+            );
     }
 
     /**
-     * @dev Hashes Action structs list.
-     * @param actions Action structs list to be hashed.
-     * @return Hashed Action structs list.
+     * @param actions Action structs array to be hashed.
+     * @return Hashed Action structs array.
      */
     function hash(Action[] memory actions) internal pure returns (bytes32) {
         bytes memory actionsData = new bytes(0);
@@ -209,31 +209,40 @@ contract SignatureVerifier {
     }
 
     /**
-     * @dev Hashes TokenAmount structs list.
-     * @param tokenAmounts TokenAmount structs list to be hashed.
-     * @return Hashed TokenAmount structs list.
+     * @param tokenAmounts TokenAmount structs array to be hashed.
+     * @return Hashed TokenAmount structs array.
      */
     function hash(TokenAmount[] memory tokenAmounts) internal pure returns (bytes32) {
         bytes memory tokenAmountsData = new bytes(0);
 
         uint256 length = tokenAmounts.length;
         for (uint256 i = 0; i < length; i++) {
-            tokenAmountsData = abi.encodePacked(
-                tokenAmountsData,
-                keccak256(
-                    abi.encode(
-                        TOKEN_AMOUNT_TYPEHASH,
-                        tokenAmounts[i].token,
-                        tokenAmounts[i].amount,
-                        tokenAmounts[i].amountType
-                    )
-                )
-            );
+            tokenAmountsData = abi.encodePacked(tokenAmountsData, hash(tokenAmounts[i]));
         }
 
         return keccak256(tokenAmountsData);
     }
 
+    /**
+     * @param tokenAmount TokenAmount struct to be hashed.
+     * @return Hashed TokenAmount struct.
+     */
+    function hash(TokenAmount memory tokenAmount) internal pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encode(
+                    TOKEN_AMOUNT_TYPEHASH,
+                    tokenAmount.token,
+                    tokenAmount.amount,
+                    tokenAmount.amountType
+                )
+            );
+    }
+
+    /**
+     * @param inputs Input structs array to be hashed.
+     * @return Hashed Input structs array.
+     */
     function hash(Input[] memory inputs) internal pure returns (bytes32) {
         bytes memory inputsData = new bytes(0);
 
@@ -250,6 +259,11 @@ contract SignatureVerifier {
         return keccak256(inputsData);
     }
 
+    /**
+     * @dev Hashes Permit struct.
+     * @param permit Permit struct to be hashed.
+     * @return Hashed Permit struct.
+     */
     function hash(Permit memory permit) internal pure returns (bytes32) {
         return
             keccak256(
@@ -271,9 +285,9 @@ contract SignatureVerifier {
     }
 
     /**
-     * @dev Hashes AbsoluteTokenAmount structs list.
-     * @param absoluteTokenAmounts AbsoluteTokenAmount structs list to be hashed.
-     * @return Hashed AbsoluteTokenAmount structs list.
+     * @dev Hashes AbsoluteTokenAmount structs array.
+     * @param absoluteTokenAmounts AbsoluteTokenAmount structs array to be hashed.
+     * @return Hashed AbsoluteTokenAmount structs array.
      */
     function hash(AbsoluteTokenAmount[] memory absoluteTokenAmounts)
         internal
@@ -305,6 +319,7 @@ contract SignatureVerifier {
     function getChainId() internal pure returns (uint256) {
         uint256 chainId;
 
+        // solhint-disable-next-line no-inline-assembly
         assembly {
             chainId := chainid()
         }

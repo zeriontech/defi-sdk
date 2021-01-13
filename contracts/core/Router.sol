@@ -25,8 +25,7 @@ import {
     Fee,
     Input,
     PermitType,
-    TokenAmount,
-    TransactionData
+    TokenAmount
 } from "../shared/Structs.sol";
 import { ERC20 } from "../interfaces/ERC20.sol";
 import { SafeERC20 } from "../shared/SafeERC20.sol";
@@ -34,6 +33,7 @@ import { Helpers } from "../shared/Helpers.sol";
 import { ChiToken } from "../interfaces/ChiToken.sol";
 import { Core } from "./Core.sol";
 import { BaseRouter } from "./BaseRouter.sol";
+import { Base } from "./Base.sol";
 import { Ownable } from "./Ownable.sol";
 import { SignatureVerifier } from "./SignatureVerifier.sol";
 import { UniswapRouter } from "./UniswapRouter.sol";
@@ -43,8 +43,8 @@ interface Chi {
 }
 
 contract Router is
-    Logger,
     Ownable,
+    Base,
     BaseRouter,
     UniswapRouter,
     SignatureVerifier("Zerion Router v1.1")
@@ -59,8 +59,8 @@ contract Router is
     /**
      * @dev The amount used as second parameter of freeFromUpTo() function
      * is the solution of the following equation:
-     * 21000 + calldataCost + executionCost + constBurnCost + n * perTokenBurnCost =
-     * 2 * (24000 * n + otherRefunds)
+     *     21000 + calldataCost + executionCost + constBurnCost + n * perTokenBurnCost =
+     *         2 * (24000 * n + otherRefunds)
      * Here,
      *     calldataCost = 7 * msg.data.length
      *     executionCost = 21000 + gasStart - gasleft()
@@ -103,27 +103,26 @@ contract Router is
     /**
      * @notice Executes actions and returns tokens to account.
      * Uses CHI tokens previously approved by the msg.sender.
-     * @param data TransactionData struct with the following elements:
      * @param actions Array of actions to be executed.
      * @param inputs Array of tokens to be taken from the signer of this data.
-     * @param fee Fee struct with fee details.
+     * @param fee Fee share and beneficiary address.
      * @param requiredOutputs Array of requirements for the returned tokens.
      * @param account Address of the account that will receive the returned tokens.
      * @param salt Number that makes this data unique.
      * @param signature EIP712-compatible signature of data.
-     * @return Array of AbsoluteTokenAmount structs with the returned tokens.
-     * @dev This function uses CHI token to refund some gas.
+     * @return Array of the returned tokens addresses and absolute amounts.
      */
     function executeWithCHI(
         Action[] memory actions,
         Input[] memory inputs,
         Fee memory fee,
         AbsoluteTokenAmount[] memory requiredOutputs,
+        address account,
         uint256 salt,
         bytes memory signature
     ) public payable useCHI returns (AbsoluteTokenAmount[] memory) {
-        bytes32 hashedData = hashData(actions, inputs, fee, requiredOutputs, salt);
-        address payable account = getAccountFromSignature(hashedData, signature);
+        bytes32 hashedData = hashData(actions, inputs, fee, requiredOutputs, account, salt);
+        require(account == getAccountFromSignature(hashedData, signature), "R: wrong account");
 
         markHashUsed(hashedData, account);
 
@@ -135,10 +134,9 @@ contract Router is
      * Uses CHI tokens previously approved by the msg.sender.
      * @param actions Array of actions to be executed.
      * @param inputs Array of tokens to be taken from the msg.sender.
-     * @param fee Fee struct with fee details.
+     * @param fee Fee share and beneficiary address.
      * @param requiredOutputs Array of requirements for the returned tokens.
-     * @return Array of AbsoluteTokenAmount structs with the returned tokens.
-     * @dev This function uses CHI token to refund some gas.
+     * @return Array of the returned tokens addresses and absolute amounts.
      */
     function executeWithCHI(
         Action[] memory actions,
@@ -146,22 +144,21 @@ contract Router is
         Fee memory fee,
         AbsoluteTokenAmount[] memory requiredOutputs
     ) public payable useCHI returns (AbsoluteTokenAmount[] memory) {
-        return execute(actions, inputs, fee, requiredOutputs);
+        return execute(actions, inputs, fee, requiredOutputs, msg.sender);
     }
 
     /**
      * @notice Executes actions and returns tokens to account.
-     * @param data TransactionData struct with the following elements:
      * @param actions Array of actions to be executed.
      * @param inputs Array of tokens to be taken from the signer of this data.
-     * @param fee Fee struct with fee details.
+     * @param fee Fee share and beneficiary address.
      * @param requiredOutputs Array of requirements for the returned tokens.
      * @param account Address of the account that will receive the returned tokens.
      * @param salt Number that makes this data unique.
      * @param signature EIP712-compatible signature of data.
-     * @return Array of AbsoluteTokenAmount structs with the returned tokens.
+     * @return Array of the returned tokens addresses and absolute amounts.
      */
-    function executeWithCHI(
+    function execute(
         Action[] memory actions,
         Input[] memory inputs,
         Fee memory fee,
@@ -169,32 +166,22 @@ contract Router is
         address account,
         uint256 salt,
         bytes memory signature
-    ) public payable useCHI returns (AbsoluteTokenAmount[] memory) {
-        bytes32 hashedData = hashData(actions, inputs, fee, requiredOutputs, salt);
-        require(
-            data.account == getAccountFromSignature(hashedData, signature),
-            "R: wrong account"
-        );
+    ) public payable returns (AbsoluteTokenAmount[] memory) {
+        bytes32 hashedData = hashData(actions, inputs, fee, requiredOutputs, account, salt);
+        require(account == getAccountFromSignature(hashedData, signature), "R: wrong account");
 
         markHashUsed(hashedData, account);
 
-        return
-            execute(
-                actions,
-                inputs,
-                fee,
-                requiredOutputs,
-                payable(account)
-            );
+        return execute(actions, inputs, fee, requiredOutputs, account);
     }
 
     /**
      * @notice Executes actions and returns tokens to account.
      * @param actions Array of actions to be executed.
      * @param inputs Array of tokens to be taken from the msg.sender.
-     * @param fee Fee struct with fee details.
+     * @param fee Fee share and beneficiary address.
      * @param requiredOutputs Array of requirements for the returned tokens.
-     * @return Array of AbsoluteTokenAmount structs with the returned tokens.
+     * @return Array of the returned tokens addresses and absolute amounts.
      */
     function execute(
         Action[] memory actions,
@@ -219,7 +206,7 @@ contract Router is
         Input[] memory inputs,
         Fee memory fee,
         AbsoluteTokenAmount[] memory requiredOutputs,
-        address payable account
+        address account
     ) internal returns (AbsoluteTokenAmount[] memory) {
         // Transfer tokens to Core contract, handle fees (if any), and add these tokens to outputs
         transferTokens(inputs, fee, account);
@@ -227,7 +214,7 @@ contract Router is
 
         // Call Core contract with all provided ETH, actions, expected outputs and account address
         AbsoluteTokenAmount[] memory actualOutputs =
-            Core(payable(core_)).executeActions(actions, modifiedOutputs, account);
+            Core(payable(core_)).executeActions(actions, modifiedOutputs, payable(account));
 
         // Emit event so one could track account and fees of this tx.
         emit Executed(account, fee.share, fee.beneficiary);
@@ -269,10 +256,11 @@ contract Router is
      * @dev Appends tokens from inputs to the requiredOutputs list.
      * @return Array of AbsoluteTokenAmount structs with the resulting tokens.
      */
-    function modifyOutputs(
-        AbsoluteTokenAmount[] memory requiredOutputs,
-        Input[] memory inputs
-    ) internal view returns (AbsoluteTokenAmount[] memory) {
+    function modifyOutputs(AbsoluteTokenAmount[] memory requiredOutputs, Input[] memory inputs)
+        internal
+        view
+        returns (AbsoluteTokenAmount[] memory)
+    {
         uint256 ethInput = msg.value > 0 ? 1 : 0;
         AbsoluteTokenAmount[] memory modifiedOutputs =
             new AbsoluteTokenAmount[](requiredOutputs.length + inputs.length + ethInput);
