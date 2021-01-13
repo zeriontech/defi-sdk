@@ -22,7 +22,7 @@ const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 const WETH9 = artifacts.require('./WETH9');
 
-contract('UniswapRouter', () => {
+contract.only('UniswapRouter', () => {
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 
