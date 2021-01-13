@@ -9,3 +9,4 @@ coverage.json
 .log
 .env
 ganache.log
+.DS_Store

@@ -44,6 +44,17 @@ contract UniswapRouter is BaseRouter {
         _;
     }
 
+    /**
+     * @notice Swaps ERC20 token to ERC20 token.
+     * @param input Token address, its amount, and amount type,
+     *     as well as permit type and calldata.
+     * @param fee Fee share and beneficiary address.
+     * @param factoryType Whether to use UniswapV2 or SushiSwap factory.
+     * @param amountOutMin The minimum amount of resulting token.
+     * @param path Array of tokens to be swapped.
+     * @param to Address to transfer resulting token to.
+     * @param deadline Timestamp the transaction must be executed up to.
+     */
     function swapExactTokensForTokens(
         Input calldata input,
         Fee calldata fee,
@@ -66,6 +77,15 @@ contract UniswapRouter is BaseRouter {
         _swap(factory, amounts, path, to);
     }
 
+    /**
+     * @notice Swaps Ether to ERC20 token.
+     * @param fee Fee share and beneficiary address.
+     * @param factoryType Whether to use UniswapV2 or SushiSwap factory.
+     * @param amountOutMin The minimum amount of resulting token.
+     * @param path Array of tokens to be swapped.
+     * @param to Address to transfer resulting token to.
+     * @param deadline Timestamp the transaction must be executed up to.
+     */
     function swapExactETHForTokens(
         Fee calldata fee,
         FactoryType factoryType,
@@ -89,6 +109,17 @@ contract UniswapRouter is BaseRouter {
         _swap(factory, amounts, path, to);
     }
 
+    /**
+     * @notice Swaps ERC20 token to Ether.
+     * @param input Token address, its amount, and amount type,
+     *     as well as permit type and calldata.
+     * @param fee Fee share and beneficiary address.
+     * @param factoryType Whether to use UniswapV2 or SushiSwap factory.
+     * @param amountOutMin The minimum amount of resulting token.
+     * @param path Array of tokens to be swapped.
+     * @param to Address to transfer resulting token to.
+     * @param deadline Timestamp the transaction must be executed up to.
+     */
     function swapExactTokensForETH(
         Input calldata input,
         Fee calldata fee,

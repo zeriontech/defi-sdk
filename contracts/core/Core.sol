@@ -144,7 +144,7 @@ contract Core is ReentrancyGuard, Base {
     }
 
     /**
-     * @notice Returns tokens to the account used as function parameter.
+     * @notice Returns tokens to the account address.
      * @param requiredOutputs Array with required amounts for the returned tokens.
      * @param tokensToBeWithdrawn Array with the tokens returned by the adapters.
      * @param account Address that will receive all the resulting funds.
@@ -185,7 +185,7 @@ contract Core is ReentrancyGuard, Base {
 
     /**
      * @notice Checks the requirement for the given token and (in case the check passes)
-     * transfers tokens to the account used as function parameter.
+     * transfers tokens to the account address.
      * @param token Address of the returned token.
      * @param requiredAmount Required amount for the returned token.
      * @param account Address that will receive the returned token.

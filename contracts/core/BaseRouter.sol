@@ -136,7 +136,7 @@ abstract contract BaseRouter is Base {
     }
 
     /**
-     * @dev Handles token fee if required.
+     * @dev Handles Ether fee if required.
      * @param fee Fee share and beneficiary address.
      * @return Fee amount.
      */

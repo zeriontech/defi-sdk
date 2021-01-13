@@ -196,7 +196,7 @@ contract Router is
      * @dev Executes actions and returns tokens to account.
      * @param actions Array of actions to be executed.
      * @param inputs Array of tokens to be taken from the account address.
-     * @param fee Fee struct with fee details.
+     * @param fee Fee share and beneficiary address.
      * @param requiredOutputs Array of requirements for the returned tokens.
      * @param account Address of the account that will receive the returned tokens.
      * @return Array of AbsoluteTokenAmount structs with the returned tokens.
@@ -227,7 +227,7 @@ contract Router is
      * @dev Transfers tokens from account address to the core_ contract
      * and takes fees if needed.
      * @param inputs Array of tokens to be taken from the account address.
-     * @param fee Fee struct with fee details.
+     * @param fee Fee share and beneficiary address.
      * @param account Address of the account tokens will be transferred from.
      */
     function transferTokens(
