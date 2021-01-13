@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.3;
+pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
 import {
@@ -87,12 +87,12 @@ contract SignatureVerifier {
     }
 
     /**
-     * @param hash Hash to be checked.
+     * @param hashToCheck Hash to be checked.
      * @param account Address of the hash will be checked for.
      * @return True if hash has already been used by this account address.
      */
-    function isHashUsed(bytes32 hash, address account) public view returns (bool) {
-        return isHashUsed_[hash][account];
+    function isHashUsed(bytes32 hashToCheck, address account) public view returns (bool) {
+        return isHashUsed_[hashToCheck][account];
     }
 
     /**
@@ -143,12 +143,12 @@ contract SignatureVerifier {
 
     /**
      * @dev Marks hash as used by the given account.
-     * @param hash Hash to be marked is used.
+     * @param hashToMark Hash to be marked as used one.
      * @param account Account using the hash.
      */
-    function markHashUsed(bytes32 hash, address account) internal {
-        require(!isHashUsed_[hash][account], "SV: used hash!");
-        isHashUsed_[hash][account] = true;
+    function markHashUsed(bytes32 hashToMark, address account) internal {
+        require(!isHashUsed_[hashToMark][account], "SV: used hash!");
+        isHashUsed_[hashToMark][account] = true;
     }
 
     /**

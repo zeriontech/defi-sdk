@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.3;
+pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
 import {
@@ -96,7 +96,7 @@ contract Router is
     /**
      * @return Address of the Core contract used.
      */
-    function core() external view returns (address) {
+    function getCore() external view returns (address) {
         return core_;
     }
 

@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.3;
+pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
 import {
@@ -98,7 +98,7 @@ contract Core is ReentrancyGuard, Base {
     /**
      * @return Address of the ProtocolAdapterRegistry contract used.
      */
-    function protocolAdapterRegistry() external view returns (address) {
+    function getProtocolAdapterRegistry() external view returns (address) {
         return protocolAdapterRegistry_;
     }
 
