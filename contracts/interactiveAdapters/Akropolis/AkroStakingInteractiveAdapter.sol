@@ -28,8 +28,14 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
  * @dev Staking contract interface.
  * Only the functions required for AkroStakingAdapter contract are added.
  */
-interface Staking {
+interface AkroStaking {
     function stake(uint256 amout, bytes calldata _data) external;
+
+    function stakeFor(
+        address _user,
+        uint256 _amount,
+        bytes memory _data
+    ) external;
 
     function unstakeAllUnlocked(bytes calldata _data) external returns (uint256);
 }
@@ -68,8 +74,14 @@ contract AkroStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         ERC20(token).safeApprove(STAKING, amount, "AKROIA");
+
+        //get user data from calldata
+        address userAddress = abi.decode(data, (address));
+
         // solhint-disable-next-line no-empty-blocks
-        try Staking(STAKING).stake(amount, "0x")  {} catch Error(string memory reason) {
+        try AkroStaking(STAKING).stakeFor(userAddress, amount, "0x")  {} catch Error(
+            string memory reason
+        ) {
             revert(reason);
         } catch {
             revert("AKROIA: stake fail");
@@ -97,7 +109,7 @@ contract AkroStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         tokensToBeWithdrawn[0] = tokenAmounts[0].token;
 
         // solhint-disable-next-line no-empty-blocks
-        try Staking(STAKING).unstakeAllUnlocked("0x")  {} catch Error(string memory reason) {
+        try AkroStaking(STAKING).unstakeAllUnlocked("0x")  {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("AKROIA: unstake fail");
