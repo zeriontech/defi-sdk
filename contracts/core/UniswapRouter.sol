@@ -207,7 +207,6 @@ contract UniswapRouter is BaseRouter {
         uint256 reserveIn,
         uint256 reserveOut
     ) internal pure returns (uint256 amountOut) {
-        require(amountIn > 0, "UR: bad input");
         require(reserveIn > 0 && reserveOut > 0, "UR: low loquidity");
         uint256 amountInWithFee = mul_(amountIn, 997);
         uint256 numerator = mul_(amountInWithFee, reserveOut);
