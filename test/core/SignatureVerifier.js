@@ -215,6 +215,16 @@ contract.only('SignatureVerifier', () => {
         gas: 10000000,
         value: web3.utils.toWei('1', 'ether'),
       }));
+
+    await expectRevert(signatureVerifier.methods.executeWithCHI(
+      data[0], data[1], data[2], data[3], data[4], data[5],
+      signature,
+    )
+      .send({
+        from: accounts[0],
+        gas: 10000000,
+        value: web3.utils.toWei('1', 'ether'),
+      }));
   });
 
   it('should be correct signer for execute', async () => {
@@ -364,7 +374,19 @@ contract.only('SignatureVerifier', () => {
             ),
           },
         ],
-        inputs: [],
+        inputs: [
+          {
+            tokenAmount: {
+              token: wethAddress,
+              amount: 1,
+              amountType: 2,
+            },
+            permit: {
+              permitType: 0,
+              permitCallData: '0x',
+            },
+          },
+        ],
         fee: {
           share: 0,
           beneficiary: ZERO,
@@ -397,7 +419,12 @@ contract.only('SignatureVerifier', () => {
           ),
         ],
       ],
-      [],
+      [
+        [
+          [wethAddress, 1, 2],
+          [0, '0x'],
+        ],
+      ],
       [0, ZERO],
       [
         [ethAddress, web3.utils.toWei('1', 'ether')],
