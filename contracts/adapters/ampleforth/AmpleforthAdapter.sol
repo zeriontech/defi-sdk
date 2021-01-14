@@ -42,26 +42,25 @@ contract AmpleforthAdapter is ProtocolAdapter {
 
     string public constant override tokenType = "ERC20";
 
-    address internal constant AMPL = 0xD46bA6D942050d489DBd938a2C909A5d5039A161;
     address internal constant UNI_AMPL_WETH = 0xc5be99A02C6857f9Eac67BbCE58DF5572498F40c;
 
     address internal constant GEYSER_PILOT = 0xD36132E0c1141B26E62733e018f12Eb38A7b7678;
     address internal constant GEYSER_BEEHIVE_V1 = 0x0eEf70ab0638A763acb5178Dd3C62E49767fd940;
     address internal constant GEYSER_BEEHIVE_V2 = 0x23796Bc856ed786dCC505984fd538f91dAD3194A;
+    address internal constant GEYSER_BEEHIVE_V3 = 0x075Bb66A472AB2BBB8c215629C77E8ee128CC2Fc;
 
     /**
      * @return AMPL balance or amount of UNI-tokens locked on the protocol by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        if (token == AMPL) {
-            return ERC20(AMPL).balanceOf(account);
-        } else if (token == UNI_AMPL_WETH) {
+        if (token == UNI_AMPL_WETH) {
             uint totalStaked = 0;
 
             totalStaked += TokenGeyser(GEYSER_PILOT).totalStakedFor(account);
             totalStaked += TokenGeyser(GEYSER_BEEHIVE_V1).totalStakedFor(account);
             totalStaked += TokenGeyser(GEYSER_BEEHIVE_V2).totalStakedFor(account);
+            totalStaked += TokenGeyser(GEYSER_BEEHIVE_V3).totalStakedFor(account);
 
             return totalStaked;
         } else {
