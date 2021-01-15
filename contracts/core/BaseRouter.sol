@@ -203,8 +203,8 @@ abstract contract BaseRouter is Base {
         //        // keccak256(abi.encodePacked('permit(address,address,uint256,uint256,bool,uint8,bytes32,bytes32)'))
         //        0x8fcbaf0c,
         //        // PermitType.Yearn
-        //        // keccak256(abi.encodePacked('permit(address,address,uint256,uint256,bytes[65])'))
-        //        0x53ab5ce3
+        //        // keccak256(abi.encodePacked('permit(address,address,uint256,uint256,bytes)'))
+        //        0x9fd5a6cf
         //    ];
 
         if (permitType == PermitType.EIP2612) {
@@ -212,7 +212,7 @@ abstract contract BaseRouter is Base {
         } else if (permitType == PermitType.DAI) {
             return 0x8fcbaf0c;
         } else if (permitType == PermitType.Yearn) {
-            return 0x53ab5ce3;
+            return 0x9fd5a6cf;
         } else {
             return bytes4(0);
         }
