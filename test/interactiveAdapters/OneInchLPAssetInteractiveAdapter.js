@@ -39,7 +39,7 @@ const ERC20 = artifacts.require('./ERC20');
 contract.only('OneInchLPAssetInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const oneInchAddress = '0x111111111117dC0aa78b770fA6A738034120C302';
-  const oneInchDaiAddress = '0x7566126f2fD0f2Dddae01Bb8A6EA49b760383D5A';
+  const oneInchDaiAddress = '0xa60A4ff8CF89D5E3d87B62ef68b3801685F22f41';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
@@ -126,8 +126,8 @@ contract.only('OneInchLPAssetInteractiveAdapter', () => {
       });
   });
 
-  describe('Uniswap V2 asset tests', () => {
-    it('should prepare for tests buyng dai for WETH', async () => {
+  describe('1inch LP asset tests', () => {
+    it('should prepare for tests buyng DAI and 1INCH for WETH', async () => {
       // exchange 1 ETH to WETH like we had WETH initially
       await router.methods.execute(
         // actions
@@ -180,7 +180,10 @@ contract.only('OneInchLPAssetInteractiveAdapter', () => {
         ],
         // inputs
         [
-          [wethAddress, web3.utils.toWei('0.6', 'ether'), AMOUNT_ABSOLUTE],
+          [
+            [wethAddress, web3.utils.toWei('0.6', 'ether'), AMOUNT_ABSOLUTE],
+            [0, EMPTY_BYTES],
+          ],
         ],
         // fee
         [0, ZERO],
@@ -193,7 +196,7 @@ contract.only('OneInchLPAssetInteractiveAdapter', () => {
         });
     });
 
-    it('should buy 1 UNI-V2 with existing DAI and WETH', async () => {
+    it('should buy 1 1LP with existing DAI and 1INCH', async () => {
       let daiAmount;
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -229,15 +232,21 @@ contract.only('OneInchLPAssetInteractiveAdapter', () => {
             ONE_INCH_LP_ASSET_ADAPTER,
             ACTION_DEPOSIT,
             [
-              [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
               [oneInchAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameters('address', oneInchDaiAddress),
+            web3.eth.abi.encodeParameter('address', oneInchDaiAddress),
           ],
         ],
         [
-          [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
-          [oneInchAddress, convertToShare(1), AMOUNT_RELATIVE],
+          [
+            [oneInchAddress, convertToShare(1), AMOUNT_RELATIVE],
+            [0, EMPTY_BYTES],
+          ],
+          [
+            [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
+            [0, EMPTY_BYTES],
+          ],
         ],
         [0, ZERO],
         [
@@ -318,7 +327,10 @@ contract.only('OneInchLPAssetInteractiveAdapter', () => {
           ],
         ],
         [
-          [oneInchDaiAddress, convertToShare(1), AMOUNT_RELATIVE],
+          [
+            [oneInchDaiAddress, convertToShare(1), AMOUNT_RELATIVE],
+            [0, EMPTY_BYTES],
+          ],
         ],
         [0, ZERO],
         [],
