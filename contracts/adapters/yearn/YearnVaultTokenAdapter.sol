@@ -15,11 +15,11 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.6;
+pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../interfaces/ERC20.sol";
-import { Component } from "../../shared/Structs.sol";
+import { ERC20 } from "../../ERC20.sol";
+import { TokenMetadata, Component } from "../../Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
 
 /**
@@ -64,7 +64,7 @@ contract YearnVaultTokenAdapter is TokenAdapter {
         components[0] = Component({
             token: Vault(token).token(),
             tokenType: "ERC20",
-            rate: Vault(token).pricePerShare()
+            rate: Vault(token).pricePerShare() * (10 ** uint256(18 - ERC20(token).decimals()))
         });
 
         return components;

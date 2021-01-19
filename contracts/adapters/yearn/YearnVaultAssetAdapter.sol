@@ -25,7 +25,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract PoolTogetherV3Adapter is ProtocolAdapter {
+contract YearnVaultAssetAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
