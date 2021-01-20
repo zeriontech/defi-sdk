@@ -46,6 +46,7 @@ contract('CurveAssetInteractiveAdapter', () => {
   const renbtcPoolToken = '0x49849C98ae39Fff122806C06791Fa73784FB3675';
   const sbtcPoolToken = '0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3';
   const hbtcPoolToken = '0xb19059ebb43466C323583928285a49f558E572Fd';
+  const stethPoolToken = '0x06325440D014e39736583c165C2963BA99fAf14E';
 
   const renBTCAddress = '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D';
   const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
@@ -1162,6 +1163,151 @@ contract('CurveAssetInteractiveAdapter', () => {
         });
       await WBTC.methods['balanceOf(address)'](core.options.address)
         .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await poolToken.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
+    it('should buy steth curve pool for 1 eth', async () => {
+      poolTokenAddress = stethPoolToken;
+      await ERC20.at(stethPoolToken)
+        .then((result) => {
+          poolToken = result.contract;
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`       eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await poolToken.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await router.methods.execute(
+        [
+          [
+            CURVE_ASSET_ADAPTER,
+            ACTION_DEPOSIT,
+            [
+              [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
+            ],
+            web3.eth.abi.encodeParameters(
+              [
+                'address',
+                'uint256',
+              ],
+              [
+                poolTokenAddress,
+                0,
+              ],
+            ),
+          ],
+        ],
+        [],
+        [0, ZERO],
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+          value: web3.utils.toWei('1', 'ether'),
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`        eth amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await poolToken.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(` pool token amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(core.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await poolToken.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
+    it('should sell 100% of ETH pool tokens', async () => {
+      poolTokenAddress = stethPoolToken;
+      await ERC20.at(poolTokenAddress)
+        .then((result) => {
+          poolToken = result.contract;
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`       eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      let poolAmount;
+      await poolToken.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          poolAmount = result;
+          console.log(`pool token amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await poolToken.methods.approve(router.options.address, poolAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        });
+      await router.methods.execute(
+        [
+          [
+            CURVE_ASSET_ADAPTER,
+            ACTION_WITHDRAW,
+            [
+              [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            web3.eth.abi.encodeParameters(
+              [
+                'address',
+                'uint256',
+              ],
+              [
+                ethAddress,
+                0,
+              ],
+            ),
+          ],
+        ],
+        [
+          [
+            [poolTokenAddress, convertToShare(1), AMOUNT_RELATIVE],
+            [0, EMPTY_BYTES],
+          ],
+        ],
+        [0, ZERO],
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`        eth amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await poolToken.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(` pool token amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(core.options.address)
         .then((result) => {
           assert.equal(result, 0);
         });

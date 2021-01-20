@@ -4,40 +4,53 @@ import convertToShare from '../helpers/convertToShare';
 import convertToBytes32 from '../helpers/convertToBytes32';
 
 const YEARN_ADAPTER = convertToBytes32('yearn.finance').slice(0, -2);
+const CURVE_ADAPTER = convertToBytes32('Curve').slice(0, -2);
 const ASSET_ADAPTER = '01';
 const YEARN_ASSET_ADAPTER = `${YEARN_ADAPTER}${ASSET_ADAPTER}`;
+const CURVE_ASSET_ADAPTER = `${CURVE_ADAPTER}${ASSET_ADAPTER}`;
 
 const ACTION_DEPOSIT = 1;
 const ACTION_WITHDRAW = 2;
 const AMOUNT_RELATIVE = 1;
-// const AMOUNT_ABSOLUTE = 2;
+const AMOUNT_ABSOLUTE = 2;
 const EMPTY_BYTES = '0x';
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
 const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
 const InteractiveAdapter = artifacts.require('./YearnAssetInteractiveAdapter');
+const CurveAdapter = artifacts.require('./CurveAssetInteractiveAdapter');
 const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
 contract('YearnAssetInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+  const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const ydaiAddress = '0xACd43E627e64355f1861cEC6d3a6688B31a6F952';
+  const stethPoolAddress = '0x06325440D014e39736583c165C2963BA99fAf14E';
+  const ystethAddress = '0xdCD90C7f6324cfa40d7169ef80b12031770B4325';
 
   let accounts;
   let core;
   let router;
   let protocolAdapterRegistry;
   let protocolAdapterAddress;
+  let curveAdapterAddress;
   let DAI;
   let YDAI;
+  let STETHPOOL;
+  let YSTETH;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
     await InteractiveAdapter.new({ from: accounts[0] })
       .then((result) => {
         protocolAdapterAddress = result.address;
+      });
+    await CurveAdapter.new({ from: accounts[0] })
+      .then((result) => {
+        curveAdapterAddress = result.address;
       });
     await ProtocolAdapterRegistry.new({ from: accounts[0] })
       .then((result) => {
@@ -46,11 +59,13 @@ contract('YearnAssetInteractiveAdapter', () => {
     await protocolAdapterRegistry.methods.addProtocolAdapters(
       [
         YEARN_ASSET_ADAPTER,
+        CURVE_ASSET_ADAPTER,
       ],
       [
         protocolAdapterAddress,
+        curveAdapterAddress,
       ],
-      [[]],
+      [[], []],
     )
       .send({
         from: accounts[0],
@@ -77,6 +92,14 @@ contract('YearnAssetInteractiveAdapter', () => {
     await ERC20.at(ydaiAddress)
       .then((result) => {
         YDAI = result.contract;
+      });
+    await ERC20.at(ystethAddress)
+      .then((result) => {
+        YSTETH = result.contract;
+      });
+    await ERC20.at(stethPoolAddress)
+      .then((result) => {
+        STETHPOOL = result.contract;
       });
   });
 
@@ -310,6 +333,174 @@ contract('YearnAssetInteractiveAdapter', () => {
           assert.equal(result, 0);
         });
       await DAI.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+  });
+
+  describe('stETH Curve pool <-> YSTETH', () => {
+    it('buy steth pool', async () => {
+      await router.methods.execute(
+        [
+          [
+            CURVE_ASSET_ADAPTER,
+            ACTION_DEPOSIT,
+            [
+              [ethAddress, web3.utils.toWei('1', 'ether'), AMOUNT_ABSOLUTE],
+            ],
+            web3.eth.abi.encodeParameters(
+              [
+                'address',
+                'uint256',
+              ],
+              [
+                stethPoolAddress,
+                0,
+              ],
+            ),
+          ],
+        ],
+        [],
+        [0, ZERO],
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+          value: web3.utils.toWei('1', 'ether'),
+        });
+    });
+
+    it('should be correct stETH Curve pool -> YSTETH deposit', async () => {
+      let stethPoolAmount;
+      await YSTETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`   YSTETH amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await STETHPOOL.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          stethPoolAmount = result;
+          console.log(`STETHPOOL amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await STETHPOOL.methods.approve(router.options.address, stethPoolAmount)
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        });
+      await router.methods.execute(
+        [
+          [
+            YEARN_ASSET_ADAPTER,
+            ACTION_DEPOSIT,
+            [
+              [stethPoolAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            web3.eth.abi.encodeParameter('address', ystethAddress),
+          ],
+        ],
+        [
+          [
+            [stethPoolAddress, convertToShare(1), AMOUNT_RELATIVE],
+            [0, EMPTY_BYTES],
+          ],
+        ],
+        [0, ZERO],
+        [],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await YSTETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`   YSTETH amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await STETHPOOL.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`STETHPOOL amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await YSTETH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await STETHPOOL.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
+    it('should be correct stETH Curve pool <- YSTETH withdraw', async () => {
+      let ystethAmount;
+      await YSTETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          ystethAmount = result;
+          console.log(`   YSTETH amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await STETHPOOL.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`STETHPOOL amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await YSTETH.methods.approve(router.options.address, ystethAmount)
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        });
+      await router.methods.execute(
+        [
+          [
+            YEARN_ASSET_ADAPTER,
+            ACTION_WITHDRAW,
+            [
+              [ystethAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            EMPTY_BYTES,
+          ],
+        ],
+        [
+          [
+            [ystethAddress, convertToShare(1), AMOUNT_RELATIVE],
+            [0, EMPTY_BYTES],
+          ],
+        ],
+        [0, ZERO],
+        [],
+      )
+        .send({
+          gas: 10000000,
+          from: accounts[0],
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await YSTETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`   YSTETH amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await STETHPOOL.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`STETHPOOL amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await YSTETH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await STETHPOOL.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);

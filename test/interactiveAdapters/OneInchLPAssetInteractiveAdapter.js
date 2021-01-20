@@ -36,10 +36,11 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('OneInchLPAssetInteractiveAdapter', () => {
+contract('OneInchLPAssetInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const oneInchAddress = '0x111111111117dC0aa78b770fA6A738034120C302';
   const oneInchDaiAddress = '0xa60A4ff8CF89D5E3d87B62ef68b3801685F22f41';
+  const oneInchEthAddress = '0x0EF1B8a0E726Fc3948E15b23993015eB1627f210';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 
@@ -54,6 +55,7 @@ contract.only('OneInchLPAssetInteractiveAdapter', () => {
   let WETH;
   let ONEINCH;
   let ONEINCHDAI;
+  let ONEINCHETH;
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -119,6 +121,10 @@ contract.only('OneInchLPAssetInteractiveAdapter', () => {
     await ERC20.at(oneInchDaiAddress)
       .then((result) => {
         ONEINCHDAI = result.contract;
+      });
+    await ERC20.at(oneInchEthAddress)
+      .then((result) => {
+        ONEINCHETH = result.contract;
       });
     await ERC20.at(oneInchAddress)
       .then((result) => {
@@ -323,7 +329,7 @@ contract.only('OneInchLPAssetInteractiveAdapter', () => {
             [
               [oneInchDaiAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
-            web3.eth.abi.encodeParameter('address', daiAddress),
+            EMPTY_BYTES,
           ],
         ],
         [
@@ -368,6 +374,168 @@ contract.only('OneInchLPAssetInteractiveAdapter', () => {
           assert.equal(result, 0);
         });
       await ONEINCHDAI.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
+    it.only('should buy 1 1LP with existing ETH and 1INCH', async () => {
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`       ETH amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      let oneInchAmount;
+      await ONEINCH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`   ONEINCH amount before is ${web3.utils.fromWei(result, 'ether')}`);
+          oneInchAmount = result;
+        });
+      await ONEINCH.methods.approve(router.options.address, oneInchAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await ONEINCHETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`ONEINCHETH amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await router.methods.execute(
+        [
+          [
+            ONE_INCH_LP_ASSET_ADAPTER,
+            ACTION_DEPOSIT,
+            [
+              [ethAddress, convertToShare(1), AMOUNT_RELATIVE],
+              [oneInchAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            web3.eth.abi.encodeParameter('address', oneInchEthAddress),
+          ],
+        ],
+        [
+          [
+            [oneInchAddress, convertToShare(1), AMOUNT_RELATIVE],
+            [0, EMPTY_BYTES],
+          ],
+        ],
+        [0, ZERO],
+        [
+          [oneInchEthAddress, 0],
+        ],
+      )
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+          value: web3.utils.toWei('1', 'ether'),
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`       ETH amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await ONEINCH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`   ONEINCH amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await ONEINCHETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`ONEINCHETH amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(core.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await ONEINCH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await ONEINCHETH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
+    it.only('should sell 100% ONEINCHDETH', async () => {
+      let oneInchEthAmount;
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`       ETH amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await ONEINCH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`   ONEINCH amount before is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await ONEINCHETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`ONEINCHETH amount before is ${web3.utils.fromWei(result, 'ether')}`);
+          oneInchEthAmount = result;
+        });
+      await ONEINCHETH.methods.approve(router.options.address, oneInchEthAmount.toString())
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        });
+      await router.methods.execute(
+        [
+          [
+            ONE_INCH_LP_ASSET_ADAPTER,
+            ACTION_WITHDRAW,
+            [
+              [oneInchEthAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            EMPTY_BYTES,
+          ],
+        ],
+        [
+          [
+            [oneInchEthAddress, convertToShare(1), AMOUNT_RELATIVE],
+            [0, EMPTY_BYTES],
+          ],
+        ],
+        [0, ZERO],
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 1000000,
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await web3.eth.getBalance(accounts[0])
+        .then((result) => {
+          console.log(`       ETH amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await ONEINCH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`ONEINCH amount after is    ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await ONEINCHETH.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`ONEINCHETH amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await web3.eth.getBalance(core.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await ONEINCH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await ONEINCHETH.methods['balanceOf(address)'](core.options.address)
         .call()
         .then((result) => {
           assert.equal(result, 0);

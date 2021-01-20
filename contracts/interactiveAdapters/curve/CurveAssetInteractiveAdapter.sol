@@ -34,11 +34,11 @@ import { Stableswap } from "../../interfaces/Stableswap.sol";
  */
 /* solhint-disable func-name-mixedcase */
 interface Deposit {
-    function add_liquidity(uint256[2] calldata, uint256) external;
+    function add_liquidity(uint256[2] calldata, uint256) external payable;
 
-    function add_liquidity(uint256[3] calldata, uint256) external;
+    function add_liquidity(uint256[3] calldata, uint256) external payable;
 
-    function add_liquidity(uint256[4] calldata, uint256) external;
+    function add_liquidity(uint256[4] calldata, uint256) external payable;
 
     function remove_liquidity_one_coin(
         uint256,
@@ -93,42 +93,42 @@ contract CurveAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
             inputAmounts[i] = i == tokenIndex ? amount : 0;
         }
 
-        uint256 allowance = ERC20(token).allowance(address(this), callee);
-
-        if (allowance < amount) {
-            if (allowance > 0) {
-                ERC20(token).safeApprove(callee, 0, "CAIA[1]");
-            }
-            ERC20(token).safeApprove(callee, type(uint256).max, "CAIA[2]");
+        uint256 value;
+        if (token == ETH) {
+            value = amount;
+        } else {
+            value = 0;
+            ERC20(token).safeApproveMax(callee, amount, "CAIA");
         }
 
         if (totalCoins == 2) {
-            // solhint-disable-next-line no-empty-blocks
-            try Deposit(callee).add_liquidity([inputAmounts[0], inputAmounts[1]], 0) {} catch {
+            try
+                Deposit(callee).add_liquidity{ value: value }(
+                    [inputAmounts[0], inputAmounts[1]],
+                    0
+                )
+            {} catch {
+                // solhint-disable-previous-line no-empty-blocks
                 revert("CAIA: deposit fail[1]");
             }
         } else if (totalCoins == 3) {
             try
-                Deposit(callee).add_liquidity(
+                Deposit(callee).add_liquidity{ value: value }(
                     [inputAmounts[0], inputAmounts[1], inputAmounts[2]],
                     0
                 )
-            // solhint-disable-next-line no-empty-blocks
-            {
-
-            } catch {
+            {} catch {
+                // solhint-disable-previous-line no-empty-blocks
                 revert("CAIA: deposit fail[2]");
             }
         } else if (totalCoins == 4) {
             try
-                Deposit(callee).add_liquidity(
+                Deposit(callee).add_liquidity{ value: value }(
                     [inputAmounts[0], inputAmounts[1], inputAmounts[2], inputAmounts[3]],
                     0
                 )
-            // solhint-disable-next-line no-empty-blocks
-            {
-
-            } catch {
+            {} catch {
+                // solhint-disable-previous-line no-empty-blocks
                 revert("CAIA: deposit fail[3]");
             }
         }

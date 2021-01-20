@@ -66,7 +66,7 @@ contract OneInchLPAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
         if (tokenAmounts[1].token == ETH) {
             value = amount1;
         } else {
-            ERC20(tokenAmounts[1].token).safeApproveMax(pool, amount1, "OILPAIA[1]");
+            ERC20(tokenAmounts[1].token).safeApproveMax(pool, amount1, "OILPAIA[2]");
         }
 
         try
@@ -97,6 +97,11 @@ contract OneInchLPAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         tokensToBeWithdrawn = Mooniswap(token).getTokens();
+        for (uint256 i = 0; i < tokensToBeWithdrawn.length; i++) {
+            if (tokensToBeWithdrawn[i] == address(0)) {
+                tokensToBeWithdrawn[i] = ETH;
+            }
+        }
 
         try Mooniswap(token).withdraw(amount, new uint256[](0)) returns (
             uint256[2] memory
