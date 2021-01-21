@@ -55,6 +55,8 @@ contract AkroStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
 
     address internal constant STAKING = 0x3501Ec11d205fa249f2C42f5470e137b529b35D0;
 
+    address internal constant AKRO = 0x8Ab7404063Ec4DBcfd4598215992DC3F8EC853d7;
+
     /**
      * @notice Stake ADEL token to the ADEL Staking
      * @param tokenAmounts Array with one element - TokenAmount struct with
@@ -68,7 +70,10 @@ contract AkroStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "AKROIA: should be 1 tokenAmount[1]");
+        require(
+            tokenAmounts.length == 1 && tokenAmounts[0].token == AKRO,
+            "ADELIA: should be 1 tokenAmount[1]"
+        );
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
@@ -89,24 +94,25 @@ contract AkroStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
     }
 
     /**
-     * @notice Withdraws tokens from the Adel Staking
-     * @param tokenAmounts Array with one element - TokenAmount struct with
-     *  ADEL address, ADEL amount to be unstake
-     * @return tokensToBeWithdrawn Array with one element - ADEL token.
+     * @notice Withdraws tokens from the Adel Staking. it always withdraws all the tokens
+     * @param tokenAmounts should be empty
+     * @param data token address encoded in bytes data
+     * @return tokensToBeWithdrawn Array with one element - AKRO token.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "AKROIA: should be 1 tokenAmount[2]");
-
-        address token = tokenAmounts[0].token;
+        require(
+            tokenAmounts.length == 0 && abi.decode(data, (address)) == AKRO,
+            "ADELIA: should be 0 tokenAmount"
+        );
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = tokenAmounts[0].token;
+        tokensToBeWithdrawn[0] = abi.decode(data, (address));
 
         // solhint-disable-next-line no-empty-blocks
         try AkroStaking(STAKING).unstakeAllUnlocked("0x")  {} catch Error(string memory reason) {
