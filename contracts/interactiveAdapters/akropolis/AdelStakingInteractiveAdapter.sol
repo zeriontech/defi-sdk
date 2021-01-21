@@ -23,32 +23,12 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-
-/**
- * @dev Staking contract interface.
- * Only the functions required for AkroStakingAdapter contract are added.
- */
-interface AdelStaking {
-    function stake(uint256 amout, bytes calldata _data) external;
-
-    function stakeFor(
-        address _user,
-        uint256 _amount,
-        bytes memory _data
-    ) external;
-
-    function unstakeAllUnlocked(bytes calldata _data) external returns (uint256);
-}
+import { AdelStaking } from "../../interfaces/AdelStaking.sol";
 
 /**
  * @title Interactive Adapter for ADEL Staking protocol.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Alexander Mazaletskiy <am@akropolis.io>
- */
-
-/**
- * @title Interactive adapter for Compound protocol.
- * @dev Implementation of InteractiveAdapter abstract contract.
  */
 contract AdelStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
@@ -58,11 +38,11 @@ contract AdelStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
     address internal constant ADEL = 0x94d863173EE77439E4292284fF13fAD54b3BA182;
 
     /**
-     * @notice Stake ADEL token to the ADEL Staking
+     * @notice Stake ADEL token to the ADEL Staking.
      * @param tokenAmounts Array with one element - TokenAmount struct with
-     * ADEL token address, token amount to be stake, and amount type.
-     * @param data user address encoded in bytes data
-     * @return tokensToBeWithdrawn empty array
+     *     ADEL token address, token amount to be stake, and amount type.
+     * @param data User address encoded in bytes data.
+     * @return tokensToBeWithdrawn Empty array.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
@@ -73,18 +53,18 @@ contract AdelStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
     {
         require(
             tokenAmounts.length == 1 && tokenAmounts[0].token == ADEL,
-            "ADELIA: should be 1 tokenAmount[1]"
+            "ADELIA: should be 1 tokenAmount"
         );
 
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
-        ERC20(tokenAmounts[0].token).safeApprove(STAKING, amount, "ADELIA");
+        ERC20(tokenAmounts[0].token).safeApproveMax(STAKING, amount, "ADELIA");
 
-        //get user data from calldata
+        // Get user data from calldata
         address userAddress = abi.decode(data, (address));
 
         // solhint-disable-next-line no-empty-blocks
-        try AdelStaking(STAKING).stakeFor(userAddress, amount, "0x")  {} catch Error(
+        try AdelStaking(STAKING).stakeFor(userAddress, amount, "0x") {} catch Error(
             string memory reason
         ) {
             revert(reason);
@@ -95,8 +75,8 @@ contract AdelStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
 
     /**
      * @notice Withdraws tokens from the Adel Staking. it always withdraws all the tokens
-     * @param tokenAmounts should be empty
-     * @param data token address encoded in bytes data
+     * @param tokenAmounts Empty array.
+     * @param data Token address encoded in bytes data.
      * @return tokensToBeWithdrawn Array with one element - ADEL token.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -112,10 +92,10 @@ contract AdelStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         );
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = abi.decode(data, (address));
+        tokensToBeWithdrawn[0] = ADEL;
 
         // solhint-disable-next-line no-empty-blocks
-        try AdelStaking(STAKING).unstakeAllUnlocked("0x")  {} catch Error(string memory reason) {
+        try AdelStaking(STAKING).unstakeAllUnlocked("0x") {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("ADELIA: unstake fail");

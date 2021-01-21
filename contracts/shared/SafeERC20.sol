@@ -78,11 +78,11 @@ library SafeERC20 {
     function safeApproveMax(
         ERC20 token,
         address spender,
-        uint256 amount,
+        uint256 value,
         string memory location
     ) internal {
         uint256 allowance = ERC20(token).allowance(address(this), spender);
-        if (allowance < amount) {
+        if (allowance < value) {
             if (allowance > 0) {
                 safeApprove(token, spender, 0, location);
             }
