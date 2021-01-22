@@ -33,6 +33,7 @@ const IearnAdapter = artifacts.require('IearnAdapter');
 const KeeperDaoAssetAdapter = artifacts.require('KeeperDaoAssetAdapter');
 const KimchiStakingAdapter = artifacts.require('KimchiStakingAdapter');
 const KyberAdapter = artifacts.require('KyberAdapter');
+const LivepeerStakingAdaptor = artifacts.require('LivepeerStakingAdaptor');
 const ChaiAdapter = artifacts.require('ChaiAdapter');
 const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
@@ -144,6 +145,7 @@ const batAddress = '0x0D8775F648430679A709E98d2b0Cb6250d2887EF';
 const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 const linkAddress = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
 const kncAddress = '0xdd974D5C2e2928deA5F71b9825b8b646686BD200';
+const lptAddress = '0x58b6a8a3302369daec383334672404ee733ab239';
 const repAddress = '0x1985365e9f78359a9B6AD760e32412f4a445E862';
 const mkrAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2';
 const manaAddress = '0x0F5D2fB29fb7d3CFeE444a200298f468908cC942';
@@ -691,6 +693,9 @@ const kyberAdapterTokens = [
   kncAddress,
   ethAddress,
 ];
+const livepeerAdapterTokens = [
+  lptAddress,
+];
 const dsrAdapterTokens = [
   daiAddress,
 ];
@@ -1167,6 +1172,18 @@ module.exports = async (deployer, network, accounts) => {
     'Platform that allows KNC token holders to participate in governance',
     'kyber.network',
     'protocol-icons.s3.amazonaws.com/kyber.png',
+    '0',
+  ]);
+
+  await deployer.deploy(LivepeerStakingAdaptor, { from: accounts[0] });
+  adapters.push([LivepeerStakingAdapter.address]);
+  tokens.push([livepeerAdapterTokens]);
+  protocolNames.push('Livepeer');
+  metadata.push([
+    'Livepeer',
+    'Delegated stake based protocol for decentralized video streaming.',
+    'livepeer.org',
+    'protocol-icons.s3.amazonaws.com/livepeer.png',
     '0',
   ]);
 
