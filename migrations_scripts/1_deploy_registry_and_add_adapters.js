@@ -33,7 +33,7 @@ const IearnAdapter = artifacts.require('IearnAdapter');
 const KeeperDaoAssetAdapter = artifacts.require('KeeperDaoAssetAdapter');
 const KimchiStakingAdapter = artifacts.require('KimchiStakingAdapter');
 const KyberAdapter = artifacts.require('KyberAdapter');
-const LivepeerStakingAdaptor = artifacts.require('LivepeerStakingAdaptor');
+const LivepeerStakingAdapter = artifacts.require('LivepeerStakingAdapter');
 const ChaiAdapter = artifacts.require('ChaiAdapter');
 const DSRAdapter = artifacts.require('DSRAdapter');
 const GovernanceAdapter = artifacts.require('GovernanceAdapter');
@@ -1175,7 +1175,7 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
-  await deployer.deploy(LivepeerStakingAdaptor, { from: accounts[0] });
+  await deployer.deploy(LivepeerStakingAdapter, { from: accounts[0] });
   adapters.push([LivepeerStakingAdapter.address]);
   tokens.push([livepeerAdapterTokens]);
   protocolNames.push('Livepeer');

@@ -47,12 +47,13 @@ interface RoundsManager {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract LivepeerAdapter is ProtocolAdapter {
+contract LivepeerStakingAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
     string public constant override tokenType = "ERC20";
 
+    address internal constant LPT = 0x58b6a8a3302369daec383334672404ee733ab239;
     address internal constant BONDING_MANAGER = 0x511bc4556d823ae99630ae8de28b9b80df90ea2e;
     address internal constant ROUNDS_MANAGER = 0x3984fc4ceeef1739135476f625d36d6c35c40dc3;
 
@@ -60,8 +61,13 @@ contract LivepeerAdapter is ProtocolAdapter {
      * @return Amount of LPT staked by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address, address account) external view override returns (uint256) {
-        uint256 currentRound = RoundsManager(ROUNDS_MANAGER).currentRound();
-        return BondingManager(BONDING_MANAGER).pendingStake(account, currentRound);
+    function getBalance(address token, address account) external view override returns (uint256) {
+        if (token == LPT) {
+            uint256 currentRound = RoundsManager(ROUNDS_MANAGER).currentRound();
+            return BondingManager(BONDING_MANAGER).pendingStake(account, currentRound);
+        } else {
+            return 0;
+        }
+        
     }
 }
