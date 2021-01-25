@@ -49,12 +49,14 @@ contract AdelStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         external
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(
             tokenAmounts.length == 1 && tokenAmounts[0].token == ADEL,
             "ADELIA: should be 1 tokenAmount"
         );
+
+        tokensToBeWithdrawn = new address[](0);
 
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 

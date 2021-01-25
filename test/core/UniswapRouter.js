@@ -380,7 +380,7 @@ contract.only('UniswapRouter', () => {
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          assert.equal(result, 0);
+          assert.equal(result, new BN(daiAmount).sub(new BN(daiAmount).divn(10).toString()));
         });
     });
 
@@ -636,7 +636,7 @@ contract.only('UniswapRouter', () => {
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          assert.equal(result, 0);
+          assert.equal(result, new BN(daiAmount).sub(new BN(daiAmount).divn(10).toString()));
         });
     });
   });

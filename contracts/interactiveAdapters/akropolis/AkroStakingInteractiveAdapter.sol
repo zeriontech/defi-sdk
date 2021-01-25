@@ -48,17 +48,18 @@ contract AkroStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         external
         payable
         override
-        returns (address[] memory)
+        returns (address[] memory tokensToBeWithdrawn)
     {
         require(
             tokenAmounts.length == 1 && tokenAmounts[0].token == AKRO,
             "ADELIA: should be 1 tokenAmount"
         );
 
-        address token = tokenAmounts[0].token;
+        tokensToBeWithdrawn = new address[](0);
+
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
-        ERC20(token).safeApproveMax(STAKING, amount, "AKROIA");
+        ERC20(tokenAmounts[0].token).safeApproveMax(STAKING, amount, "AKROIA");
 
         // Get user data from calldata
         address userAddress = abi.decode(data, (address));
