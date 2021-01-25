@@ -364,6 +364,40 @@ contract.only('Core + Router', () => {
         });
     });
 
+    it('should not execute withdraw action if no allowance/permit', async () => {
+      await web3.eth.sendTransaction({ to: wethAddress, from: accounts[0], value: 1 });
+
+      await expectRevert(router.methods.execute(
+        // actions
+        [
+          [
+            convertToBytes32('Mock'),
+            ACTION_WITHDRAW,
+            [],
+            EMPTY_BYTES,
+          ],
+        ],
+        // inputs
+        [
+          [
+            [wethAddress, 1, AMOUNT_ABSOLUTE],
+            [0, EMPTY_BYTES],
+          ],
+        ],
+        // fee
+        [
+          0,
+          ZERO,
+        ],
+        // outputs
+        [],
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        }));
+    });
+
     it('should not execute withdraw action with too large relative amount', async () => {
       let wethBalance;
       await WETH.methods.balanceOf(accounts[0])
