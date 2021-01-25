@@ -19,9 +19,9 @@ pragma solidity 0.7.6;
 
 /**
  * @dev Staking contract interface.
- * Only the functions required for AkroStakingAdapter contract are added.
+ * Only the functions required for AdelStakingAdapter contract are added.
  */
-interface AkroStaking {
+interface AdelStaking {
     function stake(uint256, bytes calldata) external;
 
     function stakeFor(

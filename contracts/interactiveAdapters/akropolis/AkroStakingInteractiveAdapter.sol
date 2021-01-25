@@ -15,10 +15,10 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.3;
+pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
@@ -48,7 +48,7 @@ contract AkroStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         external
         payable
         override
-        returns (address[] memory tokensToBeWithdrawn)
+        returns (address[] memory)
     {
         require(
             tokenAmounts.length == 1 && tokenAmounts[0].token == AKRO,
