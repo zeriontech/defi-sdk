@@ -101,6 +101,95 @@ contract.only('UniswapRouter', () => {
   });
 
   describe('test Uniswap functionality', async () => {
+    it('should not swapExactETHForTokens with bad path', async () => {
+      await expectRevert(router.methods.swapExactETHForTokens(
+        [
+          0,
+          ZERO,
+        ],
+        UNISWAP_FACTORY,
+        0,
+        [daiAddress, wethAddress],
+        accounts[0],
+        FUTURE_TIMESTAMP,
+      )
+        .send({
+          from: accounts[0],
+          value: web3.utils.toWei('0.1', 'ether'),
+          gas: 10000000,
+        }));
+    });
+
+    it('should not swapExactETHForTokens with short path', async () => {
+      await expectRevert(router.methods.swapExactETHForTokens(
+        [
+          0,
+          ZERO,
+        ],
+        UNISWAP_FACTORY,
+        0,
+        [wethAddress],
+        accounts[0],
+        FUTURE_TIMESTAMP,
+      )
+        .send({
+          from: accounts[0],
+          value: web3.utils.toWei('0.1', 'ether'),
+          gas: 10000000,
+        }));
+    });
+
+    it('should not swapExactETHForTokens with large expectations', async () => {
+      await expectRevert(router.methods.swapExactETHForTokens(
+        [
+          0,
+          ZERO,
+        ],
+        UNISWAP_FACTORY,
+        INFINITY,
+        [wethAddress, daiAddress],
+        accounts[0],
+        FUTURE_TIMESTAMP,
+      )
+        .send({
+          from: accounts[0],
+          value: web3.utils.toWei('0.1', 'ether'),
+          gas: 10000000,
+        }));
+    });
+
+    it('should swapExactETHForTokens', async () => {
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await router.methods.swapExactETHForTokens(
+        [
+          0,
+          ZERO,
+        ],
+        UNISWAP_FACTORY,
+        0,
+        [wethAddress, daiAddress],
+        accounts[0],
+        FUTURE_TIMESTAMP,
+      )
+        .send({
+          from: accounts[0],
+          value: web3.utils.toWei('0.1', 'ether'),
+          gas: 10000000,
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`dai amount after is   ${web3.utils.fromWei(result, 'ether')}`);
+        });
+    });
+
     it('should not swapExactTokensForTokens with large expectations', async () => {
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -253,7 +342,7 @@ contract.only('UniswapRouter', () => {
         [
           [
             daiAddress,
-            daiAmount,
+            new BN(daiAmount).divn(10).toString(),
             AMOUNT_ABSOLUTE,
           ],
           [
@@ -292,76 +381,6 @@ contract.only('UniswapRouter', () => {
         .call()
         .then((result) => {
           assert.equal(result, 0);
-        });
-    });
-
-    it('should not swapExactETHForTokens with bad path', async () => {
-      await expectRevert(router.methods.swapExactETHForTokens(
-        [
-          0,
-          ZERO,
-        ],
-        UNISWAP_FACTORY,
-        0,
-        [daiAddress, wethAddress],
-        accounts[0],
-        FUTURE_TIMESTAMP,
-      )
-        .send({
-          from: accounts[0],
-          value: web3.utils.toWei('0.1', 'ether'),
-          gas: 10000000,
-        }));
-    });
-
-    it('should not swapExactETHForTokens with large expectations', async () => {
-      await expectRevert(router.methods.swapExactETHForTokens(
-        [
-          0,
-          ZERO,
-        ],
-        UNISWAP_FACTORY,
-        INFINITY,
-        [wethAddress, daiAddress],
-        accounts[0],
-        FUTURE_TIMESTAMP,
-      )
-        .send({
-          from: accounts[0],
-          value: web3.utils.toWei('0.1', 'ether'),
-          gas: 10000000,
-        }));
-    });
-
-    it('should swapExactETHForTokens', async () => {
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`dai amount before is  ${web3.utils.fromWei(result, 'ether')}`);
-        });
-      await router.methods.swapExactETHForTokens(
-        [
-          0,
-          ZERO,
-        ],
-        UNISWAP_FACTORY,
-        0,
-        [wethAddress, daiAddress],
-        accounts[0],
-        FUTURE_TIMESTAMP,
-      )
-        .send({
-          from: accounts[0],
-          value: web3.utils.toWei('0.1', 'ether'),
-          gas: 10000000,
-        })
-        .then((receipt) => {
-          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
-        });
-      await DAI.methods['balanceOf(address)'](accounts[0])
-        .call()
-        .then((result) => {
-          console.log(`dai amount after is   ${web3.utils.fromWei(result, 'ether')}`);
         });
     });
 
@@ -434,6 +453,111 @@ contract.only('UniswapRouter', () => {
         }));
     });
 
+    it('should not swapExactTokensForETH with short path', async () => {
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+        });
+
+      await expectRevert(router.methods.swapExactTokensForETH(
+        [
+          [
+            daiAddress,
+            daiAmount,
+            AMOUNT_ABSOLUTE,
+          ],
+          [
+            0,
+            EMPTY_BYTES,
+          ],
+        ],
+        [
+          0,
+          ZERO,
+        ],
+        UNISWAP_FACTORY,
+        0,
+        [daiAddress],
+        accounts[0],
+        FUTURE_TIMESTAMP,
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        }));
+    });
+
+    it('should not swapExactTokensForETH with path with bad tokens', async () => {
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+        });
+
+      await expectRevert(router.methods.swapExactTokensForETH(
+        [
+          [
+            daiAddress,
+            daiAmount,
+            AMOUNT_ABSOLUTE,
+          ],
+          [
+            0,
+            EMPTY_BYTES,
+          ],
+        ],
+        [
+          0,
+          ZERO,
+        ],
+        UNISWAP_FACTORY,
+        0,
+        [daiAddress, daiAddress, wethAddress],
+        accounts[0],
+        FUTURE_TIMESTAMP,
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        }));
+    });
+
+    it('should not swapExactTokensForETH with path with zero token', async () => {
+      await DAI.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          daiAmount = result;
+        });
+
+      await expectRevert(router.methods.swapExactTokensForETH(
+        [
+          [
+            daiAddress,
+            daiAmount,
+            AMOUNT_ABSOLUTE,
+          ],
+          [
+            0,
+            EMPTY_BYTES,
+          ],
+        ],
+        [
+          0,
+          ZERO,
+        ],
+        UNISWAP_FACTORY,
+        0,
+        [daiAddress, ZERO, wethAddress],
+        accounts[0],
+        FUTURE_TIMESTAMP,
+      )
+        .send({
+          from: accounts[0],
+          gas: 10000000,
+        }));
+    });
+
     it('should not swapExactTokensForETH with large expectations', async () => {
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -479,7 +603,7 @@ contract.only('UniswapRouter', () => {
         [
           [
             daiAddress,
-            daiAmount,
+            new BN(daiAmount).divn(10).toString(),
             AMOUNT_ABSOLUTE,
           ],
           [

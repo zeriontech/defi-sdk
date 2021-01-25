@@ -11,6 +11,7 @@ const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;
 const EMPTY_BYTES = '0x';
 const FUTURE_TIMESTAMP = 1893456000;
+const UNISWAP_FACTORY = 1;
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 
@@ -37,6 +38,7 @@ contract.only('Core + Router', () => {
   let sign;
   let signature;
   let daiAmount;
+  let wethAmount;
   let usdcAmount;
   let DAI;
   let USDC;
@@ -89,6 +91,53 @@ contract.only('Core + Router', () => {
       await ERC20.at(usdcAddress)
         .then((result) => {
           USDC = result.contract;
+        });
+      await WETH9.at(wethAddress)
+        .then((result) => {
+          result.contract.methods.deposit()
+            .send({
+              from: accounts[0],
+              value: web3.utils.toWei('1', 'ether'),
+              gas: 1000000,
+            });
+        });
+      await router.methods.swapExactETHForTokens(
+        [
+          0,
+          ZERO,
+        ],
+        UNISWAP_FACTORY,
+        0,
+        [wethAddress, daiAddress],
+        accounts[0],
+        FUTURE_TIMESTAMP,
+      )
+        .send({
+          from: accounts[0],
+          value: web3.utils.toWei('0.1', 'ether'),
+          gas: 10000000,
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await router.methods.swapExactETHForTokens(
+        [
+          0,
+          ZERO,
+        ],
+        UNISWAP_FACTORY,
+        0,
+        [wethAddress, usdcAddress],
+        accounts[0],
+        FUTURE_TIMESTAMP,
+      )
+        .send({
+          from: accounts[0],
+          value: web3.utils.toWei('0.1', 'ether'),
+          gas: 10000000,
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
     });
 
@@ -523,12 +572,12 @@ contract.only('Core + Router', () => {
     });
 
     it('should accept full share input', async () => {
-      await DAI.methods['balanceOf(address)'](accounts[0])
+      await WETH.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          daiAmount = result;
+          wethAmount = result;
         });
-      await DAI.methods.approve(router.options.address, daiAmount)
+      await WETH.methods.approve(router.options.address, wethAmount)
         .send({
           gas: 10000000,
           from: accounts[0],
@@ -540,7 +589,7 @@ contract.only('Core + Router', () => {
         [
           [
             [
-              daiAddress,
+              wethAddress,
               convertToShare(1),
               AMOUNT_RELATIVE,
             ],
@@ -562,12 +611,12 @@ contract.only('Core + Router', () => {
     });
 
     it('should accept not full share input', async () => {
-      await DAI.methods['balanceOf(address)'](accounts[0])
+      await WETH.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          daiAmount = result;
+          wethAmount = result;
         });
-      await DAI.methods.approve(router.options.address, daiAmount)
+      await WETH.methods.approve(router.options.address, wethAmount)
         .send({
           gas: 10000000,
           from: accounts[0],
@@ -579,7 +628,7 @@ contract.only('Core + Router', () => {
         [
           [
             [
-              daiAddress,
+              wethAddress,
               convertToShare(0.99),
               AMOUNT_RELATIVE,
             ],
@@ -596,7 +645,6 @@ contract.only('Core + Router', () => {
       )
         .send({
           from: accounts[0],
-          value: web3.utils.toWei('1', 'ether'),
           gas: 10000000,
         });
     });
@@ -678,15 +726,6 @@ contract.only('Core + Router', () => {
     });
 
     it('should handle fees correctly', async () => {
-      await WETH9.at(wethAddress)
-        .then((result) => {
-          result.contract.methods.deposit()
-            .send({
-              from: accounts[0],
-              value: web3.utils.toWei('1', 'ether'),
-              gas: 1000000,
-            });
-        });
       await WETH.methods.approve(router.options.address, web3.utils.toWei('1', 'ether'))
         .send({
           from: accounts[0],
