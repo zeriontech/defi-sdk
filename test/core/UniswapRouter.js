@@ -6,7 +6,6 @@ const { BN } = web3.utils;
 const EMPTY_BYTES = '0x';
 const ZERO = '0x0000000000000000000000000000000000000000';
 
-// const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;
 
 const FUTURE_TIMESTAMP = 1893456000;
@@ -380,7 +379,7 @@ contract.only('UniswapRouter', () => {
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          assert.equal(result, new BN(daiAmount).sub(new BN(daiAmount).divn(10).toString()));
+          assert.equal(result, ((new BN(daiAmount)).sub(new BN(daiAmount).divn(10))).toString());
         });
     });
 
@@ -636,7 +635,7 @@ contract.only('UniswapRouter', () => {
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          assert.equal(result, new BN(daiAmount).sub(new BN(daiAmount).divn(10).toString()));
+          assert.equal(result, ((new BN(daiAmount)).sub(new BN(daiAmount).divn(10))).toString());
         });
     });
   });
