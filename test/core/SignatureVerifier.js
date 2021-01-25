@@ -116,6 +116,26 @@ contract.only('SignatureVerifier', () => {
           return signTypedData(accounts[0], typedData);
         };
       });
+    await WETH9.at(wethAddress)
+      .then((result) => {
+        result.contract.methods.deposit()
+          .send({
+            from: accounts[0],
+            value: web3.utils.toWei('1', 'ether'),
+            gas: 1000000,
+          });
+      });
+    await ERC20.at(wethAddress)
+      .then((result) => {
+        result.contract.methods.approve(
+          signatureVerifier.options.address,
+          web3.utils.toWei('1', 'ether'),
+        )
+          .send({
+            from: accounts[0],
+            gas: 1000000,
+          });
+      });
   });
 
   it('should not be correct signer for data with wrong account', async () => {
