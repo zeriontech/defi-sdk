@@ -1,6 +1,6 @@
 const TokenAdapter = artifacts.require('PoolTogetherV3TokenAdapter');
 
-contract.only('PoolTogetherV3TokenAdapter', () => {
+contract('PoolTogetherV3TokenAdapter', () => {
   const pcUNIAddress = '0xA92a861FC11b99b24296aF880011B47F9cAFb5ab';
   const uniAddress = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984';
 

@@ -1,6 +1,6 @@
 const TokenAdapter = artifacts.require('YearnVaultTokenAdapter');
 
-contract.only('YearnVaultTokenAdapter', () => {
+contract('YearnVaultTokenAdapter', () => {
   const yvUSDCAddress = '0x5f18C75AbDAe578b483E5F43f12a39cF75b973a9';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 
