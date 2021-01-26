@@ -55,6 +55,6 @@ contract MstableAssetAdapter is ProtocolAdapter {
         uint256 credits = SavingsContract(SAVINGS).creditBalances(account);
         uint256 exchangeRate = SavingsContract(SAVINGS).exchangeRate();
 
-        return ERC20(token).balanceOf(account) + credits * exchangeRate / FULL_SCALE;
+        return credits * exchangeRate / FULL_SCALE;
     }
 }
