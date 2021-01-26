@@ -1,6 +1,6 @@
 const TokenAdapter = artifacts.require('EnzymeTokenAdapter');
 
-contract.only('PoolTogetherV3TokenAdapter', () => {
+contract.only('EnzymeTokenAdapter', () => {
   const enzfAddress = '0x9D4Ed905084bbC489a514c75420429C3a246e76d';
 
   let accounts;

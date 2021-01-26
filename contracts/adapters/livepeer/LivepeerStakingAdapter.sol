@@ -20,7 +20,6 @@ import { ERC20 } from "../../ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
-
 /**
  * @dev BondingManager contract interface.
  * Only the functions required for LivepeerStakingAdapter contract are added.
@@ -28,8 +27,9 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * github.com/livepeer/protocol/blob/streamflow/contracts/bonding/BondingManager.sol.
  */
 interface BondingManager {
-    function pendingStake(address, uint256) public view returns (uint256);
+    function pendingStake(address, uint256) external view returns (uint256);
 }
+
 
 /**
  * @dev RoundsManager contract interface.
@@ -38,14 +38,14 @@ interface BondingManager {
  * github.com/livepeer/protocol/blob/streamflow/contracts/rounds/RoundsManager.sol.
  */
 interface RoundsManager {
-    function currentRound() public view returns (uint256);
+    function currentRound() external view returns (uint256);
 }
 
 
 /**
  * @title Adapter for Livepeer protocol.
  * @dev Implementation of ProtocolAdapter interface.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @author Adam Soffer <adam@livepeer.org>
  */
 contract LivepeerStakingAdapter is ProtocolAdapter {
 
@@ -53,9 +53,9 @@ contract LivepeerStakingAdapter is ProtocolAdapter {
 
     string public constant override tokenType = "ERC20";
 
-    address internal constant LPT = 0x58b6a8a3302369daec383334672404ee733ab239;
-    address internal constant BONDING_MANAGER = 0x511bc4556d823ae99630ae8de28b9b80df90ea2e;
-    address internal constant ROUNDS_MANAGER = 0x3984fc4ceeef1739135476f625d36d6c35c40dc3;
+    address internal constant LPT = 0x58b6A8A3302369DAEc383334672404Ee733aB239;
+    address internal constant BONDING_MANAGER = 0x511Bc4556D823Ae99630aE8de28b9B80Df90eA2e;
+    address internal constant ROUNDS_MANAGER = 0x3984fc4ceEeF1739135476f625D36d6c35c40dc3;
 
     /**
      * @return Amount of LPT staked by the given account.
@@ -68,6 +68,6 @@ contract LivepeerStakingAdapter is ProtocolAdapter {
         } else {
             return 0;
         }
-        
+
     }
 }
