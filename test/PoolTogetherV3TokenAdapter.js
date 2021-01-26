@@ -16,7 +16,7 @@ contract('PoolTogetherV3TokenAdapter', () => {
     [
       uniAddress,
       'ERC20',
-      '1000000000000000000'
+      '1000000000000000000',
     ],
   ];
 
@@ -33,7 +33,7 @@ contract('PoolTogetherV3TokenAdapter', () => {
     await tokenAdapter.methods['getComponents(address)'](pcUNIAddress)
       .call()
       .then((result) => {
-        assert.deepEqual(result, pcUNIComponents)
+        assert.deepEqual(result, pcUNIComponents);
       });
   });
 
@@ -41,7 +41,7 @@ contract('PoolTogetherV3TokenAdapter', () => {
     await tokenAdapter.methods['getMetadata(address)'](pcUNIAddress)
       .call()
       .then((result) => {
-        assert.deepEqual(result, pcUNI)
+        assert.deepEqual(result, pcUNI);
       });
   });
 });

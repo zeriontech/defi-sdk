@@ -20,7 +20,7 @@ contract('BancorLiquidityProtectionAdapter', () => {
     await protocolAdapterContract.methods['getBalance(address,address)'](bntAddress, testAddress)
       .call()
       .then((result) => {
-        console.log(result);
+        console.dir(result, { depth: null });
       });
   });
 
@@ -28,7 +28,7 @@ contract('BancorLiquidityProtectionAdapter', () => {
     await protocolAdapterContract.methods['getBalance(address,address)'](ethAddress, testAddress)
       .call()
       .then((result) => {
-        console.log(result);
+        console.dir(result, { depth: null });
       });
   });
 });

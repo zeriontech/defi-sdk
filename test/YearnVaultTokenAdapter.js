@@ -12,13 +12,6 @@ contract('YearnVaultTokenAdapter', () => {
     'yvUSDC',
     '6',
   ];
-  const yvUSDCComponents = [
-    [
-      usdcAddress,
-      'ERC20',
-      '1000000000000000000'
-    ],
-  ];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -33,7 +26,8 @@ contract('YearnVaultTokenAdapter', () => {
     await tokenAdapter.methods['getComponents(address)'](yvUSDCAddress)
       .call()
       .then((result) => {
-        assert.deepEqual(result, yvUSDCComponents)
+        assert.equal(result[0][0], usdcAddress);
+        assert.equal(result[0][1], 'ERC20');
       });
   });
 
@@ -41,7 +35,7 @@ contract('YearnVaultTokenAdapter', () => {
     await tokenAdapter.methods['getMetadata(address)'](yvUSDCAddress)
       .call()
       .then((result) => {
-        assert.deepEqual(result, yvUSDC)
+        assert.deepEqual(result, yvUSDC);
       });
   });
 });
