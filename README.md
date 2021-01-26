@@ -211,6 +211,7 @@ All the deployed contracts' addresses are available [here](../../wiki/Addresses)
 | [KeeperDAO](./contracts/adapters/keeperDao) | An on-chain liquidity underwriter for DeFi. | [Asset adapter](./contracts/adapters/keeperDao/KeeperDaoAssetAdapter.sol) | ["KToken"](contracts/adapters/keeperDao/KeeperDaoTokenAdapter.sol) |
 | [KIMCHI](contracts/adapters/kimchi) | Farm KIMCHI by staking LP tokens. | [Staking adapter](contracts/adapters/kimchi/KimchiStakingAdapter.sol) | — |
 | [KyberDAO](./contracts/adapters/kyber) | Platform that allows KNC token holders to participate in governance. | [Asset adapter](./contracts/adapters/kyber/KyberAssetAdapter.sol) | — |
+| [Livepeer](./contracts/adapters/livepeer) | Delegated stake based protocol for decentralized video streaming. | [Staking adapter](./contracts/adapters/livepeer/LivepeerStakingAdapter.sol) | — |
 | [Chai](./contracts/adapters/maker) | A simple ERC20 wrapper over the Dai Savings Protocol. | [Asset adapter](./contracts/adapters/maker/ChaiAdapter.sol) | ["Chai token"](./contracts/adapters/maker/ChaiTokenAdapter.sol) |
 | [Dai Savings Protocol](./contracts/adapters/maker) | Decentralized lending protocol. | [Asset adapter](./contracts/adapters/maker/DSRAdapter.sol) | — |
 | [Maker Governance](./contracts/adapters/maker) | MKR tokens locked on the MakerDAO governance contracts. | [Asset adapter](./contracts/adapters/maker/MakerGovernanceAdapter.sol) | — |
