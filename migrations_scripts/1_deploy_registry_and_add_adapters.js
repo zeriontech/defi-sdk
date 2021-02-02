@@ -87,6 +87,7 @@ const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const TokenSetsV2TokenAdapter = artifacts.require('TokenSetsV2TokenAdapter');
+const TubeProtocolAdapter = artifacs.require('TubeProtocolAdapter')
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
@@ -391,6 +392,8 @@ const pickleUniswapWethDaiJarAddress = '0xf79Ae82DCcb71ca3042485c85588a3E0C395D5
 const pickleUniswapWethUsdcJarAddress = '0x46206E9BDaf534d057be5EcF231DaD2A1479258B';
 const pickleUniswapWethUsdtJarAddress = '0x3a41AB1e362169974132dEa424Fb8079Fd0E94d8';
 const pickleThreeCrvJarAddress = '0x2385D31f1EB3736bE0C3629E6f03C4b3cd997Ffd';
+
+const tubeAddress = '0x85BC2E8Aaad5dBc347db49Ea45D95486279eD918';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -849,6 +852,9 @@ const yearnStakingV2AdapterTokens = [
 ];
 const zrxAdapterTokens = [
   zrxAddress,
+];
+const tubeProtocolAdapterTokens = [
+  tubeAddress
 ];
 
 let protocolNames = [];
@@ -1404,6 +1410,18 @@ module.exports = async (deployer, network, accounts) => {
     'Automated asset management strategies',
     'tokensets.com',
     'protocol-icons.s3.amazonaws.com/SET.png',
+    '0',
+  ]);
+
+  await deployer.deploy(TubeProtocolAdapter, { from: accounts[0] });
+  adapters.push([TubeProtocolAdapter.address]);
+  tokens.push([tubeProtocolAdapterTokens]);
+  protocolNames.push('Tube');
+  metadata.push([
+    'Tube',
+    'MUST staking contract',
+    'cometh.io',
+    'www.cometh.io/alembic.png',
     '0',
   ]);
 
