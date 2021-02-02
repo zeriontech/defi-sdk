@@ -268,6 +268,8 @@ const balancerDai98Yfi2Address = '0x60626db611a9957C1ae4Ac5b7eDE69e24A3B76c5';
 const balancerYfi2yCrv98Address = '0x95C4B6C7CfF608c0CA048df8b81a484aA377172B';
 
 const yflAddress = '0x28cb7e841ee97947a86B06fA4090C8451f64c0be';
+const yflusdAddress = '0x7b760d06e401f85545f3b50c44bf5b05308b7b62';
+const syflAddress = '0x8282df223ac402d04b2097d16f758af4f70e7db0';
 const cfiAddress = '0x63b4f3e3fa4e438698ce330e365e831f7ccd1ef4';
 const masqAddress = '0x06F3C323f0238c72BF35011071f2b5B7F43A054c';
 const dpiAddress = '0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b';
@@ -276,6 +278,10 @@ const yaxAddress = '0xb1dc9124c395c1e97773ab855d66e879f053a289';
 const gswapAddress = '0xaac41EC512808d64625576EDdd580e7Ea40ef8B2';
 
 const lslpYflLink = '0x189a730921550314934019d184ec05726881d481';
+const lslpLinkYflusd = '0x6cd7817e6f3f52123df529e1edf5830240ce48c1';
+const lslpYflusdWeth = '0x195734d862dfb5380eeda0acd8acf697ea95d370';
+const lslpLinkSyfl = '0x74c89f297b1dc87f927d9432a4eeea697e6f89a5';
+const lslpSyflWeth = '0x3315351f0b20595777a28054ef3d514bdc37463d';
 const lslpDpiLink = '0x017fad4b7a54c1ace95ca614954e4d0d12cdb27e';
 const lslpLinkGswap = '0xdef0cef53e0d4c6a5e568c53edcf45ceb33dbe46';
 const lslpLinkCel = '0x639916bb4b29859fadf7a272185a3212157f8ce1';
@@ -874,6 +880,8 @@ const yearnStakingV2AdapterTokens = [
 ];
 const LinkswapStakingAdapterTokens = [
   yflAddress,
+  yflusdAddress,
+  syflAddress,
   wethAddress,
   linkAddress,
   busdAddress,
@@ -887,6 +895,10 @@ const LinkswapStakingAdapterTokens = [
   gswapAddress,
   lslpYflWeth,
   lslpYflLink,
+  lslpLinkYflusd,
+  lslpYflusdWeth,
+  lslpLinkSyfl,
+  lslpSyflWeth,
   lslpBusdLink,
   lslpLinkUsdc,
   lslpLinkUsdt,
