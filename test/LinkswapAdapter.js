@@ -34,6 +34,7 @@ contract.only('LinkswapAdapter', () => {
   const lslpMasqWeth = '0x37cee65899da4b1738412814155540c98dfd752c';
   const lslpBusdLink = '0x983c9a1bcf0eb980a232d1b17bffd6bbf68fe4ce';
   const lslpLinkYax = '0x626b88542495d2e341d285969f8678b99cd91da7';
+  const lslpYaxWeth = '0x21dee38170f1e1f26baff2c30c0fc8f8362b6961';
   const lslpLinkCfi = '0xf68c01198cddeafb9d2ea43368fc9fa509a339fa';
   const lslpLinkUsdc = '0x9d996bDD1F65C835EE92Cd0b94E15d886EF14D63';
   const lslpLinkUsdt = '0xf36c9fc3c2abe4132019444aff914fc8dc9785a9';
@@ -111,6 +112,12 @@ contract.only('LinkswapAdapter', () => {
   const linkYax = [
     lslpLinkYax,
     'LINK-YAX',
+    'LSLP',
+    '18',
+  ];
+  const yaxWeth = [
+    lslpYaxWeth,
+    'YAX-WETH',
     'LSLP',
     '18',
   ];
@@ -294,6 +301,7 @@ contract.only('LinkswapAdapter', () => {
         lslpLinkUsdt,
         lslpLinkCel,
         lslpLinkYax,
+        lslpYaxWeth,
         lslpLinkCfi,
         lslpLinkGswap,
         lslpBusdLink,
@@ -372,6 +380,9 @@ contract.only('LinkswapAdapter', () => {
         displayToken(result[0].adapterBalances[0].balances[16].base);
         displayToken(result[0].adapterBalances[0].balances[16].underlying[0]);
         displayToken(result[0].adapterBalances[0].balances[16].underlying[1]);
+        displayToken(result[0].adapterBalances[0].balances[17].base);
+        displayToken(result[0].adapterBalances[0].balances[17].underlying[0]);
+        displayToken(result[0].adapterBalances[0].balances[17].underlying[1]);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[0].metadata, yfl);
         assert.deepEqual(result[0].adapterBalances[0].balances[1].underlying[0].metadata, link);
         assert.deepEqual(result[0].adapterBalances[0].balances[2].underlying[0].metadata, link);
@@ -382,13 +393,14 @@ contract.only('LinkswapAdapter', () => {
         assert.deepEqual(result[0].adapterBalances[0].balances[7].underlying[0].metadata, link);
         assert.deepEqual(result[0].adapterBalances[0].balances[8].underlying[0].metadata, link);
         assert.deepEqual(result[0].adapterBalances[0].balances[9].underlying[0].metadata, link);
-        assert.deepEqual(result[0].adapterBalances[0].balances[10].underlying[0].metadata, link);
+        assert.deepEqual(result[0].adapterBalances[0].balances[10].underlying[0].metadata, yax);
         assert.deepEqual(result[0].adapterBalances[0].balances[11].underlying[0].metadata, link);
-        assert.deepEqual(result[0].adapterBalances[0].balances[12].underlying[0].metadata, busd);
-        assert.deepEqual(result[0].adapterBalances[0].balances[13].underlying[0].metadata, dpi);
-        assert.deepEqual(result[0].adapterBalances[0].balances[14].underlying[0].metadata, masq);
-        assert.deepEqual(result[0].adapterBalances[0].balances[15].underlying[0].metadata, link);
+        assert.deepEqual(result[0].adapterBalances[0].balances[12].underlying[0].metadata, link);
+        assert.deepEqual(result[0].adapterBalances[0].balances[13].underlying[0].metadata, busd);
+        assert.deepEqual(result[0].adapterBalances[0].balances[14].underlying[0].metadata, dpi);
+        assert.deepEqual(result[0].adapterBalances[0].balances[15].underlying[0].metadata, masq);
         assert.deepEqual(result[0].adapterBalances[0].balances[16].underlying[0].metadata, link);
+        assert.deepEqual(result[0].adapterBalances[0].balances[17].underlying[0].metadata, link);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].base.metadata, yflLink);
         assert.deepEqual(result[0].adapterBalances[0].balances[1].base.metadata, yflWeth);
         assert.deepEqual(result[0].adapterBalances[0].balances[2].base.metadata, linkYflusd);
@@ -399,13 +411,14 @@ contract.only('LinkswapAdapter', () => {
         assert.deepEqual(result[0].adapterBalances[0].balances[7].base.metadata, linkUsdt);
         assert.deepEqual(result[0].adapterBalances[0].balances[8].base.metadata, linkCel);
         assert.deepEqual(result[0].adapterBalances[0].balances[9].base.metadata, linkYax);
-        assert.deepEqual(result[0].adapterBalances[0].balances[10].base.metadata, linkCfi);
-        assert.deepEqual(result[0].adapterBalances[0].balances[11].base.metadata, linkGswap);
-        assert.deepEqual(result[0].adapterBalances[0].balances[12].base.metadata, busdLink);
-        assert.deepEqual(result[0].adapterBalances[0].balances[13].base.metadata, dpiLink);
-        assert.deepEqual(result[0].adapterBalances[0].balances[14].base.metadata, masqWeth);
-        assert.deepEqual(result[0].adapterBalances[0].balances[15].base.metadata, linkAzuki);
-        assert.deepEqual(result[0].adapterBalances[0].balances[16].base.metadata, linkDoki);
+        assert.deepEqual(result[0].adapterBalances[0].balances[10].base.metadata, yaxWeth);
+        assert.deepEqual(result[0].adapterBalances[0].balances[11].base.metadata, linkCfi);
+        assert.deepEqual(result[0].adapterBalances[0].balances[12].base.metadata, linkGswap);
+        assert.deepEqual(result[0].adapterBalances[0].balances[13].base.metadata, busdLink);
+        assert.deepEqual(result[0].adapterBalances[0].balances[14].base.metadata, dpiLink);
+        assert.deepEqual(result[0].adapterBalances[0].balances[15].base.metadata, masqWeth);
+        assert.deepEqual(result[0].adapterBalances[0].balances[16].base.metadata, linkAzuki);
+        assert.deepEqual(result[0].adapterBalances[0].balances[17].base.metadata, linkDoki);
         assert.deepEqual(result[0].adapterBalances[0].balances[0].underlying[1].metadata, link);
         assert.deepEqual(result[0].adapterBalances[0].balances[1].underlying[1].metadata, weth);
         assert.deepEqual(result[0].adapterBalances[0].balances[2].underlying[1].metadata, yflusd);
@@ -416,13 +429,14 @@ contract.only('LinkswapAdapter', () => {
         assert.deepEqual(result[0].adapterBalances[0].balances[7].underlying[1].metadata, usdt);
         assert.deepEqual(result[0].adapterBalances[0].balances[8].underlying[1].metadata, cel);
         assert.deepEqual(result[0].adapterBalances[0].balances[9].underlying[1].metadata, yax);
-        assert.deepEqual(result[0].adapterBalances[0].balances[10].underlying[1].metadata, cfi);
-        assert.deepEqual(result[0].adapterBalances[0].balances[11].underlying[1].metadata, gswap);
-        assert.deepEqual(result[0].adapterBalances[0].balances[12].underlying[1].metadata, link);
+        assert.deepEqual(result[0].adapterBalances[0].balances[10].underlying[1].metadata, weth);
+        assert.deepEqual(result[0].adapterBalances[0].balances[11].underlying[1].metadata, cfi);
+        assert.deepEqual(result[0].adapterBalances[0].balances[12].underlying[1].metadata, gswap);
         assert.deepEqual(result[0].adapterBalances[0].balances[13].underlying[1].metadata, link);
-        assert.deepEqual(result[0].adapterBalances[0].balances[14].underlying[1].metadata, weth);
-        assert.deepEqual(result[0].adapterBalances[0].balances[15].underlying[1].metadata, azuki);
-        assert.deepEqual(result[0].adapterBalances[0].balances[16].underlying[1].metadata, doki);
+        assert.deepEqual(result[0].adapterBalances[0].balances[14].underlying[1].metadata, link);
+        assert.deepEqual(result[0].adapterBalances[0].balances[15].underlying[1].metadata, weth);
+        assert.deepEqual(result[0].adapterBalances[0].balances[16].underlying[1].metadata, azuki);
+        assert.deepEqual(result[0].adapterBalances[0].balances[17].underlying[1].metadata, doki);
       });
   });
 

@@ -288,6 +288,7 @@ const lslpLinkCel = '0x639916bb4b29859fadf7a272185a3212157f8ce1';
 const lslpMasqWeth = '0x37cee65899da4b1738412814155540c98dfd752c';
 const lslpBusdLink = '0x983c9a1bcf0eb980a232d1b17bffd6bbf68fe4ce';
 const lslpLinkYax = '0x626b88542495d2e341d285969f8678b99cd91da7';
+const lslpYaxWeth = '0x21dee38170F1e1F26baFf2C30C0fc8F8362b6961';
 const lslpLinkCfi = '0xf68c01198cddeafb9d2ea43368fc9fa509a339fa';
 const lslpLinkUsdc = '0x9d996bDD1F65C835EE92Cd0b94E15d886EF14D63';
 const lslpLinkUsdt = '0xf36c9fc3c2abe4132019444aff914fc8dc9785a9';
@@ -907,6 +908,7 @@ const LinkswapStakingAdapterTokens = [
   lslpDpiLink,
   lslpLinkCel,
   lslpLinkYax,
+  lslpYaxWeth,
   lslpLinkGswap,
   lslpLinkAzuki,
   lslpLinkDoki,
