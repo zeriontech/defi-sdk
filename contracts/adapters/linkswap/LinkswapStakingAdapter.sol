@@ -79,6 +79,7 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
     address internal constant LSLP_LINK_DOKI = 0xbe755C548D585dbc4e3Fe4bcD712a32Fd81e5Ba0;
 
     address internal constant LSLP_YFL_WETH_POOL = 0x72368fB97dab2B94A5664EbeEbF504EF482fF149;
+    address internal constant LSLP_YFL_WETH_POOL_NEW = 0x3bE07ed0239d46ca8435D4fb0bE96E43cD1c1796;
     address internal constant LSLP_YFL_LINK_POOL = 0x35fc734948b36370c15387342f048ac87210bc22;
     address internal constant LSLP_LINK_YFLUSD_POOL = 0x61401c19200B2420f93Bb2EECF4BAA2C193d76e1;
     address internal constant LSLP_YFLUSD_WETH_POOL = 0x6DddCc7F963C65b18FdDD842e6553528f014aDeA;
@@ -112,6 +113,7 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
             
             totalRewards += StakingRewards(LSLP_YFL_LINK_POOL).earned(account,0);
             totalRewards += StakingRewards(LSLP_YFL_WETH_POOL).earned(account,0);
+            totalRewards += StakingRewards(LSLP_YFL_WETH_POOL_NEW).earned(account,0);
             totalRewards += StakingRewards(LSLP_DPI_LINK_POOL).earned(account,0);
             totalRewards += StakingRewards(LSLP_MASQ_WETH_POOL).earned(account,0);
             totalRewards += StakingRewards(LSLP_BUSD_LINK_POOL).earned(account,0);
@@ -153,6 +155,7 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
         } else if (token == LSLP_YFL_WETH) {
             uint256 total = 0;
             total += ERC20(LSLP_YFL_WETH_POOL).balanceOf(account);
+            total += ERC20(LSLP_YFL_WETH_POOL_NEW).balanceOf(account);
             total += ERC20(LSLP_YFL_WETH).balanceOf(GOVERNANCE_FEES);
             return total
         } else if (token == LSLP_YFL_LINK) {
