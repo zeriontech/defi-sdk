@@ -30,6 +30,15 @@ interface StakingRewards {
     function earned(address, uint256) external view returns (uint256);
 }
 
+/**
+ * @dev SYFLTokenSharePool contract interface.
+ * Only the functions required for LinkswapStakingAdapter contract are added.
+ * The SYFLTokenSharePool contracts are available here
+ * github.com/yflink/yflusd-protocol/tree/master/contracts/distribution.
+ */
+interface SYFLTokenSharePool {
+    function earned(address) external view returns (uint256);
+}
 
 /**
  * @title Adapter for LINKSWAP governance and LP rewards staking.
@@ -127,10 +136,10 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
             return totalRewards;
         } else if (token == SYFL) {
             uint256 totalRewards = 0;
-            totalRewards += StakingRewards(LSLP_LINK_YFLUSD_POOL).earned(account,1);
-            totalRewards += StakingRewards(LSLP_YFLUSD_WETH_POOL).earned(account,1);
-            totalRewards += StakingRewards(LSLP_LINK_SYFL_POOL).earned(account,1);
-            totalRewards += StakingRewards(LSLP_SYFL_WETH_POOL).earned(account,1);
+            totalRewards += SYFLTokenSharePool(LSLP_LINK_YFLUSD_POOL).earned(account);
+            totalRewards += SYFLTokenSharePool(LSLP_YFLUSD_WETH_POOL).earned(account);
+            totalRewards += SYFLTokenSharePool(LSLP_LINK_SYFL_POOL).earned(account);
+            totalRewards += SYFLTokenSharePool(LSLP_SYFL_WETH_POOL).earned(account);
             return totalRewards;
         } else if (token == CFI) {
             return StakingRewards(LSLP_LINK_CFI_POOL).earned(account,1);
