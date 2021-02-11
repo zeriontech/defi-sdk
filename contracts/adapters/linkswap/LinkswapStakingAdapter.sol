@@ -43,6 +43,8 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
     string public constant override tokenType = "ERC20";
 
     address internal constant YFL = 0x28cb7e841ee97947a86B06fA4090C8451f64c0be;
+    address internal constant YFLUSD = 0x7b760d06e401f85545f3b50c44bf5b05308b7b62;
+    address internal constant SYFL = 0x8282df223ac402d04b2097d16f758af4f70e7db0;
     address internal constant WETH = 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2;
     address internal constant LINK = 0x514910771af9ca656af840dff83e8264ecf986ca;
     address internal constant BUSD = 0x4fabb145d64652a948d72533023f6e7a623c7c53;
@@ -59,12 +61,17 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
 
     address internal constant LSLP_YFL_WETH = 0x7e5A536F3d79791E283940ec379CEE10C9C40e86;
     address internal constant LSLP_YFL_LINK = 0x189a730921550314934019d184ec05726881d481;
+    address internal constant LSLP_LINK_YFLUSD = 0x6cd7817e6f3f52123df529e1edf5830240ce48c1;
+    address internal constant LSLP_YFLUSD_WETH = 0x195734d862dfb5380eeda0acd8acf697ea95d370;
+    address internal constant LSLP_LINK_SYFL = 0x74c89f297b1dc87f927d9432a4eeea697e6f89a5;
+    address internal constant LSLP_SYFL_WETH = 0x3315351f0b20595777a28054ef3d514bdc37463d;
     address internal constant LSLP_DPI_LINK = 0x017fad4b7a54c1ace95ca614954e4d0d12cdb27e;
     address internal constant LSLP_LINK_GSWAP = 0xdef0cef53e0d4c6a5e568c53edcf45ceb33dbe46;
     address internal constant LSLP_LINK_CEL = 0x639916bb4b29859fadf7a272185a3212157f8ce1;
     address internal constant LSLP_MASQ_WETH = 0x37cee65899da4b1738412814155540c98dfd752c;
     address internal constant LSLP_BUSD_LINK = 0x983c9a1bcf0eb980a232d1b17bffd6bbf68fe4ce;
     address internal constant LSLP_LINK_YAX = 0x626b88542495d2e341d285969f8678b99cd91da7;
+    address internal constant LSLP_YAX_WETH = 0x21dee38170F1e1F26baFf2C30C0fc8F8362b6961;
     address internal constant LSLP_LINK_CFI = 0xf68c01198cddeafb9d2ea43368fc9fa509a339fa;
     address internal constant LSLP_LINK_USDC = 0x9d996bDD1F65C835EE92Cd0b94E15d886EF14D63;
     address internal constant LSLP_LINK_USDT = 0xf36c9fc3c2abe4132019444aff914fc8dc9785a9;
@@ -72,13 +79,19 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
     address internal constant LSLP_LINK_DOKI = 0xbe755C548D585dbc4e3Fe4bcD712a32Fd81e5Ba0;
 
     address internal constant LSLP_YFL_WETH_POOL = 0x72368fB97dab2B94A5664EbeEbF504EF482fF149;
+    address internal constant LSLP_YFL_WETH_POOL_NEW = 0x3bE07ed0239d46ca8435D4fb0bE96E43cD1c1796;
     address internal constant LSLP_YFL_LINK_POOL = 0x35fc734948b36370c15387342f048ac87210bc22;
+    address internal constant LSLP_LINK_YFLUSD_POOL = 0x61401c19200B2420f93Bb2EECF4BAA2C193d76e1;
+    address internal constant LSLP_YFLUSD_WETH_POOL = 0x6DddCc7F963C65b18FdDD842e6553528f014aDeA;
+    address internal constant LSLP_LINK_SYFL_POOL = 0x1b650B522b864f6BF61705A05cc89b2b0e23f9C6;
+    address internal constant LSLP_SYFL_WETH_POOL = 0x81C76925E7F41f0306E1147c4659784d4402bD51;
     address internal constant LSLP_DPI_LINK_POOL = 0xfe04c284a9725c141cf6de85d7e8452af1b48ab7;
     address internal constant LSLP_LINK_GSWAP_POOL = 0x4e33d27cbcce9fe1c4a21a0f7c8b31c9cf5c0b75;
     address internal constant LSLP_LINK_CEL_POOL = 0xfa9712ccc86c6bd52187125dca4c2b9c7baa3ef8;
     address internal constant LSLP_MASQ_WETH_POOL = 0x790adfe75706cf70191b2bd729048e42d8ed9f60;
     address internal constant LSLP_BUSD_LINK_POOL = 0x997d4babf8290a19ecdcbd10058fc438eb6f30de;
     address internal constant LSLP_LINK_YAX_POOL = 0x603065b7e2f69c897f154ca429a2b96cf4703f56;
+    address internal constant LSLP_YAX_WETH_POOL = 0xBfe0D843D3DA0953EcEf08Fc231033D4B140a085;
     address internal constant LSLP_LINK_CFI_POOL = 0x5662e09d064781cf2e98732ec3fc7a4a4ab67ea5;
     address internal constant LSLP_LINK_USDC_POOL = 0x0d03cff17367478c3349a579e50259d8a793bbc8;
     address internal constant LSLP_LINK_USDT_POOL = 0x603065b7e2f69c897f154ca429a2b96cf4703f56;
@@ -100,6 +113,7 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
             
             totalRewards += StakingRewards(LSLP_YFL_LINK_POOL).earned(account,0);
             totalRewards += StakingRewards(LSLP_YFL_WETH_POOL).earned(account,0);
+            totalRewards += StakingRewards(LSLP_YFL_WETH_POOL_NEW).earned(account,0);
             totalRewards += StakingRewards(LSLP_DPI_LINK_POOL).earned(account,0);
             totalRewards += StakingRewards(LSLP_MASQ_WETH_POOL).earned(account,0);
             totalRewards += StakingRewards(LSLP_BUSD_LINK_POOL).earned(account,0);
@@ -111,6 +125,13 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
             totalRewards += StakingRewards(LSLP_LINK_USDT_POOL).earned(account,0);
 
             return totalRewards;
+        } else if (token == SYFL) {
+            uint256 totalRewards = 0;
+            totalRewards += StakingRewards(LSLP_LINK_YFLUSD_POOL).earned(account,1);
+            totalRewards += StakingRewards(LSLP_YFLUSD_WETH_POOL).earned(account,1);
+            totalRewards += StakingRewards(LSLP_LINK_SYFL_POOL).earned(account,1);
+            totalRewards += StakingRewards(LSLP_SYFL_WETH_POOL).earned(account,1);
+            return totalRewards;
         } else if (token == CFI) {
             return StakingRewards(LSLP_LINK_CFI_POOL).earned(account,1);
         } else if (token == MASQ) {
@@ -120,7 +141,10 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
         } else if (token == CEL) {
             return StakingRewards(LSLP_LINK_CEL_POOL).earned(account,1);
         } else if (token == YAX) {
-            return StakingRewards(LSLP_LINK_YAX_POOL).earned(account,1);
+            uint256 totalRewards = 0;
+            totalRewards += StakingRewards(LSLP_LINK_YAX_POOL).earned(account,1);
+            totalRewards += StakingRewards(LSLP_YAX_WETH_POOL).earned(account,1);
+            return totalRewards;
         } else if (token == GSWAP) {
             return StakingRewards(LSLP_LINK_GSWAP_POOL).earned(account,1);
         } else if (token == AZUKI) {
@@ -131,12 +155,33 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
         } else if (token == LSLP_YFL_WETH) {
             uint256 total = 0;
             total += ERC20(LSLP_YFL_WETH_POOL).balanceOf(account);
+            total += ERC20(LSLP_YFL_WETH_POOL_NEW).balanceOf(account);
             total += ERC20(LSLP_YFL_WETH).balanceOf(GOVERNANCE_FEES);
             return total
         } else if (token == LSLP_YFL_LINK) {
             uint256 total = 0;
             total += ERC20(LSLP_YFL_LINK_POOL).balanceOf(account);
             total += ERC20(LSLP_YFL_LINK).balanceOf(GOVERNANCE_FEES);
+            return total
+        } else if (token == LSLP_LINK_YFLUSD) {
+            uint256 total = 0;
+            total += ERC20(LSLP_LINK_YFLUSD_POOL).balanceOf(account);
+            total += ERC20(LSLP_LINK_YFLUSD).balanceOf(GOVERNANCE_FEES);
+            return total
+        } else if (token == LSLP_YFLUSD_WETH) {
+            uint256 total = 0;
+            total += ERC20(LSLP_YFLUSD_WETH_POOL).balanceOf(account);
+            total += ERC20(LSLP_YFLUSD_WETH).balanceOf(GOVERNANCE_FEES);
+            return total
+        } else if (token == LSLP_LINK_SYFL) {
+            uint256 total = 0;
+            total += ERC20(LSLP_LINK_SYFL_POOL).balanceOf(account);
+            total += ERC20(LSLP_LINK_SYFL).balanceOf(GOVERNANCE_FEES);
+            return total
+        } else if (token == LSLP_SYFL_WETH) {
+            uint256 total = 0;
+            total += ERC20(LSLP_SYFL_WETH_POOL).balanceOf(account);
+            total += ERC20(LSLP_SYFL_WETH).balanceOf(GOVERNANCE_FEES);
             return total
         } else if (token == LSLP_DPI_LINK) {
             uint256 total = 0;
@@ -172,6 +217,11 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
             uint256 total = 0;
             total += ERC20(LSLP_LINK_YAX_POOL).balanceOf(account);
             total += ERC20(LSLP_LINK_YAX).balanceOf(GOVERNANCE_FEES);
+            return total
+        } else if (token == LSLP_YAX_WETH) {
+            uint256 total = 0;
+            total += ERC20(LSLP_YAX_WETH_POOL).balanceOf(account);
+            total += ERC20(LSLP_YAX_WETH).balanceOf(GOVERNANCE_FEES);
             return total
         } else if (token == LSLP_LINK_USDC) {
             uint256 total = 0;
