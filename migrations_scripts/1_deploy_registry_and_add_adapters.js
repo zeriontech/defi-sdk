@@ -90,6 +90,8 @@ const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const TokenSetsV2TokenAdapter = artifacts.require('TokenSetsV2TokenAdapter');
+const TubeProtocolAdapter = artifacs.require('TubeProtocolAdapter')
+const MustStakingAdapter = artifacs.require('MustStakingAdapter')
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
@@ -423,6 +425,11 @@ const pickleUniswapWethDaiJarAddress = '0xf79Ae82DCcb71ca3042485c85588a3E0C395D5
 const pickleUniswapWethUsdcJarAddress = '0x46206E9BDaf534d057be5EcF231DaD2A1479258B';
 const pickleUniswapWethUsdtJarAddress = '0x3a41AB1e362169974132dEa424Fb8079Fd0E94d8';
 const pickleThreeCrvJarAddress = '0x2385D31f1EB3736bE0C3629E6f03C4b3cd997Ffd';
+
+const tubeAddress = '0x85BC2E8Aaad5dBc347db49Ea45D95486279eD918';
+
+const mustStakingAddress = '0x048Dda990f581e80EFfc72E4e1996AE548f8d64C'
+const mustAddress = '0x9C78EE466D6Cb57A4d01Fd887D2b5dFb2D46288f';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -915,6 +922,13 @@ const LinkswapStakingAdapterTokens = [
 ];
 const zrxAdapterTokens = [
   zrxAddress,
+];
+const tubeProtocolAdapterTokens = [
+  tubeAddress
+];
+const mustStakingAdapterTokens = [
+  mustAddress,
+  mustStakingAddress
 ];
 
 let protocolNames = [];
@@ -1485,6 +1499,30 @@ module.exports = async (deployer, network, accounts) => {
     'Automated asset management strategies',
     'tokensets.com',
     'protocol-icons.s3.amazonaws.com/SET.png',
+    '0',
+  ]);
+
+  await deployer.deploy(TubeProtocolAdapter, { from: accounts[0] });
+  adapters.push([TubeProtocolAdapter.address]);
+  tokens.push([tubeProtocolAdapterTokens]);
+  protocolNames.push('Tube');
+  metadata.push([
+    'Tube',
+    'MUST staking contract',
+    'cometh.io',
+    'www.cometh.io/alembic.png',
+    '0',
+  ]);
+
+  await deployer.deploy(MustStakingAdapter, { from: accounts[0] });
+  adapters.push([MustStakingAdapter.address]);
+  tokens.push([mustStakingAdapterTokens]);
+  protocolNames.push('Staking reward');
+  metadata.push([
+    'Staking reward',
+    'MUST liquidity providers staking reward',
+    'cometh.io',
+    'www.cometh.io/alembic.png',
     '0',
   ]);
 
