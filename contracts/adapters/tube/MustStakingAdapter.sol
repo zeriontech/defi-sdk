@@ -51,12 +51,12 @@ contract MustStakingAdapter is ProtocolAdapter {
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-if (token == MUST) {
-return StakingRewards(STAKING_REWARD).earned(account);
-} else if (token == UNI_V2_WETH_POOL) {
-return StakingRewards(STAKING_REWARD).balanceOf(account);
-} else {
-return 0;
-}
-}
+        if (token == MUST) {
+            return StakingRewards(STAKING_REWARD).earned(account);
+        } else if (token == UNI_V2_WETH_POOL) {
+            return StakingRewards(STAKING_REWARD).balanceOf(account);
+        } else {
+            return 0;
+        }
+    }
 }
