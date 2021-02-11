@@ -1,6 +1,6 @@
 const TokenAdapter = artifacts.require('MstableSavingsTokenAdapter');
 
-contract.only('MstableSavingsTokenAdapter', () => {
+contract('MstableSavingsTokenAdapter', () => {
   const imUsdAddress = '0x30647a72Dc82d7Fbb1123EA74716aB8A317Eac19';
   const mUsdAddress = '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5';
 

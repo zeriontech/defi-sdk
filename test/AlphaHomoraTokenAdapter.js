@@ -1,6 +1,6 @@
 const TokenAdapter = artifacts.require('AlphaHomoraTokenAdapter');
 
-contract.only('AlphaHomoraTokenAdapter', () => {
+contract('AlphaHomoraTokenAdapter', () => {
   const ibETHAddress = '0x67B66C99D3Eb37Fa76Aa3Ed1ff33E8e39F0b9c7A';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
