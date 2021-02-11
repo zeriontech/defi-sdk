@@ -58,10 +58,10 @@ contract UniswapV2TokenAdapter is TokenAdapter {
      */
     function getMetadata(address token) external view override returns (TokenMetadata memory) {
         return TokenMetadata({
-            token: token,
-            name: getPoolName(token),
-            symbol: "UNI-V2",
-            decimals: ERC20(token).decimals()
+        token : token,
+        name : getPoolName(token),
+        symbol : ERC20(token).symbol(),
+        decimals : ERC20(token).decimals()
         });
     }
 
