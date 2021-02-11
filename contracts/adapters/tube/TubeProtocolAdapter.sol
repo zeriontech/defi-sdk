@@ -23,7 +23,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @dev Tube contract interface.
  * Only the functions required for TubeProtocolAdapter contract are added.
  * The Tube contract is available here
- https://etherscan.io/address/0x85BC2E8Aaad5dBc347db49Ea45D95486279eD918#code
+ * etherscan.io/address/0x85BC2E8Aaad5dBc347db49Ea45D95486279eD918#code
  * 
  */
 interface Tube {

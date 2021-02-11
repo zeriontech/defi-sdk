@@ -23,7 +23,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @dev Tube contract interface.
  * Only the functions required for MustStakingAdapter contract are added.
  * The Tube contract is available here
- https://etherscan.io/address/0x048Dda990f581e80EFfc72E4e1996AE548f8d64C#code
+ * etherscan.io/address/0x048Dda990f581e80EFfc72E4e1996AE548f8d64C#code
  * 
  */
 interface StakingRewards {
@@ -51,13 +51,12 @@ contract MustStakingAdapter is ProtocolAdapter {
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        if (token == MUST) {
-            return StakingRewards(STAKING_REWARD).earned(account);
-        }
-        else if (token == UNI_V2_WETH_POOL) {
-            return StakingRewards(STAKING_REWARD).balanceOf(account);
-        } else {
-            return 0;
-        }
-    }
+if (token == MUST) {
+return StakingRewards(STAKING_REWARD).earned(account);
+} else if (token == UNI_V2_WETH_POOL) {
+return StakingRewards(STAKING_REWARD).balanceOf(account);
+} else {
+return 0;
+}
+}
 }

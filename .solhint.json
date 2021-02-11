@@ -9,7 +9,8 @@
       { "maxLength" : 50 }
     ],
     "function-max-lines": [
-      "error", 99
+      "error",
+      149
     ],
     "compiler-version": [
       "error",

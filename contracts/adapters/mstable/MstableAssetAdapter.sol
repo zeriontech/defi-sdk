@@ -41,20 +41,20 @@ contract MstableAssetAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "Masset";
+string public constant override tokenType = "Masset";
 
-    address internal constant SAVINGS = 0xcf3F73290803Fc04425BEE135a4Caeb2BaB2C2A1;
+address internal constant SAVINGS = 0xcf3F73290803Fc04425BEE135a4Caeb2BaB2C2A1;
 
-    uint256 internal constant FULL_SCALE = 1e18;
+uint256 internal constant FULL_SCALE = 1e18;
 
-    /**
-     * @return Amount of mUSD owned and locked on the protocol by the given account.
-     * @dev Implementation of ProtocolAdapter interface function.
-     */
-    function getBalance(address token, address account) external view override returns (uint256) {
-        uint256 credits = SavingsContract(SAVINGS).creditBalances(account);
-        uint256 exchangeRate = SavingsContract(SAVINGS).exchangeRate();
+/**
+ * @return Amount of mUSD owned and locked on the protocol by the given account.
+ * @dev Implementation of ProtocolAdapter interface function.
+ */
+function getBalance(address, address account) external view override returns (uint256) {
+uint256 credits = SavingsContract(SAVINGS).creditBalances(account);
+uint256 exchangeRate = SavingsContract(SAVINGS).exchangeRate();
 
-        return credits * exchangeRate / FULL_SCALE;
-    }
+return credits * exchangeRate / FULL_SCALE;
+}
 }

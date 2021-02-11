@@ -90,8 +90,8 @@ const PieDAOPieTokenAdapter = artifacts.require('PieDAOPieTokenAdapter');
 const PoolTogetherTokenAdapter = artifacts.require('PoolTogetherTokenAdapter');
 const TokenSetsTokenAdapter = artifacts.require('TokenSetsTokenAdapter');
 const TokenSetsV2TokenAdapter = artifacts.require('TokenSetsV2TokenAdapter');
-const TubeProtocolAdapter = artifacs.require('TubeProtocolAdapter')
-const MustStakingAdapter = artifacs.require('MustStakingAdapter')
+const TubeProtocolAdapter = artifacs.require('TubeProtocolAdapter');
+const MustStakingAdapter = artifacs.require('MustStakingAdapter');
 const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
@@ -428,7 +428,7 @@ const pickleThreeCrvJarAddress = '0x2385D31f1EB3736bE0C3629E6f03C4b3cd997Ffd';
 
 const tubeAddress = '0x85BC2E8Aaad5dBc347db49Ea45D95486279eD918';
 
-const mustStakingAddress = '0x048Dda990f581e80EFfc72E4e1996AE548f8d64C'
+const mustStakingAddress = '0x048Dda990f581e80EFfc72E4e1996AE548f8d64C';
 const mustAddress = '0x9C78EE466D6Cb57A4d01Fd887D2b5dFb2D46288f';
 
 const aaveAssetAdapterTokens = [
@@ -924,11 +924,11 @@ const zrxAdapterTokens = [
   zrxAddress,
 ];
 const tubeProtocolAdapterTokens = [
-  tubeAddress
+  tubeAddress,
 ];
 const mustStakingAdapterTokens = [
   mustAddress,
-  mustStakingAddress
+  mustStakingAddress,
 ];
 
 let protocolNames = [];
