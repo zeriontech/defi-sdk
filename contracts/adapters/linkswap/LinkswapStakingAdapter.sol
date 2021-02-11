@@ -90,7 +90,7 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
     address internal constant LSLP_LINK_CEL_POOL = 0xfa9712ccc86c6bd52187125dca4c2b9c7baa3ef8;
     address internal constant LSLP_MASQ_WETH_POOL = 0x790adfe75706cf70191b2bd729048e42d8ed9f60;
     address internal constant LSLP_BUSD_LINK_POOL = 0x997d4babf8290a19ecdcbd10058fc438eb6f30de;
-    address internal constant LSLP_LINK_YAX_POOL = 0x603065b7e2f69c897f154ca429a2b96cf4703f56;
+    address internal constant LSLP_LINK_YAX_POOL = 0xf4C17025B623665AAcAb958FC0fa454b1265A219;
     address internal constant LSLP_YAX_WETH_POOL = 0xBfe0D843D3DA0953EcEf08Fc231033D4B140a085;
     address internal constant LSLP_LINK_CFI_POOL = 0x5662e09d064781cf2e98732ec3fc7a4a4ab67ea5;
     address internal constant LSLP_LINK_USDC_POOL = 0x0d03cff17367478c3349a579e50259d8a793bbc8;
