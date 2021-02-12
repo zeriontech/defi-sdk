@@ -60,10 +60,10 @@ contract CurveVoteEscrowAdapter is ProtocolAdapter {
         override
         returns (uint256)
     {
-        if (token == VE_CRV) {
+        if (token == CRV) {
             (int128 balance, ) = Locker(VE_CRV).locked(account);
             return uint256(balance);
         }
-        return ERC20(token).balanceOf(account);
+        return 0;
     }
 }

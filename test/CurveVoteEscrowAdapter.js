@@ -4,6 +4,7 @@ const AdapterRegistry = artifacts.require("AdapterRegistry");
 
 contract("CurveVoteEscrowAdapter", () => {
   const veCrvAddress = "0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2";
+  const crvAddress = "0xD533a949740bb3306d119CC777fa900bA034cd52";
 
   let accounts;
   let adapterRegistry;
@@ -53,7 +54,7 @@ contract("CurveVoteEscrowAdapter", () => {
 
   it("returns the correct balance", async () => {
     await protocolAdapter.methods["getBalance(token, account)"](
-      VE_CRV_ADDRESS,
+      crvAddress,
       accounts[0]
     )
       .call()
