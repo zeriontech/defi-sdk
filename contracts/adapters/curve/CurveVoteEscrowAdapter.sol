@@ -41,7 +41,7 @@ interface Locker {
  */
 contract CurveVoteEscrowAdapter is ProtocolAdapter {
     string public constant override adapterType = "Asset";
-    string public constant override tokenType = "Vote-escrowed CRV";
+    string public constant override tokenType = "ERC20";
 
     // Curve DAO token
     address internal constant CRV = 0xD533a949740bb3306d119CC777fa900bA034cd52;
