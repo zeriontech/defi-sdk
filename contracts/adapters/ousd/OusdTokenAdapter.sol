@@ -26,7 +26,7 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  * Only the functions required for OusdTokenAdapter contract are added.
  */
 interface VaultLib {
-    function checkBalance(address _asset) external view returns (uint256);
+    function calculateRedeemOutputs(uint256 _amount) external view returns (uint256[] memory);
     function getAllAssets() external view returns (address[] memory);
 }
 
@@ -40,7 +40,7 @@ interface OusdLib {
 
 
 /**
- * @title Token adapter for Enzyme Protocol.
+ * @title Token adapter for OUSD Protocol.
  * @dev Implementation of TokenAdapter interface.
  * @author Domen Grabec
  */
@@ -60,39 +60,22 @@ contract OusdTokenAdapter is TokenAdapter {
     }
 
     /**
-     * @return base to the power of the exponent
-     * @dev helper function
-     */
-    function pow(uint256 base, uint256 exponent) public pure returns (uint256) {
-        uint256 z = base;
-        for (uint256 i = 1; i < exponent; i++) {
-            z = z * base;
-        }
-        return z;
-    }
-
-    /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        //uint256 totalSupply = ERC20(token).totalSupply();
         address vaultAddress = OusdLib(token).vaultAddress();
-
         address[] memory trackedAssets = VaultLib(vaultAddress).getAllAssets();
+        uint256[] memory redeemOutputs = VaultLib(vaultAddress).calculateRedeemOutputs(1e18);
+
         uint256 length = trackedAssets.length;
-
         Component[] memory underlyingTokens = new Component[](length);
-
-        // total supply: 6439222431166549810954050
 
         for (uint256 i = 0; i < length; i++) {
             underlyingTokens[i] = Component({
                 token: trackedAssets[i],
                 tokenType: "ERC20",
-                rate: pow(10, ERC20(trackedAssets[i]).decimals())
-                // rate: totalSupply == 0 ? 0 : VaultLib(vaultAddress).checkBalance(trackedAssets[i]) * 1e18 / totalSupply
-                // maybe this?: rate: totalSupply == 0 ? 0 : VaultLib(vaultAddress).checkBalance(trackedAssets[i]) * ERC20(trackedAssets[i]).decimals() / totalSupply
+                rate: redeemOutputs[i]
             });
         }
 
