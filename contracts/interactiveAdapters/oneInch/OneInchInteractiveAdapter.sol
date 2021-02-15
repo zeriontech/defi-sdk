@@ -35,10 +35,10 @@ contract OneInchInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     address internal constant ONE_INCH = 0x111111125434b319222CdBf8C261674aDB56F3ae;
 
     /**
-     * @notice Exchanges tokens using OneSplit contract.
+     * @notice Exchanges tokens using OneInch contract.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * "from" token address, "from" token amount to be deposited, and amount type.
-     * @param data Bytes array with ABI-encoded `toToken` address.
+     * @param data Bytes array with ABI-encoded `toToken` address and callData.
      * @return tokensToBeWithdrawn Array with one element - `toToken` address.
      * @dev Implementation of InteractiveAdapter function.
      */

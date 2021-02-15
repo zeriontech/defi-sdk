@@ -35,10 +35,10 @@ contract ZeroExInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     address internal constant ZERO_EX = 0xDef1C0ded9bec7F1a1670819833240f027b25EfF;
 
     /**
-     * @notice Exchanges tokens using OneSplit contract.
+     * @notice Exchanges tokens using ZeroEx contract.
      * @param tokenAmounts Array with one element - TokenAmount struct with
-     * "from" token address, "from" token amount to be deposited, and amount type.
-     * @param data Bytes array with ABI-encoded `toToken` address.
+     * "sell" token address, "sell" token amount to be deposited, and amount type.
+     * @param data Bytes array with ABI-encoded `toToken` address and callData.
      * @return tokensToBeWithdrawn Array with one element - `toToken` address.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -77,7 +77,7 @@ contract ZeroExInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     }
 
     /**
-     * @notice Withdraw functionality is not supported.
+     * @notice Withdraw functionality is not integrated yet.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(TokenAmount[] calldata, bytes calldata)
