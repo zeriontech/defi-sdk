@@ -59,12 +59,24 @@ contract OusdTokenAdapter is TokenAdapter {
         });
     }
 
-    /**“
+    /**
+     * @return base to the power of the exponent
+     * @dev helper function
+     */
+    function pow(uint256 base, uint256 exponent) public pure returns (uint256) {
+        uint256 z = base;
+        for (uint256 i = 1; i < exponent; i++) {
+            z = z * base;
+        }
+        return z;
+    }
+
+    /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        uint256 totalSupply = ERC20(token).totalSupply();
+        //uint256 totalSupply = ERC20(token).totalSupply();
         address vaultAddress = OusdLib(token).vaultAddress();
 
         address[] memory trackedAssets = VaultLib(vaultAddress).getAllAssets();
@@ -73,13 +85,13 @@ contract OusdTokenAdapter is TokenAdapter {
         Component[] memory underlyingTokens = new Component[](length);
 
         // total supply: 6439222431166549810954050
-        // 
 
         for (uint256 i = 0; i < length; i++) {
             underlyingTokens[i] = Component({
                 token: trackedAssets[i],
                 tokenType: "ERC20",
-                rate: totalSupply == 0 ? 0 : VaultLib(vaultAddress).checkBalance(trackedAssets[i]) * 1e18 / totalSupply
+                rate: pow(10, ERC20(trackedAssets[i]).decimals())
+                // rate: totalSupply == 0 ? 0 : VaultLib(vaultAddress).checkBalance(trackedAssets[i]) * 1e18 / totalSupply
                 // maybe this?: rate: totalSupply == 0 ? 0 : VaultLib(vaultAddress).checkBalance(trackedAssets[i]) * ERC20(trackedAssets[i]).decimals() / totalSupply
             });
         }
