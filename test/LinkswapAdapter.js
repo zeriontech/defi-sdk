@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('LinkswapAdapter');
 const TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
 //  const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('LinkswapAdapter', () => {
+contract('LinkswapAdapter', () => {
   //  const yflAddress = '0x28cb7e841ee97947a86B06fA4090C8451f64c0be';
   //  const yflusdAddress = '0x7b760d06e401f85545f3b50c44bf5b05308b7b62';
   //  const syflAddress = '0x8282df223ac402d04b2097d16f758af4f70e7db0';

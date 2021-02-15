@@ -1,6 +1,6 @@
 const ProtocolAdapter = artifacts.require('TubeProtocolAdapter');
 
-contract.only('TubeProtocolAdapter', () => {
+contract('TubeProtocolAdapter', () => {
   const mustAddress = '0x9C78EE466D6Cb57A4d01Fd887D2b5dFb2D46288f';
   const testAddress = '0x2ed393Dd537Bf9d60D7bB98C67811be135a5f045';
 
