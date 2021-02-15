@@ -157,93 +157,93 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
             total += ERC20(LSLP_YFL_WETH_POOL).balanceOf(account);
             total += ERC20(LSLP_YFL_WETH_POOL_NEW).balanceOf(account);
             total += ERC20(LSLP_YFL_WETH).balanceOf(GOVERNANCE_FEES);
-return total;
+            return total;
         } else if (token == LSLP_YFL_LINK) {
-uint256 total = 0;
-total += ERC20(LSLP_YFL_LINK_POOL).balanceOf(account);
-total += ERC20(LSLP_YFL_LINK).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_LINK_YFLUSD) {
-uint256 total = 0;
-total += ERC20(LSLP_LINK_YFLUSD_POOL).balanceOf(account);
-total += ERC20(LSLP_LINK_YFLUSD).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_YFLUSD_WETH) {
-uint256 total = 0;
-total += ERC20(LSLP_YFLUSD_WETH_POOL).balanceOf(account);
-total += ERC20(LSLP_YFLUSD_WETH).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_LINK_SYFL) {
-uint256 total = 0;
-total += ERC20(LSLP_LINK_SYFL_POOL).balanceOf(account);
-total += ERC20(LSLP_LINK_SYFL).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_SYFL_WETH) {
-uint256 total = 0;
-total += ERC20(LSLP_SYFL_WETH_POOL).balanceOf(account);
-total += ERC20(LSLP_SYFL_WETH).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_DPI_LINK) {
-uint256 total = 0;
-total += ERC20(LSLP_DPI_LINK_POOL).balanceOf(account);
-total += ERC20(LSLP_DPI_LINK).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_MASQ_WETH) {
-uint256 total = 0;
-total += ERC20(LSLP_MASQ_WETH_POOL).balanceOf(account);
-total += ERC20(LSLP_MASQ_WETH).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_BUSD_LINK) {
-uint256 total = 0;
-total += ERC20(LSLP_BUSD_LINK_POOL).balanceOf(account);
-total += ERC20(LSLP_BUSD_LINK).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_LINK_GSWAP) {
-uint256 total = 0;
-total += ERC20(LSLP_LINK_GSWAP_POOL).balanceOf(account);
-total += ERC20(LSLP_LINK_GSWAP).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_LINK_CFI) {
-uint256 total = 0;
-total += ERC20(LSLP_LINK_CFI_POOL).balanceOf(account);
-total += ERC20(LSLP_LINK_CFI).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_LINK_CEL) {
-uint256 total = 0;
-total += ERC20(LSLP_LINK_CEL_POOL).balanceOf(account);
-total += ERC20(LSLP_LINK_CEL).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_LINK_YAX) {
-uint256 total = 0;
-total += ERC20(LSLP_LINK_YAX_POOL).balanceOf(account);
-total += ERC20(LSLP_LINK_YAX).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_YAX_WETH) {
-uint256 total = 0;
-total += ERC20(LSLP_YAX_WETH_POOL).balanceOf(account);
-total += ERC20(LSLP_YAX_WETH).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_LINK_USDC) {
-uint256 total = 0;
-total += ERC20(LSLP_LINK_USDC_POOL).balanceOf(account);
-total += ERC20(LSLP_LINK_USDC).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_LINK_USDT) {
-uint256 total = 0;
-total += ERC20(LSLP_LINK_USDT_POOL).balanceOf(account);
-total += ERC20(LSLP_LINK_USDT).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_LINK_AZUKI) {
-uint256 total = 0;
-total += ERC20(LSLP_LINK_AZUKI_POOL).balanceOf(account);
-total += ERC20(LSLP_LINK_AZUKI).balanceOf(GOVERNANCE_FEES);
-return total;
-} else if (token == LSLP_LINK_DOKI) {
-uint256 total = 0;
-total += ERC20(LSLP_LINK_DOKI_POOL).balanceOf(account);
-total += ERC20(LSLP_LINK_DOKI).balanceOf(GOVERNANCE_FEES);
-return total;
-} else {
+            uint256 total = 0;
+            total += ERC20(LSLP_YFL_LINK_POOL).balanceOf(account);
+            total += ERC20(LSLP_YFL_LINK).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_LINK_YFLUSD) {
+            uint256 total = 0;
+            total += ERC20(LSLP_LINK_YFLUSD_POOL).balanceOf(account);
+            total += ERC20(LSLP_LINK_YFLUSD).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_YFLUSD_WETH) {
+            uint256 total = 0;
+            total += ERC20(LSLP_YFLUSD_WETH_POOL).balanceOf(account);
+            total += ERC20(LSLP_YFLUSD_WETH).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_LINK_SYFL) {
+            uint256 total = 0;
+            total += ERC20(LSLP_LINK_SYFL_POOL).balanceOf(account);
+            total += ERC20(LSLP_LINK_SYFL).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_SYFL_WETH) {
+            uint256 total = 0;
+            total += ERC20(LSLP_SYFL_WETH_POOL).balanceOf(account);
+            total += ERC20(LSLP_SYFL_WETH).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_DPI_LINK) {
+            uint256 total = 0;
+            total += ERC20(LSLP_DPI_LINK_POOL).balanceOf(account);
+            total += ERC20(LSLP_DPI_LINK).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_MASQ_WETH) {
+            uint256 total = 0;
+            total += ERC20(LSLP_MASQ_WETH_POOL).balanceOf(account);
+            total += ERC20(LSLP_MASQ_WETH).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_BUSD_LINK) {
+            uint256 total = 0;
+            total += ERC20(LSLP_BUSD_LINK_POOL).balanceOf(account);
+            total += ERC20(LSLP_BUSD_LINK).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_LINK_GSWAP) {
+            uint256 total = 0;
+            total += ERC20(LSLP_LINK_GSWAP_POOL).balanceOf(account);
+            total += ERC20(LSLP_LINK_GSWAP).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_LINK_CFI) {
+            uint256 total = 0;
+            total += ERC20(LSLP_LINK_CFI_POOL).balanceOf(account);
+            total += ERC20(LSLP_LINK_CFI).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_LINK_CEL) {
+            uint256 total = 0;
+            total += ERC20(LSLP_LINK_CEL_POOL).balanceOf(account);
+            total += ERC20(LSLP_LINK_CEL).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_LINK_YAX) {
+            uint256 total = 0;
+            total += ERC20(LSLP_LINK_YAX_POOL).balanceOf(account);
+            total += ERC20(LSLP_LINK_YAX).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_YAX_WETH) {
+            uint256 total = 0;
+            total += ERC20(LSLP_YAX_WETH_POOL).balanceOf(account);
+            total += ERC20(LSLP_YAX_WETH).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_LINK_USDC) {
+            uint256 total = 0;
+            total += ERC20(LSLP_LINK_USDC_POOL).balanceOf(account);
+            total += ERC20(LSLP_LINK_USDC).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_LINK_USDT) {
+            uint256 total = 0;
+            total += ERC20(LSLP_LINK_USDT_POOL).balanceOf(account);
+            total += ERC20(LSLP_LINK_USDT).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_LINK_AZUKI) {
+            uint256 total = 0;
+            total += ERC20(LSLP_LINK_AZUKI_POOL).balanceOf(account);
+            total += ERC20(LSLP_LINK_AZUKI).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else if (token == LSLP_LINK_DOKI) {
+            uint256 total = 0;
+            total += ERC20(LSLP_LINK_DOKI_POOL).balanceOf(account);
+            total += ERC20(LSLP_LINK_DOKI).balanceOf(GOVERNANCE_FEES);
+            return total;
+        } else {
             return 0;
         }
     }
