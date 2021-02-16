@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.3;
+pragma solidity 0.7.6;
 
 /**
  * @dev OusdVault contract interface.
@@ -25,4 +25,18 @@ interface OusdVault {
     function calculateRedeemOutputs(uint256 _amount) external view returns (uint256[] memory);
 
     function getAllAssets() external view returns (address[] memory);
+
+    function mint(
+        address _asset,
+        uint256 _amount,
+        uint256 _minimumOusdAmount
+    ) external;
+
+    function mintMultiple(
+        address[] calldata _assets,
+        uint256[] calldata _amounts,
+        uint256 _minimumOusdAmount
+    ) external;
+
+    function redeem(uint256 _amount, uint256 _minimumUnitAmount) external;
 }

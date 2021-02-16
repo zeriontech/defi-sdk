@@ -23,23 +23,24 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-import { BPool } from "../../interfaces/BPool.sol";
+import { OusdVault } from "../../interfaces/OusdVault.sol";
+import { OusdToken } from "../../interfaces/OusdToken.sol";
 
 /**
  * @title Interactive adapter for Balancer (liquidity).
  * @dev Implementation of InteractiveAdapter abstract contract.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @author Domen Grabec <domen@originprotocol.com>
  */
-contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
+contract OusdInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
+    address internal constant OUSD = 0x2A8e1E676Ec238d8A992307B495b45B3fEAa5e86;
 
     /**
      * @notice Deposits tokens to the Balancer pool.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * token address, token amount to be deposited, and amount type.
-     * @param data ABI-encoded additional parameter:
-     *     - pool - pool address.
-     * @return tokensToBeWithdrawn Array with one element - pool address.
+     * @param data ABI-encoded additional parameter
+     * @return tokensToBeWithdrawn Array with one element - ousd address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
@@ -48,29 +49,29 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        // require(tokenAmounts.length == 1, "BIA: should be 1 tokenAmount[1]");
-        // address pool = abi.decode(data, (address));
-        // tokensToBeWithdrawn = new address[](1);
-        // tokensToBeWithdrawn[0] = pool;
-        // address token = tokenAmounts[0].token;
-        // uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
-        // ERC20(token).safeApproveMax(pool, amount, "BIA");
-        // // solhint-disable-next-line no-empty-blocks
-        // try BPool(pool).joinswapExternAmountIn(token, amount, 0) {} catch Error(
-        //     string memory reason
-        // ) {
-        //     revert(reason);
-        // } catch {
-        //     revert("BIA: deposit fail");
-        // }
+        require(tokenAmounts.length == 1, "OIA: should be 1 tokenAmount[1]");
+        address vaultAddress = OusdToken(OUSD).vaultAddress();
+
+        tokensToBeWithdrawn = new address[](1);
+        tokensToBeWithdrawn[0] = OUSD;
+
+        address token = tokenAmounts[0].token;
+        uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
+        ERC20(token).safeApproveMax(vaultAddress, amount, "OIA");
+
+        // solhint-disable-next-line no-empty-blocks
+        try OusdVault(vaultAddress).mint(token, amount, 0) {} catch Error(string memory reason) {
+            revert(reason);
+        } catch {
+            revert("OIA: deposit fail");
+        }
     }
 
     /**
      * @notice Withdraws tokens from the Balancer pool.
      * @param tokenAmounts Array with one element - TokenAmount struct with
-     * Balancer token address, Balancer token amount to be redeemed, and amount type.
-     * @param data ABI-encoded additional parameter:
-     *     - toToken - destination token address.
+     * OUSD token address, OUSD token amount to be redeemed, and amount type.
+     * @param data ABI-encoded additional parameter
      * @return tokensToBeWithdrawn Array with one element - destination token address.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -80,19 +81,21 @@ contract BalancerInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter 
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        // require(tokenAmounts.length == 1, "BIA: should be 1 tokenAmount[2]");
-        // address toToken = abi.decode(data, (address));
+        require(tokenAmounts.length == 1, "OIA: should be 1 tokenAmount[2]");
+
+        address toToken = abi.decode(data, (address));
+
+        // TODO: unknown which tokens will be received upon redemption
         // tokensToBeWithdrawn = new address[](1);
         // tokensToBeWithdrawn[0] = toToken;
-        // address token = tokenAmounts[0].token;
-        // uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
-        // // solhint-disable-next-line no-empty-blocks
-        // try BPool(token).exitswapPoolAmountIn(toToken, amount, 0) {} catch Error(
-        //     string memory reason
-        // ) {
-        //     revert(reason);
-        // } catch {
-        //     revert("BIA: withdraw fail");
-        // }
+
+        address token = tokenAmounts[0].token;
+        uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
+        // solhint-disable-next-line no-empty-blocks
+        try OusdVault(token).redeem(amount, 0) {} catch Error(string memory reason) {
+            revert(reason);
+        } catch {
+            revert("OIA: withdraw fail");
+        }
     }
 }
