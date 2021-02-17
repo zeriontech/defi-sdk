@@ -83,7 +83,6 @@ contract OusdInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     {
         require(tokenAmounts.length == 1, "OIA: should be 1 tokenAmount[2]");
 
-        address toToken = abi.decode(data, (address));
 
         // TODO: unknown which tokens will be received upon redemption
         // tokensToBeWithdrawn = new address[](1);
