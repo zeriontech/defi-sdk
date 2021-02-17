@@ -380,7 +380,7 @@ contract('OneInchLPAssetInteractiveAdapter', () => {
         });
     });
 
-    it.only('should buy 1 1LP with existing ETH and 1INCH', async () => {
+    it('should buy 1 1LP with existing ETH and 1INCH', async () => {
       await web3.eth.getBalance(accounts[0])
         .then((result) => {
           console.log(`       ETH amount before is ${web3.utils.fromWei(result, 'ether')}`);
@@ -463,7 +463,7 @@ contract('OneInchLPAssetInteractiveAdapter', () => {
         });
     });
 
-    it.only('should sell 100% ONEINCHDETH', async () => {
+    it('should sell 100% ONEINCHDETH', async () => {
       let oneInchEthAmount;
       await web3.eth.getBalance(accounts[0])
         .then((result) => {
