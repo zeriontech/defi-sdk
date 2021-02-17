@@ -21,7 +21,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @title Asset adapter for Enzyme protocol.
+ * @title Asset adapter for OUSD token.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Domen Grabec
  */
