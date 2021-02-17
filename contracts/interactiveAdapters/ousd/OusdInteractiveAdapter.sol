@@ -87,7 +87,7 @@ contract OusdInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
         // solhint-disable-next-line no-empty-blocks
-        try OusdVault(token).redeem(amount, 0) {} catch Error(string memory reason) {
+        try OusdVault(vaultAddress).redeem(amount, 0) {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("OIA: withdraw fail");
