@@ -25,7 +25,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @dev Implementation of ProtocolAdapter interface.
  * @author Domen Grabec
  */
-contract EnzymeAssetAdapter is ProtocolAdapter {
+contract OusdAssetAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
