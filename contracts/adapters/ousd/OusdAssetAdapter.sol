@@ -20,9 +20,9 @@ import { ERC20 } from "../../interfaces/ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 /**
- * @title Asset adapter for Enzyme protocol.
+ * @title Asset adapter for OUSD protocol.
  * @dev Implementation of ProtocolAdapter interface.
- * @author Domen Grabec
+ * @author Domen Grabec <domen@originprotocol.com>
  */
 contract OusdAssetAdapter is ProtocolAdapter {
     /**

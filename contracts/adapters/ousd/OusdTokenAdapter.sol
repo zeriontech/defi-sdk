@@ -25,7 +25,7 @@ import { OusdToken } from "../../interfaces/OusdToken.sol";
 /**
  * @title Token adapter for OUSD Protocol.
  * @dev Implementation of TokenAdapter interface.
- * @author Domen Grabec
+ * @author Domen Grabec <domen@originprotocol.com>
  */
 contract OusdTokenAdapter is TokenAdapter {
     /**
