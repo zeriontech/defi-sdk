@@ -81,9 +81,8 @@ contract OusdInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     {
         require(tokenAmounts.length == 1, "OIA: should be 1 tokenAmount[2]");
 
-        // TODO: unknown which tokens will be received upon redemption
-        // tokensToBeWithdrawn = new address[](1);
-        // tokensToBeWithdrawn[0] = toToken;
+        address vaultAddress = OusdToken(OUSD).vaultAddress();
+        tokensToBeWithdrawn = OusdVault(vaultAddress).getAllAssets();
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
