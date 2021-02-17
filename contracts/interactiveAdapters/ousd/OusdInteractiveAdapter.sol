@@ -39,7 +39,6 @@ contract OusdInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
      * @notice Deposits tokens to the Balancer pool.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * token address, token amount to be deposited, and amount type.
-     * @param data ABI-encoded additional parameter
      * @return tokensToBeWithdrawn Array with one element - ousd address.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -71,7 +70,6 @@ contract OusdInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
      * @notice Withdraws tokens from the Balancer pool.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * OUSD token address, OUSD token amount to be redeemed, and amount type.
-     * @param data ABI-encoded additional parameter
      * @return tokensToBeWithdrawn Array with one element - destination token address.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -82,7 +80,6 @@ contract OusdInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         returns (address[] memory tokensToBeWithdrawn)
     {
         require(tokenAmounts.length == 1, "OIA: should be 1 tokenAmount[2]");
-
 
         // TODO: unknown which tokens will be received upon redemption
         // tokensToBeWithdrawn = new address[](1);
