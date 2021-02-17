@@ -43,7 +43,7 @@ contract OusdInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
      * @return tokensToBeWithdrawn Array with one element - ousd address.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
