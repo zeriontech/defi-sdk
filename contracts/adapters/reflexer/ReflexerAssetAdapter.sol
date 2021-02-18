@@ -51,7 +51,7 @@ interface GebSafeManager {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract ReflexerAssetAdapter is ProtocolAdapter, MKRAdapter {
+contract ReflexerAssetAdapter is ProtocolAdapter, ReflexerAdapter {
 
     string public constant override adapterType = "Asset";
 

@@ -2,7 +2,7 @@ const ProtocolAdapter = artifacts.require('CurveVoteEscrowAdapter');
 
 contract('CurveVoteEscrowAdapter', () => {
   const crvAddress = '0xD533a949740bb3306d119CC777fa900bA034cd52';
-  const testAddress = '0x91544E0d0ee6361152f06891b52E778B3614d253'
+  const testAddress = '0x91544E0d0ee6361152f06891b52E778B3614d253';
 
   let accounts;
   let protocolAdapterContract;
@@ -16,7 +16,7 @@ contract('CurveVoteEscrowAdapter', () => {
   });
 
   it('returns the correct balance', async () => {
-    await protocolAdapterContract.methods['getBalance'](
+    await protocolAdapterContract.methods['getBalance(address,address)'](
       crvAddress,
       testAddress,
     )
