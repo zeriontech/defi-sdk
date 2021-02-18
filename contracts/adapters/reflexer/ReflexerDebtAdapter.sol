@@ -40,7 +40,7 @@ interface SAFEEngine {
  */
 interface TaxCollector {
     function collateralTypes(bytes32) external view returns (uint256, uint256);
-    function base() external view returns (uint256);
+    function globalStabilityFee() external view returns (uint256);
 }
 
 

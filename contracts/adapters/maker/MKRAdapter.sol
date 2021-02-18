@@ -37,6 +37,7 @@ abstract contract MKRAdapter {
     uint256 internal constant ONE = 10 ** 27;
 
     function mkrRpow(uint x, uint n, uint base) internal pure returns (uint z) {
+        //solhint-disable-next-line no-inline-assembly
         assembly {
             switch x case 0 {switch n case 0 {z := base} default {z := 0}}
             default {
