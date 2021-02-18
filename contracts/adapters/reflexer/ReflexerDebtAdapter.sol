@@ -88,7 +88,7 @@ contract ReflexerDebtAdapter is ProtocolAdapter, ReflexerAdapter {
         while (id > 0) {
             collateralType = manager.collateralTypes(id);
             (, generatedDebt) = safeEngine.safes(collateralType, manager.safes(id));
-            (, id) = manager.list(id);
+            (, id) = manager.safeList(id);
             (, accumulatedRate) = safeEngine.collateralTypes(collateralType);
             (debtAmount, updateTime) = taxCollector.collateralTypes(collateralType);
             uint256 currentRate = rmultiply(
