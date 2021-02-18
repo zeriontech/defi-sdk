@@ -1,6 +1,6 @@
 const ProtocolAdapter = artifacts.require('ReflexerDebtAdapter');
 
-contract.only('ReflexerDebtAdapter', () => {
+contract('ReflexerDebtAdapter', () => {
   const raiAddress = '0x03ab458634910AaD20eF5f1C8ee96F1D6ac54919';
   // DSProxy of '0xBd3f90047B14e4f392d6877276d52D0aC59F4CF8'
   const testAddress = '0x3B75d4C34dbf26BA53AeB2220bf8A96C40d6FdC9';

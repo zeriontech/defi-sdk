@@ -4,7 +4,7 @@
 const ProtocolAdapter = artifacts.require('LinkswapStakingAdapter');
 //  const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('LinkswapStakingAdapter', () => {
+contract('LinkswapStakingAdapter', () => {
   const yflAddress = '0x28cb7e841ee97947a86B06fA4090C8451f64c0be';
   // Random address with positive balances
   const testAddress = '0x75D1aA733920b14fC74c9F6e6faB7ac1EcE8482E';
