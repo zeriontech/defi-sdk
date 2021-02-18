@@ -31,7 +31,7 @@ import { OusdToken } from "../../interfaces/OusdToken.sol";
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Domen Grabec <domen@originprotocol.com>
  */
-contract OusdInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
+contract OusdAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
     address internal constant OUSD = 0x2A8e1E676Ec238d8A992307B495b45B3fEAa5e86;
 
