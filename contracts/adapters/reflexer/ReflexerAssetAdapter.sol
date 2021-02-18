@@ -67,6 +67,7 @@ contract ReflexerAssetAdapter is ProtocolAdapter, ReflexerAdapter {
         uint256 id = manager.firstSAFEID(account);
         address safe;
         bytes32 collateralType;
+        uint256 lockedCollateral;
         uint256 value;
         uint256 totalValue = 0;
 
@@ -77,7 +78,7 @@ contract ReflexerAssetAdapter is ProtocolAdapter, ReflexerAdapter {
             (lockedCollateral, ) = safeEngine.safes(collateralType, safe);
 
             if (token == WETH && collateralType == "ETH-A") {
-                value = uint256(lockedCollateral);
+                value = lockedCollateral;
             } else {
                 value = 0;
             }

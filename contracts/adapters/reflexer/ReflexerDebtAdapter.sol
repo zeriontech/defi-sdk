@@ -76,20 +76,28 @@ contract ReflexerDebtAdapter is ProtocolAdapter, ReflexerAdapter {
     function getBalance(address, address account) external view override returns (uint256) {
         GebSafeManager manager = GebSafeManager(MANAGER);
         SAFEEngine safeEngine = SAFEEngine(SAFE_ENGINE);
-        uint256 id = manager.firstSAFEID(account);
         TaxCollector taxCollector = TaxCollector(TAX_COLLECTOR);
+        uint256 id = manager.firstSAFEID(account);
+        bytes32 collateralType;
+        uint256 generatedDebt;
+        uint256 accumulatedRate;
+        uint256 debtAmount;
+        uint256 updateTime;
         uint256 totalValue = 0;
 
         while (id > 0) {
-            bytes32 collateralType = manager.collateralTypes(id);
-            (, uint256 generatedDebt) = safeEngine.safes(collateralType, manager.safes(id));
+            collateralType = manager.collateralTypes(id);
+            (, generatedDebt) = safeEngine.safes(collateralType, manager.safes(id));
             (, id) = manager.list(id);
-            (, uint256 accumulatedRate) = safeEngine.collateralTypes(collateralType);
-            (uint256 debtAmount, uint256 updateTime) = taxCollector.collateralTypes(collateralType);
-            uint256 globalStabilityFee = taxCollector.globalStabilityFee();
+            (, accumulatedRate) = safeEngine.collateralTypes(collateralType);
+            (debtAmount, updateTime) = taxCollector.collateralTypes(collateralType);
             uint256 currentRate = rmultiply(
-                // solhint-disable-next-line not-rely-on-time
-                rpow(addition(globalStabilityFee, debtAmount), now - updateTime, RAY),
+                rpow(
+                    addition(taxCollector.globalStabilityFee(), debtAmount),
+                    // solhint-disable-next-line not-rely-on-time
+                    now - updateTime,
+                    RAY
+                ),
                 accumulatedRate
             );
 
