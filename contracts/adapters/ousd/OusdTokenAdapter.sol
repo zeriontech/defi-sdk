@@ -12,6 +12,8 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
+//
+// SPDX-License-Identifier: LGPL-3.0-only
 
 pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
