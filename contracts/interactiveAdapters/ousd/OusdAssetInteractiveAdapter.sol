@@ -27,19 +27,20 @@ import { OusdVault } from "../../interfaces/OusdVault.sol";
 import { OusdToken } from "../../interfaces/OusdToken.sol";
 
 /**
- * @title Interactive adapter for Balancer (liquidity).
+ * @title Interactive adapter for OUSD token.
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Domen Grabec <domen@originprotocol.com>
  */
 contract OusdAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
+
     address internal constant OUSD = 0x2A8e1E676Ec238d8A992307B495b45B3fEAa5e86;
 
     /**
-     * @notice Deposits tokens to the Balancer pool.
+     * @notice Deposits tokens to the OUSD token.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * token address, token amount to be deposited, and amount type.
-     * @return tokensToBeWithdrawn Array with one element - ousd address.
+     * @return tokensToBeWithdrawn Array with one element - OUSD address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata)
@@ -48,7 +49,7 @@ contract OusdAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "OIA: should be 1 tokenAmount[1]");
+        require(tokenAmounts.length == 1, "OAIA: should be 1 tokenAmount[1]");
         address vaultAddress = OusdToken(OUSD).vaultAddress();
 
         tokensToBeWithdrawn = new address[](1);
@@ -56,21 +57,21 @@ contract OusdAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
-        ERC20(token).safeApproveMax(vaultAddress, amount, "OIA");
+        ERC20(token).safeApproveMax(vaultAddress, amount, "OAIA");
 
         // solhint-disable-next-line no-empty-blocks
         try OusdVault(vaultAddress).mint(token, amount, 0) {} catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("OIA: deposit fail");
+            revert("OAIA: deposit fail");
         }
     }
 
     /**
-     * @notice Withdraws tokens from the Balancer pool.
+     * @notice Withdraws tokens from the OUSD token.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * OUSD token address, OUSD token amount to be redeemed, and amount type.
-     * @return tokensToBeWithdrawn Array with one element - destination token address.
+     * @return tokensToBeWithdrawn Array with three elements - OUSD components.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
@@ -79,18 +80,19 @@ contract OusdAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "OIA: should be 1 tokenAmount[2]");
+        require(tokenAmounts.length == 1, "OAIA: should be 1 tokenAmount[2]");
+        require(tokenAmounts[0].token == OUSD, "OAIA: should be OUSD");
 
         address vaultAddress = OusdToken(OUSD).vaultAddress();
+
         tokensToBeWithdrawn = OusdVault(vaultAddress).getAllAssets();
 
-        address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
         // solhint-disable-next-line no-empty-blocks
         try OusdVault(vaultAddress).redeem(amount, 0) {} catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("OIA: withdraw fail");
+            revert("OAIA: withdraw fail");
         }
     }
 }
