@@ -14,7 +14,7 @@
     "test:adapters": "TEST_FILES=./test/adapters/*.js ./scripts/test.sh",
     "test:interactiveAdapters": "TEST_FILES=./test/interactiveAdapters/*.js ./scripts/test.sh",
     "test:core": "TEST_FILES=./test/core/*.js ./scripts/test.sh",
-    "test": "npm run test:core",
+    "test": "npm run test:interactiveAdapters",
     "coverage": "node --max-old-space-size=4096 ./node_modules/.bin/truffle run coverage",
     "lint:solhint": "npx solhint \"./contracts/**/*.sol\"",
     "lint:eslint": "eslint .",
