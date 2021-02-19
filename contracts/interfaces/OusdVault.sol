@@ -22,21 +22,21 @@ pragma solidity 0.7.6;
  * Only the functions required for OusdTokenAdapter contract are added.
  */
 interface OusdVault {
-    function calculateRedeemOutputs(uint256 _amount) external view returns (uint256[] memory);
-
-    function getAllAssets() external view returns (address[] memory);
-
     function mint(
-        address _asset,
-        uint256 _amount,
-        uint256 _minimumOusdAmount
+        address,
+        uint256,
+        uint256
     ) external;
 
     function mintMultiple(
-        address[] calldata _assets,
-        uint256[] calldata _amounts,
-        uint256 _minimumOusdAmount
+        address[] calldata,
+        uint256[] calldata,
+        uint256
     ) external;
 
-    function redeem(uint256 _amount, uint256 _minimumUnitAmount) external;
+    function redeem(uint256, uint256) external;
+
+    function calculateRedeemOutputs(uint256) external view returns (uint256[] memory);
+
+    function getAllAssets() external view returns (address[] memory);
 }

@@ -31,19 +31,6 @@ import { OusdToken } from "../../interfaces/OusdToken.sol";
  */
 contract OusdTokenAdapter is TokenAdapter {
     /**
-     * @return ERC20Metadata struct with ERC20-style token info.
-     * @dev Implementation of TokenAdapter interface function.
-     */
-    function getMetadata(address token) public view override returns (ERC20Metadata memory) {
-        return
-            ERC20Metadata({
-                name: ERC20(token).name(),
-                symbol: ERC20(token).symbol(),
-                decimals: ERC20(token).decimals()
-            });
-    }
-
-    /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter interface function.
      */

@@ -25,20 +25,6 @@ pragma experimental ABIEncoderV2;
  * github.com/DODOEX/dodo-smart-contract/blob/master/contracts/dodo.sol.
  */
 interface DODO {
-    // solhint-disable func-name-mixedcase
-    function _BASE_TOKEN_() external view returns (address);
-
-    function _BASE_CAPITAL_TOKEN_() external view returns (address);
-
-    function _QUOTE_TOKEN_() external view returns (address);
-
-    // solhint-enable func-name-mixedcase
-    function getExpectedTarget() external view returns (uint256, uint256);
-
-    function getTotalBaseCapital() external view returns (uint256);
-
-    function getTotalQuoteCapital() external view returns (uint256);
-
     function depositBase(uint256) external returns (uint256);
 
     function depositQuote(uint256) external returns (uint256);
@@ -50,4 +36,19 @@ interface DODO {
     function withdrawAllBase() external returns (uint256);
 
     function withdrawAllQuote() external returns (uint256);
+
+    // solhint-disable func-name-mixedcase
+    function _BASE_TOKEN_() external view returns (address);
+
+    function _BASE_CAPITAL_TOKEN_() external view returns (address);
+
+    function _QUOTE_TOKEN_() external view returns (address);
+
+    // solhint-enable func-name-mixedcase
+
+    function getExpectedTarget() external view returns (uint256, uint256);
+
+    function getTotalBaseCapital() external view returns (uint256);
+
+    function getTotalQuoteCapital() external view returns (uint256);
 }
