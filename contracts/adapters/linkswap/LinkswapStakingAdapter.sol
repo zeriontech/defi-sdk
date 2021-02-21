@@ -74,7 +74,7 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
     address internal constant LSLP_YFLUSD_WETH = 0x195734d862DFb5380eeDa0ACD8acf697eA95D370;
     address internal constant LSLP_LINK_SYFL = 0x74C89f297b1dC87F927d9432a4eeea697E6f89a5;
     address internal constant LSLP_SYFL_WETH = 0x3315351F0B20595777a28054EF3d514bdC37463d;
-    address internal constant LSLP_DPI_LINK = 0x017FAD4b7a54C1ACe95Ca614954e4D0d12CDb27E;
+    address internal constant LSLP_DPI_LINK = 0xFe04c284a9725c141CF6de85D7E8452af1B48ab7;
     address internal constant LSLP_LINK_GSWAP = 0xdef0CEF53E0D4c6A5E568c53EdCf45CeB33DBE46;
     address internal constant LSLP_LINK_CEL = 0x639916bB4B29859FADF7A272185a3212157F8CE1;
     address internal constant LSLP_MASQ_WETH = 0x37CeE65899dA4B1738412814155540C98DFd752C;
@@ -94,7 +94,7 @@ contract LinkswapStakingAdapter is ProtocolAdapter {
     address internal constant LSLP_YFLUSD_WETH_POOL = 0x6DddCc7F963C65b18FdDD842e6553528f014aDeA;
     address internal constant LSLP_LINK_SYFL_POOL = 0x1b650B522b864f6BF61705A05cc89b2b0e23f9C6;
     address internal constant LSLP_SYFL_WETH_POOL = 0x81C76925E7F41f0306E1147c4659784d4402bD51;
-    address internal constant LSLP_DPI_LINK_POOL = 0xFe04c284a9725c141CF6de85D7E8452af1B48ab7;
+    address internal constant LSLP_DPI_LINK_POOL = 0x017FAD4b7a54C1ACe95Ca614954e4D0d12CDb27E ;
     address internal constant LSLP_LINK_GSWAP_POOL = 0x4e33D27CBCCe9Fe1c4a21A0f7C8b31C9CF5c0B75;
     address internal constant LSLP_LINK_CEL_POOL = 0xfa9712cCc86c6BD52187125dCA4c2B9C7bAa3Ef8;
     address internal constant LSLP_MASQ_WETH_POOL = 0x790aDfE75706cf70191b2bD729048e42d8Ed9f60;
