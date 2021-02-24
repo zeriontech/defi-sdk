@@ -1,14 +1,14 @@
-const TokenAdapter = artifacts.require('OusdTokenAdapter');
+const TokenAdapter = artifacts.require('DodoV2TokenAdapter');
 
-contract('OusdTokenAdapter', () => {
-  const tokenAddress = '0x2A8e1E676Ec238d8A992307B495b45B3fEAa5e86';
+contract.only('DodoV2TokenAdapter', () => {
+  const dvmAddress = '0xEbF6442870FcB5CE60717E712682138DF7aF441a';
 
   let accounts;
   let tokenAdapter;
-  const OUSD = [
-    tokenAddress,
-    'Origin Dollar',
-    'OUSD',
+  const DVM = [
+    dvmAddress,
+    'DODO EGGS/DODO Pool',
+    'DLP',
     '18',
   ];
 
@@ -22,7 +22,7 @@ contract('OusdTokenAdapter', () => {
   });
 
   it('should return correct components', async () => {
-    await tokenAdapter.methods['getComponents(address)'](tokenAddress)
+    await tokenAdapter.methods['getComponents(address)'](dvmAddress)
       .call()
       .then((result) => {
         console.dir(result, { depth: null });
@@ -30,10 +30,10 @@ contract('OusdTokenAdapter', () => {
   });
 
   it('should return correct metadata', async () => {
-    await tokenAdapter.methods['getMetadata(address)'](tokenAddress)
+    await tokenAdapter.methods['getMetadata(address)'](dvmAddress)
       .call()
       .then((result) => {
-        assert.deepEqual(result, OUSD);
+        assert.deepEqual(result, DVM);
       });
   });
 });
