@@ -1,6 +1,6 @@
 const TokenAdapter = artifacts.require('OusdTokenAdapter');
 
-contract.only('OusdTokenAdapter', () => {
+contract('OusdTokenAdapter', () => {
   const tokenAddress = '0x2A8e1E676Ec238d8A992307B495b45B3fEAa5e86';
 
   let accounts;
