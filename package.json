@@ -29,11 +29,11 @@
   "license": "LGPL-3.0-only",
   "repository": "https://github.com/zeriontech/defi-sdk",
   "dependencies": {
-    "@babel/core": "7.12.16",
-    "@babel/preset-env": "7.12.16",
-    "@babel/register": "7.12.13",
+    "@babel/core": "7.13.1",
+    "@babel/preset-env": "7.13.5",
+    "@babel/register": "7.13.0",
     "@truffle/hdwallet-provider": "1.2.2",
-    "core-js": "3.8.3",
+    "core-js": "3.9.0",
     "dotenv": "8.2.0",
     "regenerator-runtime": "0.13.7",
     "truffle": "5.1.67"
@@ -45,15 +45,15 @@
     "eslint-plugin-import": "2.22.1",
     "eth-gas-reporter": "0.2.21",
     "ganache-cli": "6.12.2",
-    "husky": "5.0.9",
+    "husky": "5.1.1",
     "lint-staged": "10.5.4",
-    "mrm": "2.5.18",
-    "pinst": "2.1.4",
+    "mrm": "2.6.0",
+    "pinst": "2.1.6",
     "prettier": "2.2.1",
     "prettier-plugin-solidity": "1.0.0-beta.5",
     "solhint": "3.3.2",
     "solhint-plugin-prettier": "0.0.5",
     "solidity-coverage": "0.7.15",
-    "truffle-plugin-verify": "0.5.4"
+    "truffle-plugin-verify": "0.5.5"
   }
 }
