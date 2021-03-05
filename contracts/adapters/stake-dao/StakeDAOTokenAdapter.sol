@@ -19,12 +19,8 @@ interface Vault {
  * @author Elephant memory/strength
  */
 contract StakeDaoTokenAdapter is TokenAdapter {
-    address public sdveCrv = 0x478bBC744811eE8310B461514BDc29D03739084D;
+    address internal constant sdveCrv = 0x478bBC744811eE8310B461514BDc29D03739084D;
     address internal constant CRV = 0xD533a949740bb3306d119CC777fa900bA034cd52;
-
-    function setSdveCrv(address newSdveCrv) external {
-        sdveCrv = newSdveCrv;
-    }
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
