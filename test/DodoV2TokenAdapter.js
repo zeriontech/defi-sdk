@@ -1,6 +1,6 @@
 const TokenAdapter = artifacts.require('DodoV2TokenAdapter');
 
-contract.only('DodoV2TokenAdapter', () => {
+contract('DodoV2TokenAdapter', () => {
   const dvmAddress = '0xEbF6442870FcB5CE60717E712682138DF7aF441a';
 
   let accounts;
