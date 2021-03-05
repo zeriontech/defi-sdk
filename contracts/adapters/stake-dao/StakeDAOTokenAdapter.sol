@@ -19,7 +19,7 @@ interface Vault {
  * @author Elephant memory/strength
  */
 contract StakeDaoTokenAdapter is TokenAdapter {
-    address internal constant sdveCrv = 0x478bBC744811eE8310B461514BDc29D03739084D;
+    address internal constant SD_VECRV = 0x478bBC744811eE8310B461514BDc29D03739084D;
     address internal constant CRV = 0xD533a949740bb3306d119CC777fa900bA034cd52;
 
     /**
@@ -53,7 +53,7 @@ contract StakeDaoTokenAdapter is TokenAdapter {
     {
         Component[] memory components = new Component[](1);
 
-        if (token == sdveCrv) {
+        if (token == SD_VECRV) {
             components[0] = Component({
                 token: CRV,
                 tokenType: "ERC20",
