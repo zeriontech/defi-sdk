@@ -30,9 +30,9 @@ contract.only('SaddleTokenAdapter', () => {
       .call()
       .then((result) => {
         assert.equal(result[0][0], tbtcAddress);
-        assert.equal(result[0][1], wbtcAddress);
-        assert.equal(result[0][2], renbtcAddress);
-        assert.equal(result[0][3], sbtcAddress);
+        assert.equal(result[1][0], wbtcAddress);
+        assert.equal(result[2][0], renbtcAddress);
+        assert.equal(result[3][0], sbtcAddress);
       });
   });
 
