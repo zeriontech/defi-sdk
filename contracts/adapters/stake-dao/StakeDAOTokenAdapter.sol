@@ -20,6 +20,7 @@ interface Vault {
  */
 contract StakeDaoTokenAdapter is TokenAdapter {
     address public sdveCrv = 0x478bBC744811eE8310B461514BDc29D03739084D;
+    address internal constant CRV = 0xD533a949740bb3306d119CC777fa900bA034cd52;
 
     function setSdveCrv(address newSdveCrv) external {
         sdveCrv = newSdveCrv;
@@ -58,7 +59,7 @@ contract StakeDaoTokenAdapter is TokenAdapter {
 
         if (token == sdveCrv) {
             components[0] = Component({
-                token: sdveCrv,
+                token: CRV,
                 tokenType: "ERC20",
                 rate: 1e18
             });

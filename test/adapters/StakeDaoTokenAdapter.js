@@ -5,6 +5,7 @@ contract("StakeDaoTokenAdapter", () => {
   const sbtcCrv = "0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3";
 
   const sdveCrvAddress = "0x478bBC744811eE8310B461514BDc29D03739084D";
+  const CRV = '0xD533a949740bb3306d119CC777fa900bA034cd52';
 
   let accounts;
   let tokenAdapter;
@@ -46,7 +47,7 @@ contract("StakeDaoTokenAdapter", () => {
     await tokenAdapter.methods["getComponents(address)"](sdveCrvAddress)
       .call()
       .then((result) => {
-        assert.equal(result[0][0], sdveCrvAddress);
+        assert.equal(result[0][0], CRV);
         assert.equal(result[0][1], "ERC20");
         assert.equal(result[0][2], "1000000000000000000");
       });
