@@ -20,7 +20,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('DodoV2AssetInteractiveAdapter', () => {
+contract('DodoV2AssetInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const dodoAddress = '0x43Dfc4159D86F3A37A5A4B3D4580b888ad7d4DDd';

@@ -29,7 +29,7 @@ import { SafeBox } from "../../interfaces/SafeBox.sol";
  * @title Interactive adapter for SafeBox contracts.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
-contract AlphaHomoraAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
+contract AlphaHomoraV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     /**
