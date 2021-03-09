@@ -1,8 +1,8 @@
 const TokenAdapter = artifacts.require('AlphaHomoraV2TokenAdapter');
 
-contract('AlphaHomoraV2TokenAdapter', () => {
+contract.only('AlphaHomoraV2TokenAdapter', () => {
   const ibWethAddress = '0xeEa3311250FE4c3268F8E684f7C87A82fF183Ec1';
-  const cyWethAddress = '0x41c84c0e2EE0b740Cf0d31F63f3B6F627DC6b393';
+  const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
   let accounts;
   let tokenAdapter;
@@ -26,7 +26,7 @@ contract('AlphaHomoraV2TokenAdapter', () => {
     await tokenAdapter.methods['getComponents(address)'](ibWethAddress)
       .call()
       .then((result) => {
-        assert.equal(result[0][0], cyWethAddress);
+        assert.equal(result[0][0], ethAddress);
       });
   });
 

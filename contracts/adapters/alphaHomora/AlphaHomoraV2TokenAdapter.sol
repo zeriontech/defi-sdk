@@ -29,6 +29,18 @@ import { TokenAdapter } from "../TokenAdapter.sol";
  */
 interface SafeBox {
     function cToken() external view returns (address);
+    function uToken() external view returns (address);
+}
+
+
+/**
+ * @dev CToken contract interface.
+ * Only the functions required for AlphaHomoraV2TokenAdapter contract are added.
+ * The CToken contract is available here
+ * github.com/compound-finance/compound-protocol/blob/master/contracts/CToken.sol.
+ */
+interface CToken {
+    function exchangeRateStored() external view returns (uint256);
 }
 
 
@@ -38,6 +50,8 @@ interface SafeBox {
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract AlphaHomoraV2TokenAdapter is TokenAdapter {
+
+    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -57,12 +71,20 @@ contract AlphaHomoraV2TokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
+        address underlyingToken;
+
+        try SafeBox(token).uToken() returns (address uToken) {
+            underlyingToken = uToken;
+        } catch {
+            underlyingToken = ETH;
+        }
+
         Component[] memory underlyingComponents = new Component[](1);
 
         underlyingComponents[0] = Component({
-            token: SafeBox(token).cToken(),
+            token: underlyingToken,
             tokenType: "ERC20",
-            rate: uint256(1e18)
+            rate: CToken(SafeBox(token).cToken()).exchangeRateStored()
         });
 
         return underlyingComponents;
