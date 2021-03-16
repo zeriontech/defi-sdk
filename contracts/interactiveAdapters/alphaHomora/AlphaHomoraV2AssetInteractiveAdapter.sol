@@ -37,7 +37,7 @@ contract AlphaHomoraV2AssetInteractiveAdapter is InteractiveAdapter, ERC20Protoc
     /**
      * @notice Deposits tokens to the SafeBox contract.
      * @param tokenAmounts Array with one element - TokenAmount struct with
-     * underlying token address, underlying token amount to be deposited, and amount type.
+     *     underlying token address, underlying token amount to be deposited, and amount type.
      * @param data ABI-encoded additional parameters:
      *     - box - SafeBox contract address.
      * @return tokensToBeWithdrawn Array with ane element - SafeBox contract address.
@@ -80,7 +80,7 @@ contract AlphaHomoraV2AssetInteractiveAdapter is InteractiveAdapter, ERC20Protoc
     /**
      * @notice Withdraws tokens from the SafeBox contract.
      * @param tokenAmounts Array with one element - TokenAmount struct with
-     * SafeBox address, amount to be redeemed, and amount type.
+     *     SafeBox address, amount to be redeemed, and amount type.
      * @return tokensToBeWithdrawn Array with one element - underlying token.
      * @dev Implementation of InteractiveAdapter function.
      */
