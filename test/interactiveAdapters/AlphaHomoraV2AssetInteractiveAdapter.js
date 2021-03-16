@@ -2,6 +2,8 @@ import expectRevert from '../helpers/expectRevert';
 import convertToShare from '../helpers/convertToShare';
 import convertToBytes32 from '../helpers/convertToBytes32';
 
+const { BN } = web3.utils;
+
 const protocolAdapterName = convertToBytes32('AlphaHomora V2');
 const UNISWAP_V2_EXCHANGE_ADAPTER = convertToBytes32('Uniswap V2 Exchange');
 const WETH_ASSET_ADAPTER = convertToBytes32('WETH');
@@ -178,7 +180,7 @@ contract.only('AlphaHomoraV2AssetInteractiveAdapter', () => {
       await IBDAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log(`ibdai amount before is ${web3.utils.fromWei(result, 'ether')}`);
+          console.log(`ibdai amount before is ${web3.utils.fromWei(new BN(result).muln(10), 'gwei')}`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -221,7 +223,7 @@ contract.only('AlphaHomoraV2AssetInteractiveAdapter', () => {
       await IBDAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log(`ibdai amount after is ${web3.utils.fromWei(result, 'ether')}`);
+          console.log(`ibdai amount after is ${web3.utils.fromWei(new BN(result).muln(10), 'gwei')}`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -285,7 +287,7 @@ contract.only('AlphaHomoraV2AssetInteractiveAdapter', () => {
         .call()
         .then((result) => {
           amount = result;
-          console.log(`ibdai amount before is ${web3.utils.fromWei(result, 'ether')}`);
+          console.log(`ibdai amount before is ${web3.utils.fromWei(new BN(result).muln(10), 'gwei')}`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -327,7 +329,7 @@ contract.only('AlphaHomoraV2AssetInteractiveAdapter', () => {
       await IBDAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log(`ibdai amount after is ${web3.utils.fromWei(result, 'ether')}`);
+          console.log(`ibdai amount after is ${web3.utils.fromWei(new BN(result).muln(10), 'gwei')}`);
         });
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -347,12 +349,12 @@ contract.only('AlphaHomoraV2AssetInteractiveAdapter', () => {
     });
   });
 
-  describe('ETH <-> ibETHv2', () => {
+  describe.only('ETH <-> ibETHv2', () => {
     it('should be correct ETH -> ibETHv2 deposit', async () => {
       await IBETH.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log(`ibweth amount before is ${web3.utils.fromWei(result, 'ether')}`);
+          console.log(`ibweth amount before is ${web3.utils.fromWei(new BN(result).muln(10), 'gwei')}`);
         });
       await web3.eth.getBalance(accounts[0])
         .then((result) => {
@@ -384,7 +386,7 @@ contract.only('AlphaHomoraV2AssetInteractiveAdapter', () => {
       await IBETH.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log(` ibweth amount after is ${web3.utils.fromWei(result, 'ether')}`);
+          console.log(` ibweth amount after is ${web3.utils.fromWei(new BN(result).muln(10), 'gwei')}`);
         });
       await web3.eth.getBalance(accounts[0])
         .then((result) => {
@@ -407,7 +409,7 @@ contract.only('AlphaHomoraV2AssetInteractiveAdapter', () => {
         .call()
         .then((result) => {
           amount = result;
-          console.log(`ibweth amount before is ${web3.utils.fromWei(result, 'ether')}`);
+          console.log(`ibweth amount before is ${web3.utils.fromWei(new BN(result).muln(10), 'gwei')}`);
         });
       await web3.eth.getBalance(accounts[0])
         .then((result) => {
@@ -448,7 +450,7 @@ contract.only('AlphaHomoraV2AssetInteractiveAdapter', () => {
       await IBETH.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log(`ibweth amount after is ${web3.utils.fromWei(result, 'ether')}`);
+          console.log(`ibweth amount after is ${web3.utils.fromWei(new BN(result).muln(10), 'gwei')}`);
         });
       await web3.eth.getBalance(accounts[0])
         .then((result) => {

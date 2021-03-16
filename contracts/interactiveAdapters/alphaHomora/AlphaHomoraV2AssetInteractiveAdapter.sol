@@ -18,11 +18,11 @@
 pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../interfaces/ERC20.sol";
-import { SafeERC20 } from "../../shared/SafeERC20.sol";
-import { TokenAmount } from "../../shared/Structs.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
+import { SafeERC20 } from "../../shared/SafeERC20.sol";
+import { TokenAmount } from "../../shared/Structs.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
 import { SafeBox } from "../../interfaces/SafeBox.sol";
 
 /**
@@ -31,6 +31,8 @@ import { SafeBox } from "../../interfaces/SafeBox.sol";
  */
 contract AlphaHomoraV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
+
+    address internal constant IBETH = 0xeEa3311250FE4c3268F8E684f7C87A82fF183Ec1;
 
     /**
      * @notice Deposits tokens to the SafeBox contract.
@@ -94,11 +96,7 @@ contract AlphaHomoraV2AssetInteractiveAdapter is InteractiveAdapter, ERC20Protoc
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
-        try SafeBox(token).uToken() returns (address uToken) {
-            tokensToBeWithdrawn[0] = uToken;
-        } catch {
-            tokensToBeWithdrawn[0] = ETH;
-        }
+        tokensToBeWithdrawn[0] = token == IBETH ? ETH : SafeBox(token).uToken();
 
         // solhint-disable-next-line no-empty-blocks
         try SafeBox(token).withdraw(amount) {} catch Error(string memory reason) {

@@ -32,5 +32,5 @@ interface SafeBox {
 
     function withdraw(uint256) external;
 
-    function uToken() external payable returns (address);
+    function uToken() external view returns (address);
 }
