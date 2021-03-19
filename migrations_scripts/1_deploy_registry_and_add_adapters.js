@@ -3,6 +3,7 @@ const AaveAssetAdapter = artifacts.require('AaveAssetAdapter');
 const BzxAssetAdapter = artifacts.require('BzxAssetAdapter');
 const BzxDebtAdapter = artifacts.require('BzxDebtAdapter');
 const BzxStakingAdapter = artifacts.require('BzxStakingAdapter');
+const BzxVestingStakingAdapter = artifacts.require('BzxVestingStakingAdapter');
 const AaveDebtAdapter = artifacts.require('AaveDebtAdapter');
 const AaveUniswapAssetAdapter = artifacts.require('AaveUniswapAssetAdapter');
 const AaveUniswapDebtAdapter = artifacts.require('AaveUniswapDebtAdapter');
@@ -966,9 +967,20 @@ module.exports = async (deployer, network, accounts) => {
 
   await deployer.deploy(BzxAssetAdapter, { from: accounts[0] });
   await deployer.deploy(BzxStakingAdapter, { from: accounts[0] });
+  await deployer.deploy(BzxVestingStakingAdapter, { from: accounts[0] });
   await deployer.deploy(BzxDebtAdapter, { from: accounts[0] });
-  adapters.push([BzxAssetAdapter.address, BzxStakingAdapter.address, BzxDebtAdapter.address]);
-  tokens.push([bzxAssetAdapterTokens, bzxStakingAdapterTokens, bzxDebtAdapterTokens]);
+  adapters.push([
+    BzxAssetAdapter.address,
+    BzxStakingAdapter.address,
+    BzxVestingStakingAdapter.address,
+    BzxDebtAdapter.address,
+  ]);
+  tokens.push([
+    bzxAssetAdapterTokens,
+    bzxStakingAdapterTokens,
+    BzxVestingStakingAdapter.address,
+    bzxDebtAdapterTokens,
+  ]);
   protocolNames.push('bZx');
   metadata.push([
     'bZx',
