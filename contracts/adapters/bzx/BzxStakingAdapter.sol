@@ -113,11 +113,7 @@ contract BzxStakingAdapter is ProtocolAdapter {
         } else if (token == CURVE3CRV) {
             (, uint256 curve3crv, , ) =
                 StakingRewards(stakingContract).earned(account);
-            return
-                StakingRewards(stakingContract).balanceOfByAsset(
-                    token,
-                    account
-                ) + curve3crv;
+            return curve3crv;
         } else {
             return 0;
         }
