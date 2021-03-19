@@ -26,21 +26,15 @@ import {ProtocolAdapter} from "../ProtocolAdapter.sol";
  * github.com/Synthetixio/synthetix/blob/master/contracts/StakingRewards.sol.
  */
 interface StakingRewards {
-
-    function balanceOfByAssets(address account)
+    function earned(address)
         external
         view
         returns (
-            uint256 bzrxBalance,
-            uint256 iBZRXBalance,
-            uint256 vBZRXBalance,
-            uint256 lPTokenBalance
+            uint256 bzrxRewardsEarned,
+            uint256 stableCoinRewardsEarned,
+            uint256 bzrxRewardsVesting,
+            uint256 stableCoinRewardsVesting
         );
-
-    function balanceOfByAsset(address token, address account)
-        external
-        view
-        returns (uint256 balance);
 }
 
 /**
@@ -59,6 +53,8 @@ contract BzxStakingAdapter is ProtocolAdapter {
         0xB72B31907C1C95F3650b64b2469e08EdACeE5e8F;
     address internal constant BZRX = 0x56d811088235F11C8920698a204A5010a788f4b3;
     address internal constant BPT = 0xe26A220a341EAca116bDa64cF9D5638A935ae629;
+    address internal constant CURVE3CRV =
+        0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490;
 
     address internal constant stakingContract =
         0xe95Ebce2B02Ee07dEF5Ed6B53289801F7Fc137A4;
@@ -73,30 +69,12 @@ contract BzxStakingAdapter is ProtocolAdapter {
         override
         returns (uint256)
     {
-        if (token == IBZRX) {
-            return
-                StakingRewards(stakingContract).balanceOfByAsset(
-                    token,
-                    account
-                );
-        } else if (token == VBZRX) {
-            return
-                StakingRewards(stakingContract).balanceOfByAsset(
-                    token,
-                    account
-                );
-        } else if (token == BZRX) {
-            return
-                StakingRewards(stakingContract).balanceOfByAsset(
-                    token,
-                    account
-                );
-        } else if (token == BPT) {
-            return
-                StakingRewards(stakingContract).balanceOfByAsset(
-                    token,
-                    account
-                );
+        (, uint256 curve3crvVesting, uint256 bzrxEarningsVesting, ) =
+            StakingRewards(stakingContract).earned(account);
+        if (token == BZRX) {
+            return bzrxEarningsVesting;
+        } else if (token == CURVE3CRV) {
+            return curve3crvVesting;
         } else {
             return 0;
         }
