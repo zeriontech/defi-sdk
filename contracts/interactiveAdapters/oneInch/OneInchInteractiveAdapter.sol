@@ -32,7 +32,7 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 contract OneInchInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
-    address internal constant ONE_INCH = 0x111111125434b319222CdBf8C261674aDB56F3ae;
+    address internal constant ONE_INCH = 0x11111112542D85B3EF69AE05771c2dCCff4fAa26;
 
     /**
      * @notice Exchanges tokens using OneInch contract.
