@@ -71,7 +71,7 @@ contract BzxStakingAdapter is ProtocolAdapter {
     address internal constant CURVE3CRV =
         0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490;
 
-    address internal constant stakingContract =
+    address internal constant STAKING_CONTRACT =
         0xe95Ebce2B02Ee07dEF5Ed6B53289801F7Fc137A4;
 
     /**
@@ -84,35 +84,23 @@ contract BzxStakingAdapter is ProtocolAdapter {
         override
         returns (uint256)
     {
-        if (token == IBZRX) {
+        if (token == IBZRX || token == VBZRX || token == BPT) {
             return
-                StakingRewards(stakingContract).balanceOfByAsset(
-                    token,
-                    account
-                );
-        } else if (token == VBZRX) {
-            return
-                StakingRewards(stakingContract).balanceOfByAsset(
+                StakingRewards(STAKING_CONTRACT).balanceOfByAsset(
                     token,
                     account
                 );
         } else if (token == BZRX) {
             (uint256 bzrxEarnings, , , ) =
-                StakingRewards(stakingContract).earned(account);
+                StakingRewards(STAKING_CONTRACT).earned(account);
             return
-                StakingRewards(stakingContract).balanceOfByAsset(
+                StakingRewards(STAKING_CONTRACT).balanceOfByAsset(
                     token,
                     account
                 ) + bzrxEarnings;
-        } else if (token == BPT) {
-            return
-                StakingRewards(stakingContract).balanceOfByAsset(
-                    token,
-                    account
-                );
         } else if (token == CURVE3CRV) {
             (, uint256 curve3crv, , ) =
-                StakingRewards(stakingContract).earned(account);
+                StakingRewards(STAKING_CONTRACT).earned(account);
             return curve3crv;
         } else {
             return 0;
