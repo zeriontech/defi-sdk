@@ -53,7 +53,7 @@ interface StakingRewards {
 }
 
 /**
- * @title Adapter for BZX protocol (staking).
+ * @title Adapter for BZX protocol (staking). This will return current staking + earnigns that can be immediately withdrawn
  * @dev Implementation of ProtocolAdapter interface.
  * @author Roman Iftodi <romeo8881@gmail.com>
  */
