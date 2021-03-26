@@ -15,35 +15,30 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.6;
+pragma solidity 0.8.1;
 
-import "../interfaces/ERC20.sol";
+import { ERC20 } from "../interfaces/ERC20.sol";
+import { Base } from "./Base.sol";
+import { Helpers } from "./Helpers.sol";
 
 /**
  * @title SafeERC20
  * @dev Wrappers around ERC20 operations that throw on failure (when the token contract
  * returns false). Tokens that return no value (and instead revert or throw on failure)
  * are also supported, non-reverting calls are assumed to be successful.
- * To use this library you can add a `using SafeERC20 for ERC20;` statement to your contract,
- * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
  */
 library SafeERC20 {
     function safeTransfer(
-        ERC20 token,
+        address token,
         address to,
         uint256 value,
         string memory location
     ) internal {
-        callOptionalReturn(
-            token,
-            abi.encodeWithSelector(token.transfer.selector, to, value),
-            "transfer",
-            location
-        );
+        callOptionalReturn(token, ERC20(token).transfer.selector, abi.encode(to, value), location);
     }
 
     function safeTransferFrom(
-        ERC20 token,
+        address token,
         address from,
         address to,
         uint256 value,
@@ -51,41 +46,40 @@ library SafeERC20 {
     ) internal {
         callOptionalReturn(
             token,
-            abi.encodeWithSelector(token.transferFrom.selector, from, to, value),
-            "transferFrom",
+            ERC20(token).transferFrom.selector,
+            abi.encode(from, to, value),
             location
         );
     }
 
     function safeApprove(
-        ERC20 token,
+        address token,
         address spender,
         uint256 value,
         string memory location
     ) internal {
         require(
-            (value == 0) || (token.allowance(address(this), spender) == 0),
-            string(abi.encodePacked("SafeERC20: bad approve call from ", location))
+            (value == type(uint256).max) ||
+                (value == 0) ||
+                (ERC20(token).allowance(address(this), spender) == 0),
+            string(abi.encodePacked(location, " : safeApprove failed"))
         );
         callOptionalReturn(
             token,
-            abi.encodeWithSelector(token.approve.selector, spender, value),
-            "approve",
+            ERC20(token).approve.selector,
+            abi.encode(spender, value),
             location
         );
     }
 
     function safeApproveMax(
-        ERC20 token,
+        address token,
         address spender,
         uint256 value,
         string memory location
     ) internal {
         uint256 allowance = ERC20(token).allowance(address(this), spender);
         if (allowance < value) {
-            if (allowance > 0) {
-                safeApprove(token, spender, 0, location);
-            }
             safeApprove(token, spender, type(uint256).max, location);
         }
     }
@@ -95,35 +89,24 @@ library SafeERC20 {
      * relaxing the requirement on the return value: the return value is optional
      * (but if data is returned, it must not be false).
      * @param token The token targeted by the call.
-     * @param data The call data (encoded using abi.encode or one of its variants).
+     * @param selector Function selector for the call.
+     * @param callData The call data (encoded using abi.encode or one of its variants).
      * @param location Location of the call (for debug).
      */
     function callOptionalReturn(
-        ERC20 token,
-        bytes memory data,
-        string memory functionName,
+        address token,
+        bytes4 selector,
+        bytes memory callData,
         string memory location
     ) private {
-        // We need to perform a low level call here, to bypass Solidity's return data size checking
-        // mechanism, since we're implementing it ourselves.
+        bytes memory returnData = Base.externalCall(token, selector, callData, 0, location);
 
-        // We implement two-steps call as callee is a contract is a responsibility of a caller.
-        //  1. The call itself is made, and success asserted
-        //  2. The return value is decoded, which in turn checks the size of the returned data.
-
-        // solhint-disable-next-line avoid-low-level-calls
-        (bool success, bytes memory returndata) = address(token).call(data);
-        require(
-            success,
-            string(abi.encodePacked("SafeERC20: ", functionName, " failed in ", location))
-        );
-
-        if (returndata.length > 0) {
+        if (returnData.length > 0) {
             // Return data is optional
             require(
-                abi.decode(returndata, (bool)),
+                abi.decode(returnData, (bool)),
                 string(
-                    abi.encodePacked("SafeERC20: ", functionName, " returned false in ", location)
+                    abi.encodePacked(location, ": ", Helpers.toString(selector), " returned false")
                 )
             );
         }

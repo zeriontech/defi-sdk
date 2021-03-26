@@ -18,15 +18,16 @@ const toDecimalNumber = (baseAmount, decimals) => {
 };
 
 const displayToken = async (registry, token) => {
-  await registry.methods.getFullTokenBalances(
-    [token.token],
-  )
+  await registry.methods
+    .getFullTokenBalances([token.token])
     .call()
     .then((result) => {
-      console.log(`${result[0].base.erc20metadata.name} amount: ${toDecimalNumber(
-        token.amount,
-        result[0].base.erc20metadata.decimals,
-      )}`);
+      console.log(
+        `${result[0].base.erc20metadata.name} amount: ${toDecimalNumber(
+          token.amount,
+          result[0].base.erc20metadata.decimals,
+        )}`,
+      );
     });
 };
 

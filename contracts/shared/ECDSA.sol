@@ -2,7 +2,7 @@
 // openzeppelin-contracts/v3.2.1-solc-0.7/contracts/cryptography/ECDSA.sol
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.7.6;
+pragma solidity 0.8.1;
 
 /**
  * @dev Elliptic Curve Digital Signature Algorithm (ECDSA) operations.

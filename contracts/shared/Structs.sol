@@ -15,8 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.6;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.8.1;
 
 // The struct consists of TokenBalanceMeta structs for
 // (base) token and its underlying tokens (if any).
@@ -45,8 +44,15 @@ struct ERC20Metadata {
 // and array of TokenBalance structs
 // with token addresses and absolute amounts.
 struct AdapterBalance {
-    bytes32 protocolAdapterName;
+    bytes32 name;
     TokenBalance[] tokenBalances;
+}
+
+// The struct consists of protocol adapter's name
+// and array of supported tokens' addresses.
+struct AdapterTokens {
+    bytes32 name;
+    address[] tokens;
 }
 
 // The struct consists of token address
@@ -67,6 +73,17 @@ struct Component {
 
 //=============================== Interactive Adapters Structs ====================================
 
+// The struct consists of swap type,
+// fee description, destination for input tokens,
+// Core contract address, calldata used for the call.
+struct SwapDescription {
+    SwapType swapType;
+    Fee fee;
+    address destination;
+    address caller;
+    bytes callData;
+}
+
 // The struct consists of name of the protocol adapter,
 // action type, array of token amounts,
 // and some additional data (depends on the protocol).
@@ -82,6 +99,14 @@ struct Action {
 // permit type and calldata.
 struct Input {
     TokenAmount tokenAmount;
+    Permit permit;
+}
+
+// The struct consists of token address,
+// its absolute amount, as well as
+// permit type and calldata.
+struct AbsoluteInput {
+    AbsoluteTokenAmount absoluteTokenAmount;
     Permit permit;
 }
 
@@ -119,5 +144,7 @@ struct AbsoluteTokenAmount {
 enum ActionType { None, Deposit, Withdraw }
 
 enum AmountType { None, Relative, Absolute }
+
+enum SwapType { None, FixedInputs, FixedOutputs }
 
 enum PermitType { None, EIP2612, DAI, Yearn }

@@ -4,8 +4,8 @@ const expectRevert = async (promise) => {
   } catch (error) {
     console.log(error.message);
     // TODO: Check jump destination to destinguish between a throw and an actual invalid jump.
-    const invalidOpcode = error.message.search('revert') >= 0
-      || error.message.search('invalid opcode') > -1;
+    const invalidOpcode =
+      error.message.search('revert') >= 0 || error.message.search('invalid opcode') > -1;
 
     // TODO: When we contract A calls contract B, and B throws, instead of an 'invalid jump',
     //  we get an 'out of gas' error. How do we distinguish this from an actual out of gas event?

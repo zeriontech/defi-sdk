@@ -15,18 +15,16 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.6;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.8.1;
 
 import { TokenAmount } from "../shared/Structs.sol";
-import { ERC20ProtocolAdapter } from "../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../interactiveAdapters/InteractiveAdapter.sol";
 
 /**
  * @title Mock interactive adapter.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
-contract MockInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
+contract MockInteractiveAdapter is InteractiveAdapter {
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     /**
@@ -55,5 +53,13 @@ contract MockInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     {
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = WETH;
+    }
+
+    /**
+     * @notice Mock getBalance function.
+     * @dev Implementation of ProtocolAdapter function.
+     */
+    function getBalance(address, address) public pure override returns (int256) {
+        return 100;
     }
 }

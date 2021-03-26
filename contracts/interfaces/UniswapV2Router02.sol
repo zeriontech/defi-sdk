@@ -15,29 +15,18 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.6;
+pragma solidity 0.8.1;
 
+/**
+ * @dev UniswapV2Router02 contract interface.
+ * The UniswapV2Router02 contract is available here
+ * github.com/Uniswap/uniswap-v2-periphery/blob/master/contracts/UniswapV2Router02.sol.
+ */
 interface UniswapV2Router02 {
-    function swapExactTokensForTokens(
-        uint256 amountIn,
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external returns (uint256[] memory amounts);
-
     function swapExactETHForTokens(
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external payable returns (uint256[] memory amounts);
-
-    function swapExactTokensForETH(
-        uint256 amountIn,
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external returns (uint256[] memory amounts);
+        uint256,
+        address[] calldata,
+        address,
+        uint256
+    ) external payable;
 }

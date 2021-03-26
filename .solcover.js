@@ -1,10 +1,7 @@
 require('dotenv').config();
 
 module.exports = {
-  skipFiles: [
-    'Migrations.sol',
-    'SignatureVerifier.sol',
-  ],
+  skipFiles: ['Migrations.sol', 'SignatureVerifier.sol'],
   providerOptions: {
     accounts: [
       {
@@ -53,5 +50,5 @@ module.exports = {
   },
   mocha: {
     enableTimeouts: false,
-  }
+  },
 };

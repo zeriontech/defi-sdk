@@ -15,17 +15,16 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.6;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.8.1;
 
-import { ProtocolAdapter } from "../adapters/ProtocolAdapter.sol";
+import { ProtocolAdapter } from "../protocolAdapters/ProtocolAdapter.sol";
 import { TokenAmount, AmountType } from "../shared/Structs.sol";
 import { ERC20 } from "../interfaces/ERC20.sol";
 
 /**
  * @title Base contract for interactive protocol adapters.
  * @dev deposit() and withdraw() functions MUST be implemented
- * as well as all the functions from ProtocolAdapter abstract contract.
+ *     as well as all the functions from ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract InteractiveAdapter is ProtocolAdapter {
@@ -52,76 +51,75 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         virtual
         returns (address[] memory);
 
+    /**
+     * @dev MUST be used only in `deposit()` function.
+     * @param tokenAmount TokenAmount struct with
+     *     token address, amount, and amount type.
+     * @return Absolute amount given TokenAmount struct.
+     */
     function getAbsoluteAmountDeposit(TokenAmount calldata tokenAmount)
         internal
         view
         virtual
         returns (uint256)
     {
-        address token = tokenAmount.token;
-        uint256 amount = tokenAmount.amount;
         AmountType amountType = tokenAmount.amountType;
 
         require(
             amountType == AmountType.Relative || amountType == AmountType.Absolute,
             "IA: bad amount type"
         );
-        if (amountType == AmountType.Relative) {
-            require(amount <= DELIMITER, "IA: bad amount");
 
-            uint256 balance;
-            if (token == ETH) {
-                balance = address(this).balance;
-            } else {
-                balance = ERC20(token).balanceOf(address(this));
-            }
-
-            if (amount == DELIMITER) {
-                return balance;
-            } else {
-                return mul_(balance, amount) / DELIMITER;
-            }
-        } else {
-            return amount;
+        if (amountType == AmountType.Absolute) {
+            return tokenAmount.amount;
         }
+
+        require(tokenAmount.amount <= DELIMITER, "IA: bad amount");
+
+        uint256 balance =
+            (tokenAmount.token == ETH)
+                ? address(this).balance
+                : ERC20(tokenAmount.token).balanceOf(address(this));
+
+        if (tokenAmount.amount == DELIMITER) {
+            return balance;
+        }
+
+        return (balance * tokenAmount.amount) / DELIMITER;
     }
 
+    /**
+     * @dev MUST be used only in `withdraw()` function.
+     * @param tokenAmount TokenAmount struct with
+     *     token address, amount, and amount type.
+     * @return Absolute amount given TokenAmount struct.
+     */
     function getAbsoluteAmountWithdraw(TokenAmount calldata tokenAmount)
         internal
         virtual
         returns (uint256)
     {
-        address token = tokenAmount.token;
-        uint256 amount = tokenAmount.amount;
         AmountType amountType = tokenAmount.amountType;
+        // TODO consider using uint256 amount = tokenAmount.amount
 
         require(
             amountType == AmountType.Relative || amountType == AmountType.Absolute,
             "IA: bad amount type"
         );
-        if (amountType == AmountType.Relative) {
-            require(amount <= DELIMITER, "IA: bad amount");
 
-            int256 balanceSigned = getBalance(token, address(this));
-            uint256 balance = balanceSigned > 0 ? uint256(balanceSigned) : uint256(-balanceSigned);
-            if (amount == DELIMITER) {
-                return balance;
-            } else {
-                return mul_(balance, amount) / DELIMITER;
-            }
-        } else {
-            return amount;
-        }
-    }
-
-    function mul_(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a == 0) {
-            return 0;
+        if (amountType == AmountType.Absolute) {
+            return tokenAmount.amount;
         }
 
-        uint256 c = a * b;
-        require(c / a == b, "IA: mul overflow");
+        require(tokenAmount.amount <= DELIMITER, "IA: bad amount");
 
-        return c;
+        int256 balanceSigned = getBalance(tokenAmount.token, address(this));
+        uint256 balance = balanceSigned > 0 ? uint256(balanceSigned) : uint256(-balanceSigned);
+
+        if (tokenAmount.amount == DELIMITER) {
+            return balance;
+        }
+
+        return (balance * tokenAmount.amount) / DELIMITER;
     }
 }

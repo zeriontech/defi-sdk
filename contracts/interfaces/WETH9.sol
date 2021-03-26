@@ -15,8 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.6;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.8.1;
 
 /**
  * @dev WETH9 contract interface.
@@ -28,4 +27,6 @@ interface WETH9 {
     function deposit() external payable;
 
     function withdraw(uint256) external;
+
+    function balanceOf(address) external view returns (uint256);
 }

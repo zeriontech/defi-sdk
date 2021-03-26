@@ -15,8 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.6;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.8.1;
 
 interface EIP2612 {
     function permit(
@@ -28,4 +27,6 @@ interface EIP2612 {
         bytes32 r,
         bytes32 s
     ) external;
+
+    function nonces(address holder) external view returns (uint256);
 }

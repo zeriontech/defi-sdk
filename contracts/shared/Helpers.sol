@@ -15,14 +15,27 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.6;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.8.1;
 
 /**
  * @notice Library helps to convert different types to strings.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 library Helpers {
+    // /**
+    //  * @dev Internal function to convert bytes4 to string.
+    //  * @dev Commented out due to possible bug in the compiler.
+    //  */
+    // function toString(bytes4 data) internal pure returns (string memory) {
+    //     bytes memory result = new bytes(4);
+
+    //     for (uint256 i = 0; i < 4; i++) {
+    //         result[i] = char(data[i]);
+    //     }
+
+    //     return string(result);
+    // }
+
     /**
      * @dev Internal function to convert bytes32 to string and trim zeroes.
      */
@@ -65,9 +78,8 @@ library Helpers {
         bytes memory result = new bytes(length);
         dataCopy = data;
 
-        // Here, we have on-purpose underflow cause we need case `i = 0` to be included in the loop
-        for (uint256 i = length - 1; i < length; i--) {
-            result[i] = bytes1(uint8(48 + (dataCopy % 10)));
+        for (uint256 i = length; i > 0; i--) {
+            result[i - 1] = bytes1(uint8(48 + (dataCopy % 10)));
             dataCopy /= 10;
         }
 
@@ -95,5 +107,57 @@ library Helpers {
     function char(bytes1 byteChar) internal pure returns (bytes1) {
         uint8 uintChar = uint8(byteChar);
         return uintChar < 10 ? bytes1(uintChar + 48) : bytes1(uintChar + 87);
+    }
+
+    function parseRevertReason(bytes memory data, string memory location)
+        internal
+        pure
+        returns (string memory)
+    {
+        // https://solidity.readthedocs.io/en/latest/control-structures.html#revert
+        // We assume that revert reason is abi-encoded as Error(string)
+
+        // 68 = 4-byte selector 0x08c379a0 + 32 bytes offset + 32 bytes length
+        if (
+            data.length >= 68 &&
+            data[0] == "\x08" &&
+            data[1] == "\xc3" &&
+            data[2] == "\x79" &&
+            data[3] == "\xa0"
+        ) {
+            string memory reason;
+            // solhint-disable no-inline-assembly
+            assembly {
+                // 68 = 32 bytes data length + 4-byte selector + 32 bytes offset
+                reason := add(data, 68)
+            }
+            /*
+                revert reason is padded up to 32 bytes with ABI encoder: Error(string)
+                also sometimes there is extra 32 bytes of zeros padded in the end:
+                https://github.com/ethereum/solidity/issues/10170
+                because of that we can't check for equality and instead check
+                that string length + extra 68 bytes is less than overall data length
+            */
+            require(data.length >= 68 + bytes(reason).length, "Invalid revert reason");
+            return string(abi.encodePacked(location, reason));
+        }
+        // 36 = 4-byte selector 0x4e487b71 + 32 bytes integer
+        else if (
+            data.length == 36 &&
+            data[0] == "\x4e" &&
+            data[1] == "\x48" &&
+            data[2] == "\x7b" &&
+            data[3] == "\x71"
+        ) {
+            uint256 code;
+            // solhint-disable no-inline-assembly
+            assembly {
+                // 36 = 32 bytes data length + 4-byte selector
+                code := mload(add(data, 36))
+            }
+            return string(abi.encodePacked("Panic(", location, toString(code), ")"));
+        }
+
+        return string(abi.encodePacked("Unknown(", location, ")"));
     }
 }
