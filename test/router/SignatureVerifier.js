@@ -17,7 +17,7 @@ const EXECUTE_SIGNATURE =
 const EXECUTE_WITH_CHI_SIGNATURE =
   'executeWithCHI(((address,uint256,uint8),(uint8,bytes)),(address,uint256),(uint8,(uint256,address),address,address,bytes),address,uint256,bytes)';
 
-describe('SignatureVerifier', () => {
+describe.only('SignatureVerifier', () => {
   let owner;
   let notOwner;
   let Router;
