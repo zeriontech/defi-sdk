@@ -18,5 +18,7 @@ jobs:
           ssh-private-key: ${{ secrets.PRIVATE_SSH }}
       - name: install
         run: npm ci
+      - name: build
+        run: npm run compile
       - name: lint
         run: npm run lint
