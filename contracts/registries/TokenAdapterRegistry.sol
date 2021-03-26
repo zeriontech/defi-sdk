@@ -159,43 +159,6 @@ contract TokenAdapterRegistry is Ownable, AdapterManager, TokenAdapterNamesManag
     }
 
     /**
-     * @dev Fills in FullTokenBalance struct with underlying components.
-     * @param tokenBalance TokenBalance struct consisting of
-     * token address and its absolute amount.
-     * @param components Component struct consisting of
-     *     token address and its absolute amount for each component.
-     * @return Full absolute token amount by token address, absolute amount, and components.
-     */
-    function getFullTokenBalance(TokenBalance memory tokenBalance, Component[] memory components)
-        internal
-        view
-        returns (FullTokenBalance memory)
-    {
-        uint256 length = components.length;
-        TokenBalanceMeta[] memory componentTokenBalances = new TokenBalanceMeta[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            address token = components[i].token;
-            componentTokenBalances[i] = TokenBalanceMeta({
-                tokenBalance: TokenBalance({
-                    token: token,
-                    amount: (components[i].rate * tokenBalance.amount) / int256(1e18)
-                }),
-                erc20metadata: getERC20Metadata(token)
-            });
-        }
-
-        return
-            FullTokenBalance({
-                base: TokenBalanceMeta({
-                    tokenBalance: tokenBalance,
-                    erc20metadata: getERC20Metadata(tokenBalance.token)
-                }),
-                underlying: componentTokenBalances
-            });
-    }
-
-    /**
      * @param tokenBalance TokenBalance struct consisting of
      * token address and absolute amount.
      * @return Final components by absolute token amount.
@@ -293,6 +256,43 @@ contract TokenAdapterRegistry is Ownable, AdapterManager, TokenAdapterNamesManag
         } catch {
             return new Component[](0);
         }
+    }
+
+    /**
+     * @dev Fills in FullTokenBalance struct with underlying components.
+     * @param tokenBalance TokenBalance struct consisting of
+     * token address and its absolute amount.
+     * @param components Component struct consisting of
+     *     token address and its absolute amount for each component.
+     * @return Full absolute token amount by token address, absolute amount, and components.
+     */
+    function getFullTokenBalance(TokenBalance memory tokenBalance, Component[] memory components)
+        internal
+        view
+        returns (FullTokenBalance memory)
+    {
+        uint256 length = components.length;
+        TokenBalanceMeta[] memory componentTokenBalances = new TokenBalanceMeta[](length);
+
+        for (uint256 i = 0; i < length; i++) {
+            address token = components[i].token;
+            componentTokenBalances[i] = TokenBalanceMeta({
+                tokenBalance: TokenBalance({
+                    token: token,
+                    amount: (components[i].rate * tokenBalance.amount) / int256(1e18)
+                }),
+                erc20metadata: getERC20Metadata(token)
+            });
+        }
+
+        return
+            FullTokenBalance({
+                base: TokenBalanceMeta({
+                    tokenBalance: tokenBalance,
+                    erc20metadata: getERC20Metadata(tokenBalance.token)
+                }),
+                underlying: componentTokenBalances
+            });
     }
 
     /**

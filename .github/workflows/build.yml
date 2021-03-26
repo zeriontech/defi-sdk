@@ -23,5 +23,5 @@ jobs:
       - name: upload artifacts
         uses: actions/upload-artifact@v1
         with:
-          name: build
-          path: build/contracts
+          name: artifacts
+          path: artifacts/contracts

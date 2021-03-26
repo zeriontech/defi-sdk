@@ -13,7 +13,7 @@
     "deploy:kovan": "npx hardhat deploy --network kovan",
     "test": "npx hardhat test --show-stack-traces",
     "coverage": "npx hardhat coverage --network hardhat",
-    "lint:solhint": "npx solhint \"./contracts/**/*.sol\"",
+    "lint:solhint": "npx solhint \"contracts/**/*.sol\"",
     "lint:eslint": "eslint .",
     "lint": "npm run lint:solhint && npm run lint:eslint"
   },

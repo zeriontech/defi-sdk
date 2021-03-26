@@ -104,19 +104,6 @@ contract SignatureVerifier {
     }
 
     /**
-     * @param hashedData Hash to be checked.
-     * @param signature EIP-712 signature.
-     * @return Account that signed the hashed data.
-     */
-    function getAccountFromSignature(bytes32 hashedData, bytes memory signature)
-        public
-        pure
-        returns (address payable)
-    {
-        return payable(ECDSA.recover(hashedData, signature));
-    }
-
-    /**
      * @param input Input struct to be hashed.
      * @param requiredOutput AbsoluteTokenAmount struct to be hashed.
      * @param swapDescription SwapDescription struct to be hashed.
@@ -145,6 +132,19 @@ contract SignatureVerifier {
                     hash(input, requiredOutput, swapDescription, account, salt)
                 )
             );
+    }
+
+    /**
+     * @param hashedData Hash to be checked.
+     * @param signature EIP-712 signature.
+     * @return Account that signed the hashed data.
+     */
+    function getAccountFromSignature(bytes32 hashedData, bytes memory signature)
+        public
+        pure
+        returns (address payable)
+    {
+        return payable(ECDSA.recover(hashedData, signature));
     }
 
     /**

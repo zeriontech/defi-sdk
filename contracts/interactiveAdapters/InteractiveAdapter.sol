@@ -19,6 +19,7 @@ pragma solidity 0.8.1;
 
 import { ProtocolAdapter } from "../protocolAdapters/ProtocolAdapter.sol";
 import { TokenAmount, AmountType } from "../shared/Structs.sol";
+import { Base } from "../shared/Base.sol";
 import { ERC20 } from "../interfaces/ERC20.sol";
 
 /**
@@ -52,43 +53,6 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         returns (address[] memory);
 
     /**
-     * @dev MUST be used only in `deposit()` function.
-     * @param tokenAmount TokenAmount struct with
-     *     token address, amount, and amount type.
-     * @return Absolute amount given TokenAmount struct.
-     */
-    function getAbsoluteAmountDeposit(TokenAmount calldata tokenAmount)
-        internal
-        view
-        virtual
-        returns (uint256)
-    {
-        AmountType amountType = tokenAmount.amountType;
-
-        require(
-            amountType == AmountType.Relative || amountType == AmountType.Absolute,
-            "IA: bad amount type"
-        );
-
-        if (amountType == AmountType.Absolute) {
-            return tokenAmount.amount;
-        }
-
-        require(tokenAmount.amount <= DELIMITER, "IA: bad amount");
-
-        uint256 balance =
-            (tokenAmount.token == ETH)
-                ? address(this).balance
-                : ERC20(tokenAmount.token).balanceOf(address(this));
-
-        if (tokenAmount.amount == DELIMITER) {
-            return balance;
-        }
-
-        return (balance * tokenAmount.amount) / DELIMITER;
-    }
-
-    /**
      * @dev MUST be used only in `withdraw()` function.
      * @param tokenAmount TokenAmount struct with
      *     token address, amount, and amount type.
@@ -115,6 +79,40 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
 
         int256 balanceSigned = getBalance(tokenAmount.token, address(this));
         uint256 balance = balanceSigned > 0 ? uint256(balanceSigned) : uint256(-balanceSigned);
+
+        if (tokenAmount.amount == DELIMITER) {
+            return balance;
+        }
+
+        return (balance * tokenAmount.amount) / DELIMITER;
+    }
+
+    /**
+     * @dev MUST be used only in `deposit()` function.
+     * @param tokenAmount TokenAmount struct with
+     *     token address, amount, and amount type.
+     * @return Absolute amount given TokenAmount struct.
+     */
+    function getAbsoluteAmountDeposit(TokenAmount calldata tokenAmount)
+        internal
+        view
+        virtual
+        returns (uint256)
+    {
+        AmountType amountType = tokenAmount.amountType;
+
+        require(
+            amountType == AmountType.Relative || amountType == AmountType.Absolute,
+            "IA: bad amount type"
+        );
+
+        if (amountType == AmountType.Absolute) {
+            return tokenAmount.amount;
+        }
+
+        require(tokenAmount.amount <= DELIMITER, "IA: bad amount");
+
+        uint256 balance = Base.getBalance(tokenAmount.token, address(this));
 
         if (tokenAmount.amount == DELIMITER) {
             return balance;

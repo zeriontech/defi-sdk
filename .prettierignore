@@ -2,3 +2,4 @@ node_modules
 coverage
 artifacts
 build
+contracts/callers/BaseCaller.sol

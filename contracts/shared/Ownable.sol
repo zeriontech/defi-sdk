@@ -18,6 +18,11 @@
 pragma solidity 0.8.1;
 
 abstract contract Ownable {
+    address private owner_;
+    address private pendingOwner_;
+
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
     modifier onlyOwner {
         require(msg.sender == owner_, "O: only owner");
         _;
@@ -27,11 +32,6 @@ abstract contract Ownable {
         require(msg.sender == pendingOwner_, "O: only pending owner");
         _;
     }
-
-    address private owner_;
-    address private pendingOwner_;
-
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     /**
      * @notice Initializes owner variable with msg.sender address.

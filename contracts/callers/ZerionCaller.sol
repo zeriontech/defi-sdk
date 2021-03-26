@@ -88,18 +88,18 @@ contract ZerionCaller is ReentrancyGuard, BaseCaller {
     }
 
     /**
+     * @return Address of the ProtocolAdapterRegistry contract used.
+     */
+    function getProtocolAdapterRegistry() external view returns (address) {
+        return protocolAdapterRegistry_;
+    }
+
+    /**
      * @notice Always reverts as there is no fixed outputs case.
      * @dev Implementation of Caller interface function.
      */
     function getExactInputAmount(bytes calldata) external pure override returns (uint256) {
         revert("ZC: fixed outputs");
-    }
-
-    /**
-     * @return Address of the ProtocolAdapterRegistry contract used.
-     */
-    function getProtocolAdapterRegistry() external view returns (address) {
-        return protocolAdapterRegistry_;
     }
 
     /**

@@ -25,23 +25,6 @@ library Base {
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
-     * @notice Calculates the token balance for the given account.
-     * @param token Adress of the token.
-     * @param account Adress of the account.
-     */
-    function getBalance(address token, address account) internal view returns (uint256) {
-        if (token == address(0)) {
-            return 0;
-        }
-
-        if (token == ETH) {
-            return account.balance;
-        }
-
-        return ERC20(token).balanceOf(account);
-    }
-
-    /**
      * @notice Transfers tokens or Ether.
      * @param token Adress of the token or `ETH` in case of Ether transfer.
      * @param account Adress of the account that will receive funds.
@@ -74,32 +57,6 @@ library Base {
         // solhint-disable-next-line avoid-low-level-calls
         (bool success, ) = to.call{ value: amount }(new bytes(0));
         require(success, error);
-    }
-
-    /**
-     * @dev Executes static call.
-     * @param callee Address to be called.
-     * @param selector Function selector.
-     * @param callData Function calldata.
-     * @param location Location of the call (for debug).
-     */
-    function staticCall(
-        address callee,
-        bytes4 selector,
-        bytes memory callData,
-        string memory location
-    ) internal view returns (bytes memory returnData) {
-        require(callee != address(0), "B: zero callee");
-
-        bool success;
-        // solhint-disable-next-line avoid-low-level-calls
-        (success, returnData) = callee.staticcall(abi.encodePacked(selector, callData));
-
-        if (!success) {
-            revert(Helpers.parseRevertReason(returnData, location));
-        }
-
-        return returnData;
     }
 
     /**
@@ -154,5 +111,48 @@ library Base {
         }
 
         return returnData;
+    }
+
+    /**
+     * @dev Executes static call.
+     * @param callee Address to be called.
+     * @param selector Function selector.
+     * @param callData Function calldata.
+     * @param location Location of the call (for debug).
+     */
+    function staticCall(
+        address callee,
+        bytes4 selector,
+        bytes memory callData,
+        string memory location
+    ) internal view returns (bytes memory returnData) {
+        require(callee != address(0), "B: zero callee");
+
+        bool success;
+        // solhint-disable-next-line avoid-low-level-calls
+        (success, returnData) = callee.staticcall(abi.encodePacked(selector, callData));
+
+        if (!success) {
+            revert(Helpers.parseRevertReason(returnData, location));
+        }
+
+        return returnData;
+    }
+
+    /**
+     * @notice Calculates the token balance for the given account.
+     * @param token Adress of the token.
+     * @param account Adress of the account.
+     */
+    function getBalance(address token, address account) internal view returns (uint256) {
+        if (token == address(0)) {
+            return 0;
+        }
+
+        if (token == ETH) {
+            return account.balance;
+        }
+
+        return ERC20(token).balanceOf(account);
     }
 }

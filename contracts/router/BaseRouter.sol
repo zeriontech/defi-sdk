@@ -23,7 +23,6 @@ import { SafeERC20 } from "../shared/SafeERC20.sol";
 import {
     AbsoluteTokenAmount,
     AmountType,
-    Fee,
     Input,
     Permit,
     PermitType,
@@ -180,6 +179,47 @@ abstract contract BaseRouter {
     }
 
     /**
+     * @notice Emits `Executed` event with all the necessary data.
+     * @param input Token and amount (relative or absolute) to be taken from the account address.
+     * @param absoluteInputAmount Absolute amount of token to be taken from the account address.
+     * @param inputBalanceChange Actual amount of token taken from the account address.
+     * @param absoluteOutput Token and absolute amount requirement for the returned token.
+     * @param outputBalanceChange Actual amount of token returned to the account address.
+     * @param swapDescription Swap description with the following elements:
+     *     - Whether the inputs or outputs are fixed.
+     *     - Fee share and beneficiary address.
+     *     - Address of the destination for the tokens transfer.
+     *     - Address of the Caller contract to be called.
+     *     - Calldata for the call to the Caller contract.
+     * @param account Address of the account that will receive the returned tokens.
+     */
+    function emitExecuted(
+        Input calldata input,
+        uint256 absoluteInputAmount,
+        uint256 inputBalanceChange,
+        AbsoluteTokenAmount calldata absoluteOutput,
+        uint256 outputBalanceChange,
+        SwapDescription calldata swapDescription,
+        address account
+    ) internal {
+        emit Executed(
+            input.tokenAmount.token,
+            absoluteInputAmount,
+            inputBalanceChange,
+            absoluteOutput.token,
+            absoluteOutput.absoluteAmount,
+            outputBalanceChange,
+            swapDescription.swapType,
+            swapDescription.fee.share,
+            swapDescription.fee.beneficiary,
+            swapDescription.destination,
+            swapDescription.caller,
+            account,
+            msg.sender
+        );
+    }
+
+    /**
      * @param account Address of the account to transfer token from.
      * @param tokenAmount Token address, its amount, and amount type.
      * @return Absolute token amount.
@@ -306,47 +346,6 @@ abstract contract BaseRouter {
         } else {
             return bytes4(0);
         }
-    }
-
-    /**
-     * @notice Emits `Executed` event with all the necessary data.
-     * @param input Token and amount (relative or absolute) to be taken from the account address.
-     * @param absoluteInputAmount Absolute amount of token to be taken from the account address.
-     * @param inputBalanceChange Actual amount of token taken from the account address.
-     * @param absoluteOutput Token and absolute amount requirement for the returned token.
-     * @param outputBalanceChange Actual amount of token returned to the account address.
-     * @param swapDescription Swap description with the following elements:
-     *     - Whether the inputs or outputs are fixed.
-     *     - Fee share and beneficiary address.
-     *     - Address of the destination for the tokens transfer.
-     *     - Address of the Caller contract to be called.
-     *     - Calldata for the call to the Caller contract.
-     * @param account Address of the account that will receive the returned tokens.
-     */
-    function emitExecuted(
-        Input calldata input,
-        uint256 absoluteInputAmount,
-        uint256 inputBalanceChange,
-        AbsoluteTokenAmount calldata absoluteOutput,
-        uint256 outputBalanceChange,
-        SwapDescription calldata swapDescription,
-        address account
-    ) internal {
-        emit Executed(
-            input.tokenAmount.token,
-            absoluteInputAmount,
-            inputBalanceChange,
-            absoluteOutput.token,
-            absoluteOutput.absoluteAmount,
-            outputBalanceChange,
-            swapDescription.swapType,
-            swapDescription.fee.share,
-            swapDescription.fee.beneficiary,
-            swapDescription.destination,
-            swapDescription.caller,
-            account,
-            msg.sender
-        );
     }
 
     /**
