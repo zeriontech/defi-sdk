@@ -1,6 +1,6 @@
 const TokenAdapter = artifacts.require('StakeDaoTokenAdapter');
 
-contract.only('StakeDaoTokenAdapter', () => {
+contract('StakeDaoTokenAdapter', () => {
   const sbtcVaultAddress = '0x24129B935AfF071c4f0554882C0D9573F4975fEd';
   const sbtcCrv = '0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3';
 

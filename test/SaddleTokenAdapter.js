@@ -1,6 +1,6 @@
 const TokenAdapter = artifacts.require('SaddleTokenAdapter');
 
-contract.only('SaddleTokenAdapter', () => {
+contract('SaddleTokenAdapter', () => {
   const twrensbtcAddress = '0xC28DF698475dEC994BE00C9C9D8658A548e6304F';
   const tbtcAddress = '0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa';
   const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';

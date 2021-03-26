@@ -38,7 +38,8 @@ interface StakingRewards {
 }
 
 /**
- * @title Vesting only Adapter for BZX protocol (staking). This adapter will return only vesting balances
+ * @title Vesting only Adapter for BZX protocol (staking).
+ * This adapter will return only vesting balances.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Roman Iftodi <romeo8881@gmail.com>
  */
@@ -48,11 +49,9 @@ contract BzxVestingStakingAdapter is ProtocolAdapter {
     string public constant override tokenType = "ERC20";
 
     address internal constant BZRX = 0x56d811088235F11C8920698a204A5010a788f4b3;
-    address internal constant CURVE3CRV =
-        0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490;
+    address internal constant CURVE3CRV = 0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490;
 
-    address internal constant STAKING_CONTRACT =
-        0xe95Ebce2B02Ee07dEF5Ed6B53289801F7Fc137A4;
+    address internal constant STAKING_CONTRACT = 0xe95Ebce2B02Ee07dEF5Ed6B53289801F7Fc137A4;
 
     /**
      * @return Amount of staked LP tokens for a given account.
@@ -64,12 +63,12 @@ contract BzxVestingStakingAdapter is ProtocolAdapter {
         override
         returns (uint256)
     {
-        (, uint256 curve3crvVesting, uint256 bzrxEarningsVesting, ) =
+        (, , uint256 bzrxRewardsVesting, uint256 stableCoinRewardsVesting) =
             StakingRewards(STAKING_CONTRACT).earned(account);
         if (token == BZRX) {
-            return bzrxEarningsVesting;
+            return bzrxRewardsVesting;
         } else if (token == CURVE3CRV) {
-            return curve3crvVesting;
+            return stableCoinRewardsVesting;
         } else {
             return 0;
         }
