@@ -2,6 +2,8 @@ const AragonStakingAdapter = artifacts.require('AragonStakingAdapter');
 const AaveAssetAdapter = artifacts.require('AaveAssetAdapter');
 const BzxAssetAdapter = artifacts.require('BzxAssetAdapter');
 const BzxDebtAdapter = artifacts.require('BzxDebtAdapter');
+const BzxStakingAdapter = artifacts.require('BzxStakingAdapter');
+const BzxVestingStakingAdapter = artifacts.require('BzxVestingStakingAdapter');
 const AaveDebtAdapter = artifacts.require('AaveDebtAdapter');
 const AaveUniswapAssetAdapter = artifacts.require('AaveUniswapAssetAdapter');
 const AaveUniswapDebtAdapter = artifacts.require('AaveUniswapDebtAdapter');
@@ -109,6 +111,11 @@ const iMKRAddress = '0x9189c499727f88f8ecc7dc4eea22c828e6aac015';
 const iLINKAddress = '0x463538705e7d22aa7f03ebf8ab09b067e1001b54';
 const iYFIAddress = '0x7f3fe9d492a9a60aebb06d82cba23c6f32cad10b';
 const iUSDTAddress = '0x7e9997a38a439b2be7ed9c9c4628391d3e055d48';
+const iBZRXAddress = '0x18240BD9C07fA6156Ce3F3f61921cC82b2619157';
+const iUNIAddress = '0x0a625FceC657053Fe2D9FFFdeb1DBb4e412Cf8A8';
+const iAAVEAddress = '0x0cae8d91E0b1b7Bd00D906E990C3625b2c220db1';
+const iLRCAddress = '0x3dA0e01472Dee3746b4D324a65D7EdFaECa9Aa4f';
+const iCOMPAddress = '0x6d29903BC2c4318b59B35d97Ab98ab9eC08Ed70D';
 
 const bzxDaiAddress = '0x6b175474e89094c44da98b954eedeac495271d0f';
 const bzxEthAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
@@ -120,6 +127,14 @@ const bzxMKRAddress = '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2';
 const bzxLINKAddress = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
 const bzxYFIAddress = '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e';
 const bzxUSDTAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7';
+const bzxBZRXAddress = '0x56d811088235F11C8920698a204A5010a788f4b3';
+const bzxUNIAddress = '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984';
+const bzxAAVEAddress = '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9';
+const bzxLRCAddress = '0xbbbbca6a901c926f240b89eacb641d8aec7aeafd';
+const bzxCOMPAddress = '0xc00e94cb662c3520282e6f5717214004a7f26888';
+const bzxBalancerAddress = '0xe26A220a341EAca116bDa64cF9D5638A935ae629';
+const bzxCurve3CRVAddress = '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490';
+const bzxvBZRXAddress = '0xB72B31907C1C95F3650b64b2469e08EdACeE5e8F';
 
 const aDaiAddress = '0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d';
 const aTusdAddress = '0x4DA9b813057D04BAef4e5800E36083717b4a0341';
@@ -508,7 +523,19 @@ const bzxAssetAdapterTokens = [
   iMKRAddress,
   iLINKAddress,
   iYFIAddress,
+  iBZRXAddress,
   iUSDTAddress,
+  iUNIAddress,
+  iAAVEAddress,
+  iLRCAddress,
+  iCOMPAddress,
+];
+const bzxStakingAdapterTokens = [
+  iBZRXAddress,
+  bzxvBZRXAddress,
+  bzxBZRXAddress,
+  bzxBalancerAddress,
+  bzxCurve3CRVAddress,
 ];
 const bzxDebtAdapterTokens = [
   bzxDaiAddress,
@@ -520,7 +547,12 @@ const bzxDebtAdapterTokens = [
   bzxMKRAddress,
   bzxLINKAddress,
   bzxYFIAddress,
+  bzxBZRXAddress,
   bzxUSDTAddress,
+  bzxUNIAddress,
+  bzxAAVEAddress,
+  bzxLRCAddress,
+  bzxCOMPAddress,
 ];
 const compoundAssetAdapterTokens = [
   cDAIAddress,
@@ -1014,9 +1046,21 @@ module.exports = async (deployer, network, accounts) => {
   ]);
 
   await deployer.deploy(BzxAssetAdapter, { from: accounts[0] });
+  await deployer.deploy(BzxStakingAdapter, { from: accounts[0] });
+  await deployer.deploy(BzxVestingStakingAdapter, { from: accounts[0] });
   await deployer.deploy(BzxDebtAdapter, { from: accounts[0] });
-  adapters.push([BzxAssetAdapter.address, BzxDebtAdapter.address]);
-  tokens.push([bzxAssetAdapterTokens, bzxDebtAdapterTokens]);
+  adapters.push([
+    BzxAssetAdapter.address,
+    BzxStakingAdapter.address,
+    BzxVestingStakingAdapter.address,
+    BzxDebtAdapter.address,
+  ]);
+  tokens.push([
+    bzxAssetAdapterTokens,
+    bzxStakingAdapterTokens,
+    BzxVestingStakingAdapter.address,
+    bzxDebtAdapterTokens,
+  ]);
   protocolNames.push('bZx');
   metadata.push([
     'bZx',
