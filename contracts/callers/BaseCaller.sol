@@ -28,7 +28,19 @@ abstract contract BaseCaller is Caller {
      * @return account Address of account that receives the resulting funds.
      */
     function getAccount() internal pure returns (address payable account) {
-        account = abi.decode(msg.data[msg.data.length - 32:], (address));
+        // solhint-disable-next-line no-inline-assembly
+        assembly {
+            // Type conversion will leave only lase 20 bytes from `calldataload()` call.
+            account :=
+                // Load last 32 bytes of calldata.
+                calldataload(
+                    // Calldata size, decreased by 32 bytes (1 slot).
+                    sub(
+                        calldatasize(),
+                        32
+                    )
+                )
+        }
 
         return account;
     }
