@@ -113,7 +113,7 @@ describe('UniswapCaller', () => {
     ).to.be.revertedWith('UC: 0 amount');
   });
 
-  it.only('should execute uni weth -> dai swap (fixed outputs)', async () => {
+  it('should execute uni weth -> dai swap (fixed outputs)', async () => {
     await buyTokenOnUniswap(owner, daiAddress);
     await weth.approve(router.address, ethers.utils.parseUnits('1', 18));
     logger.info(

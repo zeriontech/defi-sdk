@@ -105,12 +105,14 @@ describe.only('TokenAdapterNamesManager', () => {
   });
 
   it('should get non-empty final full token balance', async () => {
-    await mockTokenAdapter.mock.getUnderlyingTokenBalances
-      .withArgs([wethAddress, '100'])
-      .returns([[ethAddress, '100'], [daiAddress, '20']]);
-    await mockTokenAdapter.mock.getUnderlyingTokenBalances
-      .withArgs([ethAddress, '100'])
-      .returns([[AddressZero, '50'], [usdcAddress, '10']]);
+    await mockTokenAdapter.mock.getUnderlyingTokenBalances.withArgs([wethAddress, '100']).returns([
+      [ethAddress, '100'],
+      [daiAddress, '20'],
+    ]);
+    await mockTokenAdapter.mock.getUnderlyingTokenBalances.withArgs([ethAddress, '100']).returns([
+      [AddressZero, '50'],
+      [usdcAddress, '10'],
+    ]);
     await mockTokenAdapter.mock.getUnderlyingTokenBalances.withArgs([AddressZero, '50']).reverts();
     const [fullTokenBalance] = await adapterRegistry.callStatic[
       'getFinalFullTokenBalances((address,int256)[])'
