@@ -96,10 +96,9 @@ contract TokenAdapterRegistry is Ownable, AdapterManager, TokenAdapterNamesManag
 
         for (uint256 i = 0; i < length; i++) {
             address token = tokens[i];
-            uint8 decimals = token == ETH ? 18 : ERC20(token).decimals();
 
             fullTokenBalances[i] = getFullTokenBalance(
-                TokenBalance({ token: token, amount: int256(10)**decimals })
+                TokenBalance({ token: token, amount: int256(10)**getDecimals(token) })
             );
         }
 
@@ -122,10 +121,9 @@ contract TokenAdapterRegistry is Ownable, AdapterManager, TokenAdapterNamesManag
 
         for (uint256 i = 0; i < length; i++) {
             address token = tokens[i];
-            uint8 decimals = token == ETH ? 18 : ERC20(token).decimals();
 
             finalFullTokenBalances[i] = getFinalFullTokenBalance(
-                TokenBalance({ token: token, amount: int256(10)**decimals })
+                TokenBalance({ token: token, amount: int256(10)**getDecimals(token) })
             );
         }
 
@@ -326,5 +324,22 @@ contract TokenAdapterRegistry is Ownable, AdapterManager, TokenAdapterNamesManag
         address tokenAdapter = getAdapterAddress(tokenAdapterName);
 
         return tokenAdapter;
+    }
+
+    /**
+     * @dev Gets token's decimals if possible.
+     * @param token Address of the token.
+     * @return Token decimals.
+     */
+    function getDecimals(address token) internal view returns (uint8) {
+        if (token == ETH) {
+            return 18;
+        }
+
+        try ERC20(token).decimals() returns (uint8 decimals) {
+            return decimals;
+        } catch {
+            return 0;
+        }
     }
 }
