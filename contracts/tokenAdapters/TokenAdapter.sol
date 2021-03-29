@@ -18,24 +18,28 @@
 pragma solidity 0.8.1;
 
 import { ERC20 } from "../interfaces/ERC20.sol";
-import { ERC20Metadata, Component } from "../shared/Structs.sol";
+import { ERC20Metadata, TokenBalance } from "../shared/Structs.sol";
 
 /**
  * @title Token adapter abstract contract.
- * @dev getComponents() function MUST be implemented.
+ * @dev getUnderlyingTokenBalances() function MUST be implemented.
  * getName(), getSymbol(), getDecimals() functions
  * or getMetadata() function may be overridden.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract TokenAdapter {
     /**
-     * @dev MUST return array of Component structs with underlying tokens rates for the given token.
-     * struct Component {
-     *     address token;   // Address of token contract
-     *     int256 rate;     // Price per share (1e18)
+     * @dev MUST return array of TokenBalance structs with underlying tokens amounts
+     *     for the given TokenBalance struct consisting of token address and absolute amount.
+     * struct TokenBalance {
+     *     address token;    // Address of token contract.
+     *     int256 amount;    // Amount of underlying tokens for the given tokens.
      * }
      */
-    function getComponents(address token) external virtual returns (Component[] memory);
+    function getUnderlyingTokenBalances(TokenBalance memory tokenBalance)
+        external
+        virtual
+        returns (TokenBalance[] memory);
 
     /**
      * @return ERC20Metadata struct with ERC20-style token info.
@@ -46,12 +50,17 @@ abstract contract TokenAdapter {
      *     uint8 decimals;
      * }
      */
-    function getERC20Metadata(address token) public view virtual returns (ERC20Metadata memory) {
+    function getMetadata(TokenBalance memory tokenBalance)
+        public
+        view
+        virtual
+        returns (ERC20Metadata memory)
+    {
         return
             ERC20Metadata({
-                name: getName(token),
-                symbol: getSymbol(token),
-                decimals: getDecimals(token)
+                name: getName(tokenBalance.token),
+                symbol: getSymbol(tokenBalance.token),
+                decimals: getDecimals(tokenBalance.token)
             });
     }
 

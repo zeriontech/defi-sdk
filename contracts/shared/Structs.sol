@@ -63,14 +63,6 @@ struct TokenBalance {
     int256 amount;
 }
 
-// The struct consists of token address,
-// and price per full share (1e18).
-// 0xEeee...EEeE is used for Ether
-struct Component {
-    address token;
-    int256 rate;
-}
-
 //=============================== Interactive Adapters Structs ====================================
 
 // The struct consists of swap type,

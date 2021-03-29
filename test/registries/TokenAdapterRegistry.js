@@ -1,4 +1,4 @@
-import { wethAddress, ethAddress } from '../helpers/tokens';
+import { wethAddress, ethAddress, daiAddress, usdcAddress } from '../helpers/tokens';
 
 const { expect } = require('chai');
 const { waffle, ethers } = require('hardhat');
@@ -7,7 +7,7 @@ const TokenAdapterArtifacts = require('../../artifacts/contracts/tokenAdapters/T
 const { deployMockContract } = waffle;
 const { AddressZero, HashZero } = ethers.constants;
 
-describe('TokenAdapterNamesManager', () => {
+describe.only('TokenAdapterNamesManager', () => {
   let owner;
   let AdapterRegistry;
   let mockTokenAdapter;
@@ -24,8 +24,8 @@ describe('TokenAdapterNamesManager', () => {
   beforeEach(async () => {
     adapterRegistry = await AdapterRegistry.deploy();
     await adapterRegistry.setAdapters([HashZero], [mockTokenAdapter.address]);
-    await mockTokenAdapter.mock.getComponents.returns([]);
-    await mockTokenAdapter.mock.getERC20Metadata.returns(['Name', 'Symbol', 18]);
+    await mockTokenAdapter.mock.getUnderlyingTokenBalances.returns([]);
+    await mockTokenAdapter.mock.getMetadata.returns(['Name', 'Symbol', 18]);
   });
 
   it('should be correct router owner', async () => {
@@ -70,10 +70,10 @@ describe('TokenAdapterNamesManager', () => {
   });
 
   it('should get non-empty full token balance', async () => {
-    await mockTokenAdapter.mock.getComponents
-      .withArgs(wethAddress)
-      .returns([[ethAddress, ethers.utils.parseUnits('1', 18)]]);
-    await mockTokenAdapter.mock.getERC20Metadata.withArgs(ethAddress).reverts();
+    await mockTokenAdapter.mock.getUnderlyingTokenBalances
+      .withArgs([wethAddress, '100'])
+      .returns([[ethAddress, '100']]);
+    await mockTokenAdapter.mock.getMetadata.withArgs([ethAddress, '100']).reverts();
     const [fullTokenBalance] = await adapterRegistry.callStatic[
       'getFullTokenBalances((address,int256)[])'
     ]([[wethAddress, '100']]);
@@ -90,18 +90,38 @@ describe('TokenAdapterNamesManager', () => {
   });
 
   it('should get non-empty final full token balance', async () => {
-    await mockTokenAdapter.mock.getComponents
-      .withArgs(wethAddress)
-      .returns([[ethAddress, ethers.utils.parseUnits('1', 18)]]);
-    await mockTokenAdapter.mock.getComponents
-      .withArgs(ethAddress)
-      .returns([[AddressZero, ethers.utils.parseUnits('0.5', 18)]]);
-    await mockTokenAdapter.mock.getComponents.withArgs(AddressZero).reverts();
+    await mockTokenAdapter.mock.getUnderlyingTokenBalances
+      .withArgs([wethAddress, '100'])
+      .returns([[ethAddress, '100']]);
+    await mockTokenAdapter.mock.getUnderlyingTokenBalances
+      .withArgs([ethAddress, '100'])
+      .returns([[AddressZero, '50']]);
+    await mockTokenAdapter.mock.getUnderlyingTokenBalances.withArgs([AddressZero, '50']).reverts();
     const [fullTokenBalance] = await adapterRegistry.callStatic[
       'getFinalFullTokenBalances((address,int256)[])'
     ]([[wethAddress, '100']]);
     expect(fullTokenBalance.base.tokenBalance.token).to.be.equal(wethAddress);
     expect(fullTokenBalance.underlying[0].tokenBalance.token).to.be.equal(AddressZero);
+  });
+
+  it('should get non-empty final full token balance', async () => {
+    await mockTokenAdapter.mock.getUnderlyingTokenBalances
+      .withArgs([wethAddress, '100'])
+      .returns([[ethAddress, '100'], [daiAddress, '20']]);
+    await mockTokenAdapter.mock.getUnderlyingTokenBalances
+      .withArgs([ethAddress, '100'])
+      .returns([[AddressZero, '50'], [usdcAddress, '10']]);
+    await mockTokenAdapter.mock.getUnderlyingTokenBalances.withArgs([AddressZero, '50']).reverts();
+    const [fullTokenBalance] = await adapterRegistry.callStatic[
+      'getFinalFullTokenBalances((address,int256)[])'
+    ]([[wethAddress, '100']]);
+    expect(fullTokenBalance.base.tokenBalance.token).to.be.equal(wethAddress);
+    expect(fullTokenBalance.underlying[0].tokenBalance.token).to.be.equal(AddressZero);
+    expect(fullTokenBalance.underlying[0].tokenBalance.amount).to.be.equal('50');
+    expect(fullTokenBalance.underlying[1].tokenBalance.token).to.be.equal(usdcAddress);
+    expect(fullTokenBalance.underlying[1].tokenBalance.amount).to.be.equal('10');
+    expect(fullTokenBalance.underlying[2].tokenBalance.token).to.be.equal(daiAddress);
+    expect(fullTokenBalance.underlying[2].tokenBalance.amount).to.be.equal('20');
   });
 
   it('should get full token balance without adapter', async () => {
