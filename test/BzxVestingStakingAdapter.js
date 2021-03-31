@@ -1,6 +1,6 @@
 const ProtocolAdapter = artifacts.require('BzxVestingStakingAdapter');
 
-contract.only('BzxVestingStakingAdapter', () => {
+contract('BzxVestingStakingAdapter', () => {
 
   const bzxCurve3CRVAddress = '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490';
   const bzxBZRXAddress = '0x56d811088235F11C8920698a204A5010a788f4b3';

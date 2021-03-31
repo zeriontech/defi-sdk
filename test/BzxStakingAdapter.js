@@ -1,6 +1,6 @@
 const ProtocolAdapter = artifacts.require('BzxStakingAdapter');
 
-contract.only('BzxStakingAdapter', () => {
+contract('BzxStakingAdapter', () => {
 
   const bzxBalancerAddress = '0xe26A220a341EAca116bDa64cF9D5638A935ae629';
   const bzxCurve3CRVAddress = '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490';
