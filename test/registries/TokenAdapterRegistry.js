@@ -7,7 +7,7 @@ const TokenAdapterArtifacts = require('../../artifacts/contracts/tokenAdapters/T
 const { deployMockContract } = waffle;
 const { AddressZero, HashZero } = ethers.constants;
 
-describe.only('TokenAdapterNamesManager', () => {
+describe('TokenAdapterRegistry', () => {
   let owner;
   let AdapterRegistry;
   let mockTokenAdapter;
