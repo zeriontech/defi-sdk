@@ -1,301 +1,326 @@
-$ slither contracts/core/Core.sol
+$ slither .
 
 INFO:Detectors:
-InteractiveAdapter.mul(uint256,uint256) (contracts/interactiveAdapters/InteractiveAdapter.sol#117-126) uses a dangerous strict equality:
-        - a == 0 (contracts/interactiveAdapters/InteractiveAdapter.sol#118)
-InteractiveAdapter.mul(uint256,uint256) (contracts/interactiveAdapters/InteractiveAdapter.sol#117-126) uses a dangerous strict equality:
-        - require(bool,string)(c / a == b,IA: mul overflow) (contracts/interactiveAdapters/InteractiveAdapter.sol#123)
-
+Ownable.pendingOwner_ (contracts/shared/Ownable.sol#22) is never initialized. It is used in:
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#uninitialized-state-variables
 INFO:Detectors:
-Contract locking ether found in :
-        Contract Core (contracts/core/Core.sol#32-190) has payable functions:
-         - Core.receive() (contracts/core/Core.sol#48)
-         - Core.executeActions(SlitherInternalTopLevelContract7.Action[],SlitherInternalTopLevelContract10.AbsoluteTokenAmount[],address) (contracts/core/Core.sol#57-71)
-        But does not have a function to withdraw the ether
-Contract locking ether found in :
-        Contract InteractiveAdapter (contracts/interactiveAdapters/InteractiveAdapter.sol#31-127) has payable functions:
-         - InteractiveAdapter.deposit(SlitherInternalTopLevelContract8.TokenAmount[],bytes) (contracts/interactiveAdapters/InteractiveAdapter.sol#39-43)
-         - InteractiveAdapter.withdraw(SlitherInternalTopLevelContract8.TokenAmount[],bytes) (contracts/interactiveAdapters/InteractiveAdapter.sol#49-53)
-        But does not have a function to withdraw the ether
-
-INFO:Detectors:
-ProtocolAdapterRegistry.getAdapterBalance(bytes32,address[],address).amount (contracts/core/ProtocolAdapterRegistry.sol#169) is a local variable never initialized
-
-INFO:Detectors:
-ProtocolAdapterRegistry.getAdapterBalance(bytes32,address[],address) (contracts/core/ProtocolAdapterRegistry.sol#157-181) ignores return value by ProtocolAdapter(adapter).getBalance(tokens[i],account) (contracts/core/ProtocolAdapterRegistry.sol#169-173)
-
-INFO:Detectors:
-Core.constructor(address).protocolAdapterRegistry (contracts/core/Core.sol#41) shadows:
-        - Core.protocolAdapterRegistry() (contracts/core/Core.sol#87-89) (function)
-Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#local-variable-shadowing
-INFO:Detectors:
-ProtocolAdapterRegistry.getAdapterBalance(bytes32,address[],address) (contracts/core/ProtocolAdapterRegistry.sol#157-181) has external calls inside a loop: ProtocolAdapter(adapter).getBalance(tokens[i],account) (contracts/core/ProtocolAdapterRegistry.sol#169-173)
-
-INFO:Detectors:
-Pragma version0.7.3 (contracts/adapters/ProtocolAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Core.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ReentrancyGuard.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/interactiveAdapters/InteractiveAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Helpers.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/SafeERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
-
-INFO:Detectors:
-Low level call in SafeERC20.callOptionalReturn(ERC20,bytes,string,string) (contracts/shared/SafeERC20.sol#86-115):
-        - (success,returndata) = address(token).call(data) (contracts/shared/SafeERC20.sol#100)
-
-INFO:Detectors:
-Core.ETH (contracts/core/Core.sol#37) is never used in Core (contracts/core/Core.sol#32-190)
-
-$ slither contracts/core/Ownable.sol
-
-INFO:Detectors:
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
-
-$ slither contracts/core/ProtocolAdapterManager.sol
-
-INFO:Detectors:
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
-
-INFO:Detectors:
-getProtocolAdapterNames() should be declared external:
-        - ProtocolAdapterManager.getProtocolAdapterNames() (contracts/core/ProtocolAdapterManager.sol#101-103)
-getProtocolAdapterAddress(bytes32) should be declared external:
-        - ProtocolAdapterManager.getProtocolAdapterAddress(bytes32) (contracts/core/ProtocolAdapterManager.sol#109-111)
-getSupportedTokens(bytes32) should be declared external:
-        - ProtocolAdapterManager.getSupportedTokens(bytes32) (contracts/core/ProtocolAdapterManager.sol#117-123)
-
-$ slither contracts/core/ProtocolAdapterRegistry.sol
-
-INFO:Detectors:
-ProtocolAdapterRegistry.getAdapterBalance(bytes32,address[],address).amount (contracts/core/ProtocolAdapterRegistry.sol#169) is a local variable never initialized
-
-INFO:Detectors:
-ProtocolAdapterRegistry.getAdapterBalance(bytes32,address[],address) (contracts/core/ProtocolAdapterRegistry.sol#157-181) ignores return value by ProtocolAdapter(adapter).getBalance(tokens[i],account) (contracts/core/ProtocolAdapterRegistry.sol#169-173)
-
-INFO:Detectors:
-ProtocolAdapterRegistry.getAdapterBalance(bytes32,address[],address) (contracts/core/ProtocolAdapterRegistry.sol#157-181) has external calls inside a loop: ProtocolAdapter(adapter).getBalance(tokens[i],account) (contracts/core/ProtocolAdapterRegistry.sol#169-173)
-
-INFO:Detectors:
-Pragma version0.7.3 (contracts/adapters/ProtocolAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
-
-INFO:Detectors:
-getBalance(address,address) should be declared external:
-        - ProtocolAdapter.getBalance(address,address) (contracts/adapters/ProtocolAdapter.sol#31)
-
-$ slither contracts/core/ReentrancyGuard.sol
-
-INFO:Detectors:
-Pragma version0.7.3 (contracts/core/ReentrancyGuard.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
-
-$ slither contracts/core/Router.sol
-
-ERROR:ContractSolcParsing:Missing function Variable not found: ExecutedAction(Action) (context <slither.solc_parsing.declarations.function.FunctionSolc object at 0x10ef49f70>)
-INFO:Detectors:
-Router.mul(uint256,uint256) (contracts/core/Router.sol#287-296) uses a dangerous strict equality:
-        - a == 0 (contracts/core/Router.sol#288)
-Router.mul(uint256,uint256) (contracts/core/Router.sol#287-296) uses a dangerous strict equality:
-        - require(bool,string)(c / a == b,R: mul overflow) (contracts/core/Router.sol#293)
-InteractiveAdapter.mul(uint256,uint256) (contracts/interactiveAdapters/InteractiveAdapter.sol#117-126) uses a dangerous strict equality:
-        - a == 0 (contracts/interactiveAdapters/InteractiveAdapter.sol#118)
-InteractiveAdapter.mul(uint256,uint256) (contracts/interactiveAdapters/InteractiveAdapter.sol#117-126) uses a dangerous strict equality:
-        - require(bool,string)(c / a == b,IA: mul overflow) (contracts/interactiveAdapters/InteractiveAdapter.sol#123)
-
+Router.handleTokenInput(address,Permit,uint256,uint256,SwapDescription,address) (contracts/router/Router.sol#376-415) uses a dangerous strict equality:
+        - require(bool,string)(absoluteInputAmount == 0,BR: zero token) (contracts/router/Router.sol#385)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-strict-equalities
 INFO:Detectors:
 Contract locking ether found in :
-        Contract Core (contracts/core/Core.sol#32-190) has payable functions:
-         - Core.receive() (contracts/core/Core.sol#48)
-         - Core.executeActions(SlitherInternalTopLevelContract7.Action[],SlitherInternalTopLevelContract10.AbsoluteTokenAmount[],address) (contracts/core/Core.sol#57-71)
+        Contract MockInteractiveAdapter (contracts/mock/MockInteractiveAdapter.sol#27-65) has payable functions:
+         - InteractiveAdapter.deposit(TokenAmount[],bytes) (contracts/interactiveAdapters/InteractiveAdapter.sol#39-44)
+         - InteractiveAdapter.withdraw(TokenAmount[],bytes) (contracts/interactiveAdapters/InteractiveAdapter.sol#50-55)
+         - IInteractiveAdapter.deposit(TokenAmount[],bytes) (contracts/interfaces/IInteractiveAdapter.sol#31-34)
+         - IInteractiveAdapter.withdraw(TokenAmount[],bytes) (contracts/interfaces/IInteractiveAdapter.sol#40-43)
+         - MockInteractiveAdapter.deposit(TokenAmount[],bytes) (contracts/mock/MockInteractiveAdapter.sol#34-42)
+         - MockInteractiveAdapter.withdraw(TokenAmount[],bytes) (contracts/mock/MockInteractiveAdapter.sol#48-56)
         But does not have a function to withdraw the ether
-Contract locking ether found in :
-        Contract InteractiveAdapter (contracts/interactiveAdapters/InteractiveAdapter.sol#31-127) has payable functions:
-         - InteractiveAdapter.deposit(SlitherInternalTopLevelContract8.TokenAmount[],bytes) (contracts/interactiveAdapters/InteractiveAdapter.sol#39-43)
-         - InteractiveAdapter.withdraw(SlitherInternalTopLevelContract8.TokenAmount[],bytes) (contracts/interactiveAdapters/InteractiveAdapter.sol#49-53)
-        But does not have a function to withdraw the ether
-
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#contracts-that-lock-ether
 INFO:Detectors:
-ProtocolAdapterRegistry.getAdapterBalance(bytes32,address[],address).amount (contracts/core/ProtocolAdapterRegistry.sol#169) is a local variable never initialized
-Router.transferTokens(SlitherInternalTopLevelContract8.TokenAmount[],SlitherInternalTopLevelContract9.Fee,address).success_scope_0 (contracts/core/Router.sol#226) is a local variable never initialized
-
+Router.execute(Input,AbsoluteTokenAmount,SwapDescription,address) (contracts/router/Router.sol#234-295) ignores return value by Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),exactInputAmount,R: callBytes) (contracts/router/Router.sol#254-259)
+Router.execute(Input,AbsoluteTokenAmount,SwapDescription,address) (contracts/router/Router.sol#234-295) ignores return value by Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),0,R: callBytes) (contracts/router/Router.sol#254-259)
+Router.handleTokenInput(address,Permit,uint256,uint256,SwapDescription,address) (contracts/router/Router.sol#376-415) ignores return value by Address.functionCall(token,abi.encodePacked(getPermitSelector(permit.permitType),permit.permitCallData),R: permit) (contracts/router/Router.sol#390-394)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-return
 INFO:Detectors:
-ProtocolAdapterRegistry.getAdapterBalance(bytes32,address[],address) (contracts/core/ProtocolAdapterRegistry.sol#157-181) ignores return value by ProtocolAdapter(adapter).getBalance(tokens[i],account) (contracts/core/ProtocolAdapterRegistry.sol#169-173)
-
+Ownable.proposeOwnership(address) (contracts/shared/Ownable.sol#48-53) should emit an event for:
+        - pendingOwner_ = newOwner (contracts/shared/Ownable.sol#52)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing-events-access-control
 INFO:Detectors:
-Core.constructor(address).protocolAdapterRegistry (contracts/core/Core.sol#41) shadows:
-        - Core.protocolAdapterRegistry() (contracts/core/Core.sol#87-89) (function)
-Router.constructor(address).core (contracts/core/Router.sol#49) shadows:
-        - Router.core() (contracts/core/Router.sol#68-70) (function)
-SignatureVerifier.isHashUsed(bytes32,address).hash (contracts/core/SignatureVerifier.sol#102) shadows:
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract6.TransactionData) (contracts/core/SignatureVerifier.sol#125-137) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract7.Action[]) (contracts/core/SignatureVerifier.sol#139-159) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract8.TokenAmount[]) (contracts/core/SignatureVerifier.sol#161-180) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract9.Fee) (contracts/core/SignatureVerifier.sol#182-184) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) (contracts/core/SignatureVerifier.sol#186-208) (function)
-SignatureVerifier.markHashUsed(bytes32,address).hash (contracts/core/SignatureVerifier.sol#119) shadows:
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract6.TransactionData) (contracts/core/SignatureVerifier.sol#125-137) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract7.Action[]) (contracts/core/SignatureVerifier.sol#139-159) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract8.TokenAmount[]) (contracts/core/SignatureVerifier.sol#161-180) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract9.Fee) (contracts/core/SignatureVerifier.sol#182-184) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) (contracts/core/SignatureVerifier.sol#186-208) (function)
-
+UniswapCaller.callBytes(bytes) (contracts/callers/UniswapCaller.sol#45-72) has external calls inside a loop: IUniswapV2Pair(pairs[i]).swap(amount0Out,amount1Out,pairs[next],new bytes(0)) (contracts/callers/UniswapCaller.sol#65-70)
+UniswapCaller.callBytes(bytes) (contracts/callers/UniswapCaller.sol#45-72) has external calls inside a loop: IUniswapV2Pair(pairs[i]).swap(amount0Out,amount1Out,account,new bytes(0)) (contracts/callers/UniswapCaller.sol#65-70)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation/#calls-inside-a-loop
 INFO:Detectors:
-ProtocolAdapterRegistry.getAdapterBalance(bytes32,address[],address) (contracts/core/ProtocolAdapterRegistry.sol#157-181) has external calls inside a loop: ProtocolAdapter(adapter).getBalance(tokens[i],account) (contracts/core/ProtocolAdapterRegistry.sol#169-173)
-
+Reentrancy in ZerionCaller.callBytes(bytes) (contracts/callers/ZerionCaller.sol#55-74):
+        External calls:
+        - tokensToBeWithdrawn[i] = executeAction(actions[i]) (contracts/callers/ZerionCaller.sol#63)
+                - (success,returndata) = target.delegatecall(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#167)
+                - abi.decode(Address.functionDelegateCall(adapter,abi.encodeWithSelector(selector,action.tokenAmounts,action.data)),(address[])) (contracts/callers/ZerionCaller.sol#124-131)
+        Event emitted after the call(s):
+        - ExecutedAction(actions[i].protocolAdapterName,actions[i].actionType,actions[i].tokenAmounts,actions[i].data) (contracts/callers/ZerionCaller.sol#65-70)
+Reentrancy in Router.execute(Input,AbsoluteTokenAmount,SwapDescription,address) (contracts/router/Router.sol#234-295):
+        External calls:
+        - exactInputAmount = getExactInputAmount(absoluteInputAmount,swapDescription) (contracts/router/Router.sol#248)
+                - (success,returndata) = target.staticcall(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#143)
+                - returnData = Address.functionStaticCall(swapDescription.caller,abi.encodePacked(ICaller.getExactInputAmount.selector,swapDescription.callData)) (contracts/router/Router.sol#520-524)
+        - handleInput(input,absoluteInputAmount,exactInputAmount,swapDescription,account) (contracts/router/Router.sol#252)
+                - returndata = Address.functionCall(address(token),data,SafeERC20: low-level call failed) (node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol#61)
+                - (success) = to.call{value: amount}(new bytes(0)) (contracts/shared/Base.sol#57)
+                - Base.transferEther(swapDescription.fee.beneficiary,feeAmount,BR: fee) (contracts/router/Router.sol#356)
+                - (success,returndata) = target.call{value: value}(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#119)
+                - Address.functionCall(token,abi.encodePacked(getPermitSelector(permit.permitType),permit.permitCallData),R: permit) (contracts/router/Router.sol#390-394)
+                - SafeERC20.safeTransferFrom(IERC20(token),account,swapDescription.fee.beneficiary,feeAmount) (contracts/router/Router.sol#401-406)
+                - SafeERC20.safeTransferFrom(IERC20(token),account,swapDescription.destination,exactInputAmount) (contracts/router/Router.sol#409-414)
+        - Base.transferEther(account,absoluteInputAmount - inputBalanceChange,R: bad account) (contracts/router/Router.sol#271-275)
+        - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),exactInputAmount,R: callBytes) (contracts/router/Router.sol#254-259)
+        - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),0,R: callBytes) (contracts/router/Router.sol#254-259)
+        External calls sending eth:
+        - handleInput(input,absoluteInputAmount,exactInputAmount,swapDescription,account) (contracts/router/Router.sol#252)
+                - (success) = to.call{value: amount}(new bytes(0)) (contracts/shared/Base.sol#57)
+                - (success,returndata) = target.call{value: value}(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#119)
+        Event emitted after the call(s):
+        - Executed(input.tokenAmount.token,absoluteInputAmount,inputBalanceChange,absoluteOutput.token,absoluteOutput.absoluteAmount,outputBalanceChange,swapDescription.swapType,swapDescription.fee.share,swapDescription.fee.beneficiary,swapDescription.destination,swapDescription.caller,account,msg.sender) (contracts/router/Router.sol#441-455)
+                - emitExecuted(input,absoluteInputAmount,inputBalanceChange,absoluteOutput,outputBalanceChange,swapDescription,account) (contracts/router/Router.sol#283-291)
+Reentrancy in Router.executeWithCHI(Input,AbsoluteTokenAmount,SwapDescription,address,uint256,bytes) (contracts/router/Router.sol#104-120):
+        External calls:
+        - execute(input,absoluteOutput,swapDescription,account,salt,signature) (contracts/router/Router.sol#119)
+                - returndata = Address.functionCall(address(token),data,SafeERC20: low-level call failed) (node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol#61)
+                - (success) = to.call{value: amount}(new bytes(0)) (contracts/shared/Base.sol#57)
+                - (success,returndata) = target.staticcall(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#143)
+                - Base.transferEther(swapDescription.fee.beneficiary,feeAmount,BR: fee) (contracts/router/Router.sol#356)
+                - (success,returndata) = target.call{value: value}(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#119)
+                - Address.functionCall(token,abi.encodePacked(getPermitSelector(permit.permitType),permit.permitCallData),R: permit) (contracts/router/Router.sol#390-394)
+                - Base.transferEther(account,absoluteInputAmount - inputBalanceChange,R: bad account) (contracts/router/Router.sol#271-275)
+                - returnData = Address.functionStaticCall(swapDescription.caller,abi.encodePacked(ICaller.getExactInputAmount.selector,swapDescription.callData)) (contracts/router/Router.sol#520-524)
+                - SafeERC20.safeTransferFrom(IERC20(token),account,swapDescription.fee.beneficiary,feeAmount) (contracts/router/Router.sol#401-406)
+                - SafeERC20.safeTransferFrom(IERC20(token),account,swapDescription.destination,exactInputAmount) (contracts/router/Router.sol#409-414)
+                - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),exactInputAmount,R: callBytes) (contracts/router/Router.sol#254-259)
+                - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),0,R: callBytes) (contracts/router/Router.sol#254-259)
+        - useCHI() (contracts/router/Router.sol#116)
+                - IChiToken(CHI).freeFromUpTo(msg.sender,(gasSpent + 25171) / 41852) (contracts/router/Router.sol#67)
+        External calls sending eth:
+        - execute(input,absoluteOutput,swapDescription,account,salt,signature) (contracts/router/Router.sol#119)
+                - (success) = to.call{value: amount}(new bytes(0)) (contracts/shared/Base.sol#57)
+                - (success,returndata) = target.call{value: value}(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#119)
+        Event emitted after the call(s):
+        - Executed(input.tokenAmount.token,absoluteInputAmount,inputBalanceChange,absoluteOutput.token,absoluteOutput.absoluteAmount,outputBalanceChange,swapDescription.swapType,swapDescription.fee.share,swapDescription.fee.beneficiary,swapDescription.destination,swapDescription.caller,account,msg.sender) (contracts/router/Router.sol#441-455)
+                - execute(input,absoluteOutput,swapDescription,account,salt,signature) (contracts/router/Router.sol#119)
+Reentrancy in Router.executeWithCHI(Input,AbsoluteTokenAmount,SwapDescription) (contracts/router/Router.sol#137-150):
+        External calls:
+        - execute(input,absoluteOutput,swapDescription) (contracts/router/Router.sol#149)
+                - returndata = Address.functionCall(address(token),data,SafeERC20: low-level call failed) (node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol#61)
+                - (success) = to.call{value: amount}(new bytes(0)) (contracts/shared/Base.sol#57)
+                - (success,returndata) = target.staticcall(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#143)
+                - Base.transferEther(swapDescription.fee.beneficiary,feeAmount,BR: fee) (contracts/router/Router.sol#356)
+                - (success,returndata) = target.call{value: value}(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#119)
+                - Address.functionCall(token,abi.encodePacked(getPermitSelector(permit.permitType),permit.permitCallData),R: permit) (contracts/router/Router.sol#390-394)
+                - Base.transferEther(account,absoluteInputAmount - inputBalanceChange,R: bad account) (contracts/router/Router.sol#271-275)
+                - returnData = Address.functionStaticCall(swapDescription.caller,abi.encodePacked(ICaller.getExactInputAmount.selector,swapDescription.callData)) (contracts/router/Router.sol#520-524)
+                - SafeERC20.safeTransferFrom(IERC20(token),account,swapDescription.fee.beneficiary,feeAmount) (contracts/router/Router.sol#401-406)
+                - SafeERC20.safeTransferFrom(IERC20(token),account,swapDescription.destination,exactInputAmount) (contracts/router/Router.sol#409-414)
+                - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),exactInputAmount,R: callBytes) (contracts/router/Router.sol#254-259)
+                - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),0,R: callBytes) (contracts/router/Router.sol#254-259)
+        - useCHI() (contracts/router/Router.sol#146)
+                - IChiToken(CHI).freeFromUpTo(msg.sender,(gasSpent + 25171) / 41852) (contracts/router/Router.sol#67)
+        External calls sending eth:
+        - execute(input,absoluteOutput,swapDescription) (contracts/router/Router.sol#149)
+                - (success) = to.call{value: amount}(new bytes(0)) (contracts/shared/Base.sol#57)
+                - (success,returndata) = target.call{value: value}(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#119)
+        Event emitted after the call(s):
+        - Executed(input.tokenAmount.token,absoluteInputAmount,inputBalanceChange,absoluteOutput.token,absoluteOutput.absoluteAmount,outputBalanceChange,swapDescription.swapType,swapDescription.fee.share,swapDescription.fee.beneficiary,swapDescription.destination,swapDescription.caller,account,msg.sender) (contracts/router/Router.sol#441-455)
+                - execute(input,absoluteOutput,swapDescription) (contracts/router/Router.sol#149)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-3
 INFO:Detectors:
-ECDSA.recover(bytes32,bytes) (contracts/shared/ECDSA.sol#28-70) uses assembly
-        - INLINE ASM (contracts/shared/ECDSA.sol#42-46)
-
+Address.isContract(address) (node_modules/@openzeppelin/contracts/utils/Address.sol#26-35) uses assembly
+        - INLINE ASM (node_modules/@openzeppelin/contracts/utils/Address.sol#33)
+Address._verifyCallResult(bool,bytes,string) (node_modules/@openzeppelin/contracts/utils/Address.sol#171-188) uses assembly
+        - INLINE ASM (node_modules/@openzeppelin/contracts/utils/Address.sol#180-183)
+ECDSA.recover(bytes32,bytes) (node_modules/@openzeppelin/contracts/utils/cryptography/ECDSA.sol#26-47) uses assembly
+        - INLINE ASM (node_modules/@openzeppelin/contracts/utils/cryptography/ECDSA.sol#40-44)
+BaseCaller.getAccount() (contracts/callers/BaseCaller.sol#28-45) uses assembly
+        - INLINE ASM (contracts/callers/BaseCaller.sol#31-42)
+TokenAdapterNamesManager.getTokenHash(address) (contracts/registries/TokenAdapterNamesManager.sol#107-116) uses assembly
+        - INLINE ASM (contracts/registries/TokenAdapterNamesManager.sol#111-113)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
 INFO:Detectors:
-Pragma version0.7.3 (contracts/adapters/ProtocolAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Core.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ReentrancyGuard.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Router.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/SignatureVerifier.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/interactiveAdapters/InteractiveAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ECDSA.sol#5) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Helpers.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/SafeERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
-
+Different versions of Solidity is used in :
+        - Version used: ['0.8.1', '^0.8.0']
+        - ^0.8.0 (node_modules/@openzeppelin/contracts/security/ReentrancyGuard.sol#3)
+        - ^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#3)
+        - ^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol#3)
+        - ^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol#3)
+        - ^0.8.0 (node_modules/@openzeppelin/contracts/utils/Address.sol#3)
+        - ^0.8.0 (node_modules/@openzeppelin/contracts/utils/Context.sol#3)
+        - ^0.8.0 (node_modules/@openzeppelin/contracts/utils/cryptography/ECDSA.sol#3)
+        - ^0.8.0 (node_modules/@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol#3)
+        - 0.8.1 (contracts/callers/BaseCaller.sol#18)
+        - 0.8.1 (contracts/callers/UniswapCaller.sol#18)
+        - 0.8.1 (contracts/callers/ZerionCaller.sol#18)
+        - 0.8.1 (contracts/interactiveAdapters/InteractiveAdapter.sol#18)
+        - 0.8.1 (contracts/interfaces/IAdapterManager.sol#18)
+        - 0.8.1 (contracts/interfaces/ICaller.sol#18)
+        - 0.8.1 (contracts/interfaces/IChiToken.sol#18)
+        - 0.8.1 (contracts/interfaces/IDAIPermit.sol#18)
+        - 0.8.1 (contracts/interfaces/IEIP2612.sol#18)
+        - 0.8.1 (contracts/interfaces/IInteractiveAdapter.sol#18)
+        - 0.8.1 (contracts/interfaces/IProtocolAdapter.sol#18)
+        - 0.8.1 (contracts/interfaces/IProtocolAdapterRegistry.sol#18)
+        - 0.8.1 (contracts/interfaces/IRouter.sol#18)
+        - 0.8.1 (contracts/interfaces/ITokenAdapter.sol#18)
+        - 0.8.1 (contracts/interfaces/ITokenAdapterNamesManager.sol#18)
+        - 0.8.1 (contracts/interfaces/ITokenAdapterRegistry.sol#18)
+        - 0.8.1 (contracts/interfaces/IUniswapV2Pair.sol#18)
+        - 0.8.1 (contracts/interfaces/IUniswapV2Router02.sol#18)
+        - 0.8.1 (contracts/interfaces/IWETH9.sol#18)
+        - 0.8.1 (contracts/interfaces/IYearnPermit.sol#18)
+        - 0.8.1 (contracts/mock/MockInteractiveAdapter.sol#18)
+        - 0.8.1 (contracts/protocolAdapters/ProtocolAdapter.sol#18)
+        - 0.8.1 (contracts/registries/AdapterManager.sol#18)
+        - 0.8.1 (contracts/registries/ProtocolAdapterRegistry.sol#18)
+        - 0.8.1 (contracts/registries/TokenAdapterNamesManager.sol#18)
+        - 0.8.1 (contracts/registries/TokenAdapterRegistry.sol#18)
+        - 0.8.1 (contracts/router/Router.sol#18)
+        - 0.8.1 (contracts/router/SignatureVerifier.sol#18)
+        - 0.8.1 (contracts/shared/Base.sol#18)
+        - 0.8.1 (contracts/shared/Ownable.sol#18)
+        - 0.8.1 (contracts/shared/Structs.sol#18)
+        - 0.8.1 (contracts/tokenAdapters/TokenAdapter.sol#18)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#different-pragma-directives-are-used
 INFO:Detectors:
-Low level call in Router.returnLostTokens(address,address) (contracts/core/Router.sol#55-63):
-        - (success) = beneficiary.call{value: address(this).balance}(new bytes(0)) (contracts/core/Router.sol#58)
-Low level call in Router.transferTokens(SlitherInternalTopLevelContract8.TokenAmount[],SlitherInternalTopLevelContract9.Fee,address) (contracts/core/Router.sol#187-229):
-        - (success) = fee.beneficiary.call{value: feeAmount}(new bytes(0)) (contracts/core/Router.sol#221)
-        - (success) = core_.call{value: msg.value - feeAmount}(new bytes(0)) (contracts/core/Router.sol#226)
-Low level call in SafeERC20.callOptionalReturn(ERC20,bytes,string,string) (contracts/shared/SafeERC20.sol#86-115):
-        - (success,returndata) = address(token).call(data) (contracts/shared/SafeERC20.sol#100)
-
+Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/security/ReentrancyGuard.sol#3) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#3) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol#3) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol#3) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/utils/Address.sol#3) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/utils/Context.sol#3) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/utils/cryptography/ECDSA.sol#3) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol#3) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/callers/BaseCaller.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/callers/UniswapCaller.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/callers/ZerionCaller.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interactiveAdapters/InteractiveAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/IAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/ICaller.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/IChiToken.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/IDAIPermit.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/IEIP2612.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/IInteractiveAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/IProtocolAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/IProtocolAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/IRouter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/ITokenAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/ITokenAdapterNamesManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/ITokenAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/IUniswapV2Pair.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/IUniswapV2Router02.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/IWETH9.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/interfaces/IYearnPermit.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/mock/MockInteractiveAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/protocolAdapters/ProtocolAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/registries/AdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/registries/ProtocolAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/registries/TokenAdapterNamesManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/registries/TokenAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/router/Router.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/router/SignatureVerifier.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/shared/Base.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/shared/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+Pragma version0.8.1 (contracts/tokenAdapters/TokenAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6
+solc-0.8.1 is not recommended for deployment
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-versions-of-solidity
 INFO:Detectors:
-Router.slitherConstructorConstantVariables() (contracts/core/Router.sol#39-297) uses literals with too many digits:
-        - CHI = 0x0000000000004946c0e9F43F4Dee607b0eF1fA1c (contracts/core/Router.sol#44)
-
+Low level call in Address.sendValue(address,uint256) (node_modules/@openzeppelin/contracts/utils/Address.sol#53-59):
+        - (success) = recipient.call{value: amount}() (node_modules/@openzeppelin/contracts/utils/Address.sol#57)
+Low level call in Address.functionCallWithValue(address,bytes,uint256,string) (node_modules/@openzeppelin/contracts/utils/Address.sol#114-121):
+        - (success,returndata) = target.call{value: value}(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#119)
+Low level call in Address.functionStaticCall(address,bytes,string) (node_modules/@openzeppelin/contracts/utils/Address.sol#139-145):
+        - (success,returndata) = target.staticcall(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#143)
+Low level call in Address.functionDelegateCall(address,bytes,string) (node_modules/@openzeppelin/contracts/utils/Address.sol#163-169):
+        - (success,returndata) = target.delegatecall(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#167)
+Low level call in Base.transferEther(address,uint256,string) (contracts/shared/Base.sol#51-59):
+        - (success) = to.call{value: amount}(new bytes(0)) (contracts/shared/Base.sol#57)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
 INFO:Detectors:
-Core.ETH (contracts/core/Core.sol#37) is never used in Core (contracts/core/Core.sol#32-190)
-
+Variable EIP712._CACHED_DOMAIN_SEPARATOR (node_modules/@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol#30) is not in mixedCase
+Variable EIP712._CACHED_CHAIN_ID (node_modules/@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol#31) is not in mixedCase
+Variable EIP712._HASHED_NAME (node_modules/@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol#33) is not in mixedCase
+Variable EIP712._HASHED_VERSION (node_modules/@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol#34) is not in mixedCase
+Variable EIP712._TYPE_HASH (node_modules/@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol#35) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
 INFO:Detectors:
-execute(SlitherInternalTopLevelContract6.TransactionData,bytes) should be declared external:
-        - Router.execute(SlitherInternalTopLevelContract6.TransactionData,bytes) (contracts/core/Router.sol#83-94)
-execute(SlitherInternalTopLevelContract7.Action[],SlitherInternalTopLevelContract8.TokenAmount[],SlitherInternalTopLevelContract9.Fee,SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) should be declared external:
-        - Router.execute(SlitherInternalTopLevelContract7.Action[],SlitherInternalTopLevelContract8.TokenAmount[],SlitherInternalTopLevelContract9.Fee,SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) (contracts/core/Router.sol#104-111)
-executeWithCHI(SlitherInternalTopLevelContract6.TransactionData,bytes) should be declared external:
-        - Router.executeWithCHI(SlitherInternalTopLevelContract6.TransactionData,bytes) (contracts/core/Router.sol#125-136)
-executeWithCHI(SlitherInternalTopLevelContract7.Action[],SlitherInternalTopLevelContract8.TokenAmount[],SlitherInternalTopLevelContract9.Fee,SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) should be declared external:
-        - Router.executeWithCHI(SlitherInternalTopLevelContract7.Action[],SlitherInternalTopLevelContract8.TokenAmount[],SlitherInternalTopLevelContract9.Fee,SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) (contracts/core/Router.sol#147-154)
-isHashUsed(bytes32,address) should be declared external:
-        - SignatureVerifier.isHashUsed(bytes32,address) (contracts/core/SignatureVerifier.sol#102-104)
-
-$ slither contracts/core/SignatureVerifier.sol
+Redundant expression "this (node_modules/@openzeppelin/contracts/utils/Context.sol#21)" inContext (node_modules/@openzeppelin/contracts/utils/Context.sol#15-24)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#redundant-statements
 INFO:Detectors:
-SignatureVerifier.isHashUsed(bytes32,address).hash (contracts/core/SignatureVerifier.sol#102) shadows:
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract6.TransactionData) (contracts/core/SignatureVerifier.sol#125-137) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract7.Action[]) (contracts/core/SignatureVerifier.sol#139-159) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract8.TokenAmount[]) (contracts/core/SignatureVerifier.sol#161-180) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract9.Fee) (contracts/core/SignatureVerifier.sol#182-184) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) (contracts/core/SignatureVerifier.sol#186-208) (function)
-SignatureVerifier.markHashUsed(bytes32,address).hash (contracts/core/SignatureVerifier.sol#119) shadows:
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract6.TransactionData) (contracts/core/SignatureVerifier.sol#125-137) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract7.Action[]) (contracts/core/SignatureVerifier.sol#139-159) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract8.TokenAmount[]) (contracts/core/SignatureVerifier.sol#161-180) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract9.Fee) (contracts/core/SignatureVerifier.sol#182-184) (function)
-        - SignatureVerifier.hash(SlitherInternalTopLevelContract10.AbsoluteTokenAmount[]) (contracts/core/SignatureVerifier.sol#186-208) (function)
-
+Router.slitherConstructorConstantVariables() (contracts/router/Router.sol#45-616) uses literals with too many digits:
+        - CHI = 0x0000000000004946c0e9F43F4Dee607b0eF1fA1c (contracts/router/Router.sol#49)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#too-many-digits
 INFO:Detectors:
-ECDSA.recover(bytes32,bytes) (contracts/shared/ECDSA.sol#28-70) uses assembly
-        - INLINE ASM (contracts/shared/ECDSA.sol#42-46)
-
+MockInteractiveAdapter (contracts/mock/MockInteractiveAdapter.sol#27-65) does not implement functions:
+        - ProtocolAdapter.getBalance(address,address) (contracts/protocolAdapters/ProtocolAdapter.sol#31)
+ProtocolAdapterRegistry (contracts/registries/ProtocolAdapterRegistry.sol#30-239) does not implement functions:
+        - Ownable.acceptOwnership() (contracts/shared/Ownable.sol#59-63)
+        - AdapterManager.getAdapterAddress(bytes32) (contracts/registries/AdapterManager.sol#56-58)
+        - ProtocolAdapterRegistry.getAdapterBalance(AdapterTokens,address) (contracts/registries/ProtocolAdapterRegistry.sol#80-92)
+        - ProtocolAdapterRegistry.getNonZeroAdapterBalance(AdapterTokens,address) (contracts/registries/ProtocolAdapterRegistry.sol#99-118)
+        - ProtocolAdapterRegistry.getNonZeroAdapterBalances(AdapterBalance[],uint256) (contracts/registries/ProtocolAdapterRegistry.sol#151-170)
+        - ProtocolAdapterRegistry.getNonZeroAdapterBalances(AdapterTokens[],address) (contracts/registries/ProtocolAdapterRegistry.sol#56-73)
+        - ProtocolAdapterRegistry.getNonZeroAdapterBalancesNumber(AdapterBalance[]) (contracts/registries/ProtocolAdapterRegistry.sol#202-217)
+        - ProtocolAdapterRegistry.getNonZeroTokenBalances(TokenBalance[],uint256) (contracts/registries/ProtocolAdapterRegistry.sol#177-196)
+        - ProtocolAdapterRegistry.getNonZeroTokenBalancesNumber(TokenBalance[]) (contracts/registries/ProtocolAdapterRegistry.sol#223-238)
+        - ProtocolAdapterRegistry.getTokenBalances(address,address[],address) (contracts/registries/ProtocolAdapterRegistry.sol#126-144)
+        - Ownable.owner() (contracts/shared/Ownable.sol#68-70)
+        - Ownable.pendingOwner() (contracts/shared/Ownable.sol#75-77)
+        - Ownable.proposeOwnership(address) (contracts/shared/Ownable.sol#48-53)
+        - AdapterManager.setAdapter(bytes32,address) (contracts/registries/AdapterManager.sol#65-72)
+        - AdapterManager.setAdapters(bytes32[],address[]) (contracts/registries/AdapterManager.sol#38-50)
+TokenAdapterRegistry (contracts/registries/TokenAdapterRegistry.sol#41-348) does not implement functions:
+        - Ownable.acceptOwnership() (contracts/shared/Ownable.sol#59-63)
+        - AdapterManager.getAdapterAddress(bytes32) (contracts/registries/AdapterManager.sol#56-58)
+        - TokenAdapterRegistry.getDecimals(address) (contracts/registries/TokenAdapterRegistry.sol#332-347)
+        - TokenAdapterRegistry.getERC20Metadata(TokenBalance) (contracts/registries/TokenAdapterRegistry.sol#295-313)
+        - TokenAdapterRegistry.getFinalFullTokenBalance(TokenBalance) (contracts/registries/TokenAdapterRegistry.sol#164-169)
+        - TokenAdapterRegistry.getFinalFullTokenBalances(TokenBalance[]) (contracts/registries/TokenAdapterRegistry.sol#79-93)
+        - TokenAdapterRegistry.getFinalFullTokenBalances(address[]) (contracts/registries/TokenAdapterRegistry.sol#129-147)
+        - TokenAdapterRegistry.getFinalUnderlyingTokenBalances(TokenBalance) (contracts/registries/TokenAdapterRegistry.sol#199-234)
+        - TokenAdapterRegistry.getFinalUnderlyingTokenBalancesNumber(TokenBalance,bool) (contracts/registries/TokenAdapterRegistry.sol#241-259)
+        - TokenAdapterRegistry.getFullTokenBalance(TokenBalance) (contracts/registries/TokenAdapterRegistry.sol#153-158)
+        - TokenAdapterRegistry.getFullTokenBalance(TokenBalance,TokenBalance[]) (contracts/registries/TokenAdapterRegistry.sol#267-289)
+        - TokenAdapterRegistry.getFullTokenBalances(address[]) (contracts/registries/TokenAdapterRegistry.sol#102-120)
+        - TokenAdapterRegistry.getTokenAdapter(address) (contracts/registries/TokenAdapterRegistry.sol#320-325)
+        - TokenAdapterNamesManager.getTokenAdapterName(address) (contracts/registries/TokenAdapterNamesManager.sol#93-101)
+        - TokenAdapterNamesManager.getTokenHash(address) (contracts/registries/TokenAdapterNamesManager.sol#107-116)
+        - TokenAdapterRegistry.getUnderlyingTokenBalances(TokenBalance) (contracts/registries/TokenAdapterRegistry.sol#175-192)
+        - Ownable.owner() (contracts/shared/Ownable.sol#68-70)
+        - Ownable.pendingOwner() (contracts/shared/Ownable.sol#75-77)
+        - Ownable.proposeOwnership(address) (contracts/shared/Ownable.sol#48-53)
+        - AdapterManager.setAdapter(bytes32,address) (contracts/registries/AdapterManager.sol#65-72)
+        - AdapterManager.setAdapters(bytes32[],address[]) (contracts/registries/AdapterManager.sol#38-50)
+        - TokenAdapterNamesManager.setTokenAdapterName(bytes32,bytes32) (contracts/registries/TokenAdapterNamesManager.sol#123-130)
+        - TokenAdapterNamesManager.setTokenAdapterNames(bytes32[],bytes32[]) (contracts/registries/TokenAdapterNamesManager.sol#76-87)
+        - TokenAdapterNamesManager.setTokenAdapterNamesByHashes(address[],bytes32[]) (contracts/registries/TokenAdapterNamesManager.sol#38-49)
+        - TokenAdapterNamesManager.setTokenAdapterNamesByTokens(address[],bytes32[]) (contracts/registries/TokenAdapterNamesManager.sol#57-68)
+TokenAdapter (contracts/tokenAdapters/TokenAdapter.sol#32-91) does not implement functions:
+        - TokenAdapter.getUnderlyingTokenBalances(TokenBalance) (contracts/tokenAdapters/TokenAdapter.sol#41-45)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unimplemented-functions
 INFO:Detectors:
-Pragma version0.7.3 (contracts/core/SignatureVerifier.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ECDSA.sol#5) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
-
+AdapterManager._adapterAddress (contracts/registries/AdapterManager.sol#30) is never used in ProtocolAdapterRegistry (contracts/registries/ProtocolAdapterRegistry.sol#30-239)
+AdapterManager._adapterAddress (contracts/registries/AdapterManager.sol#30) is never used in TokenAdapterRegistry (contracts/registries/TokenAdapterRegistry.sol#41-348)
+TokenAdapterNamesManager._tokenAdapterName (contracts/registries/TokenAdapterNamesManager.sol#30) is never used in TokenAdapterRegistry (contracts/registries/TokenAdapterRegistry.sol#41-348)
+TokenAdapterRegistry.ETH (contracts/registries/TokenAdapterRegistry.sol#47) is never used in TokenAdapterRegistry (contracts/registries/TokenAdapterRegistry.sol#41-348)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-state-variables
 INFO:Detectors:
-isHashUsed(bytes32,address) should be declared external:
-        - SignatureVerifier.isHashUsed(bytes32,address) (contracts/core/SignatureVerifier.sol#102-104)
-getAccountFromSignature(bytes32,bytes) should be declared external:
-        - SignatureVerifier.getAccountFromSignature(bytes32,bytes) (contracts/core/SignatureVerifier.sol#106-112)
-hashData(SlitherInternalTopLevelContract6.TransactionData) should be declared external:
-        - SignatureVerifier.hashData(SlitherInternalTopLevelContract6.TransactionData) (contracts/core/SignatureVerifier.sol#114-117)
-
-$ slither contracts/core/TokenAdapterManager.sol
-INFO:Detectors:
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/TokenAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
-
-INFO:Detectors:
-getTokenAdapterAddress(bytes32) should be declared external:
-        - TokenAdapterManager.getTokenAdapterAddress(bytes32) (contracts/core/TokenAdapterManager.sol#95-97)
-
-$ slither contracts/core/TokenAdapterNamesManager.sol
-INFO:Detectors:
-TokenAdapterNamesManager.getTokenHash(address) (contracts/core/TokenAdapterNamesManager.sol#153-162) uses assembly
-        - INLINE ASM (contracts/core/TokenAdapterNamesManager.sol#157-159)
-
-INFO:Detectors:
-Pragma version0.7.3 (contracts/adapters/TokenAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/TokenAdapterNamesManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
-
-INFO:Detectors:
-getMetadata(address) should be declared external:
-        - TokenAdapter.getMetadata(address) (contracts/adapters/TokenAdapter.sol#50-57)
+name() should be declared external:
+        - ERC20.name() (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#59-61)
+symbol() should be declared external:
+        - ERC20.symbol() (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#67-69)
+decimals() should be declared external:
+        - ERC20.decimals() (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#84-86)
+totalSupply() should be declared external:
+        - ERC20.totalSupply() (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#91-93)
+balanceOf(address) should be declared external:
+        - ERC20.balanceOf(address) (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#98-100)
+transfer(address,uint256) should be declared external:
+        - ERC20.transfer(address,uint256) (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#110-113)
+allowance(address,address) should be declared external:
+        - ERC20.allowance(address,address) (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#118-120)
+approve(address,uint256) should be declared external:
+        - ERC20.approve(address,uint256) (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#129-132)
+transferFrom(address,address,uint256) should be declared external:
+        - ERC20.transferFrom(address,address,uint256) (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#147-155)
+increaseAllowance(address,uint256) should be declared external:
+        - ERC20.increaseAllowance(address,uint256) (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#169-172)
+decreaseAllowance(address,uint256) should be declared external:
+        - ERC20.decreaseAllowance(address,uint256) (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#188-194)
+getAdapterAddress(bytes32) should be declared external:
+        - AdapterManager.getAdapterAddress(bytes32) (contracts/registries/AdapterManager.sol#56-58)
+getAdapterBalance(AdapterTokens,address) should be declared external:
+        - ProtocolAdapterRegistry.getAdapterBalance(AdapterTokens,address) (contracts/registries/ProtocolAdapterRegistry.sol#80-92)
+getNonZeroAdapterBalance(AdapterTokens,address) should be declared external:
+        - ProtocolAdapterRegistry.getNonZeroAdapterBalance(AdapterTokens,address) (contracts/registries/ProtocolAdapterRegistry.sol#99-118)
 getTokenAdapterName(address) should be declared external:
-        - TokenAdapterNamesManager.getTokenAdapterName(address) (contracts/core/TokenAdapterNamesManager.sol#143-151)
-
-$ slither contracts/core/TokenAdapterRegistry.sol
-INFO:Detectors:
-TokenAdapterRegistry.getComponents(SlitherInternalTopLevelContract4.TokenBalance).result (contracts/core/TokenAdapterRegistry.sol#287) is a local variable never initialized
-TokenAdapterRegistry.getTokenBalanceMeta(SlitherInternalTopLevelContract4.TokenBalance).result (contracts/core/TokenAdapterRegistry.sol#316) is a local variable never initialized
-TokenAdapterRegistry.getTokenBalanceMeta(SlitherInternalTopLevelContract4.TokenBalance).erc20metadata (contracts/core/TokenAdapterRegistry.sol#310) is a local variable never initialized
-TokenAdapterRegistry.getComponents(SlitherInternalTopLevelContract4.TokenBalance).components (contracts/core/TokenAdapterRegistry.sol#281) is a local variable never initialized
-
-INFO:Detectors:
-TokenAdapterRegistry.getComponents(SlitherInternalTopLevelContract4.TokenBalance) (contracts/core/TokenAdapterRegistry.sol#276-296) ignores return value by TokenAdapter(tokenAdapter).getComponents(tokenBalance.token) (contracts/core/TokenAdapterRegistry.sol#286-292)
-TokenAdapterRegistry.getTokenBalanceMeta(SlitherInternalTopLevelContract4.TokenBalance) (contracts/core/TokenAdapterRegistry.sol#304-329) ignores return value by TokenAdapter(tokenAdapter).getMetadata(tokenBalance.token) (contracts/core/TokenAdapterRegistry.sol#315-325)
-
-INFO:Detectors:
-TokenAdapterRegistry.getFullTokenBalances(address[]) (contracts/core/TokenAdapterRegistry.sol#91-109) has external calls inside a loop: decimals = ERC20(tokens[i]).decimals() (contracts/core/TokenAdapterRegistry.sol#101)
-TokenAdapterRegistry.getFinalFullTokenBalances(address[]) (contracts/core/TokenAdapterRegistry.sol#117-135) has external calls inside a loop: decimals = ERC20(tokens[i]).decimals() (contracts/core/TokenAdapterRegistry.sol#127)
-
-INFO:Detectors:
-TokenAdapterNamesManager.getTokenHash(address) (contracts/core/TokenAdapterNamesManager.sol#153-162) uses assembly
-        - INLINE ASM (contracts/core/TokenAdapterNamesManager.sol#157-159)
-
-INFO:Detectors:
-Pragma version0.7.3 (contracts/adapters/TokenAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/TokenAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/TokenAdapterNamesManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/TokenAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
-
-INFO:Detectors:
-getMetadata(address) should be declared external:
-        - TokenAdapter.getMetadata(address) (contracts/adapters/TokenAdapter.sol#50-57)
+        - TokenAdapterNamesManager.getTokenAdapterName(address) (contracts/registries/TokenAdapterNamesManager.sol#93-101)
+isHashUsed(bytes32,address) should be declared external:
+        - SignatureVerifier.isHashUsed(bytes32,address) (contracts/router/SignatureVerifier.sol#97-99)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#public-function-that-could-be-declared-external
