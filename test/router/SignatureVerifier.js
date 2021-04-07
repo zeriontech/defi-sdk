@@ -33,7 +33,7 @@ describe('SignatureVerifier', () => {
 
     [wallet] = provider.getWallets();
 
-    const weth9 = await ethers.getContractAt('IWETH(', wethAddress);
+    const weth9 = await ethers.getContractAt('IWETH', wethAddress);
 
     await weth9.connect(wallet).deposit({
       value: ethers.utils.parseEther('1'),

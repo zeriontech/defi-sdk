@@ -26,7 +26,7 @@ import { ERC20Metadata, TokenBalance } from "../shared/Structs.sol";
  * @title Token adapter abstract contract.
  * @dev getUnderlyingTokenBalances() function MUST be implemented.
  * getName(), getSymbol(), getDecimals() functions
- * or getMetadata() function may be overridden.
+ *     or getMetadata() function may be overridden.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract TokenAdapter is ITokenAdapter {
@@ -54,7 +54,7 @@ abstract contract TokenAdapter is ITokenAdapter {
      * }
      */
     function getMetadata(TokenBalance memory tokenBalance)
-        public
+        external
         view
         virtual
         override

@@ -20,6 +20,7 @@ pragma solidity 0.8.1;
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { SignatureVerifier } from "./SignatureVerifier.sol";
 import { IChiToken } from "../interfaces/IChiToken.sol";
@@ -29,7 +30,6 @@ import { IEIP2612 } from "../interfaces/IEIP2612.sol";
 import { IRouter } from "../interfaces/IRouter.sol";
 import { IYearnPermit } from "../interfaces/IYearnPermit.sol";
 import { Base } from "../shared/Base.sol";
-import { Helpers } from "../shared/Helpers.sol";
 import { Ownable } from "../shared/Ownable.sol";
 import {
     AbsoluteTokenAmount,
@@ -79,6 +79,7 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         address payable beneficiary,
         uint256 amount
     ) external override onlyOwner {
+        require(beneficiary != address(0), "R: beneficiary");
         Base.transfer(token, beneficiary, amount);
     }
 
@@ -111,8 +112,8 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         external
         payable
         override
-        useCHI
         nonReentrant
+        useCHI
         returns (uint256 inputBalanceChange, uint256 outputBalanceChange)
     {
         return execute(input, absoluteOutput, swapDescription, account, salt, signature);
@@ -141,8 +142,8 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         external
         payable
         override
-        useCHI
         nonReentrant
+        useCHI
         returns (uint256 inputBalanceChange, uint256 outputBalanceChange)
     {
         return execute(input, absoluteOutput, swapDescription);
@@ -250,14 +251,11 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         // Transfer input token (except ETH) to destination address and handle fees (if any).
         handleInput(input, absoluteInputAmount, exactInputAmount, swapDescription, account);
 
-        // Execute swap(s) in a caller contract.
-        require(swapDescription.caller != address(0), "R: zero caller");
-
-        Base.externalCall(
+        Address.functionCallWithValue(
             swapDescription.caller,
-            ICaller.callBytes.selector,
-            abi.encodePacked(swapDescription.callData, account),
-            input.tokenAmount.token == ETH ? exactInputAmount : 0
+            abi.encodePacked(ICaller.callBytes.selector, swapDescription.callData, account),
+            input.tokenAmount.token == ETH ? exactInputAmount : 0,
+            "R: callBytes"
         );
 
         // Calculate the balances changes for input and output tokens.
@@ -354,6 +352,7 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         uint256 feeAmount = getFeeAmount(absoluteInputAmount, exactInputAmount, swapDescription);
 
         if (feeAmount > 0) {
+            require(swapDescription.fee.beneficiary != address(0), "BR: beneficiary");
             Base.transferEther(swapDescription.fee.beneficiary, feeAmount, "BR: fee");
         }
     }
@@ -388,17 +387,17 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         }
 
         if (absoluteInputAmount > IERC20(token).allowance(account, address(this))) {
-            Base.externalCall(
+            Address.functionCall(
                 token,
-                getPermitSelector(permit.permitType),
-                permit.permitCallData,
-                0
+                abi.encodePacked(getPermitSelector(permit.permitType), permit.permitCallData),
+                "R: permit"
             );
         }
 
         uint256 feeAmount = getFeeAmount(absoluteInputAmount, exactInputAmount, swapDescription);
 
         if (feeAmount > 0) {
+            require(swapDescription.fee.beneficiary != address(0), "BR: beneficiary");
             SafeERC20.safeTransferFrom(
                 IERC20(token),
                 account,
@@ -519,10 +518,9 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         }
 
         bytes memory returnData =
-            Base.staticCall(
+            Address.functionStaticCall(
                 swapDescription.caller,
-                ICaller.getExactInputAmount.selector,
-                swapDescription.callData
+                abi.encodePacked(ICaller.getExactInputAmount.selector, swapDescription.callData)
             );
         require(returnData.length == 32, "BR: bad exactInputAmount");
         return abi.decode(returnData, (uint256));

@@ -18,6 +18,7 @@
 pragma solidity 0.8.1;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { AdapterManager } from "./AdapterManager.sol";
 import { TokenAdapterNamesManager } from "./TokenAdapterNamesManager.sol";
@@ -332,7 +333,12 @@ contract TokenAdapterRegistry is
         if (token == ETH) {
             return 18;
         }
-        bytes memory returnData = Base.staticCall(token, ERC20.decimals.selector, new bytes(0));
+        bytes memory returnData =
+            Address.functionStaticCall(
+                token,
+                abi.encodePacked(ERC20.decimals.selector),
+                "TAR: decimals"
+            );
 
         if (returnData.length != 32) {
             return 0;

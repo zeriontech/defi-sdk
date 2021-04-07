@@ -18,6 +18,7 @@
 pragma solidity 0.8.1;
 
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { BaseCaller } from "./BaseCaller.sol";
 import { IAdapterManager } from "../interfaces/IAdapterManager.sol";
@@ -30,8 +31,6 @@ import { Action, ActionType, TokenAmount } from "../shared/Structs.sol";
  * @title Zerion caller that executs actions.
  */
 contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
-    address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-
     address internal immutable protocolAdapterRegistry_;
 
     event ExecutedAction(
@@ -124,7 +123,10 @@ contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
 
         return
             abi.decode(
-                Base.delegateCall(adapter, selector, abi.encode(action.tokenAmounts, action.data)),
+                Address.functionDelegateCall(
+                    adapter,
+                    abi.encodeWithSelector(selector, action.tokenAmounts, action.data)
+                ),
                 (address[])
             );
     }

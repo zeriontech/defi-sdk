@@ -39,7 +39,7 @@ describe('Router', () => {
 
     [owner, notOwner, feeRecipient] = await ethers.getSigners();
 
-    const weth9 = await ethers.getContractAt('IWETH(', wethAddress);
+    const weth9 = await ethers.getContractAt('I', wethAddress);
 
     await weth9.deposit({
       value: ethers.utils.parseUnits('1', 18),
@@ -457,7 +457,7 @@ describe('Router', () => {
     );
     expect(await weth.balanceOf(owner.address)).to.be.equal('0');
 
-    const weth9 = await ethers.getContractAt('IWETH(', wethAddress);
+    const weth9 = await ethers.getContractAt('IWETH', wethAddress);
     await weth9.deposit({
       value: ethers.utils.parseUnits('1', 18),
     });
