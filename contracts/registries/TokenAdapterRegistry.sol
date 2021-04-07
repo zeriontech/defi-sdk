@@ -17,8 +17,14 @@
 
 pragma solidity 0.8.1;
 
+import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
 import { AdapterManager } from "./AdapterManager.sol";
 import { TokenAdapterNamesManager } from "./TokenAdapterNamesManager.sol";
+import { ITokenAdapter } from "../interfaces/ITokenAdapter.sol";
+import { ITokenAdapterRegistry } from "../interfaces/ITokenAdapterRegistry.sol";
+import { Base } from "../shared/Base.sol";
+import { Ownable } from "../shared/Ownable.sol";
 import {
     AdapterBalance,
     ERC20Metadata,
@@ -26,15 +32,17 @@ import {
     TokenBalance,
     TokenBalanceMeta
 } from "../shared/Structs.sol";
-import { Ownable } from "../shared/Ownable.sol";
-import { TokenAdapter } from "../tokenAdapters/TokenAdapter.sol";
-import { ERC20 } from "../interfaces/ERC20.sol";
 
 /**
  * @title Registry for token adapters.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract TokenAdapterRegistry is Ownable, AdapterManager, TokenAdapterNamesManager {
+contract TokenAdapterRegistry is
+    ITokenAdapterRegistry,
+    Ownable,
+    AdapterManager,
+    TokenAdapterNamesManager
+{
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
@@ -46,6 +54,7 @@ contract TokenAdapterRegistry is Ownable, AdapterManager, TokenAdapterNamesManag
      */
     function getFullTokenBalances(TokenBalance[] calldata tokenBalances)
         external
+        override
         returns (FullTokenBalance[] memory fullTokenBalances)
     {
         uint256 length = tokenBalances.length;
@@ -68,6 +77,7 @@ contract TokenAdapterRegistry is Ownable, AdapterManager, TokenAdapterNamesManag
      */
     function getFinalFullTokenBalances(TokenBalance[] calldata tokenBalances)
         external
+        override
         returns (FullTokenBalance[] memory finalFullTokenBalances)
     {
         uint256 length = tokenBalances.length;
@@ -90,6 +100,7 @@ contract TokenAdapterRegistry is Ownable, AdapterManager, TokenAdapterNamesManag
      */
     function getFullTokenBalances(address[] calldata tokens)
         external
+        override
         returns (FullTokenBalance[] memory fullTokenBalances)
     {
         uint256 length = tokens.length;
@@ -116,6 +127,7 @@ contract TokenAdapterRegistry is Ownable, AdapterManager, TokenAdapterNamesManag
      */
     function getFinalFullTokenBalances(address[] calldata tokens)
         external
+        override
         returns (FullTokenBalance[] memory finalFullTokenBalances)
     {
         uint256 length = tokens.length;
@@ -199,7 +211,7 @@ contract TokenAdapterRegistry is Ownable, AdapterManager, TokenAdapterNamesManag
             return new TokenBalance[](0);
         }
 
-        try TokenAdapter(tokenAdapter).getUnderlyingTokenBalances(tokenBalance) returns (
+        try ITokenAdapter(tokenAdapter).getUnderlyingTokenBalances(tokenBalance) returns (
             TokenBalance[] memory underlyingTokenBalances
         ) {
             return underlyingTokenBalances;
@@ -290,7 +302,7 @@ contract TokenAdapterRegistry is Ownable, AdapterManager, TokenAdapterNamesManag
             return ERC20Metadata({ name: "Not available", symbol: "N/A", decimals: 0 });
         }
 
-        try TokenAdapter(tokenAdapter).getMetadata(tokenBalance) returns (
+        try ITokenAdapter(tokenAdapter).getMetadata(tokenBalance) returns (
             ERC20Metadata memory metadata
         ) {
             return metadata;
@@ -320,11 +332,11 @@ contract TokenAdapterRegistry is Ownable, AdapterManager, TokenAdapterNamesManag
         if (token == ETH) {
             return 18;
         }
+        bytes memory returnData = Base.staticCall(token, ERC20.decimals.selector, new bytes(0));
 
-        try ERC20(token).decimals() returns (uint8 decimals) {
-            return decimals;
-        } catch {
+        if (returnData.length != 32) {
             return 0;
         }
+        return abi.decode(returnData, (uint8));
     }
 }

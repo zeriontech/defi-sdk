@@ -17,16 +17,12 @@
 
 pragma solidity 0.8.1;
 
-/**
- * @dev WETH9 contract interface.
- * Only the functions required for WethInteractiveAdapter contract are added.
- * The WETH9 contract is available here
- * github.com/0xProject/0x-monorepo/blob/development/contracts/erc20/contracts/src/WETH9.sol.
- */
-interface WETH9 {
-    function deposit() external payable;
-
-    function withdraw(uint256) external;
-
-    function balanceOf(address) external view returns (uint256);
+interface IYearnPermit {
+    function permit(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes calldata
+    ) external;
 }

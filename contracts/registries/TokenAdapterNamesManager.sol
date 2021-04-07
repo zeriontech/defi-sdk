@@ -17,34 +17,28 @@
 
 pragma solidity 0.8.1;
 
+import { ITokenAdapterNamesManager } from "../interfaces/ITokenAdapterNamesManager.sol";
 import { Ownable } from "../shared/Ownable.sol";
-import { TokenAdapter } from "../tokenAdapters/TokenAdapter.sol";
 
 /**
  * @title TokenAdapterRegistry part responsible for contracts' hashes management.
  * @dev Base contract for TokenAdapterRegistry.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-abstract contract TokenAdapterNamesManager is Ownable {
+abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable {
     // Contract's or address hash => token adapter's name
     mapping(bytes32 => bytes32) private _tokenAdapterName;
 
-    event TokenAdapterNameSet(
-        bytes32 indexed hash,
-        bytes32 indexed oldTokenAdapterName,
-        bytes32 indexed newTokenAdapterName
-    );
-
     /**
-     * @notice Adds token adapters' names by tokens' hashes using tokens addresses.
-     * The function is callable only by the owner.
+     * @notice Sets token adapters' names by tokens' hashes using tokens addresses.
      * @param tokens Array of tokens addresses.
      * @param newTokenAdapterNames Array of new token adapters' names.
+     * @dev Can be called only by this contract's owner.
      */
     function setTokenAdapterNamesByHashes(
         address[] calldata tokens,
         bytes32[] calldata newTokenAdapterNames
-    ) external onlyOwner {
+    ) external override onlyOwner {
         uint256 length = tokens.length;
         require(length != 0, "TANM: empty");
         require(length == newTokenAdapterNames.length, "TANM: lengths differ");
@@ -55,15 +49,15 @@ abstract contract TokenAdapterNamesManager is Ownable {
     }
 
     /**
-     * @notice Adds token adapters' names by tokens addresses.
-     * The function is callable only by the owner.
+     * @notice Sets token adapters' names by tokens addresses.
      * @param tokens Array of tokens addresses.
      * @param newTokenAdapterNames Array of new token adapters' names.
+     * @dev Can be called only by this contract's owner.
      */
     function setTokenAdapterNamesByTokens(
         address[] calldata tokens,
         bytes32[] calldata newTokenAdapterNames
-    ) external onlyOwner {
+    ) external override onlyOwner {
         uint256 length = tokens.length;
         require(length != 0, "TANM: empty");
         require(length == newTokenAdapterNames.length, "TANM: lengths differ");
@@ -74,15 +68,15 @@ abstract contract TokenAdapterNamesManager is Ownable {
     }
 
     /**
-     * @notice Adds token adapters' names using hashes.
-     * The function is callable only by the owner.
+     * @notice Sets token adapters' names using hashes.
      * @param hashes Array of hashes.
      * @param newTokenAdapterNames Array of new token adapters' names.
+     * @dev Can be called only by this contract's owner.
      */
     function setTokenAdapterNames(
         bytes32[] calldata hashes,
         bytes32[] calldata newTokenAdapterNames
-    ) external onlyOwner {
+    ) external override onlyOwner {
         uint256 length = hashes.length;
         require(length != 0, "TANM: empty");
         require(length == newTokenAdapterNames.length, "TANM: lengths differ");
@@ -96,7 +90,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
      * @param token Address of token.
      * @return Name of token adapter.
      */
-    function getTokenAdapterName(address token) public view returns (bytes32) {
+    function getTokenAdapterName(address token) public view override returns (bytes32) {
         bytes32 tokenAdapterName = _tokenAdapterName[keccak256(abi.encodePacked(token))];
 
         if (tokenAdapterName == bytes32(0)) {
@@ -110,7 +104,7 @@ abstract contract TokenAdapterNamesManager is Ownable {
      * @param token Address of token.
      * @return Hash of token's bytecode.
      */
-    function getTokenHash(address token) public view returns (bytes32) {
+    function getTokenHash(address token) public view override returns (bytes32) {
         bytes32 hash;
 
         // solhint-disable-next-line no-inline-assembly

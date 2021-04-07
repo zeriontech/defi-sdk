@@ -17,13 +17,16 @@
 
 pragma solidity 0.8.1;
 
-import { AbsoluteTokenAmount, AbsoluteInput } from "../shared/Structs.sol";
+/**
+ * @dev WETH9 contract interface.
+ * Only the functions required for WethInteractiveAdapter contract are added.
+ * The WETH9 contract is available here
+ * github.com/0xProject/0x-monorepo/blob/development/contracts/erc20/contracts/src/WETH9.sol.
+ */
+interface IWETH9 {
+    function deposit() external payable;
 
-interface Caller {
-    function callBytes(bytes calldata data) external payable;
+    function withdraw(uint256) external;
 
-    function getExactInputAmount(bytes calldata callData)
-        external
-        view
-        returns (uint256 exactInputAmount);
+    function balanceOf(address) external view returns (uint256);
 }

@@ -17,9 +17,10 @@
 
 pragma solidity 0.8.1;
 
-import { ERC20 } from "../interfaces/ERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 import { Helpers } from "../shared/Helpers.sol";
-import { SafeERC20 } from "../shared/SafeERC20.sol";
 
 library Base {
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -29,7 +30,7 @@ library Base {
      * @param token Adress of the token or `ETH` in case of Ether transfer.
      * @param account Adress of the account that will receive funds.
      * @param amount Amount to be transferred.
-     * @dev This function is compatible only with ERC20 tokens and Ether, not ERC721 tokens.
+     * @dev This function is compatible only with IERC20 tokens and Ether, not ERC721 tokens.
      */
     function transfer(
         address token,
@@ -39,7 +40,7 @@ library Base {
         if (token == ETH) {
             Base.transferEther(account, amount, "B: bad account");
         } else {
-            SafeERC20.safeTransfer(token, account, amount, "B");
+            SafeERC20.safeTransfer(IERC20(token), account, amount);
         }
     }
 
@@ -65,26 +66,23 @@ library Base {
      * @param selector Function selector.
      * @param callData Function calldata.
      * @param etherValue Amount of Ether to be sent with call.
-     * @param location Location of the call (for debug).
+     * @return returnData Data returned by the call.
      */
     function externalCall(
         address callee,
         bytes4 selector,
         bytes memory callData,
-        uint256 etherValue,
-        string memory location
+        uint256 etherValue
     ) internal returns (bytes memory returnData) {
         require(callee != address(0), "B: zero callee");
 
         bool success;
-        // solhint-disable-next-line avoid-low-level-calls
         (success, returnData) = callee.call{ value: etherValue }(
             abi.encodePacked(selector, callData)
         );
+        // solhint-disable-previous-line avoid-low-level-calls
 
-        if (!success) {
-            revert(Helpers.parseRevertReason(returnData, location));
-        }
+        processReturnData(success, returnData, selector, "externalcall");
 
         return returnData;
     }
@@ -94,6 +92,7 @@ library Base {
      * @param callee Address to be called.
      * @param selector Function selector.
      * @param callData Function calldata.
+     * @return returnData Data returned by the call.
      */
     function delegateCall(
         address callee,
@@ -103,12 +102,10 @@ library Base {
         require(callee != address(0), "B: zero callee");
 
         bool success;
-        // solhint-disable-next-line avoid-low-level-calls
         (success, returnData) = callee.delegatecall(abi.encodePacked(selector, callData));
+        // solhint-disable-previous-line avoid-low-level-calls
 
-        if (!success) {
-            revert(Helpers.parseRevertReason(returnData, ""));
-        }
+        processReturnData(success, returnData, selector, "delegatecall");
 
         return returnData;
     }
@@ -118,25 +115,65 @@ library Base {
      * @param callee Address to be called.
      * @param selector Function selector.
      * @param callData Function calldata.
-     * @param location Location of the call (for debug).
+     * @return returnData Data returned by the call.
      */
     function staticCall(
         address callee,
         bytes4 selector,
-        bytes memory callData,
-        string memory location
+        bytes memory callData
     ) internal view returns (bytes memory returnData) {
         require(callee != address(0), "B: zero callee");
 
         bool success;
-        // solhint-disable-next-line avoid-low-level-calls
         (success, returnData) = callee.staticcall(abi.encodePacked(selector, callData));
+        // solhint-disable-previous-line avoid-low-level-calls
 
-        if (!success) {
-            revert(Helpers.parseRevertReason(returnData, location));
-        }
+        processReturnData(success, returnData, selector, "staticcall");
 
         return returnData;
+    }
+
+    /**
+     * @dev Processes call result:
+     *     - if success does nothing;
+     *     - if failed with revert reason - bubbles it up;
+     *     - else just reverts.
+     * @param success If the call was successful.
+     * @param returnData Data returned by the call.
+     * @param selector Function selector.
+     * @param callType String with type of call (for debug).
+     */
+    function processReturnData(
+        bool success,
+        bytes memory returnData,
+        bytes4 selector,
+        string memory callType
+    ) internal pure {
+        if (success) {
+            return;
+        }
+
+        uint256 length = returnData.length;
+        // Look for revert reason and bubble it up if present
+        if (length > 0) {
+            // assembly revert opcode is used here as `returnData`
+            // is already bytes array generated by the callee's revert()
+            // solhint-disable-next-line no-inline-assembly
+            assembly {
+                revert(add(32, returnData), length)
+            }
+        }
+
+        revert(
+            string(
+                abi.encodePacked(
+                    callType,
+                    " with selector ",
+                    Helpers.toString(selector),
+                    " failed"
+                )
+            )
+        );
     }
 
     /**
@@ -153,6 +190,6 @@ library Base {
             return account.balance;
         }
 
-        return ERC20(token).balanceOf(account);
+        return IERC20(token).balanceOf(account);
     }
 }

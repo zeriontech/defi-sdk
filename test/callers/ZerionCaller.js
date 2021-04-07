@@ -37,13 +37,13 @@ describe('ZerionCaller', () => {
 
     [owner] = await ethers.getSigners();
 
-    const weth9 = await ethers.getContractAt('WETH9', wethAddress);
+    const weth9 = await ethers.getContractAt('IWETH(', wethAddress);
     await weth9.deposit({
       value: ethers.utils.parseEther('1'),
       gasLimit: 1000000,
     });
 
-    weth = await ethers.getContractAt('ERC20', wethAddress, owner);
+    weth = await ethers.getContractAt('IERC20', wethAddress, owner);
 
     protocolAdapterRegistry = await ProtocolAdapterRegistry.deploy();
     caller = await Caller.deploy(protocolAdapterRegistry.address);

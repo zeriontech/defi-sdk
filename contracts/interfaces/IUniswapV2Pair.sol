@@ -18,15 +18,32 @@
 pragma solidity 0.8.1;
 
 /**
- * @dev UniswapV2Router02 contract interface.
- * The UniswapV2Router02 contract is available here
- * github.com/Uniswap/uniswap-v2-periphery/blob/master/contracts/UniswapV2Router02.sol.
+ * @dev UniswapV2Pair contract interface.
+ * The UniswapV2Pair contract is available here
+ * github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2Pair.sol.
  */
-interface UniswapV2Router02 {
-    function swapExactETHForTokens(
+interface IUniswapV2Pair {
+    function mint(address) external returns (uint256);
+
+    function burn(address) external returns (uint256, uint256);
+
+    function swap(
         uint256,
-        address[] calldata,
+        uint256,
         address,
-        uint256
-    ) external payable;
+        bytes calldata
+    ) external;
+
+    function getReserves()
+        external
+        view
+        returns (
+            uint112,
+            uint112,
+            uint32
+        );
+
+    function token0() external view returns (address);
+
+    function token1() external view returns (address);
 }

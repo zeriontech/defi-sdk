@@ -5,8 +5,8 @@ import { wethAddress, ethAddress, daiAddress, usdcAddress } from '../helpers/tok
 const { expect } = require('chai');
 
 const { waffle, ethers } = require('hardhat');
-const CallerArtifacts = require('../../artifacts/contracts/interfaces/Caller.sol/Caller.json');
-const TokenArtifacts = require('../../artifacts/contracts/interfaces/ERC20.sol/ERC20.json');
+const CallerArtifacts = require('../../artifacts/contracts/interfaces/ICaller.sol/ICaller.json');
+const TokenArtifacts = require('../../artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json');
 
 const { deployMockContract, provider } = waffle;
 const { AddressZero, MaxUint256 } = ethers.constants;
@@ -39,7 +39,7 @@ describe('Router', () => {
 
     [owner, notOwner, feeRecipient] = await ethers.getSigners();
 
-    const weth9 = await ethers.getContractAt('WETH9', wethAddress);
+    const weth9 = await ethers.getContractAt('IWETH(', wethAddress);
 
     await weth9.deposit({
       value: ethers.utils.parseUnits('1', 18),
@@ -50,9 +50,9 @@ describe('Router', () => {
     mockToken = await deployMockContract(owner, TokenArtifacts.abi);
     await mockCaller.mock.callBytes.returns();
 
-    weth = await ethers.getContractAt('ERC20', wethAddress, owner);
-    dai = await ethers.getContractAt('ERC20', daiAddress, owner);
-    usdc = await ethers.getContractAt('ERC20', usdcAddress, owner);
+    weth = await ethers.getContractAt('IERC20', wethAddress, owner);
+    dai = await ethers.getContractAt('IERC20', daiAddress, owner);
+    usdc = await ethers.getContractAt('IERC20', usdcAddress, owner);
   });
 
   beforeEach(async () => {
@@ -457,7 +457,7 @@ describe('Router', () => {
     );
     expect(await weth.balanceOf(owner.address)).to.be.equal('0');
 
-    const weth9 = await ethers.getContractAt('WETH9', wethAddress);
+    const weth9 = await ethers.getContractAt('IWETH(', wethAddress);
     await weth9.deposit({
       value: ethers.utils.parseUnits('1', 18),
     });
@@ -500,7 +500,7 @@ describe('Router', () => {
 
   it('should not transfer DAI with permit with bad signature', async () => {
     const [wallet] = provider.getWallets();
-    const daiPermit = await ethers.getContractAt('DAI', daiAddress, wallet);
+    const daiPermit = await ethers.getContractAt('IDAI', daiAddress, wallet);
 
     await buyTokenOnUniswap(wallet, daiAddress);
 
@@ -565,7 +565,7 @@ describe('Router', () => {
 
   it('should transfer DAI with permit', async () => {
     const [wallet] = provider.getWallets();
-    const daiPermit = await ethers.getContractAt('DAI', daiAddress, wallet);
+    const daiPermit = await ethers.getContractAt('IDAI', daiAddress, wallet);
 
     await buyTokenOnUniswap(wallet, daiAddress);
 
@@ -630,7 +630,7 @@ describe('Router', () => {
 
   it('should transfer USDC with permit', async () => {
     const [wallet] = provider.getWallets();
-    const usdcPermit = await ethers.getContractAt('EIP2612', usdcAddress, wallet);
+    const usdcPermit = await ethers.getContractAt('IEIP2612', usdcAddress, wallet);
 
     await buyTokenOnUniswap(wallet, usdcAddress);
 

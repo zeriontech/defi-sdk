@@ -22,6 +22,6 @@ pragma solidity 0.8.1;
  * The ChiToken contract is available here
  * github.com/1inch-exchange/chi/blob/master/contracts/ChiToken.sol.
  */
-interface ChiToken {
+interface IChiToken {
     function freeFromUpTo(address, uint256) external;
 }

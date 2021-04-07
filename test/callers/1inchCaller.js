@@ -22,13 +22,17 @@ describe('ZerionCaller', () => {
 
     [owner] = await ethers.getSigners();
 
-    const weth9 = await ethers.getContractAt('WETH9', wethAddress);
+    const weth9 = await ethers.getContractAt('IWETH(', wethAddress);
     await weth9.deposit({
       value: ethers.utils.parseEther('1'),
       gasLimit: 1000000,
     });
 
-    ilv = await ethers.getContractAt('ERC20', '0x767FE9EDC9E0dF98E07454847909b5E959D7ca0E', owner);
+    ilv = await ethers.getContractAt(
+      'IERC20',
+      '0x767FE9EDC9E0dF98E07454847909b5E959D7ca0E',
+      owner,
+    );
   });
 
   beforeEach(async () => {

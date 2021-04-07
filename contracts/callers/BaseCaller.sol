@@ -17,17 +17,16 @@
 
 pragma solidity 0.8.1;
 
-import { Caller } from "../interfaces/Caller.sol";
-
 /**
  * @title Base caller that provides `getAccount` function.
  */
-abstract contract BaseCaller is Caller {
+abstract contract BaseCaller {
     /**
      * @notice Fetches `account` address from `msg.data`
      * @return account Address of account that receives the resulting funds.
      */
     function getAccount() internal pure returns (address payable account) {
+        // require(msg.data.length > 32, "BC: bad calldata");
         // solhint-disable-next-line no-inline-assembly
         assembly {
             // Type conversion will leave only lase 20 bytes from `calldataload()` call.

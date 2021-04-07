@@ -17,7 +17,9 @@
 
 pragma solidity 0.8.1;
 
-import { ERC20 } from "../interfaces/ERC20.sol";
+import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+import { ITokenAdapter } from "../interfaces/ITokenAdapter.sol";
 import { ERC20Metadata, TokenBalance } from "../shared/Structs.sol";
 
 /**
@@ -27,7 +29,7 @@ import { ERC20Metadata, TokenBalance } from "../shared/Structs.sol";
  * or getMetadata() function may be overridden.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-abstract contract TokenAdapter {
+abstract contract TokenAdapter is ITokenAdapter {
     /**
      * @dev MUST return array of TokenBalance structs with underlying tokens amounts
      *     for the given TokenBalance struct consisting of token address and absolute amount.
@@ -39,10 +41,11 @@ abstract contract TokenAdapter {
     function getUnderlyingTokenBalances(TokenBalance memory tokenBalance)
         external
         virtual
+        override
         returns (TokenBalance[] memory);
 
     /**
-     * @return ERC20Metadata struct with ERC20-style token info.
+     * @return ERC20Metadata struct with IERC20-style token info.
      * @dev It is recommended to override getName(), getSymbol(), and getDecimals() functions.
      * struct ERC20Metadata {
      *     string name;
@@ -54,6 +57,7 @@ abstract contract TokenAdapter {
         public
         view
         virtual
+        override
         returns (ERC20Metadata memory)
     {
         return

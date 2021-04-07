@@ -17,16 +17,28 @@
 
 pragma solidity 0.8.1;
 
-import { IProtocolAdapter } from "../interfaces/IProtocolAdapter.sol";
+import { TokenAmount } from "../shared/Structs.sol";
 
 /**
- * @title Protocol adapter abstract contract.
- * @dev getBalance() function MUST be implemented.
+ * @title Interface for interactive protocol adapters.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-abstract contract ProtocolAdapter is IProtocolAdapter {
+interface IInteractiveAdapter {
     /**
-     * @dev MUST return amount of the given token locked on the protocol by the given account.
+     * @dev Deposits assets to the protocol.
+     * @return Assets to be sent back to the `msg.sender`.
      */
-    function getBalance(address token, address account) public virtual override returns (int256);
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
+        external
+        payable
+        returns (address[] memory);
+
+    /**
+     * @dev Withdraws assets from the protocol.
+     * @return Assets to be sent back to the `msg.sender`.
+     */
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata data)
+        external
+        payable
+        returns (address[] memory);
 }

@@ -29,6 +29,7 @@
     "@babel/core": "7.13.10",
     "@babel/preset-env": "7.13.12",
     "@babel/register": "7.13.8",
+    "@openzeppelin/contracts": "4.0.0",
     "core-js": "3.9.1",
     "dotenv": "8.2.0",
     "hardhat-tracer": "1.0.0-alpha.3",

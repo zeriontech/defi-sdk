@@ -33,7 +33,7 @@ describe('SignatureVerifier', () => {
 
     [wallet] = provider.getWallets();
 
-    const weth9 = await ethers.getContractAt('WETH9', wethAddress);
+    const weth9 = await ethers.getContractAt('IWETH(', wethAddress);
 
     await weth9.connect(wallet).deposit({
       value: ethers.utils.parseEther('1'),
@@ -43,7 +43,7 @@ describe('SignatureVerifier', () => {
     mockCaller = await deployMockContract(owner, CallerArtifacts.abi);
     await mockCaller.mock.callBytes.returns();
 
-    weth = await ethers.getContractAt('ERC20', wethAddress, owner);
+    weth = await ethers.getContractAt('IERC20', wethAddress, owner);
   });
 
   beforeEach(async () => {

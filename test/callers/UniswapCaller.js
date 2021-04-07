@@ -33,7 +33,7 @@ describe('UniswapCaller', () => {
 
     [owner] = await ethers.getSigners();
 
-    const weth9 = await ethers.getContractAt('WETH9', wethAddress);
+    const weth9 = await ethers.getContractAt('IWETH(', wethAddress);
 
     await weth9.deposit({
       value: ethers.utils.parseEther('2'),
@@ -42,8 +42,8 @@ describe('UniswapCaller', () => {
 
     caller = await Caller.deploy();
 
-    weth = await ethers.getContractAt('ERC20', wethAddress, owner);
-    dai = await ethers.getContractAt('ERC20', daiAddress, owner);
+    weth = await ethers.getContractAt('IERC20', wethAddress, owner);
+    dai = await ethers.getContractAt('IERC20', daiAddress, owner);
   });
 
   beforeEach(async () => {

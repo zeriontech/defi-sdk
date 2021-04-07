@@ -17,7 +17,9 @@
 
 pragma solidity 0.8.1;
 
-import { ECDSA } from "../shared/ECDSA.sol";
+import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
+import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
 import {
     AbsoluteTokenAmount,
     Fee,
@@ -27,15 +29,9 @@ import {
     TokenAmount
 } from "../shared/Structs.sol";
 
-contract SignatureVerifier {
+contract SignatureVerifier is EIP712 {
     mapping(bytes32 => mapping(address => bool)) internal isHashUsed_;
 
-    bytes32 internal immutable nameHash_;
-
-    bytes32 internal constant DOMAIN_SEPARATOR_TYPEHASH =
-        keccak256(
-            abi.encodePacked("EIP712Domain(string name,uint256 chainId,address verifyingContract)")
-        );
     bytes32 internal constant EXECUTE_TYPEHASH =
         keccak256(
             abi.encodePacked(
@@ -90,9 +86,8 @@ contract SignatureVerifier {
     bytes32 internal constant TOKEN_AMOUNT_TYPEHASH =
         keccak256(abi.encodePacked("TokenAmount(address token,uint256 amount,uint8 amountType)"));
 
-    constructor(string memory name) {
-        nameHash_ = keccak256(abi.encodePacked(name));
-    }
+    // solhint-disable-next-line no-empty-blocks
+    constructor(string memory name, string memory version) EIP712(name, version) {}
 
     /**
      * @param hashToCheck Hash to be checked.
@@ -118,20 +113,7 @@ contract SignatureVerifier {
         address account,
         uint256 salt
     ) public view returns (bytes32) {
-        bytes32 domainSeparator =
-            keccak256(
-                abi.encode(DOMAIN_SEPARATOR_TYPEHASH, nameHash_, block.chainid, address(this))
-            );
-
-        return
-            keccak256(
-                abi.encodePacked(
-                    bytes1(0x19),
-                    bytes1(0x01),
-                    domainSeparator,
-                    hash(input, requiredOutput, swapDescription, account, salt)
-                )
-            );
+        return _hashTypedDataV4(hash(input, requiredOutput, swapDescription, account, salt));
     }
 
     /**

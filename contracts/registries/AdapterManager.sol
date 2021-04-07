@@ -17,6 +17,7 @@
 
 pragma solidity 0.8.1;
 
+import { IAdapterManager } from "../interfaces/IAdapterManager.sol";
 import { Ownable } from "../shared/Ownable.sol";
 
 /**
@@ -24,24 +25,19 @@ import { Ownable } from "../shared/Ownable.sol";
  * @dev Base contract for ProtocolAdapterRegistry and TokenAdaptersRegistry.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-abstract contract AdapterManager is Ownable {
+abstract contract AdapterManager is IAdapterManager, Ownable {
     // Adapter's name => adapter's address
     mapping(bytes32 => address) private _adapterAddress;
 
-    event AdapterSet(
-        bytes32 indexed adapterName,
-        address indexed oldAdapterAddress,
-        address indexed newAdapterAddress
-    );
-
     /**
      * @notice Sets adapters (adds, updates or removes).
-     *     The function is callable only by the owner.
      * @param adapterNames Array of the new adapters' names.
      * @param newAdapterAddresses Array of the new adapters' addresses.
+     * @dev Can be called only by this contract's owner.
      */
     function setAdapters(bytes32[] calldata adapterNames, address[] calldata newAdapterAddresses)
         external
+        override
         onlyOwner
     {
         uint256 length = adapterNames.length;
@@ -57,12 +53,12 @@ abstract contract AdapterManager is Ownable {
      * @param adapterName Name of the adapter.
      * @return Address of adapter.
      */
-    function getAdapterAddress(bytes32 adapterName) public view returns (address) {
+    function getAdapterAddress(bytes32 adapterName) public view override returns (address) {
         return _adapterAddress[adapterName];
     }
 
     /**
-     * @dev Adds an adapter.
+     * @dev Sets an adapter.
      * @param adapterName Adapter's name.
      * @param newAdapterAddress New adapter's address.
      */

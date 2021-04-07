@@ -17,19 +17,19 @@
 
 pragma solidity 0.8.1;
 
+import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
 import { BaseCaller } from "./BaseCaller.sol";
+import { ICaller } from "../interfaces/ICaller.sol";
+import { IUniswapV2Pair } from "../interfaces/IUniswapV2Pair.sol";
+import { IWETH9 } from "../interfaces/IWETH9.sol";
+import { AbsoluteInput, SwapType } from "../shared/Structs.sol";
 import { Base } from "../shared/Base.sol";
-import { ReentrancyGuard } from "../shared/ReentrancyGuard.sol";
-import { AbsoluteTokenAmount, AbsoluteInput, SwapType } from "../shared/Structs.sol";
-import { Caller } from "../interfaces/Caller.sol";
-import { UniswapV2Pair } from "../interfaces/UniswapV2Pair.sol";
-import { ERC20 } from "../interfaces/ERC20.sol";
-import { WETH9 } from "../interfaces/WETH9.sol";
 
 /**
- * @title Uniswap caller that executs swaps on UniswapV2-like pools.
+ * @title Uniswap caller that executes swaps on UniswapV2-like pools.
  */
-contract UniswapCaller is ReentrancyGuard, BaseCaller {
+contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     /**
@@ -39,11 +39,11 @@ contract UniswapCaller is ReentrancyGuard, BaseCaller {
      *     - pairs Array of uniswap-like pairs;
      *     - directions Array of exchange directions (`true` means token0 -> token1);
      *     - swapType Whether input of output amount is fixed;
-     *     - amount Amount of the token which is fixed (see swapType);
-     *     - account The address that will receive tokens after the last swap.
+     *     - amount Amount of the token which is fixed (see swapType).
      * @dev Implementation of Caller interface function.
      */
     function callBytes(bytes calldata callData) external payable override nonReentrant {
+        require(callData.length % 32 == 0, "UC: bad callData[1]");
         (address[] memory pairs, bool[] memory directions, SwapType swapType, uint256 amount) =
             abi.decode(callData, (address[], bool[], SwapType, uint256));
         address payable account = getAccount();
@@ -62,7 +62,7 @@ contract UniswapCaller is ReentrancyGuard, BaseCaller {
             uint256 next = i + 1;
             (uint256 amount0Out, uint256 amount1Out) =
                 directions[i] ? (uint256(0), amounts[next]) : (amounts[next], uint256(0));
-            UniswapV2Pair(pairs[i]).swap(
+            IUniswapV2Pair(pairs[i]).swap(
                 amount0Out,
                 amount1Out,
                 next < length ? pairs[next] : account,
@@ -87,6 +87,7 @@ contract UniswapCaller is ReentrancyGuard, BaseCaller {
         override
         returns (uint256 exactAbsoluteInputAmount)
     {
+        require(callData.length % 32 == 0, "UC: bad callData[2]");
         (address[] memory pairs, bool[] memory directions, , uint256 amount, ) =
             abi.decode(callData, (address[], bool[], SwapType, uint256, address));
 
@@ -98,8 +99,8 @@ contract UniswapCaller is ReentrancyGuard, BaseCaller {
      * @param pair Address of the pair to transfer tokens to.
      */
     function depositWeth(address pair) internal {
-        WETH9(WETH).deposit{ value: msg.value }();
-        ERC20(WETH).transfer(pair, msg.value);
+        IWETH9(WETH).deposit{ value: msg.value }();
+        Base.transfer(WETH, pair, msg.value);
     }
 
     /**
@@ -168,7 +169,7 @@ contract UniswapCaller is ReentrancyGuard, BaseCaller {
         address pair,
         bool direction
     ) internal view returns (uint256 amountIn) {
-        (uint256 reserve0, uint256 reserve1, ) = UniswapV2Pair(pair).getReserves();
+        (uint256 reserve0, uint256 reserve1, ) = IUniswapV2Pair(pair).getReserves();
         (uint256 reserveIn, uint256 reserveOut) =
             direction ? (reserve0, reserve1) : (reserve1, reserve0);
 
@@ -194,7 +195,7 @@ contract UniswapCaller is ReentrancyGuard, BaseCaller {
         address pair,
         bool direction
     ) internal view returns (uint256 amountOut) {
-        (uint256 reserve0, uint256 reserve1, ) = UniswapV2Pair(pair).getReserves();
+        (uint256 reserve0, uint256 reserve1, ) = IUniswapV2Pair(pair).getReserves();
         (uint256 reserveIn, uint256 reserveOut) =
             direction ? (reserve0, reserve1) : (reserve1, reserve0);
 

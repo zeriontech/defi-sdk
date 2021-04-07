@@ -18,32 +18,12 @@
 pragma solidity 0.8.1;
 
 /**
- * @dev UniswapV2Pair contract interface.
- * The UniswapV2Pair contract is available here
- * github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2Pair.sol.
+ * @title Protocol adapter interface.
+ * @author Igor Sobolev <sobolev@zerion.io>
  */
-interface UniswapV2Pair {
-    function mint(address) external returns (uint256);
-
-    function burn(address) external returns (uint256, uint256);
-
-    function swap(
-        uint256,
-        uint256,
-        address,
-        bytes calldata
-    ) external;
-
-    function getReserves()
-        external
-        view
-        returns (
-            uint112,
-            uint112,
-            uint32
-        );
-
-    function token0() external view returns (address);
-
-    function token1() external view returns (address);
+interface IProtocolAdapter {
+    /**
+     * @return amount of the given token locked on the protocol by the given account.
+     */
+    function getBalance(address token, address account) external returns (int256);
 }

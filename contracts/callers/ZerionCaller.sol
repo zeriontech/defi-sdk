@@ -17,19 +17,19 @@
 
 pragma solidity 0.8.1;
 
+import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
 import { BaseCaller } from "./BaseCaller.sol";
-import { InteractiveAdapter } from "../interactiveAdapters/InteractiveAdapter.sol";
-import { ProtocolAdapterRegistry } from "../registries/ProtocolAdapterRegistry.sol";
+import { IAdapterManager } from "../interfaces/IAdapterManager.sol";
+import { ICaller } from "../interfaces/ICaller.sol";
+import { IInteractiveAdapter } from "../interfaces/IInteractiveAdapter.sol";
 import { Base } from "../shared/Base.sol";
-import { ReentrancyGuard } from "../shared/ReentrancyGuard.sol";
-import { SafeERC20 } from "../shared/SafeERC20.sol";
 import { Action, ActionType, TokenAmount } from "../shared/Structs.sol";
-import { ERC20 } from "../interfaces/ERC20.sol";
 
 /**
  * @title Zerion caller that executs actions.
  */
-contract ZerionCaller is ReentrancyGuard, BaseCaller {
+contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     address internal immutable protocolAdapterRegistry_;
@@ -51,8 +51,7 @@ contract ZerionCaller is ReentrancyGuard, BaseCaller {
      * @notice Main external function:
      *     executes actions and returns tokens to the account.
      * @param callData ABI-encoded parameters:
-     *     - actions Array with actions to be executed;
-     *     - account The address that will receive all the resulting tokens.
+     *     - actions Array with actions to be executed.
      */
     function callBytes(bytes calldata callData) external payable override nonReentrant {
         Action[] memory actions = abi.decode(callData, (Action[]));
@@ -109,7 +108,7 @@ contract ZerionCaller is ReentrancyGuard, BaseCaller {
      */
     function executeAction(Action memory action) internal returns (address[] memory) {
         address adapter =
-            ProtocolAdapterRegistry(protocolAdapterRegistry_).getAdapterAddress(
+            IAdapterManager(protocolAdapterRegistry_).getAdapterAddress(
                 action.protocolAdapterName
             );
         require(adapter != address(0), "ZC: bad name");
@@ -120,8 +119,8 @@ contract ZerionCaller is ReentrancyGuard, BaseCaller {
 
         bytes4 selector =
             (action.actionType == ActionType.Deposit)
-                ? InteractiveAdapter.deposit.selector
-                : InteractiveAdapter.withdraw.selector;
+                ? IInteractiveAdapter.deposit.selector
+                : IInteractiveAdapter.withdraw.selector;
 
         return
             abi.decode(

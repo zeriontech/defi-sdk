@@ -17,17 +17,17 @@
 
 pragma solidity 0.8.1;
 
+import { AdapterManager } from "./AdapterManager.sol";
+import { IProtocolAdapter } from "../interfaces/IProtocolAdapter.sol";
+import { IProtocolAdapterRegistry } from "../interfaces/IProtocolAdapterRegistry.sol";
 import { Ownable } from "../shared/Ownable.sol";
 import { AdapterBalance, TokenBalance, AdapterTokens } from "../shared/Structs.sol";
-import { ERC20 } from "../interfaces/ERC20.sol";
-import { AdapterManager } from "./AdapterManager.sol";
-import { ProtocolAdapter } from "../protocolAdapters/ProtocolAdapter.sol";
 
 /**
  * @title Registry for protocol adapters.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract ProtocolAdapterRegistry is Ownable, AdapterManager {
+contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterManager {
     /**
      * @param adaptersTokens Array of the protocol adapters' names and tokens.
      * @param account Address of the account.
@@ -35,6 +35,7 @@ contract ProtocolAdapterRegistry is Ownable, AdapterManager {
      */
     function getAdapterBalances(AdapterTokens[] calldata adaptersTokens, address account)
         external
+        override
         returns (AdapterBalance[] memory)
     {
         uint256 length = adaptersTokens.length;
@@ -50,10 +51,11 @@ contract ProtocolAdapterRegistry is Ownable, AdapterManager {
     /**
      * @param adaptersTokens Array of the protocol adapters' names and tokens.
      * @param account Address of the account.
-     * @return AdapterBalance array by the given parameters.
+     * @return AdapterBalance array by the given parameters with non-zero token balances.
      */
     function getNonZeroAdapterBalances(AdapterTokens[] calldata adaptersTokens, address account)
         external
+        override
         returns (AdapterBalance[] memory)
     {
         uint256 length = adaptersTokens.length;
@@ -77,6 +79,7 @@ contract ProtocolAdapterRegistry is Ownable, AdapterManager {
      */
     function getAdapterBalance(AdapterTokens calldata adapterTokens, address account)
         public
+        override
         returns (AdapterBalance memory)
     {
         address adapter = getAdapterAddress(adapterTokens.name);
@@ -91,10 +94,11 @@ contract ProtocolAdapterRegistry is Ownable, AdapterManager {
     /**
      * @param adapterTokens Protocol adapter's name and tokens.
      * @param account Address of the account.
-     * @return AdapterBalance by the given parameters.
+     * @return AdapterBalance by the given parameters with non-zero token balances.
      */
     function getNonZeroAdapterBalance(AdapterTokens calldata adapterTokens, address account)
         public
+        override
         returns (AdapterBalance memory)
     {
         address adapter = getAdapterAddress(adapterTokens.name);
@@ -129,7 +133,7 @@ contract ProtocolAdapterRegistry is Ownable, AdapterManager {
 
         for (uint256 i = 0; i < length; i++) {
             address token = tokens[i];
-            try ProtocolAdapter(adapter).getBalance(token, account) returns (int256 amount) {
+            try IProtocolAdapter(adapter).getBalance(token, account) returns (int256 amount) {
                 tokenBalances[i] = TokenBalance({ token: token, amount: amount });
             } catch {
                 tokenBalances[i] = TokenBalance({ token: token, amount: 0 });

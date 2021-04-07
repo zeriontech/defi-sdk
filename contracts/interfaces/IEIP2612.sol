@@ -17,23 +17,16 @@
 
 pragma solidity 0.8.1;
 
-abstract contract ReentrancyGuard {
-    uint256 internal constant UNLOCKED = 1;
-    uint256 internal constant LOCKED = 2;
+interface IEIP2612 {
+    function permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
 
-    uint256 internal guard_;
-
-    modifier nonReentrant() {
-        require(guard_ == UNLOCKED, "RG: locked");
-
-        guard_ = LOCKED;
-
-        _;
-
-        guard_ = UNLOCKED;
-    }
-
-    constructor() {
-        guard_ = UNLOCKED;
-    }
+    function nonces(address holder) external view returns (uint256);
 }

@@ -17,10 +17,10 @@
 
 pragma solidity 0.8.1;
 
+import { IInteractiveAdapter } from "../interfaces/IInteractiveAdapter.sol";
 import { ProtocolAdapter } from "../protocolAdapters/ProtocolAdapter.sol";
 import { TokenAmount, AmountType } from "../shared/Structs.sol";
 import { Base } from "../shared/Base.sol";
-import { ERC20 } from "../interfaces/ERC20.sol";
 
 /**
  * @title Base contract for interactive protocol adapters.
@@ -28,7 +28,7 @@ import { ERC20 } from "../interfaces/ERC20.sol";
  *     as well as all the functions from ProtocolAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-abstract contract InteractiveAdapter is ProtocolAdapter {
+abstract contract InteractiveAdapter is IInteractiveAdapter, ProtocolAdapter {
     uint256 internal constant DELIMITER = 1e18;
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
@@ -40,6 +40,7 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         external
         payable
         virtual
+        override
         returns (address[] memory);
 
     /**
@@ -50,6 +51,7 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         external
         payable
         virtual
+        override
         returns (address[] memory);
 
     /**
