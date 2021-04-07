@@ -77,10 +77,10 @@ library Base {
         require(callee != address(0), "B: zero callee");
 
         bool success;
+        // solhint-disable-next-line avoid-low-level-calls
         (success, returnData) = callee.call{ value: etherValue }(
             abi.encodePacked(selector, callData)
         );
-        // solhint-disable-previous-line avoid-low-level-calls
 
         processReturnData(success, returnData, selector, "externalcall");
 
@@ -134,6 +134,23 @@ library Base {
     }
 
     /**
+     * @notice Calculates the token balance for the given account.
+     * @param token Adress of the token.
+     * @param account Adress of the account.
+     */
+    function getBalance(address token, address account) internal view returns (uint256) {
+        if (token == address(0)) {
+            return 0;
+        }
+
+        if (token == ETH) {
+            return account.balance;
+        }
+
+        return IERC20(token).balanceOf(account);
+    }
+
+    /**
      * @dev Processes call result:
      *     - if success does nothing;
      *     - if failed with revert reason - bubbles it up;
@@ -174,22 +191,5 @@ library Base {
                 )
             )
         );
-    }
-
-    /**
-     * @notice Calculates the token balance for the given account.
-     * @param token Adress of the token.
-     * @param account Adress of the account.
-     */
-    function getBalance(address token, address account) internal view returns (uint256) {
-        if (token == address(0)) {
-            return 0;
-        }
-
-        if (token == ETH) {
-            return account.balance;
-        }
-
-        return IERC20(token).balanceOf(account);
     }
 }

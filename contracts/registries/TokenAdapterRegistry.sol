@@ -169,36 +169,6 @@ contract TokenAdapterRegistry is
 
     /**
      * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
-     * @param underlyingTokenBalances TokenBalance structs array consisting of
-     *     token address and absolute amount for each underlying token.
-     * @return FullTokenBalance struct given token and underlying tokens balances.
-     */
-    function getFullTokenBalance(
-        TokenBalance memory tokenBalance,
-        TokenBalance[] memory underlyingTokenBalances
-    ) internal view returns (FullTokenBalance memory) {
-        uint256 length = underlyingTokenBalances.length;
-        TokenBalanceMeta[] memory underlyingTokenBalancesMeta = new TokenBalanceMeta[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            underlyingTokenBalancesMeta[i] = TokenBalanceMeta({
-                tokenBalance: underlyingTokenBalances[i],
-                erc20metadata: getERC20Metadata(underlyingTokenBalances[i])
-            });
-        }
-
-        return
-            FullTokenBalance({
-                base: TokenBalanceMeta({
-                    tokenBalance: tokenBalance,
-                    erc20metadata: getERC20Metadata(tokenBalance)
-                }),
-                underlying: underlyingTokenBalancesMeta
-            });
-    }
-
-    /**
-     * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
      * @return Array of TokenBalance structs with 'closest' underlying token balances.
      */
     function getUnderlyingTokenBalances(TokenBalance memory tokenBalance)
@@ -285,6 +255,36 @@ contract TokenAdapterRegistry is
         }
 
         return finalUnderlyingTokenBalancesNumber;
+    }
+
+    /**
+     * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
+     * @param underlyingTokenBalances TokenBalance structs array consisting of
+     *     token address and absolute amount for each underlying token.
+     * @return FullTokenBalance struct given token and underlying tokens balances.
+     */
+    function getFullTokenBalance(
+        TokenBalance memory tokenBalance,
+        TokenBalance[] memory underlyingTokenBalances
+    ) internal view returns (FullTokenBalance memory) {
+        uint256 length = underlyingTokenBalances.length;
+        TokenBalanceMeta[] memory underlyingTokenBalancesMeta = new TokenBalanceMeta[](length);
+
+        for (uint256 i = 0; i < length; i++) {
+            underlyingTokenBalancesMeta[i] = TokenBalanceMeta({
+                tokenBalance: underlyingTokenBalances[i],
+                erc20metadata: getERC20Metadata(underlyingTokenBalances[i])
+            });
+        }
+
+        return
+            FullTokenBalance({
+                base: TokenBalanceMeta({
+                    tokenBalance: tokenBalance,
+                    erc20metadata: getERC20Metadata(tokenBalance)
+                }),
+                underlying: underlyingTokenBalancesMeta
+            });
     }
 
     /**
