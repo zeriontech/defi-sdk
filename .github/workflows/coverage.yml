@@ -1,6 +1,5 @@
 name: coverage
-on:
-  push
+on: push
 
 jobs:
   coverage:
@@ -12,7 +11,7 @@ jobs:
       - name: setup-node
         uses: actions/setup-node@v1
         with:
-          node-version: '10.x'
+          node-version: "10.x"
       - name: webfactory/ssh-agent
         uses: webfactory/ssh-agent@v0.4.1
         with:
