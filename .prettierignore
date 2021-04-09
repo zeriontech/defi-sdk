@@ -1,0 +1,12 @@
+./node_modules/
+./.idea/
+./.vscode/
+./.github/
+./build/
+coverage
+artifacts
+cache
+*.json
+*.js
+*.log
+*.env
