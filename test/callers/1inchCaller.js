@@ -10,7 +10,7 @@ const EMPTY_BYTES = '0x';
 const EXECUTE_SIGNATURE =
   'execute(((address,uint256,uint8),(uint8,bytes)),(address,uint256),(uint8,(uint256,address),address,address,bytes))';
 
-describe('ZerionCaller', () => {
+describe.skip('1InchCaller', () => {
   let owner;
   let Router;
   let router;
@@ -22,7 +22,7 @@ describe('ZerionCaller', () => {
 
     [owner] = await ethers.getSigners();
 
-    const weth9 = await ethers.getContractAt('IWETH', wethAddress);
+    const weth9 = await ethers.getContractAt('IWETH9', wethAddress);
     await weth9.deposit({
       value: ethers.utils.parseEther('1'),
       gasLimit: 1000000,
@@ -39,7 +39,7 @@ describe('ZerionCaller', () => {
     router = await Router.deploy();
   });
 
-  it.only('should execute with 1inch caller', async () => {
+  it('should execute with 1inch caller', async () => {
     logger.info(
       `ilv balance is ${ethers.utils.formatUnits(await ilv.balanceOf(owner.address), 18)}`,
     );

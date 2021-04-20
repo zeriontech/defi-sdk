@@ -37,7 +37,7 @@ describe('ZerionCaller', () => {
 
     [owner] = await ethers.getSigners();
 
-    const weth9 = await ethers.getContractAt('IWETH', wethAddress);
+    const weth9 = await ethers.getContractAt('IWETH9', wethAddress);
     await weth9.deposit({
       value: ethers.utils.parseEther('1'),
       gasLimit: 1000000,

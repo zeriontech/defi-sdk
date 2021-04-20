@@ -33,7 +33,7 @@ describe('SignatureVerifier', () => {
 
     [wallet] = provider.getWallets();
 
-    const weth9 = await ethers.getContractAt('IWETH', wethAddress);
+    const weth9 = await ethers.getContractAt('IWETH9', wethAddress);
 
     await weth9.connect(wallet).deposit({
       value: ethers.utils.parseEther('1'),
@@ -92,7 +92,8 @@ describe('SignatureVerifier', () => {
         ],
       },
       domain: {
-        name: 'Zerion Router V2',
+        name: 'Zerion Router',
+        version: '2',
         chainId: 31337,
         verifyingContract: router.address,
       },
@@ -246,7 +247,8 @@ describe('SignatureVerifier', () => {
         ],
       },
       domain: {
-        name: 'Zerion Router V2',
+        name: 'Zerion Router',
+        version: '2',
         chainId: 31337,
         verifyingContract: router.address,
       },

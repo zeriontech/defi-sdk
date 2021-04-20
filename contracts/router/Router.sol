@@ -112,7 +112,6 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         external
         payable
         override
-        nonReentrant
         useCHI
         returns (uint256 inputBalanceChange, uint256 outputBalanceChange)
     {
@@ -142,7 +141,6 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         external
         payable
         override
-        nonReentrant
         useCHI
         returns (uint256 inputBalanceChange, uint256 outputBalanceChange)
     {

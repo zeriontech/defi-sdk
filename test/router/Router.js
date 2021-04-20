@@ -39,7 +39,7 @@ describe('Router', () => {
 
     [owner, notOwner, feeRecipient] = await ethers.getSigners();
 
-    const weth9 = await ethers.getContractAt('I', wethAddress);
+    const weth9 = await ethers.getContractAt('IWETH9', wethAddress);
 
     await weth9.deposit({
       value: ethers.utils.parseUnits('1', 18),
@@ -165,7 +165,7 @@ describe('Router', () => {
           value: '100',
         },
       ),
-    ).to.be.revertedWith('R: zero caller');
+    ).to.be.revertedWith('Address: call to non-contract');
   });
 
   it('should not execute with bad output requirement', async () => {
@@ -457,7 +457,7 @@ describe('Router', () => {
     );
     expect(await weth.balanceOf(owner.address)).to.be.equal('0');
 
-    const weth9 = await ethers.getContractAt('IWETH', wethAddress);
+    const weth9 = await ethers.getContractAt('IWETH9', wethAddress);
     await weth9.deposit({
       value: ethers.utils.parseUnits('1', 18),
     });
@@ -500,7 +500,7 @@ describe('Router', () => {
 
   it('should not transfer DAI with permit with bad signature', async () => {
     const [wallet] = provider.getWallets();
-    const daiPermit = await ethers.getContractAt('IDAI', daiAddress, wallet);
+    const daiPermit = await ethers.getContractAt('IDAIPermit', daiAddress, wallet);
 
     await buyTokenOnUniswap(wallet, daiAddress);
 
@@ -565,7 +565,7 @@ describe('Router', () => {
 
   it('should transfer DAI with permit', async () => {
     const [wallet] = provider.getWallets();
-    const daiPermit = await ethers.getContractAt('IDAI', daiAddress, wallet);
+    const daiPermit = await ethers.getContractAt('IDAIPermit', daiAddress, wallet);
 
     await buyTokenOnUniswap(wallet, daiAddress);
 
