@@ -63,11 +63,8 @@ abstract contract AdapterManager is IAdapterManager, Ownable {
      * @param newAdapterAddress New adapter's address.
      */
     function setAdapter(bytes32 adapterName, address newAdapterAddress) internal {
-        address oldAdapterAddress = _adapterAddress[adapterName];
-        require(oldAdapterAddress != newAdapterAddress, "AM: same");
+        emit AdapterSet(adapterName, _adapterAddress[adapterName], newAdapterAddress);
 
         _adapterAddress[adapterName] = newAdapterAddress;
-
-        emit AdapterSet(adapterName, oldAdapterAddress, newAdapterAddress);
     }
 }

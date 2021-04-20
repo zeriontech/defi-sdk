@@ -19,7 +19,7 @@ describe('TokenAdapterNamesManager', () => {
   });
 
   it('should be correct router owner', async () => {
-    expect(await adapterRegistry.owner()).to.be.equal(owner.address);
+    expect(await adapterRegistry.getOwner()).to.be.equal(owner.address);
   });
 
   it('should not set adapters names by hashes with 0 length', async () => {
@@ -113,19 +113,5 @@ describe('TokenAdapterNamesManager', () => {
 
     let name = await adapterRegistry.getTokenAdapterName(uniDaiEthAddress);
     expect(name).to.be.equal(ethers.utils.formatBytes32String('UniswapV2'));
-  });
-
-  it('should not set adapters names twice', async () => {
-    await adapterRegistry.setTokenAdapterNames(
-      ['0xf4cf7fdef2319300c5fbaf8213a507362bc4dd64c9d4c40a27d04e19ed1a4f82'],
-      [ethers.utils.formatBytes32String('UniswapV2')],
-    );
-
-    await expect(
-      adapterRegistry.setTokenAdapterNames(
-        ['0xf4cf7fdef2319300c5fbaf8213a507362bc4dd64c9d4c40a27d04e19ed1a4f82'],
-        [ethers.utils.formatBytes32String('UniswapV2')],
-      ),
-    ).to.be.revertedWith('TANM: same');
   });
 });

@@ -235,6 +235,12 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         SwapDescription calldata swapDescription,
         address account
     ) internal returns (uint256 inputBalanceChange, uint256 outputBalanceChange) {
+        // Validate fee correctness
+        if (swapDescription.fee.share > 0) {
+            require(swapDescription.fee.beneficiary != address(0), "R: zero beneficiary");
+        }
+        require(swapDescription.fee.share <= FEE_LIMIT, "R: bad fee");
+
         // Calculate absolute amount in case it was relative.
         uint256 absoluteInputAmount = getAbsoluteAmount(input.tokenAmount, account);
 
@@ -345,13 +351,12 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         uint256 exactInputAmount,
         SwapDescription calldata swapDescription
     ) internal {
-        require(msg.value >= absoluteInputAmount, "BR: bad msg.value");
+        require(msg.value >= absoluteInputAmount, "R: bad msg.value");
 
         uint256 feeAmount = getFeeAmount(absoluteInputAmount, exactInputAmount, swapDescription);
 
         if (feeAmount > 0) {
-            require(swapDescription.fee.beneficiary != address(0), "BR: beneficiary");
-            Base.transferEther(swapDescription.fee.beneficiary, feeAmount, "BR: fee");
+            Base.transferEther(swapDescription.fee.beneficiary, feeAmount, "R: fee");
         }
     }
 
@@ -380,7 +385,7 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         address account
     ) internal {
         if (token == address(0)) {
-            require(absoluteInputAmount == 0, "BR: zero token");
+            require(absoluteInputAmount == 0, "R: zero token");
             return;
         }
 
@@ -395,7 +400,6 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         uint256 feeAmount = getFeeAmount(absoluteInputAmount, exactInputAmount, swapDescription);
 
         if (feeAmount > 0) {
-            require(swapDescription.fee.beneficiary != address(0), "BR: beneficiary");
             SafeERC20.safeTransferFrom(
                 IERC20(token),
                 account,
@@ -466,15 +470,15 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         AmountType amountType = tokenAmount.amountType;
         require(
             amountType == AmountType.Relative || amountType == AmountType.Absolute,
-            "BR: bad amount type"
+            "R: bad amount type"
         );
 
         if (amountType == AmountType.Absolute) {
             return tokenAmount.amount;
         }
 
-        require(tokenAmount.token != address(0) && tokenAmount.token != ETH, "BR: bad token");
-        require(tokenAmount.amount <= DELIMITER, "BR: bad amount");
+        require(tokenAmount.token != address(0) && tokenAmount.token != ETH, "R: bad token");
+        require(tokenAmount.amount <= DELIMITER, "R: bad amount");
         if (tokenAmount.amount == DELIMITER) {
             return IERC20(tokenAmount.token).balanceOf(account);
         } else {
@@ -506,9 +510,6 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
 
         if (swapType == SwapType.FixedInputs) {
             if (swapDescription.fee.share > 0) {
-                require(swapDescription.fee.beneficiary != address(0), "R: zero beneficiary");
-                require(swapDescription.fee.share <= FEE_LIMIT, "R: bad fee");
-
                 return (absoluteInputAmount * (DELIMITER - swapDescription.fee.share)) / DELIMITER;
             }
 
@@ -520,7 +521,7 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
                 swapDescription.caller,
                 abi.encodePacked(ICaller.getExactInputAmount.selector, swapDescription.callData)
             );
-        require(returnData.length == 32, "BR: bad exactInputAmount");
+        require(returnData.length >= 32, "R: bad exactInputAmount");
         return abi.decode(returnData, (uint256));
     }
 
@@ -551,7 +552,7 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
             permitType == PermitType.EIP2612 ||
                 permitType == PermitType.DAI ||
                 permitType == PermitType.Yearn,
-            "BR: bad permit type"
+            "R: bad permit type"
         );
 
         // Constants of non-value type not yet implemented,

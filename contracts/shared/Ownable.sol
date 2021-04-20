@@ -18,18 +18,19 @@
 pragma solidity 0.8.1;
 
 abstract contract Ownable {
-    address private owner_;
     address private pendingOwner_;
+    address private owner_;
 
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
-
-    modifier onlyOwner {
-        require(msg.sender == owner_, "O: only owner");
-        _;
-    }
+    event PendingOwnerSet(address indexed previousPendingOwner, address indexed newPendingOwner);
+    event OwnerSet(address indexed previousOwner, address indexed newOwner);
 
     modifier onlyPendingOwner {
         require(msg.sender == pendingOwner_, "O: only pending owner");
+        _;
+    }
+
+    modifier onlyOwner {
+        require(msg.sender == owner_, "O: only owner");
         _;
     }
 
@@ -37,27 +38,28 @@ abstract contract Ownable {
      * @notice Initializes owner variable with msg.sender address.
      */
     constructor() {
+        emit OwnerSet(address(0), msg.sender);
+
         owner_ = msg.sender;
-        emit OwnershipTransferred(address(0), msg.sender);
     }
 
     /**
-     * @notice Sets pending owner to the desired address.
+     * @notice Sets pending owner to the `newOwner` address.
      * The function is callable only by the owner.
      */
-    function proposeOwnership(address newOwner) external onlyOwner {
-        require(newOwner != address(0), "O: empty newOwner");
-        require(newOwner != owner_, "O: equal to owner_");
-        require(newOwner != pendingOwner_, "O: equal to pendingOwner_");
+    function setPendingOwner(address newOwner) external onlyOwner {
+        emit PendingOwnerSet(pendingOwner_, newOwner);
+
         pendingOwner_ = newOwner;
     }
 
     /**
-     * @notice Transfers ownership to the pending owner.
+     * @notice Sets owner to the pending owner.
      * The function is callable only by the pending owner.
      */
-    function acceptOwnership() external onlyPendingOwner {
-        emit OwnershipTransferred(owner_, msg.sender);
+    function setOwner() external onlyPendingOwner {
+        emit OwnerSet(owner_, msg.sender);
+
         owner_ = msg.sender;
         delete pendingOwner_;
     }
@@ -65,14 +67,14 @@ abstract contract Ownable {
     /**
      * @return Owner of the contract.
      */
-    function owner() external view returns (address) {
+    function getOwner() external view returns (address) {
         return owner_;
     }
 
     /**
      * @return Pending owner of the contract.
      */
-    function pendingOwner() external view returns (address) {
+    function getPendingOwner() external view returns (address) {
         return pendingOwner_;
     }
 }

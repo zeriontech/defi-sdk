@@ -121,10 +121,7 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
      * @param newTokenAdapterName New token adapter's name.
      */
     function setTokenAdapterName(bytes32 hash, bytes32 newTokenAdapterName) internal {
-        bytes32 oldTokenAdapterName = _tokenAdapterName[hash];
-        require(oldTokenAdapterName != newTokenAdapterName, "TANM: same");
-
-        emit TokenAdapterNameSet(hash, oldTokenAdapterName, newTokenAdapterName);
+        emit TokenAdapterNameSet(hash, _tokenAdapterName[hash], newTokenAdapterName);
 
         _tokenAdapterName[hash] = newTokenAdapterName;
     }

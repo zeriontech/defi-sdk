@@ -24,7 +24,7 @@ describe('AdapterManager', () => {
   });
 
   it('should be correct router owner', async () => {
-    expect(await adapterRegistry.owner()).to.be.equal(owner.address);
+    expect(await adapterRegistry.getOwner()).to.be.equal(owner.address);
   });
 
   it('should not set adapters with 0 length', async () => {
@@ -52,20 +52,6 @@ describe('AdapterManager', () => {
       ethers.utils.formatBytes32String('Mock'),
     );
     expect(address).to.be.equal(mockProtocolAdapter.address);
-  });
-
-  it('should not set adapters twice', async () => {
-    await adapterRegistry.setAdapters(
-      [ethers.utils.formatBytes32String('Mock')],
-      [mockProtocolAdapter.address],
-    );
-
-    await expect(
-      adapterRegistry.setAdapters(
-        [ethers.utils.formatBytes32String('Mock')],
-        [mockProtocolAdapter.address],
-      ),
-    ).to.be.revertedWith('AM: same');
   });
 
   it('should perlace adapters', async () => {

@@ -64,7 +64,7 @@ describe('Router', () => {
   });
 
   it('should be correct router owner', async () => {
-    expect(await router.owner()).to.be.equal(owner.address);
+    expect(await router.getOwner()).to.be.equal(owner.address);
   });
 
   it('should return lost tokens', async () => {
@@ -305,7 +305,7 @@ describe('Router', () => {
         // swap description
         [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
       ),
-    ).to.be.revertedWith('BR: bad permit type');
+    ).to.be.revertedWith('R: bad permit type');
   });
 
   it('should not transfer tokens with bad amount', async () => {
@@ -322,7 +322,7 @@ describe('Router', () => {
         // swap description
         [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
       ),
-    ).to.be.revertedWith('BR: bad amount type');
+    ).to.be.revertedWith('R: bad amount type');
   });
 
   it('should not transfer AddressZero token (absolute amount > 0)', async () => {
@@ -338,7 +338,7 @@ describe('Router', () => {
         // swap description
         [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
       ),
-    ).to.be.revertedWith('BR: zero token');
+    ).to.be.revertedWith('R: zero token');
   });
 
   it('should not transfer AddressZero token (relative amount)', async () => {
@@ -354,7 +354,7 @@ describe('Router', () => {
         // swap description
         [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
       ),
-    ).to.be.revertedWith('BR: bad token');
+    ).to.be.revertedWith('R: bad token');
   });
 
   it('should transfer token fee correctly', async () => {
@@ -392,7 +392,7 @@ describe('Router', () => {
         // swap description
         [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
       ),
-    ).to.be.revertedWith('BR: bad msg.value');
+    ).to.be.revertedWith('R: bad msg.value');
   });
 
   it('should transfer ether fee correctly', async () => {
@@ -495,7 +495,7 @@ describe('Router', () => {
         // swap description
         [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
       ),
-    ).to.be.revertedWith('BR: bad amount');
+    ).to.be.revertedWith('R: bad amount');
   });
 
   it('should not transfer DAI with permit with bad signature', async () => {

@@ -340,7 +340,7 @@ contract TokenAdapterRegistry is
                 "TAR: decimals"
             );
 
-        if (returnData.length != 32) {
+        if (returnData.length < 32) {
             return 0;
         }
         return abi.decode(returnData, (uint8));
