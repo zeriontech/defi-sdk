@@ -1,8 +1,7 @@
-./node_modules/
-./.idea/
-./.vscode/
-./.github/
-./build/
+node_modules/
+.idea/
+.vscode/
+build/
 coverage
 artifacts
 cache
@@ -10,3 +9,4 @@ cache
 *.js
 *.log
 *.env
+*.md
