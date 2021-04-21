@@ -95,6 +95,7 @@ contract TokenAdapterRegistry is
     /**
      * @notice Fills in FullTokenBalance structs with underlying tokens.
      * @dev Amount is considered to be 10 ** decimals.
+     * Use this method carefully as decimals is an optional method in ERC20 standard.
      * @param tokens Array of token addresses.
      * @return fullTokenBalances Array of FullTokenBalance structs
      *     with 'closest' underlying tokens.
@@ -122,6 +123,7 @@ contract TokenAdapterRegistry is
     /**
      * @notice Fills in FullTokenBalance structs with final underlying tokens.
      * @dev Amount is considered to be 10 ** decimals.
+     * Use this method carefully as decimals is an optional method in ERC20 standard.
      * @param tokens Array of token addresses.
      * @return finalFullTokenBalances Array of FullTokenBalance structs
      *     with 'deepest' underlying tokens.
@@ -148,32 +150,10 @@ contract TokenAdapterRegistry is
 
     /**
      * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
-     * @return FullTokenBalance struct with 'closest' underlying tokens.
-     */
-    function getFullTokenBalance(TokenBalance memory tokenBalance)
-        internal
-        returns (FullTokenBalance memory)
-    {
-        return getFullTokenBalance(tokenBalance, getUnderlyingTokenBalances(tokenBalance));
-    }
-
-    /**
-     * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
-     * @return FullTokenBalance struct with 'deepest' underlying tokens.
-     */
-    function getFinalFullTokenBalance(TokenBalance memory tokenBalance)
-        internal
-        returns (FullTokenBalance memory)
-    {
-        return getFullTokenBalance(tokenBalance, getFinalUnderlyingTokenBalances(tokenBalance));
-    }
-
-    /**
-     * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
      * @return Array of TokenBalance structs with 'closest' underlying token balances.
      */
     function getUnderlyingTokenBalances(TokenBalance memory tokenBalance)
-        internal
+        public
         returns (TokenBalance[] memory)
     {
         address tokenAdapter = getTokenAdapter(tokenBalance.token);
@@ -197,7 +177,7 @@ contract TokenAdapterRegistry is
      *     with 'deepest' underlying token balances.
      */
     function getFinalUnderlyingTokenBalances(TokenBalance memory tokenBalance)
-        internal
+        public
         returns (TokenBalance[] memory finalUnderlyingTokenBalances)
     {
         uint256 counter = 0;
@@ -235,6 +215,70 @@ contract TokenAdapterRegistry is
 
     /**
      * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
+     * @param underlyingTokenBalances TokenBalance structs array consisting of
+     *     token address and absolute amount for each underlying token.
+     * @return FullTokenBalance struct given token and underlying tokens balances.
+     */
+    function getFullTokenBalance(
+        TokenBalance memory tokenBalance,
+        TokenBalance[] memory underlyingTokenBalances
+    ) public view returns (FullTokenBalance memory) {
+        uint256 length = underlyingTokenBalances.length;
+        TokenBalanceMeta[] memory underlyingTokenBalancesMeta = new TokenBalanceMeta[](length);
+
+        for (uint256 i = 0; i < length; i++) {
+            underlyingTokenBalancesMeta[i] = TokenBalanceMeta({
+                tokenBalance: underlyingTokenBalances[i],
+                erc20metadata: getERC20Metadata(underlyingTokenBalances[i])
+            });
+        }
+
+        return
+            FullTokenBalance({
+                base: TokenBalanceMeta({
+                    tokenBalance: tokenBalance,
+                    erc20metadata: getERC20Metadata(tokenBalance)
+                }),
+                underlying: underlyingTokenBalancesMeta
+            });
+    }
+
+    /**
+     * @dev Gets token adapter address for the given token address.
+     * @param token Address of the token.
+     * @return Token adapter address.
+     */
+    function getTokenAdapter(address token) public view returns (address) {
+        bytes32 tokenAdapterName = getTokenAdapterName(token);
+        address tokenAdapter = getAdapterAddress(tokenAdapterName);
+
+        return tokenAdapter;
+    }
+
+    /**
+     * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
+     * @return FullTokenBalance struct with 'closest' underlying tokens.
+     */
+    function getFullTokenBalance(TokenBalance memory tokenBalance)
+        internal
+        returns (FullTokenBalance memory)
+    {
+        return getFullTokenBalance(tokenBalance, getUnderlyingTokenBalances(tokenBalance));
+    }
+
+    /**
+     * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
+     * @return FullTokenBalance struct with 'deepest' underlying tokens.
+     */
+    function getFinalFullTokenBalance(TokenBalance memory tokenBalance)
+        internal
+        returns (FullTokenBalance memory)
+    {
+        return getFullTokenBalance(tokenBalance, getFinalUnderlyingTokenBalances(tokenBalance));
+    }
+
+    /**
+     * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
      * @param initial Whether the function call is initial or recursive.
      * @return finalUnderlyingTokenBalancesNumber Final underlying tokens number.
      */
@@ -260,36 +304,6 @@ contract TokenAdapterRegistry is
 
     /**
      * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
-     * @param underlyingTokenBalances TokenBalance structs array consisting of
-     *     token address and absolute amount for each underlying token.
-     * @return FullTokenBalance struct given token and underlying tokens balances.
-     */
-    function getFullTokenBalance(
-        TokenBalance memory tokenBalance,
-        TokenBalance[] memory underlyingTokenBalances
-    ) internal view returns (FullTokenBalance memory) {
-        uint256 length = underlyingTokenBalances.length;
-        TokenBalanceMeta[] memory underlyingTokenBalancesMeta = new TokenBalanceMeta[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            underlyingTokenBalancesMeta[i] = TokenBalanceMeta({
-                tokenBalance: underlyingTokenBalances[i],
-                erc20metadata: getERC20Metadata(underlyingTokenBalances[i])
-            });
-        }
-
-        return
-            FullTokenBalance({
-                base: TokenBalanceMeta({
-                    tokenBalance: tokenBalance,
-                    erc20metadata: getERC20Metadata(tokenBalance)
-                }),
-                underlying: underlyingTokenBalancesMeta
-            });
-    }
-
-    /**
-     * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
      * @return ERC20Metadata struct by TokenBalance struct.
      */
     function getERC20Metadata(TokenBalance memory tokenBalance)
@@ -310,18 +324,6 @@ contract TokenAdapterRegistry is
         } catch {
             return ERC20Metadata({ name: "Not available", symbol: "N/A", decimals: 0 });
         }
-    }
-
-    /**
-     * @dev Gets token adapter address for the given token address.
-     * @param token Address of the token.
-     * @return Token adapter address.
-     */
-    function getTokenAdapter(address token) internal view returns (address) {
-        bytes32 tokenAdapterName = getTokenAdapterName(token);
-        address tokenAdapter = getAdapterAddress(tokenAdapterName);
-
-        return tokenAdapter;
     }
 
     /**

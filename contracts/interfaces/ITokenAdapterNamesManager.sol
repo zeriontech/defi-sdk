@@ -23,6 +23,12 @@ pragma solidity 0.8.1;
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 interface ITokenAdapterNamesManager {
+    /**
+     * @notice Emits old and new token adapter names.
+     * @param hash Hash of token address or token code.
+     * @param oldTokenAdapterName Old token adapter's name.
+     * @param newTokenAdapterName New token adapter's name.
+     */
     event TokenAdapterNameSet(
         bytes32 indexed hash,
         bytes32 indexed oldTokenAdapterName,

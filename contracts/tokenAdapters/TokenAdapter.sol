@@ -25,40 +25,33 @@ import { ERC20Metadata, TokenBalance } from "../shared/Structs.sol";
 /**
  * @title Token adapter abstract contract.
  * @dev getUnderlyingTokenBalances() function MUST be implemented.
- * getName(), getSymbol(), getDecimals() functions
- *     or getMetadata() function may be overridden.
+ * getName(), getSymbol(), getDecimals() functions or getMetadata() function may be overridden.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 abstract contract TokenAdapter is ITokenAdapter {
     /**
-     * @dev MUST return array of TokenBalance structs with underlying tokens amounts
-     *     for the given TokenBalance struct consisting of token address and absolute amount.
-     * struct TokenBalance {
-     *     address token;    // Address of token contract.
-     *     int256 amount;    // Amount of underlying tokens for the given tokens.
-     * }
+     * @dev MUST return array of TokenBalance structs with underlying tokens balances
+     *     for the given TokenBalance struct consisting of token address and absolute balance.
+     * @param tokenBalance TokenBalance struct with token info to get underlying token balances for.
+     * @return underlyingTokenBalances Array of TokenBalance structs with underlying token balances.
      */
     function getUnderlyingTokenBalances(TokenBalance memory tokenBalance)
         external
         virtual
         override
-        returns (TokenBalance[] memory);
+        returns (TokenBalance[] memory underlyingTokenBalances);
 
     /**
-     * @return ERC20Metadata struct with IERC20-style token info.
      * @dev It is recommended to override getName(), getSymbol(), and getDecimals() functions.
-     * struct ERC20Metadata {
-     *     string name;
-     *     string symbol;
-     *     uint8 decimals;
-     * }
+     * @param tokenBalance TokenBalance struct with token info to get metadata for.
+     * @return metadata ERC20Metadata struct with IERC20-style token info.
      */
     function getMetadata(TokenBalance memory tokenBalance)
         external
         view
         virtual
         override
-        returns (ERC20Metadata memory)
+        returns (ERC20Metadata memory metadata)
     {
         return
             ERC20Metadata({
@@ -69,23 +62,23 @@ abstract contract TokenAdapter is ITokenAdapter {
     }
 
     /**
-     * @return String that will be treated like token name.
+     * @return name String that will be treated like token name.
      */
-    function getName(address token) internal view virtual returns (string memory) {
+    function getName(address token) internal view virtual returns (string memory name) {
         return ERC20(token).name();
     }
 
     /**
-     * @return String that will be treated like token symbol.
+     * @return symbol String that will be treated like token symbol.
      */
-    function getSymbol(address token) internal view virtual returns (string memory) {
+    function getSymbol(address token) internal view virtual returns (string memory symbol) {
         return ERC20(token).symbol();
     }
 
     /**
-     * @return Number (of uint8 type) that will be treated like token decimals.
+     * @return decimals Number (of uint8 type) that will be treated like token decimals.
      */
-    function getDecimals(address token) internal view virtual returns (uint8) {
+    function getDecimals(address token) internal view virtual returns (uint8 decimals) {
         return ERC20(token).decimals();
     }
 }

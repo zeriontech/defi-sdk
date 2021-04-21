@@ -20,6 +20,22 @@ pragma solidity 0.8.1;
 import { AbsoluteTokenAmount, Input, SwapDescription, SwapType } from "../shared/Structs.sol";
 
 interface IRouter {
+    /**
+     * @notice Emits swap info.
+     * @param inputToken Input token of the swap.
+     * @param absoluteInputAmount Max amount of input token to be spent.
+     * @param absoluteInputAmount Actual amount of input token spent.
+     * @param outputToken Output token of the swap.
+     * @param absoluteOutputAmount Max amount of output token to be spent.
+     * @param actualOutputAmount Actual amount of output token spent.
+     * @param swapType Swap type (fixed inputs or fixed outputs).
+     * @param share Fee share.
+     * @param beneficiary Fee beneficiary.
+     * @param destination Destination for the input token.
+     * @param core Address of the core contract.
+     * @param account Address that swapped tokens.
+     * @param sender Address that called the Router contract.
+     */
     event Executed(
         address indexed inputToken,
         uint256 absoluteInputAmount,

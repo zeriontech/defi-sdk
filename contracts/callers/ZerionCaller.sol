@@ -28,11 +28,18 @@ import { Base } from "../shared/Base.sol";
 import { Action, ActionType, TokenAmount } from "../shared/Structs.sol";
 
 /**
- * @title Zerion caller that executs actions.
+ * @title Zerion caller that executes actions.
  */
 contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
     address internal immutable protocolAdapterRegistry_;
 
+    /**
+     * @notice Emits action info.
+     * @param protocolAdapterName Name of protocol adapter.
+     * @param actionType Type of action: deposit or withdraw.
+     * @param tokenAmounts Array of TokenAmount structs for the tokens used in this action.
+     * @param data ABI-encoded additional parameters.
+     */
     event ExecutedAction(
         bytes32 indexed protocolAdapterName,
         ActionType indexed actionType,
@@ -40,6 +47,10 @@ contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
         bytes data
     );
 
+    /**
+     * @notice Sets ProtocolAdapterRegistry contract address, which is immutable.
+     * @param protocolAdapterRegistry Address of the ProtocolAdapterRegistry contract.
+     */
     constructor(address protocolAdapterRegistry) {
         require(protocolAdapterRegistry != address(0), "ZC: empty protocolAdapterRegistry");
 
@@ -78,17 +89,21 @@ contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
      * @param action Action struct.
      * @dev Can be called only by this contract.
      * This function is used to create cross-protocol adapters.
+     * @return tokensToBeWithdrawn Array of tokens to be returned to the account.
      */
-    function executeExternal(Action memory action) external returns (address[] memory) {
+    function executeExternal(Action memory action)
+        external
+        returns (address[] memory tokensToBeWithdrawn)
+    {
         require(msg.sender == address(this), "ZC: only address(this)");
 
         return executeAction(action);
     }
 
     /**
-     * @return Address of the ProtocolAdapterRegistry contract used.
+     * @return protocolAdapterRegistry Address of the ProtocolAdapterRegistry contract used.
      */
-    function getProtocolAdapterRegistry() external view returns (address) {
+    function getProtocolAdapterRegistry() external view returns (address protocolAdapterRegistry) {
         return protocolAdapterRegistry_;
     }
 
@@ -103,9 +118,12 @@ contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
     /**
      * @notice Executes one action and returns the list of tokens to be returned.
      * @param action Action struct with with action to be executed.
-     * @return List of tokens addresses to be returned by the action.
+     * @return tokensToBeWithdrawn Array of tokens to be returned to the account.
      */
-    function executeAction(Action memory action) internal returns (address[] memory) {
+    function executeAction(Action memory action)
+        internal
+        returns (address[] memory tokensToBeWithdrawn)
+    {
         address adapter =
             IAdapterManager(protocolAdapterRegistry_).getAdapterAddress(
                 action.protocolAdapterName

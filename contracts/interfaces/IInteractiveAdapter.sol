@@ -26,7 +26,9 @@ import { TokenAmount } from "../shared/Structs.sol";
 interface IInteractiveAdapter {
     /**
      * @dev Deposits assets to the protocol.
-     * @return Assets to be sent back to the `msg.sender`.
+     * @param tokenAmounts Array of TokenAmount structs for the tokens used in deposit action.
+     * @param data ABI-encoded additional parameters.
+     * @return tokensToBeWithdrawn Array of tokens to be returned to the account.
      */
     function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
@@ -35,10 +37,12 @@ interface IInteractiveAdapter {
 
     /**
      * @dev Withdraws assets from the protocol.
-     * @return Assets to be sent back to the `msg.sender`.
+     * @param tokenAmounts Array of TokenAmount structs for the tokens used in withdraw action.
+     * @param data ABI-encoded additional parameters.
+     * @return tokensToBeWithdrawn Array of tokens to be returned to the account.
      */
     function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
-        returns (address[] memory);
+        returns (address[] memory tokensToBeWithdrawn);
 }

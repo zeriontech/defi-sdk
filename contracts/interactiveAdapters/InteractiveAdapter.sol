@@ -34,36 +34,41 @@ abstract contract InteractiveAdapter is IInteractiveAdapter, ProtocolAdapter {
 
     /**
      * @dev The function must deposit assets to the protocol.
-     * @return MUST return assets to be sent back to the `msg.sender`.
+     * MUST return array of tokens to be returned to the account.
+     * @param tokenAmounts Array of TokenAmount structs for the tokens used in deposit action.
+     * @param data ABI-encoded additional parameters.
+     * @return tokensToBeWithdrawn Array of tokens to be returned to the account.
      */
     function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         virtual
         override
-        returns (address[] memory);
+        returns (address[] memory tokensToBeWithdrawn);
 
     /**
      * @dev The function must withdraw assets from the protocol.
-     * @return MUST return assets to be sent back to the `msg.sender`.
+     * MUST return array of tokens to be returned to the account.
+     * @param tokenAmounts Array of TokenAmount structs for the tokens used in withdraw action.
+     * @param data ABI-encoded additional parameters.
+     * @return tokensToBeWithdrawn Array of tokens to be returned to the account.
      */
     function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         virtual
         override
-        returns (address[] memory);
+        returns (address[] memory tokensToBeWithdrawn);
 
     /**
      * @dev MUST be used only in `withdraw()` function.
-     * @param tokenAmount TokenAmount struct with
-     *     token address, amount, and amount type.
-     * @return Absolute amount given TokenAmount struct.
+     * @param tokenAmount TokenAmount struct with token address, amount, and amount type.
+     * @return absoluteAmountWithdraw Absolute amount for the withdraw action.
      */
     function getAbsoluteAmountWithdraw(TokenAmount calldata tokenAmount)
         internal
         virtual
-        returns (uint256)
+        returns (uint256 absoluteAmountWithdraw)
     {
         AmountType amountType = tokenAmount.amountType;
         // TODO consider using uint256 amount = tokenAmount.amount
@@ -91,15 +96,14 @@ abstract contract InteractiveAdapter is IInteractiveAdapter, ProtocolAdapter {
 
     /**
      * @dev MUST be used only in `deposit()` function.
-     * @param tokenAmount TokenAmount struct with
-     *     token address, amount, and amount type.
-     * @return Absolute amount given TokenAmount struct.
+     * @param tokenAmount TokenAmount struct with token address, amount, and amount type.
+     * @return absoluteAmountDeposit Absolute amount for the deposit action.
      */
     function getAbsoluteAmountDeposit(TokenAmount calldata tokenAmount)
         internal
         view
         virtual
-        returns (uint256)
+        returns (uint256 absoluteAmountDeposit)
     {
         AmountType amountType = tokenAmount.amountType;
 

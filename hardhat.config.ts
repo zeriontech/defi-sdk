@@ -36,7 +36,7 @@ const config: HardhatUserConfig = {
   docgen: {
     path: "./docs",
     clear: false,
-    runOnCompile: false,
+    runOnCompile: true,
   },
   mocha: {
     timeout: "200000",

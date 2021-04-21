@@ -27,6 +27,13 @@ import { IProtocolAdapter } from "../interfaces/IProtocolAdapter.sol";
 abstract contract ProtocolAdapter is IProtocolAdapter {
     /**
      * @dev MUST return amount of the given token locked on the protocol by the given account.
+     * @param token Address of the token to check balance of.
+     * @param token Address of the account to check balance of.
+     * @return balance Balance of the given token for the given account.
      */
-    function getBalance(address token, address account) public virtual override returns (int256);
+    function getBalance(address token, address account)
+        public
+        virtual
+        override
+        returns (int256 balance);
 }

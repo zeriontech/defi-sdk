@@ -23,6 +23,12 @@ pragma solidity 0.8.1;
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 interface IAdapterManager {
+    /**
+     * @notice Emits old and new adapter addersses.
+     * @param adapterName Adapter's name.
+     * @param oldAdapterAddress Old adapter's address.
+     * @param newAdapterAddress New adapter's address.
+     */
     event AdapterSet(
         bytes32 indexed adapterName,
         address indexed oldAdapterAddress,

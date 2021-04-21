@@ -21,8 +21,18 @@ abstract contract Ownable {
     address private pendingOwner_;
     address private owner_;
 
-    event PendingOwnerSet(address indexed previousPendingOwner, address indexed newPendingOwner);
-    event OwnerSet(address indexed previousOwner, address indexed newOwner);
+    /**
+     * @notice Emits old and new pending owners.
+     * @param oldPendingOwner Old pending owner.
+     * @param newPendingOwner New pending owner.
+     */
+    event PendingOwnerSet(address indexed oldPendingOwner, address indexed newPendingOwner);
+    /**
+     * @notice Emits old and new owners.
+     * @param oldOwner Old contract's owner.
+     * @param newOwner New contract's owner.
+     */
+    event OwnerSet(address indexed oldOwner, address indexed newOwner);
 
     modifier onlyPendingOwner {
         require(msg.sender == pendingOwner_, "O: only pending owner");
@@ -44,13 +54,14 @@ abstract contract Ownable {
     }
 
     /**
-     * @notice Sets pending owner to the `newOwner` address.
+     * @notice Sets pending owner to the `newPendingOwner` address.
      * The function is callable only by the owner.
+     * @param newPendingOwner Address of new pending owner
      */
-    function setPendingOwner(address newOwner) external onlyOwner {
-        emit PendingOwnerSet(pendingOwner_, newOwner);
+    function setPendingOwner(address newPendingOwner) external onlyOwner {
+        emit PendingOwnerSet(pendingOwner_, newPendingOwner);
 
-        pendingOwner_ = newOwner;
+        pendingOwner_ = newPendingOwner;
     }
 
     /**
@@ -65,16 +76,16 @@ abstract contract Ownable {
     }
 
     /**
-     * @return Owner of the contract.
+     * @return owner Owner of the contract.
      */
-    function getOwner() external view returns (address) {
+    function getOwner() external view returns (address owner) {
         return owner_;
     }
 
     /**
-     * @return Pending owner of the contract.
+     * @return pendingOwner Pending owner of the contract.
      */
-    function getPendingOwner() external view returns (address) {
+    function getPendingOwner() external view returns (address pendingOwner) {
         return pendingOwner_;
     }
 }

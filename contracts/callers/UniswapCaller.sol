@@ -79,6 +79,7 @@ contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
      *     - swapType Whether inputs of outputs are fixed;
      *     - amount Amount of token which is fixed (see swapType);
      *     - account The address that will receive tokens after the last swap.
+     * @return exactAbsoluteInputAmount The exact amount of the input tokens.
      * @dev Implementation of Caller interface function.
      */
     function getExactInputAmount(bytes memory callData)

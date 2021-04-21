@@ -25,26 +25,19 @@ import { ERC20Metadata, TokenBalance } from "../shared/Structs.sol";
  */
 interface ITokenAdapter {
     /**
-     * @return Array of TokenBalance structs with underlying tokens balances.
-     * struct TokenBalance {
-     *     address token;    // Address of token contract.
-     *     int256 amount;    // Amount of underlying tokens for the given tokens.
-     * }
+     * @param tokenBalance TokenBalance struct with token info to get underlying token balances for.
+     * @return underlyingTokenBalances Array of TokenBalance structs with underlying token balances.
      */
     function getUnderlyingTokenBalances(TokenBalance calldata tokenBalance)
         external
-        returns (TokenBalance[] memory);
+        returns (TokenBalance[] memory underlyingTokenBalances);
 
     /**
-     * @return ERC20Metadata struct with IERC20-style token info.
-     * struct ERC20Metadata {
-     *     string name;
-     *     string symbol;
-     *     uint8 decimals;
-     * }
+     * @param tokenBalance TokenBalance struct with token info to get metadata for.
+     * @return metadata ERC20Metadata struct with IERC20-style token info.
      */
     function getMetadata(TokenBalance calldata tokenBalance)
         external
         view
-        returns (ERC20Metadata memory);
+        returns (ERC20Metadata memory metadata);
 }

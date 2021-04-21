@@ -86,15 +86,19 @@ contract SignatureVerifier is EIP712 {
     bytes32 internal constant TOKEN_AMOUNT_TYPEHASH =
         keccak256(abi.encodePacked("TokenAmount(address token,uint256 amount,uint8 amountType)"));
 
-    // solhint-disable-next-line no-empty-blocks
+    /**
+     * @param name String with EIP712 name.
+     * @param version String with EIP712 version.
+     */
     constructor(string memory name, string memory version) EIP712(name, version) {}
+    // solhint-disable-previous-line no-empty-blocks
 
     /**
      * @param hashToCheck Hash to be checked.
      * @param account Address of the hash will be checked for.
-     * @return True if hash has already been used by this account address.
+     * @return hashUsed True if hash has already been used by this account address.
      */
-    function isHashUsed(bytes32 hashToCheck, address account) public view returns (bool) {
+    function isHashUsed(bytes32 hashToCheck, address account) public view returns (bool hashUsed) {
         return isHashUsed_[hashToCheck][account];
     }
 
@@ -104,7 +108,7 @@ contract SignatureVerifier is EIP712 {
      * @param swapDescription SwapDescription struct to be hashed.
      * @param account Account address to be hashed.
      * @param salt Salt parameter preventing double-spending to be hashed.
-     * @return Execute data hashed with domainSeparator.
+     * @return hashedData Execute data hashed with domainSeparator.
      */
     function hashData(
         Input memory input,
@@ -112,19 +116,19 @@ contract SignatureVerifier is EIP712 {
         SwapDescription memory swapDescription,
         address account,
         uint256 salt
-    ) public view returns (bytes32) {
+    ) public view returns (bytes32 hashedData) {
         return _hashTypedDataV4(hash(input, requiredOutput, swapDescription, account, salt));
     }
 
     /**
      * @param hashedData Hash to be checked.
-     * @param signature EIP-712 signature.
-     * @return Account that signed the hashed data.
+     * @param signature EIP712 signature.
+     * @return account Account that signed the hashed data.
      */
     function getAccountFromSignature(bytes32 hashedData, bytes memory signature)
         public
         pure
-        returns (address payable)
+        returns (address payable account)
     {
         return payable(ECDSA.recover(hashedData, signature));
     }
