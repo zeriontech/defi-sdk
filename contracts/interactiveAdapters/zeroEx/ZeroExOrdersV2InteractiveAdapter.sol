@@ -54,8 +54,11 @@ contract ZeroExOrdersV2InteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
-        (MixinExchangeCore.Order memory order, bytes memory signature) =
-            abi.decode(data, (MixinExchangeCore.Order, bytes));
+        (
+            MixinExchangeCore.Order memory order,
+            uint256 takerAssetFillAmount,
+            bytes memory signature
+        ) = abi.decode(data, (MixinExchangeCore.Order, uint256, bytes));
 
         ERC20(token).safeApproveMax(ZERO_EX_EXCHANGE, amount, "ZEOV2IA");
 
@@ -70,7 +73,7 @@ contract ZeroExOrdersV2InteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
         }
 
         try
-            MixinExchangeCore(ZERO_EX_EXCHANGE).fillOrder(order, order.takerAssetAmount, signature)
+            MixinExchangeCore(ZERO_EX_EXCHANGE).fillOrder(order, takerAssetFillAmount, signature)
         returns (MixinExchangeCore.FillResults memory) {} catch Error(string memory reason) {
             //solhint-disable-previous-line no-empty-blocks
             revert(reason);
