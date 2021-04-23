@@ -22,74 +22,45 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 
 
 /**
- * @dev Basset struct.
- * The Basset struct is available here
- * github.com/mstable/mStable-contracts/blob/master/contracts/masset/shared/MassetStructs.sol.
+ * @dev BassetPersonal struct.
+ * The BassetPersonal struct is available here
+ * github.com/mstable/mStable-contracts/blob/master-v2/contracts/masset/MassetStructs.sol.
  */
-struct Basset {
+struct BassetPersonal {
     address addr;
+    address integrator;
+    bool hasTxFee;
     uint8 status;
-    bool isTransferFeeCharged;
-    uint256 ratio;
-    uint256 maxWeight;
-    uint256 vaultBalance;
 }
-//
-//
-///**
-// * @dev BassetStatus enum.
-// * The BassetStatus enum is available here
-// * github.com/mstable/mStable-contracts/blob/master/contracts/masset/shared/MassetStructs.sol.
-// */
-//enum BassetStatus {
-//    Default,
-//    Normal,
-//    BrokenBelowPeg,
-//    BrokenAbovePeg,
-//    Blacklisted,
-//    Liquidating,
-//    Liquidated,
-//    Failed
-//}
 
 
 /**
- * @dev BasketManager contract interface.
- * Only the functions required for MassetTokenAdapter contract are added.
- * The BasketManager contract is available here
- * github.com/mstable/mStable-contracts/blob/master/contracts/masset/BasketManager.sol.
+ * @dev BassetData struct.
+ * The BassetData struct is available here
+ * github.com/mstable/mStable-contracts/blob/master-v2/contracts/masset/MassetStructs.sol.
  */
-interface BasketManager {
-    function getBassets() external view returns (Basset[] memory, uint256);
+struct BassetData {
+    uint128 ratio;
+    uint128 vaultBalance;
 }
 
 
 /**
- * @dev ForgeValidator contract interface.
+ * @dev Masset contract interface.
  * Only the functions required for MassetTokenAdapter contract are added.
- * The ForgeValidator contract is available here
- * github.com/mstable/mStable-contracts/blob/master/contracts/masset/forge-validator/ForgeValidator.sol.
+ * The Masset contract is available here
+ * github.com/mstable/mStable-contracts/blob/master-v2/contracts/masset/Masset.sol.
  */
-interface ForgeValidator {
-    function calculateRedemptionMulti(
-        uint256,
-        Basset[] calldata
-    )
-    external
-    view
-    returns (bool, string memory, uint256[] memory);
+interface Masset {
+    function getBassets() external view returns (BassetPersonal[] memory, BassetData[] memory);
 }
 
 
 /**
- * @title Token adapter for Masset.
+ * @title Token adapter for mStable Masset.
  * @dev Implementation of TokenAdapter interface.
  */
 contract MstableTokenAdapter is TokenAdapter {
-
-    address internal constant BASKET_MANAGER = 0x66126B4aA2a1C07536Ef8E5e8bD4EfDA1FdEA96D;
-    address internal constant FORGE_VALIDATOR = 0xbB90D06371030fFa150E463621c22950b212eaa1;
-
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -108,20 +79,23 @@ contract MstableTokenAdapter is TokenAdapter {
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter interface function.
      */
-    function getComponents(address) external view override returns (Component[] memory) {
-        (Basset[] memory bassets, uint256 length) = BasketManager(BASKET_MANAGER).getBassets();
-        uint256[] memory underlyingAmounts;
-        (, , underlyingAmounts) = ForgeValidator(FORGE_VALIDATOR).calculateRedemptionMulti(
-            1e18,
-            bassets
-        );
+    function getComponents(address token) external view override returns (Component[] memory) {
+        (BassetPersonal[] memory personal, BassetData[] memory data) = Masset(token).getBassets();
+        uint256 length = data.length;
+        uint256[] memory scaledAmounts = new uint256[](length);
+        uint256 scaledAmountsSum = 0;
+
+        for (uint256 i = 0; i < length; i++) {
+            scaledAmounts[i] = data[i].vaultBalance * data[i].ratio / 1e8;
+            scaledAmountsSum += scaledAmounts[i];
+        }
 
         Component[] memory underlyingTokens = new Component[](length);
         for (uint256 i = 0; i < length; i++) {
             underlyingTokens[i] = Component({
-                token: bassets[i].addr,
+                token: personal[i].addr,
                 tokenType: "ERC20",
-                rate: underlyingAmounts[i]
+                rate: (scaledAmounts[i] * 1e18 / scaledAmountsSum) * 1e8 / data[i].ratio
             });
         }
 
