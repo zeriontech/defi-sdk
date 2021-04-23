@@ -1,6 +1,6 @@
 const TokenAdapter = artifacts.require('CurveMetapoolTokenAdapter');
 
-contract.only('CurveMetapoolTokenAdapter', () => {
+contract('CurveMetapoolTokenAdapter', () => {
   const alUSD3CrvAddress = '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c';
   const alUSDAddress = '0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9';
 
