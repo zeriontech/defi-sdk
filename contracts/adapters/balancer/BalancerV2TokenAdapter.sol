@@ -22,12 +22,12 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 
 
 /**
- * @dev WeightedPool contract interface.
- * Only the functions required for BalancerWeightedPoolTokenAdapter contract are added.
- * The WeightedPool contract is available here
- * github.com/balancer-labs/balancer-core-v2/blob/master/contracts/pools/weighted/WeightedPool.sol.
+ * @dev BasePool contract interface.
+ * Only the functions required for BalancerV2PoolTokenAdapter contract are added.
+ * The BasePool contract is available here
+ * github.com/balancer-labs/balancer-core-v2/blob/master/contracts/pools/BasePool.sol.
  */
-interface WeightedPool {
+interface BasePool {
     function getPoolId() external view returns (bytes32);
     function getVault() external view returns (address);
 }
@@ -35,7 +35,7 @@ interface WeightedPool {
 
 /**
  * @dev Vault contract interface.
- * Only the functions required for BalancerWeightedPoolTokenAdapter contract are added.
+ * Only the functions required for BalancerV2PoolTokenAdapter contract are added.
  * The Vault contract is available here
  * https://github.com/balancer-labs/balancer-core-v2/blob/master/contracts/vault/Vault.sol.
  */
@@ -52,11 +52,11 @@ interface Vault {
 
 
 /**
- * @title Token adapter for Balancer V2 weighted pool tokens.
+ * @title Token adapter for Balancer V2 pool tokens.
  * @dev Implementation of TokenAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract BalancerV2WeightedPoolTokenAdapter is TokenAdapter {
+contract BalancerV2TokenAdapter is TokenAdapter {
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.
@@ -76,8 +76,8 @@ contract BalancerV2WeightedPoolTokenAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter interface function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        bytes32 poolId = WeightedPool(token).getPoolId();
-        address vault = WeightedPool(token).getVault();
+        bytes32 poolId = BasePool(token).getPoolId();
+        address vault = BasePool(token).getVault();
         (address[] memory tokens, uint256[] memory balances,) = Vault(vault).getPoolTokens(poolId);
         uint256 totalSupply = ERC20(token).totalSupply();
 

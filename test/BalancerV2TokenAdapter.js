@@ -1,6 +1,6 @@
-const TokenAdapter = artifacts.require('BalancerV2WeightedPoolTokenAdapter');
+const TokenAdapter = artifacts.require('BalancerV2TokenAdapter');
 
-contract('BalancerV2WeightedPoolTokenAdapter', () => {
+contract('BalancerV2TokenAdapter', () => {
   const b50Wbtc50WethAddress = '0x0297e37f1873D2DAb4487Aa67cD56B58E2F27875';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const wbtcAddress = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
