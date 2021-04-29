@@ -41,6 +41,7 @@ interface Pod {
 contract PoolTogetherAdapter is ProtocolAdapter {
     address internal constant DAI_POOL = 0x29fe7D60DdF151E5b52e5FAB4f1325da6b2bD958;
     address internal constant USDC_POOL = 0x0034Ea9808E620A0EF79261c51AF20614B742B24;
+    address internal constant POOL_POOL = 0x27d22a7648e955e510a40bdb058333e9190d12d4;
     address internal constant DAI_POD = 0x9F4C5D8d9BE360DF36E67F52aE55C1B137B4d0C4;
     address internal constant USDC_POD = 0x6F5587E191C8b222F634C78111F97c4851663ba4;
 
