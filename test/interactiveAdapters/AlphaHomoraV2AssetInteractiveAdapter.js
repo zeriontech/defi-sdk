@@ -23,7 +23,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('AlphaHomoraV2AssetInteractiveAdapter', () => {
+contract('AlphaHomoraV2AssetInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const ibDaiAddress = '0xee8389d235E092b2945fE363e97CDBeD121A0439';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -349,7 +349,7 @@ contract.only('AlphaHomoraV2AssetInteractiveAdapter', () => {
     });
   });
 
-  describe.only('ETH <-> ibETHv2', () => {
+  describe('ETH <-> ibETHv2', () => {
     it('should be correct ETH -> ibETHv2 deposit', async () => {
       await IBETH.methods['balanceOf(address)'](accounts[0])
         .call()

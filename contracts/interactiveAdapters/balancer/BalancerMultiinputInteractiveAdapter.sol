@@ -34,7 +34,7 @@ contract BalancerMultiinputInteractiveAdapter is InteractiveAdapter, ERC20Protoc
     using SafeERC20 for ERC20;
 
     /**
-     * @notice Deposits tokens to the TokenSet.
+     * @notice Deposits tokens to the Balancer pool.
      * @param tokenAmounts Array with TokenAmount structs with
      * underlying tokens addresses, underlying tokens amounts to be deposited, and amount types.
      * @param data ABI-encoded additional parameters:
