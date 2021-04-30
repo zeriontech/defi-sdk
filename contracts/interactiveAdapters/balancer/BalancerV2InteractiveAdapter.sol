@@ -27,7 +27,7 @@ import { Vault } from "../../interfaces/Vault.sol";
 import { BalancerBasePool } from "../../interfaces/BalancerBasePool.sol";
 
 /**
- * @title Interactive adapter for Balancer V2 (multi input).
+ * @title Interactive adapter for Balancer V2.
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
@@ -81,7 +81,7 @@ contract BalancerV2InteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
     }
 
     /**
-     * @notice Withdraws tokens from the TokenSet.
+     * @notice Withdraws tokens from the Balancer V2 pool.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      *     pool address, pool amount to be redeemed, and amount type.
      * @param data ABI-encoded additional parameter (optional):

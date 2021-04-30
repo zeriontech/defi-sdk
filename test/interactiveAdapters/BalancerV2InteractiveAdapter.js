@@ -178,7 +178,69 @@ contract.only('BalancerV2InteractiveAdapter', () => {
         });
     });
 
-    it('should sell 50% of WETH/BAL pool', async () => {
+    it('should buy WBTC/WETH pool with 1 token', async () => {
+      await POOL.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`pool amount before is     ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await router.methods.execute(
+        // actions
+        [
+          [
+            WETH_ASSET_ADAPTER,
+            ACTION_DEPOSIT,
+            [
+              [ethAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            EMPTY_BYTES,
+          ],
+          [
+            BALANCER_V2_ASSET_ADAPTER,
+            ACTION_DEPOSIT,
+            [
+              [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
+            ],
+            web3.eth.abi.encodeParameter('address', poolAddress),
+          ],
+        ],
+        // inputs
+        [],
+        // fee
+        [0, ZERO],
+        // outputs
+        [],
+      )
+        .send({
+          gas: 10000000,
+          value: web3.utils.toWei('1', 'ether'),
+          from: accounts[0],
+        })
+        .then((receipt) => {
+          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
+        });
+      await POOL.methods['balanceOf(address)'](accounts[0])
+        .call()
+        .then((result) => {
+          console.log(`pool amount after is ${web3.utils.fromWei(result, 'ether')}`);
+        });
+      await WETH.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await POOL.methods['balanceOf(address)'](core.options.address)
+        .call()
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+      await web3.eth.getBalance(core.options.address)
+        .then((result) => {
+          assert.equal(result, 0);
+        });
+    });
+
+    it('should sell 50% of WBTC/WETH pool', async () => {
       let poolBalance;
       await POOL.methods.balanceOf(accounts[0])
         .call()
@@ -259,7 +321,7 @@ contract.only('BalancerV2InteractiveAdapter', () => {
         });
     });
 
-    it('should sell another 50% of WETH/BAL pool', async () => {
+    it('should sell another 50% of WBTC/WETH pool', async () => {
       let poolBalance;
       await POOL.methods.balanceOf(accounts[0])
         .call()
