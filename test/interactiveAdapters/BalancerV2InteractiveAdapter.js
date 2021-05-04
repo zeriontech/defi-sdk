@@ -199,6 +199,7 @@ contract.only('BalancerV2InteractiveAdapter', () => {
             BALANCER_V2_ASSET_ADAPTER,
             ACTION_DEPOSIT,
             [
+              [wbtcAddress, 0, AMOUNT_RELATIVE],
               [wethAddress, convertToShare(1), AMOUNT_RELATIVE],
             ],
             web3.eth.abi.encodeParameter('address', poolAddress),
