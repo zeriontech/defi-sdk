@@ -106,7 +106,7 @@ contract BalancerV2InteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
             data.length == 0
                 ? abi.encode(1, getAbsoluteAmountWithdraw(tokenAmounts[0]))
                 : abi.encode(
-                    1,
+                    0,
                     getAbsoluteAmountWithdraw(tokenAmounts[0]),
                     abi.decode(data, (uint8))
                 );
