@@ -54,7 +54,8 @@ library Base {
         string memory error
     ) internal {
         // solhint-disable-next-line avoid-low-level-calls
-        (bool success, ) = to.call{ value: amount }(new bytes(0));
+        (bool success, ) = to.call{ value: amount, gas: 5000 }(new bytes(0));
+
         require(success, error);
     }
 

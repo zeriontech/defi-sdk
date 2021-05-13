@@ -575,8 +575,6 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
             return IDAIPermit.permit.selector;
         } else if (permitType == PermitType.Yearn) {
             return IYearnPermit.permit.selector;
-        } else {
-            return bytes4(0);
         }
     }
 
