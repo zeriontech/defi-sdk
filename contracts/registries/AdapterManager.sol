@@ -32,9 +32,7 @@ abstract contract AdapterManager is IAdapterManager, Ownable {
     mapping(bytes32 => address) private _adapter;
 
     /**
-     * @notice Sets adapters (adds, updates or removes).
-     * @param adaptersNamesAndAddresses Array of the new adapters' names and addresses.
-     * @dev Can be called only by this contract's owner.
+     * @inheritdoc IAdapterManager
      */
     function setAdapters(AdapterNameAndAddress[] calldata adaptersNamesAndAddresses)
         external
@@ -52,8 +50,7 @@ abstract contract AdapterManager is IAdapterManager, Ownable {
     }
 
     /**
-     * @param name Name of the adapter.
-     * @return adapter Address of the adapter.
+     * @inheritdoc IAdapterManager
      */
     function getAdapterAddress(bytes32 name) public view override returns (address adapter) {
         return _adapter[name];

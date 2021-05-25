@@ -30,10 +30,7 @@ import { ERC20Metadata, TokenBalance } from "../shared/Structs.sol";
  */
 abstract contract TokenAdapter is ITokenAdapter {
     /**
-     * @dev MUST return array of TokenBalance structs with underlying tokens balances
-     *     for the given TokenBalance struct consisting of token address and absolute balance.
-     * @param tokenBalance TokenBalance struct with token info to get underlying token balances for.
-     * @return underlyingTokenBalances Array of TokenBalance structs with underlying token balances.
+     * @inheritdoc ITokenAdapter
      */
     function getUnderlyingTokenBalances(TokenBalance memory tokenBalance)
         external
@@ -42,9 +39,7 @@ abstract contract TokenAdapter is ITokenAdapter {
         returns (TokenBalance[] memory underlyingTokenBalances);
 
     /**
-     * @dev It is recommended to override getName(), getSymbol(), and getDecimals() functions.
-     * @param tokenBalance TokenBalance struct with token info to get metadata for.
-     * @return metadata ERC20Metadata struct with IERC20-style token info.
+     * @inheritdoc ITokenAdapter
      */
     function getMetadata(TokenBalance memory tokenBalance)
         external

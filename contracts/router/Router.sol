@@ -82,11 +82,7 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
     }
 
     /**
-     * @notice Returns tokens mistakenly sent to this contract.
-     * @param token Address of token.
-     * @param beneficiary Address that will receive tokens.
-     * @param amount Amount of tokens to return.
-     * @dev Can be called only by this contract's owner.
+     * @inheritdoc IRouter
      */
     function returnLostTokens(
         address token,
@@ -101,22 +97,7 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
     }
 
     /**
-     * @notice Executes actions and returns tokens to account.
-     * Uses CHI tokens previously approved by the msg.sender.
-     * @param input Token and amount (relative or absolute) to be taken from the account address.
-     * Permit type and calldata may provided if possible.
-     * @param absoluteOutput Token and absolute amount requirement for the returned token.
-     * @param swapDescription Swap description with the following elements:
-     *     - Whether the inputs or outputs are fixed.
-     *     - Fee share and beneficiary address.
-     *     - Address of the destination for the tokens transfer.
-     *     - Address of the Caller contract to be called.
-     *     - Calldata for the call to the Caller contract.
-     * @param account Address of the account that will receive the returned tokens.
-     * @param salt Number that makes this data unique.
-     * @param signature EIP712-compatible signature of data.
-     * @return inputBalanceChange Input token balance change.
-     * @return outputBalanceChange Output token balance change.
+     * @inheritdoc IRouter
      */
     function executeWithCHI(
         Input calldata input,
@@ -136,19 +117,7 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
     }
 
     /**
-     * @notice Executes actions and returns tokens to account.
-     * Uses CHI tokens previously approved by the msg.sender.
-     * @param input Token and amount (relative or absolute) to be taken from the account address.
-     * Permit type and calldata may provided if possible.
-     * @param absoluteOutput Token and absolute amount requirement for the returned token.
-     * @param swapDescription Swap description with the following elements:
-     *     - Whether the inputs or outputs are fixed.
-     *     - Fee share and beneficiary address.
-     *     - Address of the destination for the tokens transfer.
-     *     - Address of the Caller contract to be called.
-     *     - Calldata for the call to the Caller contract.
-     * @return inputBalanceChange Input token balance change.
-     * @return outputBalanceChange Output token balance change.
+     * @inheritdoc IRouter
      */
     function executeWithCHI(
         Input calldata input,
@@ -165,21 +134,7 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
     }
 
     /**
-     * @notice Executes actions and returns tokens to account.
-     * @param input Token and amount (relative or absolute) to be taken from the account address.
-     * Permit type and calldata may provided if possible.
-     * @param absoluteOutput Token and absolute amount requirement for the returned token.
-     * @param swapDescription Swap description with the following elements:
-     *     - Whether the inputs or outputs are fixed.
-     *     - Fee share and beneficiary address.
-     *     - Address of the destination for the tokens transfer.
-     *     - Address of the Caller contract to be called.
-     *     - Calldata for the call to the Caller contract.
-     * @param account Address of the account that will receive the returned tokens.
-     * @param salt Number that makes this data unique.
-     * @param signature EIP712-compatible signature of data.
-     * @return inputBalanceChange Input token balance change.
-     * @return outputBalanceChange Output token balance change.
+     * @inheritdoc IRouter
      */
     function execute(
         Input calldata input,
@@ -207,18 +162,7 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
     }
 
     /**
-     * @notice Executes actions and returns tokens to account.
-     * @param input Token and amount (relative or absolute) to be taken from the account address.
-     * Permit type and calldata may provided if possible.
-     * @param absoluteOutput Token and absolute amount requirement for the returned token.
-     * @param swapDescription Swap description with the following elements:
-     *     - Whether the inputs or outputs are fixed.
-     *     - Fee share and beneficiary address.
-     *     - Address of the destination for the tokens transfer.
-     *     - Address of the Caller contract to be called.
-     *     - Calldata for the call to the Caller contract.
-     * @return inputBalanceChange Input token balance change.
-     * @return outputBalanceChange Output token balance change.
+     * @inheritdoc IRouter
      */
     function execute(
         Input calldata input,

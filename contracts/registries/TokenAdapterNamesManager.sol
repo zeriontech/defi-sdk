@@ -32,9 +32,7 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
     mapping(bytes32 => bytes32) private _tokenAdapterName;
 
     /**
-     * @notice Sets token adapters' names by tokens' hashes using tokens addresses.
-     * @param tokensAndAdapterNames Array of tokens addresses and new token adapters' names.
-     * @dev Can be called only by this contract's owner.
+     * @inheritdoc ITokenAdapterNamesManager
      */
     function setTokenAdapterNamesByHashes(
         TokenAndAdapterName[] calldata tokensAndAdapterNames
@@ -53,9 +51,7 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
     }
 
     /**
-     * @notice Sets token adapters' names by tokens addresses.
-     * @param tokensAndAdapterNames Array of tokens addresses and new token adapters' names.
-     * @dev Can be called only by this contract's owner.
+     * @inheritdoc ITokenAdapterNamesManager
      */
     function setTokenAdapterNamesByTokens(
         TokenAndAdapterName[] calldata tokensAndAdapterNames
@@ -74,9 +70,7 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
     }
 
     /**
-     * @notice Sets token adapters' names using hashes.
-     * @param hashesAndAdapterNames Array of hashes and new token adapters' names.
-     * @dev Can be called only by this contract's owner.
+     * @inheritdoc ITokenAdapterNamesManager
      */
     function setTokenAdapterNames(
         HashAndAdapterName[] calldata hashesAndAdapterNames
@@ -92,22 +86,20 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
     }
 
     /**
-     * @param token Address of the token.
-     * @return Name of the token adapter.
+     * @inheritdoc ITokenAdapterNamesManager
      */
-    function getTokenAdapterName(address token) public view override returns (bytes32) {
-        bytes32 tokenAdapterName = _tokenAdapterName[keccak256(abi.encodePacked(token))];
+    function getTokenAdapterName(address token) public view override returns (bytes32 name) {
+        name = _tokenAdapterName[keccak256(abi.encodePacked(token))];
 
-        if (tokenAdapterName == bytes32(0)) {
-            tokenAdapterName = _tokenAdapterName[getTokenHash(token)];
+        if (name == bytes32(0)) {
+            name = _tokenAdapterName[getTokenHash(token)];
         }
 
-        return tokenAdapterName;
+        return name;
     }
 
     /**
-     * @param token Address of the token.
-     * @return hash Hash of the token's bytecode.
+     * @inheritdoc ITokenAdapterNamesManager
      */
     function getTokenHash(address token) public view override returns (bytes32 hash) {
         // solhint-disable-next-line no-inline-assembly

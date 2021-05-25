@@ -29,18 +29,17 @@ import { AdapterBalance, TokenBalance, AdapterTokens } from "../shared/Structs.s
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterManager {
+
     /**
-     * @param adaptersTokens Array of the protocol adapters' names and tokens.
-     * @param account Address of the account.
-     * @return AdapterBalance array by the given parameters.
+     * @inheritdoc IProtocolAdapterRegistry
      */
     function getAdapterBalances(AdapterTokens[] calldata adaptersTokens, address account)
         external
         override
-        returns (AdapterBalance[] memory)
+        returns (AdapterBalance[] memory adapterBalances)
     {
         uint256 length = adaptersTokens.length;
-        AdapterBalance[] memory adapterBalances = new AdapterBalance[](length);
+        adapterBalances = new AdapterBalance[](length);
 
         for (uint256 i = 0; i < length; i++) {
             adapterBalances[i] = getAdapterBalance(adaptersTokens[i], account);
@@ -50,38 +49,35 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
     }
 
     /**
-     * @param adaptersTokens Array of the protocol adapters' names and tokens.
-     * @param account Address of the account.
-     * @return AdapterBalance array by the given parameters with non-zero token balances.
+     * @inheritdoc IProtocolAdapterRegistry
      */
     function getNonZeroAdapterBalances(AdapterTokens[] calldata adaptersTokens, address account)
         external
         override
-        returns (AdapterBalance[] memory)
+        returns (AdapterBalance[] memory adapterBalances)
     {
         uint256 length = adaptersTokens.length;
-        AdapterBalance[] memory adapterBalances = new AdapterBalance[](length);
+        adapterBalances = new AdapterBalance[](length);
 
         for (uint256 i = 0; i < length; i++) {
             adapterBalances[i] = getNonZeroAdapterBalance(adaptersTokens[i], account);
         }
 
-        return
-            getNonZeroAdapterBalances(
+        adapterBalances = getNonZeroAdapterBalances(
                 adapterBalances,
                 getNonZeroAdapterBalancesNumber(adapterBalances)
             );
+
+        return adapterBalances;
     }
 
     /**
-     * @param adapterTokens Protocol adapter's name and tokens.
-     * @param account Address of the account.
-     * @return AdapterBalance by the given parameters.
+     * @inheritdoc IProtocolAdapterRegistry
      */
     function getAdapterBalance(AdapterTokens calldata adapterTokens, address account)
         public
         override
-        returns (AdapterBalance memory)
+        returns (AdapterBalance memory adapterBalance)
     {
         address adapter = getAdapterAddress(adapterTokens.name);
         if (adapter == address(0)) {
@@ -91,18 +87,18 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
         TokenBalance[] memory tokenBalances =
             getTokenBalances(adapter, adapterTokens.tokens, account);
 
-        return AdapterBalance({ name: adapterTokens.name, tokenBalances: tokenBalances });
+        adapterBalance = AdapterBalance({ name: adapterTokens.name, tokenBalances: tokenBalances });
+
+        return adapterBalance;
     }
 
     /**
-     * @param adapterTokens Protocol adapter's name and tokens.
-     * @param account Address of the account.
-     * @return AdapterBalance by the given parameters with non-zero token balances.
+     * @inheritdoc IProtocolAdapterRegistry
      */
     function getNonZeroAdapterBalance(AdapterTokens calldata adapterTokens, address account)
         public
         override
-        returns (AdapterBalance memory)
+        returns (AdapterBalance memory nonZeroAdapterBalance)
     {
         address adapter = getAdapterAddress(adapterTokens.name);
         if (adapter == address(0)) {
@@ -112,14 +108,15 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
         TokenBalance[] memory tokenBalances =
             getTokenBalances(adapter, adapterTokens.tokens, account);
 
-        return
-            AdapterBalance({
+        nonZeroAdapterBalance = AdapterBalance({
                 name: adapterTokens.name,
                 tokenBalances: getNonZeroTokenBalances(
                     tokenBalances,
                     getNonZeroTokenBalancesNumber(tokenBalances)
                 )
             });
+
+        return nonZeroAdapterBalance;
     }
 
     /**
@@ -202,15 +199,15 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
 
     /**
      * @param adapterBalances List of AdapterBalance structs.
-     * @return Number of non-zero AdapterBalance structs.
+     * @return nonZeroTokenBalancesNumber Number of non-zero AdapterBalance structs.
      */
     function getNonZeroAdapterBalancesNumber(AdapterBalance[] memory adapterBalances)
         internal
         pure
-        returns (uint256)
+        returns (uint256 nonZeroTokenBalancesNumber)
     {
         uint256 length = adapterBalances.length;
-        uint256 nonZeroTokenBalancesNumber = 0;
+        nonZeroTokenBalancesNumber = 0;
 
         for (uint256 i = 0; i < length; i++) {
             if (adapterBalances[i].tokenBalances.length > 0) {
@@ -223,15 +220,15 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
 
     /**
      * @param tokenBalances List of TokenBalance structs.
-     * @return Number of non-zero TokenBalance structs.
+     * @return nonZeroTokenBalancesNumber Number of non-zero TokenBalance structs.
      */
     function getNonZeroTokenBalancesNumber(TokenBalance[] memory tokenBalances)
         internal
         pure
-        returns (uint256)
+        returns (uint256 nonZeroTokenBalancesNumber)
     {
         uint256 length = tokenBalances.length;
-        uint256 nonZeroTokenBalancesNumber = 0;
+        nonZeroTokenBalancesNumber = 0;
 
         for (uint256 i = 0; i < length; i++) {
             if (tokenBalances[i].amount > 0) {

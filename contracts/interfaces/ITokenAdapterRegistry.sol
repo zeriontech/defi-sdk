@@ -67,4 +67,39 @@ interface ITokenAdapterRegistry {
     function getFinalFullTokenBalances(address[] calldata tokens)
         external
         returns (FullTokenBalance[] memory finalFullTokenBalances);
+
+    /**
+     * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
+     * @return Array of TokenBalance structs with 'closest' underlying token balances.
+     */
+    function getUnderlyingTokenBalances(TokenBalance calldata tokenBalance)
+        external
+        returns (TokenBalance[] memory);
+
+    /**
+     * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
+     * @return finalUnderlyingTokenBalances Array of TokenBalance structs
+     *     with 'deepest' underlying token balances.
+     */
+    function getFinalUnderlyingTokenBalances(TokenBalance calldata tokenBalance)
+        external
+        returns (TokenBalance[] memory finalUnderlyingTokenBalances);
+
+    /**
+     * @param tokenBalance TokenBalance struct consisting of token address and absolute amount.
+     * @param underlyingTokenBalances TokenBalance structs array consisting of
+     *     token address and absolute amount for each underlying token.
+     * @return fullTokenBalance FullTokenBalance struct given token and underlying tokens balances.
+     */
+    function getFullTokenBalance(
+        TokenBalance calldata tokenBalance,
+        TokenBalance[] calldata underlyingTokenBalances
+    ) external view returns (FullTokenBalance memory fullTokenBalance);
+
+    /**
+     * @dev Gets token adapter address for the given token address.
+     * @param token Address of the token.
+     * @return tokenAdapter Token adapter address.
+     */
+    function getTokenAdapter(address token) external view returns (address tokenAdapter);
 }

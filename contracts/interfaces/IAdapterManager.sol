@@ -46,8 +46,8 @@ interface IAdapterManager {
         external;
 
     /**
-     * @param adapterName Name of the adapter.
+     * @param name Name of the adapter.
      * @return Address of adapter.
      */
-    function getAdapterAddress(bytes32 adapterName) external view returns (address);
+    function getAdapterAddress(bytes32 name) external view returns (address);
 }

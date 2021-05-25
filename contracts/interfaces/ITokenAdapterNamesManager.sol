@@ -66,13 +66,13 @@ interface ITokenAdapterNamesManager {
 
     /**
      * @param token Address of token.
-     * @return Name of token adapter.
+     * @return name Name of token adapter.
      */
-    function getTokenAdapterName(address token) external view returns (bytes32);
+    function getTokenAdapterName(address token) external view returns (bytes32 name);
 
     /**
      * @param token Address of token.
-     * @return Hash of token's bytecode.
+     * @return hash Hash of token's bytecode.
      */
-    function getTokenHash(address token) external view returns (bytes32);
+    function getTokenHash(address token) external view returns (bytes32 hash);
 }

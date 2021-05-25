@@ -20,6 +20,7 @@ pragma solidity 0.8.4;
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
+import { ISignatureVerifier } from "../interfaces/ISignatureVerifier.sol";
 import { UsedHash } from "../shared/Errors.sol";
 import {
     AbsoluteTokenAmount,
@@ -30,7 +31,7 @@ import {
     TokenAmount
 } from "../shared/Structs.sol";
 
-contract SignatureVerifier is EIP712 {
+contract SignatureVerifier is ISignatureVerifier, EIP712 {
     mapping(bytes32 => mapping(address => bool)) internal isHashUsed_;
 
     bytes32 internal constant EXECUTE_TYPEHASH =
@@ -95,21 +96,17 @@ contract SignatureVerifier is EIP712 {
     // solhint-disable-previous-line no-empty-blocks
 
     /**
-     * @param hashToCheck Hash to be checked.
-     * @param account Address of the hash will be checked for.
-     * @return hashUsed True if hash has already been used by this account address.
+     * @inheritdoc ISignatureVerifier
      */
-    function isHashUsed(bytes32 hashToCheck, address account) public view returns (bool hashUsed) {
+    function isHashUsed(
+        bytes32 hashToCheck,
+        address account
+    ) public view override returns (bool hashUsed) {
         return isHashUsed_[hashToCheck][account];
     }
 
     /**
-     * @param input Input struct to be hashed.
-     * @param requiredOutput AbsoluteTokenAmount struct to be hashed.
-     * @param swapDescription SwapDescription struct to be hashed.
-     * @param account Account address to be hashed.
-     * @param salt Salt parameter preventing double-spending to be hashed.
-     * @return hashedData Execute data hashed with domainSeparator.
+     * @inheritdoc ISignatureVerifier
      */
     function hashData(
         Input memory input,
@@ -117,18 +114,17 @@ contract SignatureVerifier is EIP712 {
         SwapDescription memory swapDescription,
         address account,
         uint256 salt
-    ) public view returns (bytes32 hashedData) {
+    ) public view override returns (bytes32 hashedData) {
         return _hashTypedDataV4(hash(input, requiredOutput, swapDescription, account, salt));
     }
 
     /**
-     * @param hashedData Hash to be checked.
-     * @param signature EIP712 signature.
-     * @return account Account that signed the hashed data.
+     * @inheritdoc ISignatureVerifier
      */
     function getAccountFromSignature(bytes32 hashedData, bytes memory signature)
         public
         pure
+        override
         returns (address payable account)
     {
         return payable(ECDSA.recover(hashedData, signature));
