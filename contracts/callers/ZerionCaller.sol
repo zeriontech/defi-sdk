@@ -25,7 +25,15 @@ import { IAdapterManager } from "../interfaces/IAdapterManager.sol";
 import { ICaller } from "../interfaces/ICaller.sol";
 import { IInteractiveAdapter } from "../interfaces/IInteractiveAdapter.sol";
 import { Base } from "../shared/Base.sol";
-import { Action, ActionType, TokenAmount } from "../shared/Structs.sol";
+import { ActionType } from "../shared/Enums.sol";
+import {
+    BadMsgSender,
+    BadProtocolAdapterName,
+    NoneActionType,
+    NotImplemented,
+    ZeroProtocolAdapterRegistry
+} from "../shared/Errors.sol";
+import { Action, TokenAmount } from "../shared/Structs.sol";
 
 /**
  * @title Zerion caller that executes actions.
@@ -52,7 +60,9 @@ contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
      * @param protocolAdapterRegistry Address of the ProtocolAdapterRegistry contract.
      */
     constructor(address protocolAdapterRegistry) {
-        require(protocolAdapterRegistry != address(0), "ZC: empty protocolAdapterRegistry");
+        if (protocolAdapterRegistry == address(0)) {
+            revert ZeroProtocolAdapterRegistry();
+        }
 
         protocolAdapterRegistry_ = protocolAdapterRegistry;
     }
@@ -95,7 +105,9 @@ contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
         external
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(msg.sender == address(this), "ZC: only address(this)");
+        if (msg.sender != address(this)) {
+            revert BadMsgSender(msg.sender, address(this));
+        }
 
         return executeAction(action);
     }
@@ -112,7 +124,7 @@ contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
      * @dev Implementation of Caller interface function.
      */
     function getExactInputAmount(bytes calldata) external pure override returns (uint256) {
-        revert("ZC: fixed outputs");
+        revert NotImplemented();
     }
 
     /**
@@ -128,11 +140,13 @@ contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
             IAdapterManager(protocolAdapterRegistry_).getAdapterAddress(
                 action.protocolAdapterName
             );
-        require(adapter != address(0), "ZC: bad name");
-        require(
-            action.actionType == ActionType.Deposit || action.actionType == ActionType.Withdraw,
-            "ZC: bad action type"
-        );
+
+        if (adapter == address(0)) {
+            revert BadProtocolAdapterName(action.protocolAdapterName);
+        }
+        if (action.actionType == ActionType.None) {
+            revert NoneActionType();
+        }
 
         bytes4 selector =
             (action.actionType == ActionType.Deposit)

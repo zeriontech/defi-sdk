@@ -20,6 +20,7 @@ pragma solidity 0.8.4;
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
+import { UsedHash } from "../shared/Errors.sol";
 import {
     AbsoluteTokenAmount,
     Fee,
@@ -139,7 +140,9 @@ contract SignatureVerifier is EIP712 {
      * @param account Account using the hash.
      */
     function markHashUsed(bytes32 hashToMark, address account) internal {
-        require(!isHashUsed_[hashToMark][account], "SV: used hash");
+        if (isHashUsed_[hashToMark][account]) {
+            revert UsedHash(hashToMark, account);
+        }
         isHashUsed_[hashToMark][account] = true;
     }
 

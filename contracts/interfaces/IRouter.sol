@@ -17,7 +17,8 @@
 
 pragma solidity 0.8.4;
 
-import { AbsoluteTokenAmount, Input, SwapDescription, SwapType } from "../shared/Structs.sol";
+import { SwapType } from "../shared/Enums.sol";
+import { AbsoluteTokenAmount, Input, SwapDescription } from "../shared/Structs.sol";
 
 interface IRouter {
     /**

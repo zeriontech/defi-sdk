@@ -20,6 +20,7 @@ pragma solidity 0.8.4;
 import { AdapterManager } from "./AdapterManager.sol";
 import { IProtocolAdapter } from "../interfaces/IProtocolAdapter.sol";
 import { IProtocolAdapterRegistry } from "../interfaces/IProtocolAdapterRegistry.sol";
+import { BadProtocolAdapterName } from "../shared/Errors.sol";
 import { Ownable } from "../shared/Ownable.sol";
 import { AdapterBalance, TokenBalance, AdapterTokens } from "../shared/Structs.sol";
 
@@ -83,7 +84,9 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
         returns (AdapterBalance memory)
     {
         address adapter = getAdapterAddress(adapterTokens.name);
-        require(adapter != address(0), "PAR: bad protocolAdapterName");
+        if (adapter == address(0)) {
+            revert BadProtocolAdapterName(adapterTokens.name);
+        }
 
         TokenBalance[] memory tokenBalances =
             getTokenBalances(adapter, adapterTokens.tokens, account);
@@ -102,7 +105,9 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
         returns (AdapterBalance memory)
     {
         address adapter = getAdapterAddress(adapterTokens.name);
-        require(adapter != address(0), "PAR: bad protocolAdapterName");
+        if (adapter == address(0)) {
+            revert BadProtocolAdapterName(adapterTokens.name);
+        }
 
         TokenBalance[] memory tokenBalances =
             getTokenBalances(adapter, adapterTokens.tokens, account);

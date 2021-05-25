@@ -17,6 +17,8 @@
 
 pragma solidity 0.8.4;
 
+import { ActionType, AmountType, PermitType, SwapType } from "./Enums.sol";
+
 // The struct consists of TokenBalanceMeta structs for
 // (base) token and its underlying tokens (if any).
 struct FullTokenBalance {

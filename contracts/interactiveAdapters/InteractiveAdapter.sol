@@ -19,8 +19,10 @@ pragma solidity 0.8.4;
 
 import { IInteractiveAdapter } from "../interfaces/IInteractiveAdapter.sol";
 import { ProtocolAdapter } from "../protocolAdapters/ProtocolAdapter.sol";
-import { TokenAmount, AmountType } from "../shared/Structs.sol";
 import { Base } from "../shared/Base.sol";
+import { AmountType } from "../shared/Enums.sol";
+import { ExceedingLimitAmount, NoneAmountType } from "../shared/Errors.sol";
+import { TokenAmount } from "../shared/Structs.sol";
 
 /**
  * @title Base contract for interactive protocol adapters.
@@ -73,16 +75,17 @@ abstract contract InteractiveAdapter is IInteractiveAdapter, ProtocolAdapter {
         AmountType amountType = tokenAmount.amountType;
         // TODO consider using uint256 amount = tokenAmount.amount
 
-        require(
-            amountType == AmountType.Relative || amountType == AmountType.Absolute,
-            "IA: bad amount type"
-        );
+        if (amountType == AmountType.None) {
+            revert NoneAmountType();
+        }
 
         if (amountType == AmountType.Absolute) {
             return tokenAmount.amount;
         }
 
-        require(tokenAmount.amount <= DELIMITER, "IA: bad amount");
+        if (tokenAmount.amount > DELIMITER) {
+            revert ExceedingLimitAmount(tokenAmount.amount);
+        }
 
         int256 balanceSigned = getBalance(tokenAmount.token, address(this));
         uint256 balance = balanceSigned > 0 ? uint256(balanceSigned) : uint256(-balanceSigned);
@@ -107,16 +110,17 @@ abstract contract InteractiveAdapter is IInteractiveAdapter, ProtocolAdapter {
     {
         AmountType amountType = tokenAmount.amountType;
 
-        require(
-            amountType == AmountType.Relative || amountType == AmountType.Absolute,
-            "IA: bad amount type"
-        );
+        if (amountType == AmountType.None) {
+            revert NoneAmountType();
+        }
 
         if (amountType == AmountType.Absolute) {
             return tokenAmount.amount;
         }
 
-        require(tokenAmount.amount <= DELIMITER, "IA: bad amount");
+        if (tokenAmount.amount > DELIMITER) {
+            revert ExceedingLimitAmount(tokenAmount.amount);
+        }
 
         uint256 balance = Base.getBalance(tokenAmount.token, address(this));
 

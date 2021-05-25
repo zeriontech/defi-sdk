@@ -18,6 +18,7 @@
 pragma solidity 0.8.4;
 
 import { ITokenAdapterNamesManager } from "../interfaces/ITokenAdapterNamesManager.sol";
+import { BadLength, ZeroLength } from "../shared/Errors.sol";
 import { Ownable } from "../shared/Ownable.sol";
 
 /**
@@ -40,8 +41,12 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
         bytes32[] calldata newTokenAdapterNames
     ) external override onlyOwner {
         uint256 length = tokens.length;
-        require(length != 0, "TANM: empty");
-        require(length == newTokenAdapterNames.length, "TANM: lengths differ");
+        if (length == 0) {
+            revert ZeroLength();
+        }
+        if (length != newTokenAdapterNames.length) {
+            revert BadLength(length, newTokenAdapterNames.length);
+        }
 
         for (uint256 i = 0; i < length; i++) {
             setTokenAdapterName(getTokenHash(tokens[i]), newTokenAdapterNames[i]);
@@ -59,8 +64,12 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
         bytes32[] calldata newTokenAdapterNames
     ) external override onlyOwner {
         uint256 length = tokens.length;
-        require(length != 0, "TANM: empty");
-        require(length == newTokenAdapterNames.length, "TANM: lengths differ");
+        if (length == 0) {
+            revert ZeroLength();
+        }
+        if (length != newTokenAdapterNames.length) {
+            revert BadLength(length, newTokenAdapterNames.length);
+        }
 
         for (uint256 i = 0; i < length; i++) {
             setTokenAdapterName(keccak256(abi.encodePacked(tokens[i])), newTokenAdapterNames[i]);
@@ -78,8 +87,12 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
         bytes32[] calldata newTokenAdapterNames
     ) external override onlyOwner {
         uint256 length = hashes.length;
-        require(length != 0, "TANM: empty");
-        require(length == newTokenAdapterNames.length, "TANM: lengths differ");
+        if (length == 0) {
+            revert ZeroLength();
+        }
+        if (length != newTokenAdapterNames.length) {
+            revert BadLength(length, newTokenAdapterNames.length);
+        }
 
         for (uint256 i = 0; i < length; i++) {
             setTokenAdapterName(hashes[i], newTokenAdapterNames[i]);

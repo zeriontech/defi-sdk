@@ -31,13 +31,27 @@ import { IRouter } from "../interfaces/IRouter.sol";
 import { IYearnPermit } from "../interfaces/IYearnPermit.sol";
 import { Base } from "../shared/Base.sol";
 import { Ownable } from "../shared/Ownable.sol";
+import { AmountType, PermitType, SwapType } from "../shared/Enums.sol";
+import {
+    BadAbsoluteInputAmount,
+    BadAccountFromSignature,
+    BadAmountType,
+    BadGetExactInputAmountReturnData,
+    ExceedingLimitAmount,
+    ExceedingLimitFee,
+    InsufficientMsgValue,
+    InsufficientOutputBalanceChange,
+    LargeExactInputAmount,
+    LargeInputBalanceChange,
+    NoneAmountType,
+    NonePermitType,
+    NoneSwapType,
+    ZeroBeneficiary
+} from "../shared/Errors.sol";
 import {
     AbsoluteTokenAmount,
-    AmountType,
     Input,
     Permit,
-    PermitType,
-    SwapType,
     SwapDescription,
     TokenAmount
 } from "../shared/Structs.sol";
@@ -79,7 +93,10 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         address payable beneficiary,
         uint256 amount
     ) external override onlyOwner {
-        require(beneficiary != address(0), "R: beneficiary");
+        if (beneficiary == address(0)) {
+            revert ZeroBeneficiary();
+        }
+
         Base.transfer(token, beneficiary, amount);
     }
 
@@ -179,7 +196,10 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         returns (uint256 inputBalanceChange, uint256 outputBalanceChange)
     {
         bytes32 hashedData = hashData(input, absoluteOutput, swapDescription, account, salt);
-        require(account == getAccountFromSignature(hashedData, signature), "R: bad signature");
+        address accountFromSignature = getAccountFromSignature(hashedData, signature);
+        if (account != accountFromSignature) {
+            revert BadAccountFromSignature(accountFromSignature, account);
+        }
 
         markHashUsed(hashedData, account);
 
@@ -237,9 +257,13 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
     ) internal returns (uint256 inputBalanceChange, uint256 outputBalanceChange) {
         // Validate fee correctness
         if (swapDescription.fee.share > 0) {
-            require(swapDescription.fee.beneficiary != address(0), "R: zero beneficiary");
+            if (swapDescription.fee.beneficiary == address(0)) {
+                revert ZeroBeneficiary();
+            }
+            if (swapDescription.fee.share > FEE_LIMIT) {
+                revert ExceedingLimitFee(swapDescription.fee.share);
+            }
         }
-        require(swapDescription.fee.share <= FEE_LIMIT, "R: bad fee");
 
         // Calculate absolute amount in case it was relative.
         uint256 absoluteInputAmount = getAbsoluteAmount(input.tokenAmount, account);
@@ -250,7 +274,9 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
 
         // Get the exact amount required for the caller.
         uint256 exactInputAmount = getExactInputAmount(absoluteInputAmount, swapDescription);
-        require(exactInputAmount <= absoluteInputAmount, "R: high exact input");
+        if (exactInputAmount > absoluteInputAmount) {
+            revert LargeExactInputAmount(exactInputAmount, absoluteInputAmount);
+        }
 
         // Transfer input token (except ETH) to destination address and handle fees (if any).
         handleInput(input, absoluteInputAmount, exactInputAmount, swapDescription, account);
@@ -280,8 +306,12 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         }
 
         // Check the requirements for the input and output tokens.
-        require(inputBalanceChange <= absoluteInputAmount, "R: high input");
-        require(outputBalanceChange >= absoluteOutput.absoluteAmount, "R: low output");
+        if (inputBalanceChange > absoluteInputAmount) {
+            revert LargeInputBalanceChange(inputBalanceChange, absoluteInputAmount);
+        }
+        if (outputBalanceChange < absoluteOutput.absoluteAmount) {
+            revert InsufficientOutputBalanceChange(outputBalanceChange, absoluteOutput.absoluteAmount);
+        }
 
         // Emit event so one could track the swap.
         emitExecuted(
@@ -351,7 +381,9 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         uint256 exactInputAmount,
         SwapDescription calldata swapDescription
     ) internal {
-        require(msg.value >= absoluteInputAmount, "R: bad msg.value");
+        if (msg.value < absoluteInputAmount) {
+            revert InsufficientMsgValue(msg.value, absoluteInputAmount);
+        }
 
         uint256 feeAmount = getFeeAmount(absoluteInputAmount, exactInputAmount, swapDescription);
 
@@ -385,7 +417,9 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         address account
     ) internal {
         if (token == address(0)) {
-            require(absoluteInputAmount == 0, "R: zero token");
+            if (absoluteInputAmount > 0) {
+                revert BadAbsoluteInputAmount(absoluteInputAmount, 0);
+            }
             return;
         }
 
@@ -468,17 +502,20 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         returns (uint256)
     {
         AmountType amountType = tokenAmount.amountType;
-        require(
-            amountType == AmountType.Relative || amountType == AmountType.Absolute,
-            "R: bad amount type"
-        );
+        if (amountType == AmountType.None) {
+            revert NoneAmountType();
+        }
 
         if (amountType == AmountType.Absolute) {
             return tokenAmount.amount;
         }
 
-        require(tokenAmount.token != address(0) && tokenAmount.token != ETH, "R: bad token");
-        require(tokenAmount.amount <= DELIMITER, "R: bad amount");
+        if (tokenAmount.token == address(0) || tokenAmount.token == ETH) {
+            revert BadAmountType(amountType, AmountType.Absolute);
+        }
+        if (tokenAmount.amount > DELIMITER) {
+            revert ExceedingLimitAmount(tokenAmount.amount);
+        }
         if (tokenAmount.amount == DELIMITER) {
             return IERC20(tokenAmount.token).balanceOf(account);
         } else {
@@ -503,10 +540,9 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         SwapDescription calldata swapDescription
     ) internal view returns (uint256 exactInputAmount) {
         SwapType swapType = swapDescription.swapType;
-        require(
-            swapType == SwapType.FixedInputs || swapType == SwapType.FixedOutputs,
-            "R: bad swapType"
-        );
+        if (swapType == SwapType.None) {
+            revert NoneSwapType();
+        }
 
         if (swapType == SwapType.FixedInputs) {
             if (swapDescription.fee.share > 0) {
@@ -521,7 +557,11 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
                 swapDescription.caller,
                 abi.encodePacked(ICaller.getExactInputAmount.selector, swapDescription.callData)
             );
-        require(returnData.length >= 32, "R: bad exactInputAmount");
+
+        if (returnData.length < 32) {
+            revert BadGetExactInputAmountReturnData(returnData);
+        }
+
         return abi.decode(returnData, (uint256));
     }
 
@@ -545,15 +585,12 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
 
     /**
      * @param permitType PermitType enum variable with permit type.
-     * @return permit() function signature corresponding to the given permit type.
+     * @return selector permit() function signature corresponding to the given permit type.
      */
-    function getPermitSelector(PermitType permitType) internal pure returns (bytes4) {
-        require(
-            permitType == PermitType.EIP2612 ||
-                permitType == PermitType.DAI ||
-                permitType == PermitType.Yearn,
-            "R: bad permit type"
-        );
+    function getPermitSelector(PermitType permitType) internal pure returns (bytes4 selector) {
+        if (permitType == PermitType.None) {
+            revert NonePermitType();
+        }
 
         // Constants of non-value type not yet implemented,
         // so we have to use else-if's.
@@ -571,9 +608,11 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
 
         if (permitType == PermitType.EIP2612) {
             return IEIP2612.permit.selector;
-        } else if (permitType == PermitType.DAI) {
+        }
+        if (permitType == PermitType.DAI) {
             return IDAIPermit.permit.selector;
-        } else if (permitType == PermitType.Yearn) {
+        }
+        if (permitType == PermitType.Yearn) {
             return IYearnPermit.permit.selector;
         }
     }

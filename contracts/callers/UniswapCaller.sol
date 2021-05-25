@@ -23,8 +23,15 @@ import { BaseCaller } from "./BaseCaller.sol";
 import { ICaller } from "../interfaces/ICaller.sol";
 import { IUniswapV2Pair } from "../interfaces/IUniswapV2Pair.sol";
 import { IWETH9 } from "../interfaces/IWETH9.sol";
-import { AbsoluteInput, SwapType } from "../shared/Structs.sol";
 import { Base } from "../shared/Base.sol";
+import { SwapType } from "../shared/Enums.sol";
+import {
+    BadGetExactInputAmountCallData,
+    ZeroSwapPath,
+    ZeroAmountOut,
+    ZeroLiquidity
+} from "../shared/Errors.sol";
+import { AbsoluteInput} from "../shared/Structs.sol";
 
 /**
  * @title Uniswap caller that executes swaps on UniswapV2-like pools.
@@ -43,7 +50,6 @@ contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
      * @dev Implementation of Caller interface function.
      */
     function callBytes(bytes calldata callData) external payable override nonReentrant {
-        require(callData.length % 32 == 0, "UC: bad callData[1]");
         (address[] memory pairs, bool[] memory directions, SwapType swapType, uint256 amount) =
             abi.decode(callData, (address[], bool[], SwapType, uint256));
         address payable account = getAccount();
@@ -88,7 +94,9 @@ contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
         override
         returns (uint256 exactAbsoluteInputAmount)
     {
-        require(callData.length % 32 == 0, "UC: bad callData[2]");
+        if (callData.length % 32 != 0) {
+            revert BadGetExactInputAmountCallData(callData);
+        }
         (address[] memory pairs, bool[] memory directions, , uint256 amount, ) =
             abi.decode(callData, (address[], bool[], SwapType, uint256, address));
 
@@ -118,7 +126,9 @@ contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
         bool[] memory directions
     ) internal view returns (uint256[] memory amountsIn) {
         uint256 length = pairs.length;
-        require(length > 0, "UC: bad path");
+        if (length == 0) {
+            revert ZeroSwapPath();
+        }
 
         amountsIn = new uint256[](pairs.length + 1);
         amountsIn[length] = amountOut;
@@ -145,7 +155,9 @@ contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
         bool[] memory directions
     ) internal view returns (uint256[] memory amountsOut) {
         uint256 length = pairs.length;
-        require(length > 0, "UC: bad path");
+        if (length == 0) {
+            revert ZeroSwapPath();
+        }
 
         amountsOut = new uint256[](length + 1);
         amountsOut[0] = amountIn;
@@ -174,8 +186,12 @@ contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
         (uint256 reserveIn, uint256 reserveOut) =
             direction ? (reserve0, reserve1) : (reserve1, reserve0);
 
-        require(amountOut > 0, "UC: 0 amount");
-        require(reserveIn > 0 && reserveOut > 0, "UC: 0 liquidity");
+        if (amountOut == 0) {
+            revert ZeroAmountOut();
+        }
+        if (reserveIn == 0 || reserveOut == 0) {
+            revert ZeroLiquidity();
+        }
 
         uint256 numerator = reserveIn * amountOut * 1000;
         uint256 denominator = (reserveOut - amountOut) * 997;
@@ -200,8 +216,12 @@ contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
         (uint256 reserveIn, uint256 reserveOut) =
             direction ? (reserve0, reserve1) : (reserve1, reserve0);
 
-        require(amountIn > 0, "UC: 0 amount");
-        require(reserveIn > 0 && reserveOut > 0, "UC: 0 liquidity");
+        if (amountOut == 0) {
+            revert ZeroAmountOut();
+        }
+        if (reserveIn == 0 || reserveOut == 0) {
+            revert ZeroLiquidity();
+        }
 
         uint256 amountInWithFee = amountIn * 997;
         uint256 numerator = amountInWithFee * reserveOut;

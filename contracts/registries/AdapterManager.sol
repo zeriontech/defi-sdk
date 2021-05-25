@@ -18,6 +18,7 @@
 pragma solidity 0.8.4;
 
 import { IAdapterManager } from "../interfaces/IAdapterManager.sol";
+import { BadLength, ZeroLength } from "../shared/Errors.sol";
 import { Ownable } from "../shared/Ownable.sol";
 
 /**
@@ -41,8 +42,12 @@ abstract contract AdapterManager is IAdapterManager, Ownable {
         onlyOwner
     {
         uint256 length = adapterNames.length;
-        require(length != 0, "AM: empty");
-        require(length == newAdapterAddresses.length, "AM: lengths differ");
+        if (length == 0) {
+            revert ZeroLength();
+        }
+        if (length != newAdapterAddresses.length) {
+            revert BadLength(newAdapterAddresses.length, length);
+        }
 
         for (uint256 i = 0; i < length; i++) {
             setAdapter(adapterNames[i], newAdapterAddresses[i]);
