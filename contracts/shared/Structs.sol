@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.1;
+pragma solidity 0.8.4;
 
 // The struct consists of TokenBalanceMeta structs for
 // (base) token and its underlying tokens (if any).
@@ -132,11 +132,3 @@ struct AbsoluteTokenAmount {
     address token;
     uint256 absoluteAmount;
 }
-
-enum ActionType { None, Deposit, Withdraw }
-
-enum AmountType { None, Relative, Absolute }
-
-enum SwapType { None, FixedInputs, FixedOutputs }
-
-enum PermitType { None, EIP2612, DAI, Yearn }
