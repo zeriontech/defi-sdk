@@ -17,6 +17,8 @@
 
 pragma solidity 0.8.4;
 
+import { AdapterNameAndAddress } from "../shared/Structs.sol";
+
 /**
  * @title Contract responsible for adapters management.
  * @dev Interface for ProtocolAdapterRegistry and TokenAdaptersRegistry.
@@ -37,11 +39,10 @@ interface IAdapterManager {
 
     /**
      * @notice Sets adapters (adds, updates or removes).
-     * @param adapterNames Array of the new adapters' names.
-     * @param newAdapterAddresses Array of the new adapters' addresses.
+     * @param adaptersNamesAndAddresses Array of the new adapters' names and addresses.
      * @dev Can be called only by this contract's owner.
      */
-    function setAdapters(bytes32[] calldata adapterNames, address[] calldata newAdapterAddresses)
+    function setAdapters(AdapterNameAndAddress[] calldata adaptersNamesAndAddresses)
         external;
 
     /**

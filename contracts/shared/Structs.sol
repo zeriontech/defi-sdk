@@ -19,6 +19,27 @@ pragma solidity 0.8.4;
 
 import { ActionType, AmountType, PermitType, SwapType } from "./Enums.sol";
 
+//=============================== Adapters Managers Structs ====================================
+
+// The struct consists of adapter name and address.
+struct AdapterNameAndAddress {
+    bytes32 name;
+    address adapter;
+}
+
+// The struct consists of token and its adapter name.
+struct TokenAndAdapterName {
+    address token;
+    bytes32 name;
+}
+
+// The struct consists of hash (hash of token's bytecode or address)
+// and its adapter name.
+struct HashAndAdapterName {
+    bytes32 hash;
+    bytes32 name;
+}
+
 // The struct consists of TokenBalanceMeta structs for
 // (base) token and its underlying tokens (if any).
 struct FullTokenBalance {

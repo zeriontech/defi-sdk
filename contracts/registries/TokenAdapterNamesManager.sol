@@ -20,6 +20,7 @@ pragma solidity 0.8.4;
 import { ITokenAdapterNamesManager } from "../interfaces/ITokenAdapterNamesManager.sol";
 import { BadLength, ZeroLength } from "../shared/Errors.sol";
 import { Ownable } from "../shared/Ownable.sol";
+import { HashAndAdapterName, TokenAndAdapterName } from "../shared/Structs.sol";
 
 /**
  * @title TokenAdapterRegistry part responsible for contracts' hashes management.
@@ -32,76 +33,67 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
 
     /**
      * @notice Sets token adapters' names by tokens' hashes using tokens addresses.
-     * @param tokens Array of tokens addresses.
-     * @param newTokenAdapterNames Array of new token adapters' names.
+     * @param tokensAndAdapterNames Array of tokens addresses and new token adapters' names.
      * @dev Can be called only by this contract's owner.
      */
     function setTokenAdapterNamesByHashes(
-        address[] calldata tokens,
-        bytes32[] calldata newTokenAdapterNames
+        TokenAndAdapterName[] calldata tokensAndAdapterNames
     ) external override onlyOwner {
-        uint256 length = tokens.length;
+        uint256 length = tokensAndAdapterNames.length;
         if (length == 0) {
             revert ZeroLength();
         }
-        if (length != newTokenAdapterNames.length) {
-            revert BadLength(length, newTokenAdapterNames.length);
-        }
 
         for (uint256 i = 0; i < length; i++) {
-            setTokenAdapterName(getTokenHash(tokens[i]), newTokenAdapterNames[i]);
+            setTokenAdapterName(
+                getTokenHash(tokensAndAdapterNames[i].token),
+                tokensAndAdapterNames[i].name
+            );
         }
     }
 
     /**
      * @notice Sets token adapters' names by tokens addresses.
-     * @param tokens Array of tokens addresses.
-     * @param newTokenAdapterNames Array of new token adapters' names.
+     * @param tokensAndAdapterNames Array of tokens addresses and new token adapters' names.
      * @dev Can be called only by this contract's owner.
      */
     function setTokenAdapterNamesByTokens(
-        address[] calldata tokens,
-        bytes32[] calldata newTokenAdapterNames
+        TokenAndAdapterName[] calldata tokensAndAdapterNames
     ) external override onlyOwner {
-        uint256 length = tokens.length;
+        uint256 length = tokensAndAdapterNames.length;
         if (length == 0) {
             revert ZeroLength();
         }
-        if (length != newTokenAdapterNames.length) {
-            revert BadLength(length, newTokenAdapterNames.length);
-        }
 
         for (uint256 i = 0; i < length; i++) {
-            setTokenAdapterName(keccak256(abi.encodePacked(tokens[i])), newTokenAdapterNames[i]);
+            setTokenAdapterName(
+                keccak256(abi.encodePacked(tokensAndAdapterNames[i].token)),
+                tokensAndAdapterNames[i].name
+            );
         }
     }
 
     /**
      * @notice Sets token adapters' names using hashes.
-     * @param hashes Array of hashes.
-     * @param newTokenAdapterNames Array of new token adapters' names.
+     * @param hashesAndAdapterNames Array of hashes and new token adapters' names.
      * @dev Can be called only by this contract's owner.
      */
     function setTokenAdapterNames(
-        bytes32[] calldata hashes,
-        bytes32[] calldata newTokenAdapterNames
+        HashAndAdapterName[] calldata hashesAndAdapterNames
     ) external override onlyOwner {
-        uint256 length = hashes.length;
+        uint256 length = hashesAndAdapterNames.length;
         if (length == 0) {
             revert ZeroLength();
         }
-        if (length != newTokenAdapterNames.length) {
-            revert BadLength(length, newTokenAdapterNames.length);
-        }
 
         for (uint256 i = 0; i < length; i++) {
-            setTokenAdapterName(hashes[i], newTokenAdapterNames[i]);
+            setTokenAdapterName(hashesAndAdapterNames[i].hash, hashesAndAdapterNames[i].name);
         }
     }
 
     /**
-     * @param token Address of token.
-     * @return Name of token adapter.
+     * @param token Address of the token.
+     * @return Name of the token adapter.
      */
     function getTokenAdapterName(address token) public view override returns (bytes32) {
         bytes32 tokenAdapterName = _tokenAdapterName[keccak256(abi.encodePacked(token))];
@@ -114,12 +106,10 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
     }
 
     /**
-     * @param token Address of token.
-     * @return Hash of token's bytecode.
+     * @param token Address of the token.
+     * @return hash Hash of the token's bytecode.
      */
-    function getTokenHash(address token) public view override returns (bytes32) {
-        bytes32 hash;
-
+    function getTokenHash(address token) public view override returns (bytes32 hash) {
         // solhint-disable-next-line no-inline-assembly
         assembly {
             hash := extcodehash(token)
@@ -130,12 +120,12 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
 
     /**
      * @dev Sets token adapters' name by hash.
-     * @param hash Hash.
-     * @param newTokenAdapterName New token adapter's name.
+     * @param hash Hash of token's bytecode or address.
+     * @param name Token adapter's name.
      */
-    function setTokenAdapterName(bytes32 hash, bytes32 newTokenAdapterName) internal {
-        emit TokenAdapterNameSet(hash, _tokenAdapterName[hash], newTokenAdapterName);
+    function setTokenAdapterName(bytes32 hash, bytes32 name) internal {
+        emit TokenAdapterNameSet(hash, _tokenAdapterName[hash], name);
 
-        _tokenAdapterName[hash] = newTokenAdapterName;
+        _tokenAdapterName[hash] = name;
     }
 }

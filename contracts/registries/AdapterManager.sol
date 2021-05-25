@@ -19,6 +19,7 @@ pragma solidity 0.8.4;
 
 import { IAdapterManager } from "../interfaces/IAdapterManager.sol";
 import { BadLength, ZeroLength } from "../shared/Errors.sol";
+import { AdapterNameAndAddress } from "../shared/Structs.sol";
 import { Ownable } from "../shared/Ownable.sol";
 
 /**
@@ -28,48 +29,48 @@ import { Ownable } from "../shared/Ownable.sol";
  */
 abstract contract AdapterManager is IAdapterManager, Ownable {
     // Adapter's name => adapter's address
-    mapping(bytes32 => address) private _adapterAddress;
+    mapping(bytes32 => address) private _adapter;
 
     /**
      * @notice Sets adapters (adds, updates or removes).
-     * @param adapterNames Array of the new adapters' names.
-     * @param newAdapterAddresses Array of the new adapters' addresses.
+     * @param adaptersNamesAndAddresses Array of the new adapters' names and addresses.
      * @dev Can be called only by this contract's owner.
      */
-    function setAdapters(bytes32[] calldata adapterNames, address[] calldata newAdapterAddresses)
+    function setAdapters(AdapterNameAndAddress[] calldata adaptersNamesAndAddresses)
         external
         override
         onlyOwner
     {
-        uint256 length = adapterNames.length;
+        uint256 length = adaptersNamesAndAddresses.length;
         if (length == 0) {
             revert ZeroLength();
         }
-        if (length != newAdapterAddresses.length) {
-            revert BadLength(newAdapterAddresses.length, length);
-        }
 
         for (uint256 i = 0; i < length; i++) {
-            setAdapter(adapterNames[i], newAdapterAddresses[i]);
+            setAdapter(adaptersNamesAndAddresses[i].name, adaptersNamesAndAddresses[i].adapter);
         }
     }
 
     /**
-     * @param adapterName Name of the adapter.
-     * @return Address of adapter.
+     * @param name Name of the adapter.
+     * @return adapter Address of the adapter.
      */
-    function getAdapterAddress(bytes32 adapterName) public view override returns (address) {
-        return _adapterAddress[adapterName];
+    function getAdapterAddress(bytes32 name) public view override returns (address adapter) {
+        return _adapter[name];
     }
 
     /**
-     * @dev Sets an adapter.
-     * @param adapterName Adapter's name.
-     * @param newAdapterAddress New adapter's address.
+     * @dev Sets an adapter address.
+     * @param name Adapter's name.
+     * @param adapter Adapter's address.
      */
-    function setAdapter(bytes32 adapterName, address newAdapterAddress) internal {
-        emit AdapterSet(adapterName, _adapterAddress[adapterName], newAdapterAddress);
+    function setAdapter(bytes32 name, address adapter) internal {
+        emit AdapterSet(
+            name,
+            _adapter[name],
+            adapter
+        );
 
-        _adapterAddress[adapterName] = newAdapterAddress;
+        _adapter[name] = adapter;
     }
 }

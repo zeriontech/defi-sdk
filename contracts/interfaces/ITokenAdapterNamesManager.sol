@@ -17,6 +17,8 @@
 
 pragma solidity 0.8.4;
 
+import { HashAndAdapterName, TokenAndAdapterName } from "../shared/Structs.sol";
+
 /**
  * @title TokenAdapterRegistry part responsible for contracts' hashes management.
  * @dev Interface for TokenAdapterRegistry.
@@ -37,35 +39,29 @@ interface ITokenAdapterNamesManager {
 
     /**
      * @notice Sets token adapters' names by tokens' hashes using tokens addresses.
-     * @param tokens Array of tokens addresses.
-     * @param newTokenAdapterNames Array of new token adapters' names.
+     * @param tokensAndAdapterNames Array of tokens addresses and new token adapters' names.
      * @dev Can be called only by this contract's owner.
      */
     function setTokenAdapterNamesByHashes(
-        address[] calldata tokens,
-        bytes32[] calldata newTokenAdapterNames
+        TokenAndAdapterName[] calldata tokensAndAdapterNames
     ) external;
 
     /**
      * @notice Sets token adapters' names by tokens addresses.
-     * @param tokens Array of tokens addresses.
-     * @param newTokenAdapterNames Array of new token adapters' names.
+     * @param tokensAndAdapterNames Array of tokens addresses and new token adapters' names.
      * @dev Can be called only by this contract's owner.
      */
     function setTokenAdapterNamesByTokens(
-        address[] calldata tokens,
-        bytes32[] calldata newTokenAdapterNames
+        TokenAndAdapterName[] calldata tokensAndAdapterNames
     ) external;
 
     /**
      * @notice Sets token adapters' names using hashes.
-     * @param hashes Array of hashes.
-     * @param newTokenAdapterNames Array of new token adapters' names.
+     * @param hashesAndAdapterNames Array of hashes and new token adapters' names.
      * @dev Can be called only by this contract's owner.
      */
     function setTokenAdapterNames(
-        bytes32[] calldata hashes,
-        bytes32[] calldata newTokenAdapterNames
+        HashAndAdapterName[] calldata hashesAndAdapterNames
     ) external;
 
     /**
