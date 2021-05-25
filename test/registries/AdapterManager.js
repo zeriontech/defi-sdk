@@ -29,23 +29,20 @@ describe('AdapterManager', () => {
 
   it('should not set adapters with 0 length', async () => {
     await expect(
-      adapterRegistry.setAdapters([], [mockProtocolAdapter.address]),
-    ).to.be.reverted;
-  });
-
-  it('should not set adapters with different lengths', async () => {
-    await expect(
       adapterRegistry.setAdapters(
-        [ethers.utils.formatBytes32String('Mock')],
-        [mockProtocolAdapter.address, mockProtocolAdapter.address],
+        [],
       ),
     ).to.be.reverted;
   });
 
   it('should set adapters', async () => {
     await adapterRegistry.setAdapters(
-      [ethers.utils.formatBytes32String('Mock')],
-      [mockProtocolAdapter.address],
+      [
+        [
+          ethers.utils.formatBytes32String('Mock'),
+          mockProtocolAdapter.address,
+        ],
+      ],
     );
 
     let address = await adapterRegistry.getAdapterAddress(
@@ -56,15 +53,23 @@ describe('AdapterManager', () => {
 
   it('should perlace adapters', async () => {
     await adapterRegistry.setAdapters(
-      [ethers.utils.formatBytes32String('Mock')],
-      [mockProtocolAdapter.address],
+      [
+        [
+          ethers.utils.formatBytes32String('Mock'),
+          mockProtocolAdapter.address,
+        ],
+      ],
     );
 
     const newMockProtocolAdapter = await deployMockContract(owner, ProtocolAdapterArtifacts.abi);
 
     await adapterRegistry.setAdapters(
-      [ethers.utils.formatBytes32String('Mock')],
-      [newMockProtocolAdapter.address],
+      [
+        [
+          ethers.utils.formatBytes32String('Mock'),
+          newMockProtocolAdapter.address,
+        ],
+      ],
     );
 
     let address = await adapterRegistry.getAdapterAddress(

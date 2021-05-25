@@ -182,13 +182,13 @@ contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
         address pair,
         bool direction
     ) internal view returns (uint256 amountIn) {
-        (uint256 reserve0, uint256 reserve1, ) = IUniswapV2Pair(pair).getReserves();
-        (uint256 reserveIn, uint256 reserveOut) =
-            direction ? (reserve0, reserve1) : (reserve1, reserve0);
-
         if (amountOut == 0) {
             revert ZeroAmountOut();
         }
+
+        (uint256 reserve0, uint256 reserve1, ) = IUniswapV2Pair(pair).getReserves();
+        (uint256 reserveIn, uint256 reserveOut) =
+            direction ? (reserve0, reserve1) : (reserve1, reserve0);
         if (reserveIn == 0 || reserveOut == 0) {
             revert ZeroLiquidity();
         }
@@ -212,13 +212,13 @@ contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
         address pair,
         bool direction
     ) internal view returns (uint256 amountOut) {
+        if (amountIn == 0) {
+            revert ZeroAmountOut();
+        }
+
         (uint256 reserve0, uint256 reserve1, ) = IUniswapV2Pair(pair).getReserves();
         (uint256 reserveIn, uint256 reserveOut) =
             direction ? (reserve0, reserve1) : (reserve1, reserve0);
-
-        if (amountOut == 0) {
-            revert ZeroAmountOut();
-        }
         if (reserveIn == 0 || reserveOut == 0) {
             revert ZeroLiquidity();
         }

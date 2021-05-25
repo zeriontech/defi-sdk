@@ -222,10 +222,12 @@ describe('UniswapCaller', () => {
   });
 
   it('should execute uni weth -> dai swap (fixed inputs)', async () => {
-    await buyTokenOnUniswap(owner, daiAddress);
     await weth.approve(router.address, ethers.utils.parseUnits('1', 18));
     logger.info(
       `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
+    );
+    logger.info(
+      `weth balance is ${ethers.utils.formatUnits(await weth.balanceOf(owner.address), 18)}`,
     );
     const tx = await router.functions[EXECUTE_SIGNATURE](
       // input
@@ -234,7 +236,7 @@ describe('UniswapCaller', () => {
         ['0', EMPTY_BYTES],
       ],
       // output
-      [daiAddress, ethers.utils.parseUnits('500', 18)],
+      [daiAddress, ethers.utils.parseUnits('100', 18)],
       // swap description
       [
         SWAP_FIXED_INPUTS,
@@ -256,6 +258,9 @@ describe('UniswapCaller', () => {
     logger.info(
       `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
     );
+    logger.info(
+      `weth balance is ${ethers.utils.formatUnits(await weth.balanceOf(owner.address), 18)}`,
+    );
   });
 
   it('should not execute uni eth -> dai swap (fixed inputs) with empty path', async () => {
@@ -267,7 +272,7 @@ describe('UniswapCaller', () => {
           ['0', EMPTY_BYTES],
         ],
         // output
-        [daiAddress, ethers.utils.parseUnits('1000', 18)],
+        [daiAddress, ethers.utils.parseUnits('100', 18)],
         // swap description
         [
           SWAP_FIXED_INPUTS,
@@ -302,7 +307,7 @@ describe('UniswapCaller', () => {
         ['0', EMPTY_BYTES],
       ],
       // output
-      [daiAddress, ethers.utils.parseUnits('1000', 18)],
+      [daiAddress, ethers.utils.parseUnits('100', 18)],
       // swap description
       [
         SWAP_FIXED_INPUTS,

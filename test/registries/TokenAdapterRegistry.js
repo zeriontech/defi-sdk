@@ -23,7 +23,14 @@ describe('TokenAdapterRegistry', () => {
 
   beforeEach(async () => {
     adapterRegistry = await AdapterRegistry.deploy();
-    await adapterRegistry.setAdapters([HashZero], [mockTokenAdapter.address]);
+    await adapterRegistry.setAdapters(
+      [
+        [
+          HashZero,
+          mockTokenAdapter.address,
+        ],
+      ],
+    );
     await mockTokenAdapter.mock.getUnderlyingTokenBalances.returns([]);
     await mockTokenAdapter.mock.getMetadata.returns(['Name', 'Symbol', 18]);
   });
@@ -127,7 +134,7 @@ describe('TokenAdapterRegistry', () => {
   });
 
   it('should get full token balance without adapter', async () => {
-    await adapterRegistry.setAdapters([HashZero], [AddressZero]);
+    await adapterRegistry.setAdapters([[HashZero, AddressZero]]);
     const [fullTokenBalance] = await adapterRegistry.callStatic[
       'getFullTokenBalances((address,int256)[])'
     ]([[wethAddress, '100']]);

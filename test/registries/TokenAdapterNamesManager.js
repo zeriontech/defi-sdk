@@ -26,27 +26,18 @@ describe('TokenAdapterNamesManager', () => {
     await expect(
       adapterRegistry.setTokenAdapterNamesByHashes(
         [],
-        [ethers.utils.formatBytes32String('UniswapV2')],
       ),
-    ).to.be.revertedWith('TANM: empty');
-  });
-
-  it('should not set adapters names by hashes with different lengths', async () => {
-    await expect(
-      adapterRegistry.setTokenAdapterNamesByHashes(
-        [uniDaiEthAddress],
-        [
-          ethers.utils.formatBytes32String('UniswapV2'),
-          ethers.utils.formatBytes32String('UniswapV2'),
-        ],
-      ),
-    ).to.be.revertedWith('TANM: lengths differ');
+    ).to.be.reverted;
   });
 
   it('should set adapters names by hashes', async () => {
     await adapterRegistry.setTokenAdapterNamesByHashes(
-      [uniDaiEthAddress],
-      [ethers.utils.formatBytes32String('UniswapV2')],
+      [
+        [
+          uniDaiEthAddress,
+          ethers.utils.formatBytes32String('UniswapV2'),
+        ],
+      ],
     );
 
     let name = await adapterRegistry.getTokenAdapterName(uniDaiEthAddress);
@@ -60,27 +51,18 @@ describe('TokenAdapterNamesManager', () => {
     await expect(
       adapterRegistry.setTokenAdapterNamesByTokens(
         [],
-        [ethers.utils.formatBytes32String('UniswapV2')],
       ),
-    ).to.be.revertedWith('TANM: empty');
-  });
-
-  it('should not set adapters names by tokens with different lengths', async () => {
-    await expect(
-      adapterRegistry.setTokenAdapterNamesByTokens(
-        [uniDaiEthAddress],
-        [
-          ethers.utils.formatBytes32String('UniswapV2'),
-          ethers.utils.formatBytes32String('UniswapV2'),
-        ],
-      ),
-    ).to.be.revertedWith('TANM: lengths differ');
+    ).to.be.reverted;
   });
 
   it('should set adapters names by tokens', async () => {
     await adapterRegistry.setTokenAdapterNamesByTokens(
-      [uniDaiEthAddress],
-      [ethers.utils.formatBytes32String('UniswapV2')],
+      [
+        [
+          uniDaiEthAddress,
+          ethers.utils.formatBytes32String('UniswapV2'),
+        ],
+      ],
     );
 
     let name = await adapterRegistry.getTokenAdapterName(uniDaiEthAddress);
@@ -89,26 +71,20 @@ describe('TokenAdapterNamesManager', () => {
 
   it('should not set adapters nameswith 0 length', async () => {
     await expect(
-      adapterRegistry.setTokenAdapterNames([], [ethers.utils.formatBytes32String('UniswapV2')]),
-    ).to.be.revertedWith('TANM: empty');
-  });
-
-  it('should not set adapters nameswith different lengths', async () => {
-    await expect(
       adapterRegistry.setTokenAdapterNames(
-        ['0xf4cf7fdef2319300c5fbaf8213a507362bc4dd64c9d4c40a27d04e19ed1a4f82'],
-        [
-          ethers.utils.formatBytes32String('UniswapV2'),
-          ethers.utils.formatBytes32String('UniswapV2'),
-        ],
+        [],
       ),
-    ).to.be.revertedWith('TANM: lengths differ');
+    ).to.be.reverted;
   });
 
   it('should set adapters names', async () => {
     await adapterRegistry.setTokenAdapterNames(
-      ['0xf4cf7fdef2319300c5fbaf8213a507362bc4dd64c9d4c40a27d04e19ed1a4f82'],
-      [ethers.utils.formatBytes32String('UniswapV2')],
+      [
+        [
+          '0xf4cf7fdef2319300c5fbaf8213a507362bc4dd64c9d4c40a27d04e19ed1a4f82',
+          ethers.utils.formatBytes32String('UniswapV2'),
+        ],
+      ],
     );
 
     let name = await adapterRegistry.getTokenAdapterName(uniDaiEthAddress);

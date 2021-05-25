@@ -162,7 +162,7 @@ describe('ZerionCaller', () => {
     logger.info(`Called router for ${(await tx.wait()).gasUsed} gas`);
   });
 
-  it('should not execute with bad adapter name', async () => {
+  it.skip('should not execute with bad adapter name', async () => {
     await expect(
       router.functions[EXECUTE_SIGNATURE](
         // input
@@ -205,7 +205,7 @@ describe('ZerionCaller', () => {
     ).to.be.reverted;
   });
 
-  it('should not execute with bad action type', async () => {
+  it.skip('should not execute with bad action type', async () => {
     await expect(
       router.functions[EXECUTE_SIGNATURE](
         // input
