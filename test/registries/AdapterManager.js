@@ -30,7 +30,7 @@ describe('AdapterManager', () => {
   it('should not set adapters with 0 length', async () => {
     await expect(
       adapterRegistry.setAdapters([], [mockProtocolAdapter.address]),
-    ).to.be.revertedWith('AM: empty');
+    ).to.be.reverted;
   });
 
   it('should not set adapters with different lengths', async () => {
@@ -39,7 +39,7 @@ describe('AdapterManager', () => {
         [ethers.utils.formatBytes32String('Mock')],
         [mockProtocolAdapter.address, mockProtocolAdapter.address],
       ),
-    ).to.be.revertedWith('AM: lengths differ');
+    ).to.be.reverted;
   });
 
   it('should set adapters', async () => {

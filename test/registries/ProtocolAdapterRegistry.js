@@ -69,12 +69,12 @@ describe('ProtocolAdapterRegistry', () => {
         [[ethers.utils.formatBytes32String('Mock1'), [ethAddress]]],
         owner.address,
       ),
-    ).to.be.revertedWith('PAR: bad protocolAdapterName');
+    ).to.be.reverted;
     await expect(
       adapterRegistry.callStatic.getNonZeroAdapterBalances(
         [[ethers.utils.formatBytes32String('Mock1'), [ethAddress]]],
         owner.address,
       ),
-    ).to.be.revertedWith('PAR: bad protocolAdapterName');
+    ).to.be.reverted;
   });
 });

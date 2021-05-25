@@ -49,8 +49,12 @@ describe('ZerionCaller', () => {
     caller = await Caller.deploy(protocolAdapterRegistry.address);
     mockInteractiveAdapter = await MockInteractiveAdapter.deploy();
     await protocolAdapterRegistry.setAdapters(
-      [ethers.utils.formatBytes32String('Mock')],
-      [mockInteractiveAdapter.address],
+      [
+        [
+          ethers.utils.formatBytes32String('Mock'),
+          mockInteractiveAdapter.address,
+        ],
+      ],
     );
   });
 
@@ -63,9 +67,7 @@ describe('ZerionCaller', () => {
   });
 
   it('should not deploy caller with no protocolAdapterRegistry', async () => {
-    await expect(Caller.deploy(AddressZero)).to.be.revertedWith(
-      'C: empty protocolAdapterRegistry',
-    );
+    await expect(Caller.deploy(AddressZero)).to.be.reverted;
   });
 
   it('should execute with mock adapter deposit', async () => {
@@ -200,7 +202,7 @@ describe('ZerionCaller', () => {
           value: '100',
         },
       ),
-    ).to.be.revertedWith('ZC: bad name');
+    ).to.be.reverted;
   });
 
   it('should not execute with bad action type', async () => {
@@ -234,7 +236,7 @@ describe('ZerionCaller', () => {
           value: '100',
         },
       ),
-    ).to.be.revertedWith('ZC: bad action type');
+    ).to.be.reverted;
   });
 
   it('should not execute with fixed outputs', async () => {
@@ -268,6 +270,6 @@ describe('ZerionCaller', () => {
           value: '100',
         },
       ),
-    ).to.be.revertedWith('ZC: fixed outputs');
+    ).to.be.reverted;
   });
 });
