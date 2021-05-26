@@ -10,3 +10,4 @@ cache
 *.log
 *.env
 *.md
+ZeroExOrdersV2InteractiveAdapter.sol
