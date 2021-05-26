@@ -24,7 +24,7 @@ struct TypedToken {
     address token;
 }
 
-interface AdapterRegistry {
+interface IAdapterRegistry {
 
     function isValidTokenAdapter(
         string calldata tokenAdapterName
@@ -40,8 +40,8 @@ interface AdapterRegistry {
  */
 contract BerezkaTokenAdapterGovernance is Ownable {
 
-    AdapterRegistry internal constant ADAPTER_REGISTRY =
-        AdapterRegistry(0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672);
+    IAdapterRegistry internal constant ADAPTER_REGISTRY =
+        IAdapterRegistry(0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672);
 
     using EnumerableSet for EnumerableSet.AddressSet;
 
