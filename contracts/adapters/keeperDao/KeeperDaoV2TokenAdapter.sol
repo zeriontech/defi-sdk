@@ -44,7 +44,7 @@ interface LiquidityPoolV2 {
  * @dev Implementation of TokenAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract KeeperDaoTokenAdapter is TokenAdapter {
+contract KeeperDaoV2TokenAdapter is TokenAdapter {
 
     address internal constant POOL = 0xAaE0633E15200bc9C50d45cD762477D268E126BD;
 

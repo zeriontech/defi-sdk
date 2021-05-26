@@ -25,7 +25,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract KeeperDaoAssetAdapter is ProtocolAdapter {
+contract KeeperDaoV2AssetAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
