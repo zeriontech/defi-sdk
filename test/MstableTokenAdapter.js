@@ -1,6 +1,6 @@
 const TokenAdapter = artifacts.require('MstableTokenAdapter');
 
-contract.only('MstableTokenAdapter', () => {
+contract('MstableTokenAdapter', () => {
   const musdAddress = '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5';
   const mbtcAddress = '0x945Facb997494CC2570096c74b5F66A3507330a1';
   const busdFeederPoolAddress = '0xfE842e95f8911dcc21c943a1dAA4bd641a1381c6';
@@ -45,7 +45,7 @@ contract.only('MstableTokenAdapter', () => {
       });
   });
 
-  it.only('should return correct components for busd feeder pool', async () => {
+  it('should return correct components for busd feeder pool', async () => {
     await tokenAdapter.methods['getComponents(address)'](busdFeederPoolAddress)
       .call()
       .then((result) => {
