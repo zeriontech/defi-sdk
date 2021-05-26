@@ -14,6 +14,7 @@ contract.only('KeeperDaoV2AssetAdapter', () => {
 
   let accounts;
   let adapterRegistry;
+  let tokenAdapter;
   let protocolAdapterAddress;
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
@@ -33,6 +34,7 @@ contract.only('KeeperDaoV2AssetAdapter', () => {
     await TokenAdapter.new({ from: accounts[0] })
       .then((result) => {
         tokenAdapterAddress = result.address;
+        tokenAdapter = result.contract;
       });
     await ERC20TokenAdapter.new({ from: accounts[0] })
       .then((result) => {
