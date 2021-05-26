@@ -63,14 +63,8 @@ contract ZeroExOrdersV2InteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
         ERC20(token).safeApproveMax(ZERO_EX_EXCHANGE, amount, "ZEOV2IA");
 
         tokensToBeWithdrawn = new address[](1);
-
-        {
-            bytes4 selector;
-            (selector, tokensToBeWithdrawn[0]) = abi.decode(
-                order.makerAssetData,
-                (bytes4, address)
-            );
-        }
+        // Shift by 516 = 32 * 16 + 4 to get return token address from data
+        tokensToBeWithdrawn[0] = abi.decode(data[516:], (address));
 
         try
             MixinExchangeCore(ZERO_EX_EXCHANGE).fillOrder(order, takerAssetFillAmount, signature)
