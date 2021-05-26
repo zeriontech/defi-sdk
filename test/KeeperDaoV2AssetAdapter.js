@@ -85,11 +85,10 @@ contract.only('KeeperDaoV2AssetAdapter', () => {
       });
   });
 
-  it('should return correct components for ', async () => {
+  it('should return correct components for kWETH', async () => {
     await tokenAdapter.methods['getComponents(address)'](kWETHAddress)
       .call()
       .then((result) => {
-        console.log(result);
         assert.equal(result[0][0], wethAddress);
       });
   });
