@@ -34,6 +34,7 @@ contract ZeroExOrdersV2InteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
     using SafeERC20 for ERC20;
 
     address internal constant ZERO_EX_EXCHANGE = 0x080bf510FCbF18b91105470639e9561022937712;
+    address internal constant ZERO_EX_ERC_20_PROXY = 0x95E6F48254609A6ee006F7D493c8e5fB97094ceF;
 
     /**
      * @notice Exchanges tokens using ZeroEx contract.
@@ -60,7 +61,7 @@ contract ZeroExOrdersV2InteractiveAdapter is InteractiveAdapter, ERC20ProtocolAd
             bytes memory signature
         ) = abi.decode(data, (MixinExchangeCore.Order, uint256, bytes));
 
-        ERC20(token).safeApproveMax(ZERO_EX_EXCHANGE, amount, "ZEOV2IA");
+        ERC20(token).safeApproveMax(ZERO_EX_ERC_20_PROXY, amount, "ZEOV2IA");
 
         tokensToBeWithdrawn = new address[](1);
         // Shift by 516 = 32 * 16 + 4 to get return token address from data
