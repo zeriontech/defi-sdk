@@ -21,10 +21,10 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../shared/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-import { IAmunBasket } from "../../interfaces/AmunBasket.sol";
+import { AmunBasket } from "../../interfaces/AmunBasket.sol";
 
 /**
- * @title Token adapter for lima basket tokens.
+ * @title Token adapter for amun basket tokens.
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Timo Hedke <timo@amun.com>
  */
@@ -34,7 +34,7 @@ contract AmunBasketAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external override returns (Component[] memory) {
-        (address[] memory tokens, uint256[] memory amounts) = IAmunBasket(token)
+        (address[] memory tokens, uint256[] memory amounts) = AmunBasket(token)
             .calcTokensForAmount(1e18);
         Component[] memory components = new Component[](tokens.length);
 

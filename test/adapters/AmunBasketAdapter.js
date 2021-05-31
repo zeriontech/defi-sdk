@@ -1,6 +1,6 @@
 import convertToBytes32 from '../helpers/convertToBytes32';
 
-const LIMA_BASKET_ADAPTER = convertToBytes32('Amun Basket Adapter');
+const AMUN_BASKET_ADAPTER = convertToBytes32('Amun Basket Adapter');
 const EMPTY_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
@@ -49,7 +49,7 @@ contract('AmunBasketAdapter', () => {
     });
     await protocolAdapterRegistry.methods
       .addProtocolAdapters(
-        [LIMA_BASKET_ADAPTER],
+        [AMUN_BASKET_ADAPTER],
         [protocolAdapterAddress],
         [[DFIAddress]],
       )
@@ -77,7 +77,7 @@ contract('AmunBasketAdapter', () => {
       });
   });
 
-  it('should return correct underlying tokens for limaBasket', async () => {
+  it('should return correct underlying tokens for AmunBasket', async () => {
     const result = await tokenAdapterRegistry.methods
       .getFullTokenBalances([DFIAddress])
       .call();

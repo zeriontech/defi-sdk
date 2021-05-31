@@ -2,12 +2,12 @@ import convertToBytes32 from '../helpers/convertToBytes32';
 
 import expectRevert from '../helpers/expectRevert';
 
-const LIMA_BASKET_ADAPTER = convertToBytes32('AmunBasket').slice(0, -2);
+const AMUN_BASKET_ADAPTER = convertToBytes32('AmunBasket').slice(0, -2);
 const UNISWAP_V2_ADAPTER = convertToBytes32('Uniswap V2').slice(0, -2);
 const WETH_ADAPTER = convertToBytes32('Weth').slice(0, -2);
 const ASSET_ADAPTER = '01';
 const EXCHANGE_ADAPTER = '03';
-const LIMA_BASKET_ASSET_ADAPTER = `${LIMA_BASKET_ADAPTER}${ASSET_ADAPTER}`;
+const AMUN_BASKET_ASSET_ADAPTER = `${AMUN_BASKET_ADAPTER}${ASSET_ADAPTER}`;
 const WETH_ASSET_ADAPTER = `${WETH_ADAPTER}${ASSET_ADAPTER}`;
 const UNISWAP_V2_EXCHANGE_ADAPTER = `${UNISWAP_V2_ADAPTER}${EXCHANGE_ADAPTER}`;
 
@@ -37,13 +37,13 @@ const TokenAdapter = artifacts.require('AmunBasketAdapter');
 contract('AmunBasketInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
-  const limaBasketAddress = '0xA9536B9c75A9E0faE3B56a96AC8EdF76AbC91978';
+  const amunBasketAddress = '0xA9536B9c75A9E0faE3B56a96AC8EdF76AbC91978';
 
   let accounts;
   let core;
   let protocolAdapterRegistry;
   let router;
-  let limaBasketAdapterAddress;
+  let amunBasketAdapterAddress;
   let wethAdapterAddress;
   let uniswapAdapterAddress;
   let tokenAdapterRegistry;
@@ -56,7 +56,7 @@ contract('AmunBasketInteractiveAdapter', () => {
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
     await AmunBasketAdapter.new({ from: accounts[0] }).then((result) => {
-      limaBasketAdapterAddress = result.address;
+      amunBasketAdapterAddress = result.address;
     });
     await WethInteractiveAdapter.new({ from: accounts[0] }).then((result) => {
       wethAdapterAddress = result.address;
@@ -73,11 +73,11 @@ contract('AmunBasketInteractiveAdapter', () => {
     await protocolAdapterRegistry.methods
       .addProtocolAdapters(
         [
-          LIMA_BASKET_ASSET_ADAPTER,
+          AMUN_BASKET_ASSET_ADAPTER,
           WETH_ASSET_ADAPTER,
           UNISWAP_V2_EXCHANGE_ADAPTER,
         ],
-        [limaBasketAdapterAddress, wethAdapterAddress, uniswapAdapterAddress],
+        [amunBasketAdapterAddress, wethAdapterAddress, uniswapAdapterAddress],
         [[], [], []],
       )
       .send({
@@ -101,7 +101,7 @@ contract('AmunBasketInteractiveAdapter', () => {
       });
     await tokenAdapterRegistry.methods
       .addTokenAdapterNamesByHashes(
-        [limaBasketAddress],
+        [amunBasketAddress],
         [convertToBytes32('Amun Basket Token')],
       )
       .send({
@@ -121,7 +121,7 @@ contract('AmunBasketInteractiveAdapter', () => {
     await ERC20.at(wethAddress).then((result) => {
       WETH = result.contract;
     });
-    await ERC20.at(limaBasketAddress).then((result) => {
+    await ERC20.at(amunBasketAddress).then((result) => {
       BASKET = result.contract;
     });
   });
@@ -129,7 +129,7 @@ contract('AmunBasketInteractiveAdapter', () => {
   describe('Scenario ETH <-> DFI Basket', () => {
     it('should not buy basket with inconsistent tokens/amounts', async () => {
       const [fullTokenBalance] = await tokenAdapterRegistry.methods
-        .getFullTokenBalances([limaBasketAddress])
+        .getFullTokenBalances([amunBasketAddress])
         .call();
       // exchange 10 ETH to WETH like we had WETH initially
       await router.methods
@@ -180,12 +180,12 @@ contract('AmunBasketInteractiveAdapter', () => {
       const actions = [
         ...swapsFromEthToBasketComposition,
         [
-          LIMA_BASKET_ASSET_ADAPTER,
+          AMUN_BASKET_ASSET_ADAPTER,
           ACTION_DEPOSIT,
           [
             ...depositTokenAmounts,
           ],
-          web3.eth.abi.encodeParameters(['address', 'uint256'], [limaBasketAddress, ONE]),
+          web3.eth.abi.encodeParameters(['address'], [amunBasketAddress]),
         ],
       ];
       await expectRevert(router.methods
@@ -205,7 +205,7 @@ contract('AmunBasketInteractiveAdapter', () => {
 
     it('should buy 1 basket token', async () => {
       const [fullTokenBalance] = await tokenAdapterRegistry.methods
-        .getFullTokenBalances([limaBasketAddress])
+        .getFullTokenBalances([amunBasketAddress])
         .call();
       // exchange 10 ETH to WETH like we had WETH initially
       await router.methods
@@ -256,12 +256,12 @@ contract('AmunBasketInteractiveAdapter', () => {
       const actions = [
         ...swapsFromEthToBasketComposition,
         [
-          LIMA_BASKET_ASSET_ADAPTER,
+          AMUN_BASKET_ASSET_ADAPTER,
           ACTION_DEPOSIT,
           [
             ...depositTokenAmounts,
           ],
-          web3.eth.abi.encodeParameters(['address', 'uint256'], [limaBasketAddress, ONE]),
+          web3.eth.abi.encodeParameters(['address'], [amunBasketAddress]),
         ],
       ];
       const basketBalanceBefore = await BASKET.methods['balanceOf(address)'](accounts[0])
@@ -294,11 +294,11 @@ contract('AmunBasketInteractiveAdapter', () => {
     it('should sell 1 basket token', async () => {
       const actions = [
         [
-          LIMA_BASKET_ASSET_ADAPTER,
+          AMUN_BASKET_ASSET_ADAPTER,
           ACTION_WITHDRAW,
           [
             [
-              limaBasketAddress,
+              amunBasketAddress,
               ONE,
               AMOUNT_ABSOLUTE,
             ],
@@ -323,7 +323,7 @@ contract('AmunBasketInteractiveAdapter', () => {
         .execute(
           actions,
           // inputs
-          [[limaBasketAddress, ONE, AMOUNT_ABSOLUTE]],
+          [[amunBasketAddress, ONE, AMOUNT_ABSOLUTE]],
           [0, ZERO],
           // outputs
           [],
@@ -347,11 +347,11 @@ contract('AmunBasketInteractiveAdapter', () => {
     it('should fail sell more basket token then own', async () => {
       const actions = [
         [
-          LIMA_BASKET_ASSET_ADAPTER,
+          AMUN_BASKET_ASSET_ADAPTER,
           ACTION_WITHDRAW,
           [
             [
-              limaBasketAddress,
+              amunBasketAddress,
               ONE,
               AMOUNT_ABSOLUTE,
             ],
@@ -369,7 +369,7 @@ contract('AmunBasketInteractiveAdapter', () => {
         .execute(
           actions,
           // inputs
-          [[limaBasketAddress, TEN, AMOUNT_ABSOLUTE]],
+          [[amunBasketAddress, TEN, AMOUNT_ABSOLUTE]],
           [0, ZERO],
           // outputs
           [],

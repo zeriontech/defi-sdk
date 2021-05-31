@@ -2,7 +2,9 @@
 pragma experimental ABIEncoderV2;
 pragma solidity ^0.7.1;
 
-interface IAmunBasket {
+interface AmunBasket {
+    function getEntryFee() external view returns (uint256);
+
     /**
         @notice Pulls underlying from caller and mints the pool token
         @param _amount Amount of pool tokens to mint

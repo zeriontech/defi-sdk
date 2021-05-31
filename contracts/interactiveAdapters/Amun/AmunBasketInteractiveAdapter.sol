@@ -23,7 +23,7 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-import { IAmunBasket } from "../../interfaces/AmunBasket.sol";
+import { AmunBasket } from "../../interfaces/AmunBasket.sol";
 
 /**
  * @title Interactive adapter for AmunBasket.
@@ -49,16 +49,19 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        uint256 amount;
-        address basket;
-
-        (basket, amount) = abi.decode(data, (address, uint256));
+        address basket = abi.decode(data, (address));
         require(
-            tokenAmounts.length == IAmunBasket(basket).getTokens().length,
+            tokenAmounts.length == AmunBasket(basket).getTokens().length,
             "LBIA: should be equal tokenAmount"
         );
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = basket;
+
+        uint256 totalSupply = ERC20(basket).totalSupply();
+        uint256 tokenBalance = ERC20(tokenAmounts[0].token).balanceOf(basket);
+        uint256 entryFee = AmunBasket(basket).getEntryFee();
+        uint256 amount = tokenAmounts[0].amount - (mul(tokenAmounts[0].amount, entryFee) / 10**18);
+        amount = mul(amount, totalSupply) / tokenBalance;
 
         for (uint256 i = 0; i < tokenAmounts.length; i++) {
             ERC20(tokenAmounts[i].token).safeApprove(
@@ -68,7 +71,7 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
             );
         }
 
-        try IAmunBasket(basket).joinPool(amount, 101)  {} catch Error(string memory reason) {
+        try AmunBasket(basket).joinPool(amount, 101)  {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("LBIA: join fail");
@@ -79,7 +82,7 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
      * @notice Withdraws tokens from the TokenSet.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * AmunBasket token address, AmunBasket token amount to be redeemed, and amount type.
-     * @return tokensToBeWithdrawn Array with lima token underlying.
+     * @return tokensToBeWithdrawn Array with amun token underlying.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
@@ -90,11 +93,11 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
     {
         require(tokenAmounts.length == 1, "LBIA: should be 1 tokenAmount");
         address basket = tokenAmounts[0].token;
-        tokensToBeWithdrawn = IAmunBasket(basket).getTokens();
+        tokensToBeWithdrawn = AmunBasket(basket).getTokens();
 
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
-        try IAmunBasket(basket).exitPool(amount, 101)  {} catch Error(string memory reason) {
+        try AmunBasket(basket).exitPool(amount, 101)  {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("LBIA: exit fail");
