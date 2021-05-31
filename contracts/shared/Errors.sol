@@ -32,7 +32,10 @@ error ExceedingLimitAmount(uint256 amount);
 error ExceedingLimitFee(uint256 fee);
 
 error InsufficientMsgValue(uint256 msgValue, uint256 requiredMsgValue);
-error InsufficientOutputBalanceChange(uint256 outputBalanceChange, uint256 requiredOutputBalanceChange);
+error InsufficientOutputBalanceChange(
+    uint256 outputBalanceChange,
+    uint256 requiredOutputBalanceChange
+);
 
 error LargeExactInputAmount(uint256 exactInputAmount, uint256 requiredExactInputAmoun);
 error LargeInputBalanceChange(uint256 inputBalanceChange, uint256 requiredInputBalanceChange);

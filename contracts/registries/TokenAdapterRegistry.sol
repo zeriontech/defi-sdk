@@ -212,12 +212,12 @@ contract TokenAdapterRegistry is
         }
 
         fullTokenBalance = FullTokenBalance({
-                base: TokenBalanceMeta({
-                    tokenBalance: tokenBalance,
-                    erc20metadata: getERC20Metadata(tokenBalance)
-                }),
-                underlying: underlyingTokenBalancesMeta
-            });
+            base: TokenBalanceMeta({
+                tokenBalance: tokenBalance,
+                erc20metadata: getERC20Metadata(tokenBalance)
+            }),
+            underlying: underlyingTokenBalancesMeta
+        });
 
         return fullTokenBalance;
     }

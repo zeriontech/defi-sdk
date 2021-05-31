@@ -20,20 +20,18 @@ pragma solidity 0.8.4;
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-import {
-    AbsoluteTokenAmount,
-    Input,
-    SwapDescription
-} from "../shared/Structs.sol";
+import { AbsoluteTokenAmount, Input, SwapDescription } from "../shared/Structs.sol";
 
 interface ISignatureVerifier {
-
     /**
      * @param hashToCheck Hash to be checked.
      * @param account Address of the hash will be checked for.
      * @return hashUsed True if hash has already been used by this account address.
      */
-    function isHashUsed(bytes32 hashToCheck, address account) external view returns (bool hashUsed);
+    function isHashUsed(bytes32 hashToCheck, address account)
+        external
+        view
+        returns (bool hashUsed);
 
     /**
      * @param input Input struct to be hashed.

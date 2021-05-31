@@ -62,11 +62,7 @@ abstract contract AdapterManager is IAdapterManager, Ownable {
      * @param adapter Adapter's address.
      */
     function setAdapter(bytes32 name, address adapter) internal {
-        emit AdapterSet(
-            name,
-            _adapter[name],
-            adapter
-        );
+        emit AdapterSet(name, _adapter[name], adapter);
 
         _adapter[name] = adapter;
     }

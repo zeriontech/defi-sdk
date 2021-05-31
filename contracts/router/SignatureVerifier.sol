@@ -92,16 +92,19 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
      * @param name String with EIP712 name.
      * @param version String with EIP712 version.
      */
-    constructor(string memory name, string memory version) EIP712(name, version) {}
-    // solhint-disable-previous-line no-empty-blocks
+    constructor(string memory name, string memory version) EIP712(name, version) {
+        // solhint-disable-previous-line no-empty-blocks
+    }
 
     /**
      * @inheritdoc ISignatureVerifier
      */
-    function isHashUsed(
-        bytes32 hashToCheck,
-        address account
-    ) public view override returns (bool hashUsed) {
+    function isHashUsed(bytes32 hashToCheck, address account)
+        public
+        view
+        override
+        returns (bool hashUsed)
+    {
         return isHashUsed_[hashToCheck][account];
     }
 

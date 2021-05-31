@@ -31,7 +31,7 @@ import {
     ZeroAmountOut,
     ZeroLiquidity
 } from "../shared/Errors.sol";
-import { AbsoluteInput} from "../shared/Structs.sol";
+import { AbsoluteInput } from "../shared/Structs.sol";
 
 /**
  * @title Uniswap caller that executes swaps on UniswapV2-like pools.
