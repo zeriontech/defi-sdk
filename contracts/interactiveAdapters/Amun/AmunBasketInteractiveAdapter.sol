@@ -57,19 +57,8 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = basket;
 
-        uint256 totalSupply = ERC20(basket).totalSupply();
-        uint256 tokenBalance = ERC20(tokenAmounts[0].token).balanceOf(basket);
-        uint256 entryFee = AmunBasket(basket).getEntryFee();
-        uint256 amount = tokenAmounts[0].amount - (mul(tokenAmounts[0].amount, entryFee) / 10**18);
-        amount = mul(amount, totalSupply) / tokenBalance;
-
-        for (uint256 i = 0; i < tokenAmounts.length; i++) {
-            ERC20(tokenAmounts[i].token).safeApprove(
-                basket,
-                getAbsoluteAmountDeposit(tokenAmounts[i]),
-                "LBIA[1]"
-            );
-        }
+        uint256 amount = getBasketAmount(basket, tokenAmounts);
+        approveTokens(basket, tokenAmounts);
 
         try AmunBasket(basket).joinPool(amount, 101)  {} catch Error(string memory reason) {
             revert(reason);
@@ -101,6 +90,32 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
             revert(reason);
         } catch {
             revert("LBIA: exit fail");
+        }
+    }
+
+    function getBasketAmount(address basket, TokenAmount[] calldata tokenAmounts)
+        internal
+        view
+        returns (uint256)
+    {
+        uint256 totalSupply = ERC20(basket).totalSupply();
+        uint256 tokenBalance = ERC20(tokenAmounts[0].token).balanceOf(basket);
+        uint256 entryFee = AmunBasket(basket).getEntryFee();
+        uint256 amount = tokenAmounts[0].amount - (mul(tokenAmounts[0].amount, entryFee) / 10**18);
+        return mul(amount, totalSupply) / tokenBalance;
+    }
+
+    function approveTokens(address basket, TokenAmount[] calldata tokenAmounts) internal {
+        uint256 length = tokenAmounts.length;
+
+        for (uint256 i = 0; i < length; i++) {
+            uint256 allowance = ERC20(tokenAmounts[i].token).allowance(address(this), basket);
+            if (allowance < getAbsoluteAmountDeposit(tokenAmounts[i])) {
+                if (allowance > 0) {
+                    ERC20(tokenAmounts[i].token).safeApprove(basket, 0, "LBIA[1]");
+                }
+                ERC20(tokenAmounts[i].token).safeApprove(basket, type(uint256).max, "LBIA[2]");
+            }
         }
     }
 }
