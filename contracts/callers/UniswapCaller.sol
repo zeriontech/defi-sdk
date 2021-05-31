@@ -50,9 +50,9 @@ contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
      * @dev Implementation of Caller interface function.
      */
     function callBytes(bytes calldata callData) external payable override nonReentrant {
+        address payable account = getAccount();
         (address[] memory pairs, bool[] memory directions, SwapType swapType, uint256 amount) =
             abi.decode(callData, (address[], bool[], SwapType, uint256));
-        address payable account = getAccount();
 
         uint256[] memory amounts =
             (swapType == SwapType.FixedInputs)

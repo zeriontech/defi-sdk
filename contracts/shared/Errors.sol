@@ -24,6 +24,7 @@ error BadAbsoluteInputAmount(uint256 absoluteInputAmount, uint256 requiredAbsolu
 error BadAmountType(AmountType amountType, AmountType requiredAmountType);
 error BadGetExactInputAmountCallData(bytes callData);
 error BadGetExactInputAmountReturnData(bytes returnData);
+error BadCallBytesCallData(bytes callData);
 error BadLength(uint256 length, uint256 requiredLength);
 error BadMsgSender(address msgSender, address requiredMsgSender);
 error BadProtocolAdapterName(bytes32 protocolAdapterName);
