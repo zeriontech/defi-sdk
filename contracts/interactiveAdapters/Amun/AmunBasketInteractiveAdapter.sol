@@ -39,7 +39,6 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
      * underlying tokens addresses, underlying tokens amounts to be deposited, and amount types.
      * @param data ABI-encoded additional parameters:
      *     - basket - AmunBasket address.
-     *     - amount - AmunBasket amount to mint.
      * @return tokensToBeWithdrawn Array with one element - rebalancing set address.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -98,11 +97,23 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         view
         returns (uint256)
     {
-        uint256 totalSupply = ERC20(basket).totalSupply();
-        uint256 tokenBalance = ERC20(tokenAmounts[0].token).balanceOf(basket);
+        uint256 totalSupply = ERC20(basket).totalSupply() +
+            AmunBasket(basket).calcOutStandingAnnualizedFee();
         uint256 entryFee = AmunBasket(basket).getEntryFee();
-        uint256 amount = tokenAmounts[0].amount - (mul(tokenAmounts[0].amount, entryFee) / 10**18);
-        return mul(amount, totalSupply) / tokenBalance;
+        uint256 minimumBasketAmount = type(uint256).max;
+        uint256 tempAmount;
+        for (uint256 i = 0; i < tokenAmounts.length; i++) {
+            uint256 tokenBalance = ERC20(tokenAmounts[i].token).balanceOf(basket);
+
+            tempAmount = tokenAmounts[i].amount - (mul(tokenAmounts[i].amount, entryFee) / 10**18);
+            tempAmount = mul(tempAmount, totalSupply) / tokenBalance;
+
+            if (tempAmount < minimumBasketAmount) {
+                minimumBasketAmount = tempAmount;
+            }
+        }
+
+        return minimumBasketAmount;
     }
 
     function approveTokens(address basket, TokenAmount[] calldata tokenAmounts) internal {
