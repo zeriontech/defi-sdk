@@ -34,6 +34,7 @@ import { AmunAddressStorage } from "../../interfaces/AmunAddressStorage.sol";
  */
 contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
+    uint8 referralCode = 101;
 
     /**
      * @notice Deposits tokens to the AmunBasket.
@@ -68,7 +69,7 @@ contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
                 amount,
                 address(this),
                 0,
-                101
+                referralCode
             )
          {} catch Error(string memory reason) {
             revert(reason);
@@ -103,7 +104,7 @@ contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
                 amount,
                 address(this),
                 0,
-                101
+                referralCode
             )
          {} catch Error(string memory reason) {
             revert(reason);
