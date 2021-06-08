@@ -15,10 +15,10 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.3;
+pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
@@ -120,13 +120,18 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         uint256 length = tokenAmounts.length;
 
         for (uint256 i = 0; i < length; i++) {
-            uint256 allowance = ERC20(tokenAmounts[i].token).allowance(address(this), basket);
-            if (allowance < getAbsoluteAmountDeposit(tokenAmounts[i])) {
-                if (allowance > 0) {
-                    ERC20(tokenAmounts[i].token).safeApprove(basket, 0, "LBIA[1]");
-                }
-                ERC20(tokenAmounts[i].token).safeApprove(basket, type(uint256).max, "LBIA[2]");
-            }
+            ERC20(tokenAmounts[i].token).safeApproveMax(basket, getAbsoluteAmountDeposit(tokenAmounts[i]), "LBIA[2]");
         }
+    }
+    
+    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+        if (a == 0) {
+            return 0;
+        }
+
+        uint256 c = a * b;
+        require(c / a == b, "LBIA: mul overflow");
+
+        return c;
     }
 }

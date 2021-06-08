@@ -36,7 +36,7 @@ const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const TokenAdapter = artifacts.require('AmunBasketAdapter');
 
-contract.only('AmunBasketInteractiveAdapter', () => {
+contract('AmunBasketInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const amunBasketAddress = '0xA9536B9c75A9E0faE3B56a96AC8EdF76AbC91978';
@@ -194,7 +194,7 @@ contract.only('AmunBasketInteractiveAdapter', () => {
         .execute(
           actions,
           // inputs
-          [[wethAddress, TEN, AMOUNT_ABSOLUTE]],
+          [[[wethAddress, TEN, AMOUNT_ABSOLUTE], [0, EMPTY_BYTES]]],
           [0, ZERO],
           // outputs
           [],
@@ -272,7 +272,12 @@ contract.only('AmunBasketInteractiveAdapter', () => {
         .execute(
           actions,
           // inputs
-          [[wethAddress, TEN, AMOUNT_ABSOLUTE]],
+          [
+            [
+              [wethAddress, TEN, AMOUNT_ABSOLUTE],
+              [0, EMPTY_BYTES],
+            ],
+          ],
           [0, ZERO],
           // outputs
           [],
@@ -289,7 +294,6 @@ contract.only('AmunBasketInteractiveAdapter', () => {
       await BASKET.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
-          console.log('asdf:', new BN(basketBalanceBefore).add(new BN(ONE)).toString(), result);
           assert.equal(true, new BN(result).gt(new BN(basketBalanceBefore)));
         });
     });
@@ -326,7 +330,7 @@ contract.only('AmunBasketInteractiveAdapter', () => {
         .execute(
           actions,
           // inputs
-          [[amunBasketAddress, ONE, AMOUNT_ABSOLUTE]],
+          [[[amunBasketAddress, ONE, AMOUNT_ABSOLUTE], [0, EMPTY_BYTES]]],
           [0, ZERO],
           // outputs
           [],
@@ -367,7 +371,7 @@ contract.only('AmunBasketInteractiveAdapter', () => {
         .execute(
           actions,
           // inputs
-          [[amunBasketAddress, TEN, AMOUNT_ABSOLUTE]],
+          [[[amunBasketAddress, ONE, AMOUNT_ABSOLUTE], [0, EMPTY_BYTES]]],
           [0, ZERO],
           // outputs
           [],
