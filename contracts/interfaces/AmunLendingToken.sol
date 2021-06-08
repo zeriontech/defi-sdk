@@ -1,4 +1,4 @@
-pragma solidity 0.7.3;
+pragma solidity 0.7.6;
 
 interface AmunLendingToken {
     function create(

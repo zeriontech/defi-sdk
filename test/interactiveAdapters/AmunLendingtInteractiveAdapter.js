@@ -187,7 +187,7 @@ contract('AmunLendingInteractiveAdapter', () => {
         .execute(
           actions,
           // inputs
-          [[wethAddress, ONE, AMOUNT_ABSOLUTE]],
+          [[[wethAddress, ONE, AMOUNT_ABSOLUTE], [0, EMPTY_BYTES]]],
           [0, ZERO],
           // outputs
           [],
@@ -256,7 +256,7 @@ contract('AmunLendingInteractiveAdapter', () => {
         .execute(
           actions,
           // inputs
-          [[wethAddress, ONE, AMOUNT_ABSOLUTE]],
+          [[[wethAddress, ONE, AMOUNT_ABSOLUTE], [0, EMPTY_BYTES]]],
           [0, ZERO],
           // outputs
           [],
@@ -306,7 +306,8 @@ contract('AmunLendingInteractiveAdapter', () => {
         .execute(
           actions,
           // inputs
-          [[amunLendingAddress, ONE, AMOUNT_ABSOLUTE]],
+          [[[amunLendingAddress, ONE, AMOUNT_ABSOLUTE], [0, EMPTY_BYTES],
+          ]],
           [0, ZERO],
           // outputs
           [],
@@ -353,7 +354,8 @@ contract('AmunLendingInteractiveAdapter', () => {
         .execute(
           actions,
           // inputs
-          [[amunLendingAddress, TEN, AMOUNT_ABSOLUTE]],
+          [[[amunLendingAddress, TEN, AMOUNT_ABSOLUTE], [0, EMPTY_BYTES],
+          ]],
           [0, ZERO],
           // outputs
           [],
