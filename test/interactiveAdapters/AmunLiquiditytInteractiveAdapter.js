@@ -35,7 +35,7 @@ const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const TokenAdapter = artifacts.require('AmunLiquidityAdapter');
 
-contract.only('AmunLiquidityInteractiveAdapter', () => {
+contract('AmunLiquidityInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
@@ -190,8 +190,10 @@ contract.only('AmunLiquidityInteractiveAdapter', () => {
             web3.eth.abi.encodeParameter('address', amunLiquidityAddress),
           ],
         ],
-        [
+        [[
           [usdcAddress, convertToShare(0.5), AMOUNT_RELATIVE],
+          [0, EMPTY_BYTES],
+        ],
         ],
         [0, ZERO],
         [],
@@ -252,8 +254,10 @@ contract.only('AmunLiquidityInteractiveAdapter', () => {
             web3.eth.abi.encodeParameter('address', amunLiquidityAddress),
           ],
         ],
-        [
+        [[
           [usdcAddress, convertToShare(1), AMOUNT_RELATIVE],
+          [0, EMPTY_BYTES],
+        ],
         ],
         [0, ZERO],
         [],
@@ -318,8 +322,10 @@ contract.only('AmunLiquidityInteractiveAdapter', () => {
               EMPTY_BYTES,
             ],
           ],
-          [
+          [[
             [amunLiquidityAddress, convertToShare(0.5), AMOUNT_RELATIVE],
+            [0, EMPTY_BYTES],
+          ],
           ],
           [0, ZERO],
           [],
@@ -360,8 +366,10 @@ contract.only('AmunLiquidityInteractiveAdapter', () => {
             EMPTY_BYTES,
           ],
         ],
-        [
+        [[
           [amunLiquidityAddress, web3.utils.toWei('1', 'mwei'), AMOUNT_ABSOLUTE],
+          [0, EMPTY_BYTES],
+        ],
         ],
         [0, ZERO],
         [],
