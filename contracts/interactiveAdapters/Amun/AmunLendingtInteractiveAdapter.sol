@@ -62,7 +62,7 @@ contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = lendingToken;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
-        ERC20(tokenAmounts[0].token).safeApprove(lendingToken, amount, "LBIA[1]");
+        ERC20(tokenAmounts[0].token).safeApproveMax(lendingToken, amount, "LBIA[1]");
         try
             AmunLendingToken(lendingToken).create(
                 tokenAmounts[0].token,
