@@ -32,7 +32,7 @@ import { IVault } from "../../interfaces/IVault.sol";
  */
 contract AmunLiquidityInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
-    uint8 referralCode = 101;
+    uint8 internal constant REFERRAL_CODE = 101;
 
     /**
      * @notice Deposits tokens to the Yearn Vault.
@@ -61,7 +61,7 @@ contract AmunLiquidityInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
 
         ERC20(token).safeApproveMax(liquidityToken, amount, "LBIA");
         // solhint-disable-next-line no-empty-blocks
-        try IVault(liquidityToken).deposit(amount, referralCode)  {} catch Error(
+        try IVault(liquidityToken).deposit(amount, REFERRAL_CODE)  {} catch Error(
             string memory reason
         ) {
             revert(reason);
@@ -92,7 +92,7 @@ contract AmunLiquidityInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
         tokensToBeWithdrawn[0] = IVault(token).underlying();
 
         // solhint-disable-next-line no-empty-blocks
-        try IVault(token).withdraw(amount, referralCode)  {} catch Error(string memory reason) {
+        try IVault(token).withdraw(amount, REFERRAL_CODE)  {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("LBIA: withdraw fail");
