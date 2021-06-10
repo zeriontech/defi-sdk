@@ -34,7 +34,7 @@ import { AmunAddressStorage } from "../../interfaces/AmunAddressStorage.sol";
  */
 contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
-    uint8 internal constant REFERRAL_CODE = 101;
+    uint16 internal constant REFERRAL_CODE = 101;
 
     /**
      * @notice Deposits tokens to the AmunLending.
