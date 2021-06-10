@@ -1,4 +1,5 @@
 import convertToBytes32 from '../helpers/convertToBytes32';
+import displayToken from '../helpers/displayToken';
 
 const AMUN_LENDING_ADAPTER = convertToBytes32('Amun Lending Adapter');
 const EMPTY_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -19,7 +20,7 @@ contract('AmunLendingAdapter', () => {
   let tokenAdapterAddress;
   let erc20TokenAdapterAddress;
 
-  const composition = [['iearn USDC', 'yUSDC', '6']];
+  const composition = [['USD Coin', 'USDC', '6']];
 
   beforeEach(async () => {
     accounts = await web3.eth.getAccounts();
@@ -68,7 +69,7 @@ contract('AmunLendingAdapter', () => {
       });
   });
 
-  it.only('should return correct underlying tokens for amunLending', async () => {
+  it('should return correct underlying tokens for amunLending', async () => {
     const result = await tokenAdapterRegistry.methods
       .getFullTokenBalances([DROPAddress])
       .call();

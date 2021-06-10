@@ -24,6 +24,15 @@ import { TokenAdapter } from "../TokenAdapter.sol";
 import { AmunLendingToken } from "../../interfaces/AmunLendingToken.sol";
 import { AmunLendingTokenStorage } from "../../interfaces/AmunLendingTokenStorage.sol";
 
+interface UnderlyingToken {
+    function token() external view returns (address);
+
+    function decimals() external view returns (uint8);
+
+    function getPricePerFullShare() external view returns (uint256);
+
+}
+
 /**
  * @title Token adapter for amun lending tokens.
  * @dev Implementation of TokenAdapter abstract contract.
@@ -35,14 +44,17 @@ contract AmunLendingAdapter is TokenAdapter {
      * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external override returns (Component[] memory) {
-        uint256 amount = AmunLendingToken(token).getUnderlyingTokenBalanceOf(1e18);
+        uint256 underlyingAmount = AmunLendingToken(token).getUnderlyingTokenBalanceOf(1e18);
         address underlyingToken = AmunLendingTokenStorage(
             AmunLendingToken(token).limaTokenHelper()
         )
             .currentUnderlyingToken();
         Component[] memory components = new Component[](1);
 
-        components[0] = Component({ token: underlyingToken, rate: int256(amount) });
+       components[0] = Component({
+            token: UnderlyingToken(underlyingToken).token(),
+            rate: int256(underlyingAmount * UnderlyingToken(underlyingToken).getPricePerFullShare() / 1e18)
+        });
 
         return components;
     }
