@@ -28,7 +28,7 @@ import { AmunLendingTokenStorage } from "../../interfaces/AmunLendingTokenStorag
 import { AmunAddressStorage } from "../../interfaces/AmunAddressStorage.sol";
 
 /**
- * @title Interactive adapter for AmunBasket.
+ * @title Interactive adapter for AmunLending.
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Timo <Timo@amun.com>
  */
@@ -37,12 +37,12 @@ contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
     uint8 internal constant REFERRAL_CODE = 101;
 
     /**
-     * @notice Deposits tokens to the AmunBasket.
+     * @notice Deposits tokens to the AmunLending.
      * @param tokenAmounts Array of underlying TokenAmounts - TokenAmount struct with
      * underlying tokens addresses, underlying tokens amounts to be deposited, and amount types.
      * @param data ABI-encoded additional parameters:
-     *     - lendingToken - AmunBasket address.
-     * @return tokensToBeWithdrawn Array with one element - rebalancing set address.
+     *     - lendingToken - AmunLending address.
+     * @return tokensToBeWithdrawn Array with one element - AmunLending address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
@@ -81,7 +81,7 @@ contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
     /**
      * @notice Withdraws tokens from the AmunLending.
      * @param tokenAmounts Array with one element - TokenAmount struct with
-     * AmunBasket token address, AmunBasket token amount to be redeemed, and amount type.
+     * AmunLending token address, AmunLending token amount to be redeemed, and amount type.
      * @return tokensToBeWithdrawn Array with amun token underlying.
      * @dev Implementation of InteractiveAdapter function.
      */
