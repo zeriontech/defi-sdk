@@ -32,7 +32,7 @@ import { IVault } from "../../interfaces/IVault.sol";
  */
 contract AmunLiquidityInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
-    uint8 internal constant REFERRAL_CODE = 101;
+    uint16 internal constant REFERRAL_CODE = 101;
 
     /**
      * @notice Deposits tokens to the Yearn Vault.
