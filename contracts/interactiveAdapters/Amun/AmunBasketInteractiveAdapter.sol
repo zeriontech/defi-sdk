@@ -32,6 +32,7 @@ import { AmunBasket } from "../../interfaces/AmunBasket.sol";
  */
 contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
+    uint16 internal constant REFERRAL_CODE = 101;
 
     /**
      * @notice Deposits tokens to the AmunBasket.
@@ -39,7 +40,7 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
      * underlying tokens addresses, underlying tokens amounts to be deposited, and amount types.
      * @param data ABI-encoded additional parameters:
      *     - basket - AmunBasket address.
-     * @return tokensToBeWithdrawn Array with one element - rebalancing set address.
+     * @return tokensToBeWithdrawn Array with one element - AmunBasket address.
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
@@ -59,7 +60,7 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         uint256 amount = getBasketAmount(basket, tokenAmounts);
         approveTokens(basket, tokenAmounts);
 
-        try AmunBasket(basket).joinPool(amount, 101)  {} catch Error(string memory reason) {
+        try AmunBasket(basket).joinPool(amount, REFERRAL_CODE)  {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("LBIA: join fail");
@@ -67,7 +68,7 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
     }
 
     /**
-     * @notice Withdraws tokens from the TokenSet.
+     * @notice Withdraws tokens from the AmunBasket.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * AmunBasket token address, AmunBasket token amount to be redeemed, and amount type.
      * @return tokensToBeWithdrawn Array with amun token underlying.
@@ -85,7 +86,7 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
 
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
-        try AmunBasket(basket).exitPool(amount, 101)  {} catch Error(string memory reason) {
+        try AmunBasket(basket).exitPool(amount, REFERRAL_CODE)  {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("LBIA: exit fail");
