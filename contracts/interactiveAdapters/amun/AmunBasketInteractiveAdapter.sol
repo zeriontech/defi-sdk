@@ -50,15 +50,21 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         returns (address[] memory tokensToBeWithdrawn)
     {
         address basket = abi.decode(data, (address));
+        uint256 length = tokenAmounts.length;
         require(
-            tokenAmounts.length == AmunBasket(basket).getTokens().length,
+            length == AmunBasket(basket).getTokens().length,
             "ABIA: should be equal tokenAmount"
         );
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = basket;
 
-        uint256 amount = getBasketAmount(basket, tokenAmounts);
-        approveTokens(basket, tokenAmounts);
+        uint256[] memory absoluteAmounts = new uint256[](length);
+        for (uint256 i = 0; i < length; i++) {
+            absoluteAmounts[i] = getAbsoluteAmountDeposit(tokenAmounts[i]);
+        }
+
+        uint256 amount = getBasketAmount(basket, tokenAmounts, absoluteAmounts);
+        approveTokens(basket, tokenAmounts, absoluteAmounts);
 
         try AmunBasket(basket).joinPool(amount, REFERRAL_CODE) {} catch Error(
             // solhint-disable-previous-line no-empty-blocks
@@ -66,7 +72,7 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         ) {
             revert(reason);
         } catch {
-            revert("ABIA: joinPool fail");
+            revert("ABIA: join fail");
         }
     }
 
@@ -99,11 +105,23 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         }
     }
 
-    function getBasketAmount(address basket, TokenAmount[] calldata tokenAmounts)
-        internal
-        view
-        returns (uint256)
-    {
+    function approveTokens(
+        address basket,
+        TokenAmount[] calldata tokenAmounts,
+        uint256[] memory absoluteAmounts
+    ) internal {
+        uint256 length = tokenAmounts.length;
+
+        for (uint256 i = 0; i < length; i++) {
+            ERC20(tokenAmounts[i].token).safeApproveMax(basket, absoluteAmounts[i], "ABIA[2]");
+        }
+    }
+
+    function getBasketAmount(
+        address basket,
+        TokenAmount[] calldata tokenAmounts,
+        uint256[] memory absoluteAmounts
+    ) internal view returns (uint256) {
         uint256 totalSupply =
             ERC20(basket).totalSupply() + AmunBasket(basket).calcOutStandingAnnualizedFee();
         uint256 entryFee = AmunBasket(basket).getEntryFee();
@@ -112,7 +130,7 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         for (uint256 i = 0; i < tokenAmounts.length; i++) {
             uint256 tokenBalance = ERC20(tokenAmounts[i].token).balanceOf(basket);
 
-            tempAmount = tokenAmounts[i].amount - (mul(tokenAmounts[i].amount, entryFee) / 10**18);
+            tempAmount = absoluteAmounts[i] - (mul(absoluteAmounts[i], entryFee) / 10**18);
             tempAmount = mul(tempAmount, totalSupply) / tokenBalance;
 
             if (tempAmount < minimumBasketAmount) {
@@ -121,18 +139,6 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         }
 
         return minimumBasketAmount;
-    }
-
-    function approveTokens(address basket, TokenAmount[] calldata tokenAmounts) internal {
-        uint256 length = tokenAmounts.length;
-
-        for (uint256 i = 0; i < length; i++) {
-            ERC20(tokenAmounts[i].token).safeApproveMax(
-                basket,
-                getAbsoluteAmountDeposit(tokenAmounts[i]),
-                "ABIA[2]"
-            );
-        }
     }
 
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
