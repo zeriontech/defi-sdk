@@ -17,18 +17,8 @@
 
 pragma solidity 0.7.6;
 
-/**
- * @dev yVault contract interface.
- * Only the functions required for YearnVaultAssetInteractiveAdapter contract are added.
- * The yVault contract is available here
- * github.com/iearn-finance/yearn-protocol/blob/develop/contracts/vaults/yVault.sol.
- */
-interface YVault {
-    function deposit(uint256) external;
+interface IAmunLendingTokenStorage {
+    function currentUnderlyingToken() external view returns (address);
 
-    function withdraw(uint256) external;
-
-    function token() external view returns (address);
-
-    function getPricePerFullShare() external view returns (uint256);
+    function limaSwap() external view returns (address);
 }

@@ -13,10 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 //
-// SPDX-License-Identifier: LGPL-3.0-only
+// SPDX-License-Identifier: LGPL-3.0-onlypragma solidity 0.7.6;
 
 pragma solidity 0.7.6;
 
-interface AmunAddressStorage {
-    function interestTokenToUnderlyingStablecoin(address) external view returns (address);
+interface IAmunVault {
+    function deposit(uint256, uint16) external;
+
+    function withdraw(uint256, uint16) external;
+
+    function underlying() external view returns (address);
+
+    function getPricePerFullShare() external view returns (uint256);
 }

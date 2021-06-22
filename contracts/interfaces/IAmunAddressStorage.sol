@@ -17,8 +17,6 @@
 
 pragma solidity 0.7.6;
 
-interface AmunLendingTokenStorage {
-    function currentUnderlyingToken() external view returns (address);
-
-    function limaSwap() external view returns (address);
+interface IAmunAddressStorage {
+    function interestTokenToUnderlyingStablecoin(address) external view returns (address);
 }

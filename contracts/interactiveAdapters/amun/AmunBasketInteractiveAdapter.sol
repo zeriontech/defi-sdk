@@ -23,7 +23,7 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-import { AmunBasket } from "../../interfaces/AmunBasket.sol";
+import { IAmunBasket } from "../../interfaces/IAmunBasket.sol";
 
 /**
  * @title Interactive adapter for AmunBasket.
@@ -52,7 +52,7 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         address basket = abi.decode(data, (address));
         uint256 length = tokenAmounts.length;
         require(
-            length == AmunBasket(basket).getTokens().length,
+            length == IAmunBasket(basket).getTokens().length,
             "ABIA: should be equal tokenAmount"
         );
         tokensToBeWithdrawn = new address[](1);
@@ -66,7 +66,7 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         uint256 amount = getBasketAmount(basket, tokenAmounts, absoluteAmounts);
         approveTokens(basket, tokenAmounts, absoluteAmounts);
 
-        try AmunBasket(basket).joinPool(amount, REFERRAL_CODE) {} catch Error(
+        try IAmunBasket(basket).joinPool(amount, REFERRAL_CODE) {} catch Error(
             // solhint-disable-previous-line no-empty-blocks
             string memory reason
         ) {
@@ -91,11 +91,11 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
     {
         require(tokenAmounts.length == 1, "ABIA: should be 1 tokenAmount");
         address basket = tokenAmounts[0].token;
-        tokensToBeWithdrawn = AmunBasket(basket).getTokens();
+        tokensToBeWithdrawn = IAmunBasket(basket).getTokens();
 
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
-        try AmunBasket(basket).exitPool(amount, REFERRAL_CODE) {} catch Error(
+        try IAmunBasket(basket).exitPool(amount, REFERRAL_CODE) {} catch Error(
             // solhint-disable-previous-line no-empty-blocks
             string memory reason
         ) {
@@ -123,8 +123,8 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         uint256[] memory absoluteAmounts
     ) internal view returns (uint256) {
         uint256 totalSupply =
-            ERC20(basket).totalSupply() + AmunBasket(basket).calcOutStandingAnnualizedFee();
-        uint256 entryFee = AmunBasket(basket).getEntryFee();
+            ERC20(basket).totalSupply() + IAmunBasket(basket).calcOutStandingAnnualizedFee();
+        uint256 entryFee = IAmunBasket(basket).getEntryFee();
         uint256 minimumBasketAmount = type(uint256).max;
         uint256 tempAmount;
         for (uint256 i = 0; i < tokenAmounts.length; i++) {

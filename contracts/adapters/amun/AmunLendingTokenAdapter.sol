@@ -18,29 +18,12 @@
 pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
-import { TokenMetadata, Component } from "../../Structs.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
+import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-
-interface YToken {
-    function token() external view returns (address);
-
-    function getPricePerFullShare() external view returns (uint256);
-}
-
-interface AmunLendingToken {
-    function limaTokenHelper() external view returns (address);
-
-    function getUnderlyingTokenBalance() external view returns (uint256);
-
-    function getUnderlyingTokenBalanceOf(uint256) external view returns (uint256);
-}
-
-interface AmunLendingTokenStorage {
-    function currentUnderlyingToken() external view returns (address);
-
-    function limaSwap() external view returns (address);
-}
+import { IAmunLendingToken } from "../../interfaces/IAmunLendingToken.sol";
+import { IAmunLendingTokenStorage } from "../../interfaces/IAmunLendingTokenStorage.sol";
+import { YVault } from "../../interfaces/YVault.sol";
 
 /**
  * @title Token adapter for amun lending tokens.
@@ -58,16 +41,17 @@ contract AmunLendingTokenAdapter is TokenAdapter {
         override
         returns (Component[] memory components)
     {
-        uint256 underlyingAmount = AmunLendingToken(token).getUnderlyingTokenBalanceOf(1e18);
+        uint256 underlyingAmount = IAmunLendingToken(token).getUnderlyingTokenBalanceOf(1e18);
         address underlyingToken =
-            AmunLendingTokenStorage(AmunLendingToken(token).limaTokenHelper())
+            IAmunLendingTokenStorage(IAmunLendingToken(token).limaTokenHelper())
                 .currentUnderlyingToken();
+
         components = new Component[](1);
 
         components[0] = Component({
-            token: YToken(underlyingToken).token(),
+            token: YVault(underlyingToken).token(),
             rate: int256(
-                (underlyingAmount * YToken(underlyingToken).getPricePerFullShare()) / 1e18
+                (underlyingAmount * YVault(underlyingToken).getPricePerFullShare()) / 1e18
             )
         });
 

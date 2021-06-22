@@ -23,9 +23,9 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-import { AmunLendingToken } from "../../interfaces/AmunLendingToken.sol";
-import { AmunLendingTokenStorage } from "../../interfaces/AmunLendingTokenStorage.sol";
-import { AmunAddressStorage } from "../../interfaces/AmunAddressStorage.sol";
+import { IAmunLendingToken } from "../../interfaces/IAmunLendingToken.sol";
+import { IAmunLendingTokenStorage } from "../../interfaces/IAmunLendingTokenStorage.sol";
+import { YVault } from "../../interfaces/YVault.sol";
 
 /**
  * @title Interactive adapter for AmunLending.
@@ -64,7 +64,7 @@ contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
         ERC20(tokenAmounts[0].token).safeApproveMax(lendingToken, amount, "ALIA[1]");
         try
-            AmunLendingToken(lendingToken).create(
+            IAmunLendingToken(lendingToken).create(
                 tokenAmounts[0].token,
                 amount,
                 address(this),
@@ -100,7 +100,7 @@ contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         tokensToBeWithdrawn[0] = getUnderlyingStablecoin(lendingToken);
 
         try
-            AmunLendingToken(lendingToken).redeem(
+            IAmunLendingToken(lendingToken).redeem(
                 tokensToBeWithdrawn[0],
                 amount,
                 address(this),
@@ -116,11 +116,10 @@ contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
     }
 
     function getUnderlyingStablecoin(address lendingToken) internal view returns (address) {
-        address limaTokenHelper = AmunLendingToken(lendingToken).limaTokenHelper();
+        address limaTokenHelper = IAmunLendingToken(lendingToken).limaTokenHelper();
         address underlyingToken =
-            AmunLendingTokenStorage(limaTokenHelper).currentUnderlyingToken();
-        address limaSwap = AmunLendingTokenStorage(limaTokenHelper).limaSwap();
+            IAmunLendingTokenStorage(limaTokenHelper).currentUnderlyingToken();
 
-        return AmunAddressStorage(limaSwap).interestTokenToUnderlyingStablecoin(underlyingToken);
+        return YVault(underlyingToken).token();
     }
 }

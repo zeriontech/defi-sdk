@@ -23,7 +23,7 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-import { IVault } from "../../interfaces/IVault.sol";
+import { IAmunVault } from "../../interfaces/IAmunVault.sol";
 
 /**
  * @title Interactive adapter for AmunLiquidity.
@@ -61,7 +61,7 @@ contract AmunLiquidityInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
 
         ERC20(token).safeApproveMax(liquidityToken, amount, "LBIA");
 
-        try IVault(liquidityToken).deposit(amount, REFERRAL_CODE) {} catch Error(
+        try IAmunVault(liquidityToken).deposit(amount, REFERRAL_CODE) {} catch Error(
             // solhint-disable-previous-line no-empty-blocks
             string memory reason
         ) {
@@ -87,12 +87,15 @@ contract AmunLiquidityInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
         require(tokenAmounts.length == 1, "LBIA: should be 1 tokenAmount[2]");
 
         address token = tokenAmounts[0].token;
-        uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = IVault(token).underlying();
+        tokensToBeWithdrawn[0] = IAmunVault(token).underlying();
 
-        try IVault(token).withdraw(amount, REFERRAL_CODE) {} catch Error(string memory reason) {
+        uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
+
+        try IAmunVault(token).withdraw(amount, REFERRAL_CODE) {} catch Error(
+            string memory reason
+        ) {
             // solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {

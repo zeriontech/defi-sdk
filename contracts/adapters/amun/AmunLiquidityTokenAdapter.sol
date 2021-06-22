@@ -21,7 +21,7 @@ pragma experimental ABIEncoderV2;
 import { ERC20 } from "../../interfaces/ERC20.sol";
 import { Component } from "../../shared/Structs.sol";
 import { TokenAdapter } from "../TokenAdapter.sol";
-import { IVault } from "../../interfaces/IVault.sol";
+import { IAmunVault } from "../../interfaces/IAmunVault.sol";
 
 /**
  * @title Token adapter for amun liquidity tokens.
@@ -35,14 +35,15 @@ contract AmunLiquidityAdapter is TokenAdapter {
      */
     function getComponents(address token)
         external
+        view
         override
         returns (Component[] memory components)
     {
         components = new Component[](1);
 
         components[0] = Component({
-            token: IVault(token).underlying(),
-            rate: int256(IVault(token).getPricePerFullShare())
+            token: IAmunVault(token).underlying(),
+            rate: int256(IAmunVault(token).getPricePerFullShare())
         });
 
         return components;
