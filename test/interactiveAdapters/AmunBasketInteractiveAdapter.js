@@ -36,7 +36,7 @@ const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 const TokenAdapter = artifacts.require('AmunBasketAdapter');
 
-contract('AmunBasketInteractiveAdapter', () => {
+contract.only('AmunBasketInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const amunBasketAddress = '0xA9536B9c75A9E0faE3B56a96AC8EdF76AbC91978';

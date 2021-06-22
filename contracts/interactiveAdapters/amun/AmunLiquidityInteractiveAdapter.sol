@@ -37,7 +37,7 @@ contract AmunLiquidityInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
     /**
      * @notice Deposits tokens to the Yearn Vault.
      * @param tokenAmounts Array with one element - TokenAmount struct with
-     * underlying token address, underlying token amount to be deposited, and amount type.
+     *     underlying token address, underlying token amount to be deposited, and amount type.
      * @param data ABI-encoded additional parameters:
      *     - liquidityToken - liquidityToken address.
      * @return tokensToBeWithdrawn Array with ane element - liquidityToken.
@@ -60,8 +60,9 @@ contract AmunLiquidityInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
         tokensToBeWithdrawn[0] = liquidityToken;
 
         ERC20(token).safeApproveMax(liquidityToken, amount, "LBIA");
-        // solhint-disable-next-line no-empty-blocks
-        try IVault(liquidityToken).deposit(amount, REFERRAL_CODE)  {} catch Error(
+
+        try IVault(liquidityToken).deposit(amount, REFERRAL_CODE) {} catch Error(
+            // solhint-disable-previous-line no-empty-blocks
             string memory reason
         ) {
             revert(reason);
@@ -91,8 +92,8 @@ contract AmunLiquidityInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = IVault(token).underlying();
 
-        // solhint-disable-next-line no-empty-blocks
-        try IVault(token).withdraw(amount, REFERRAL_CODE)  {} catch Error(string memory reason) {
+        try IVault(token).withdraw(amount, REFERRAL_CODE) {} catch Error(string memory reason) {
+            // solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
             revert("LBIA: withdraw fail");

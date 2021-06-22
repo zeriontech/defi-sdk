@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.6.5;
+pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
 import { ERC20 } from "../../ERC20.sol";
@@ -49,36 +49,28 @@ interface AmunLendingTokenStorage {
  */
 contract AmunLendingTokenAdapter is TokenAdapter {
     /**
-     * @return TokenMetadata struct with ERC20-style token info.
+     * @return components Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter interface function.
      */
-    function getMetadata(address token) external view override returns (TokenMetadata memory) {
-        return
-            TokenMetadata({
-                token: token,
-                name: ERC20(token).name(),
-                symbol: ERC20(token).symbol(),
-                decimals: ERC20(token).decimals()
-            });
-    }
-
-    /**
-     * @return Array of Component structs with underlying tokens rates for the given token.
-     * @dev Implementation of TokenAdapter interface function.
-     */
-    function getComponents(address token) external view override returns (Component[] memory) {
+    function getComponents(address token)
+        external
+        view
+        override
+        returns (Component[] memory components)
+    {
         uint256 underlyingAmount = AmunLendingToken(token).getUnderlyingTokenBalanceOf(1e18);
         address underlyingToken =
             AmunLendingTokenStorage(AmunLendingToken(token).limaTokenHelper())
                 .currentUnderlyingToken();
-        Component[] memory underlyingTokens = new Component[](1);
+        components = new Component[](1);
 
-        underlyingTokens[0] = Component({
+        components[0] = Component({
             token: YToken(underlyingToken).token(),
-            tokenType: "ERC20",
-            rate: (underlyingAmount * YToken(underlyingToken).getPricePerFullShare()) / 1e18
+            rate: int256(
+                (underlyingAmount * YToken(underlyingToken).getPricePerFullShare()) / 1e18
+            )
         });
 
-        return underlyingTokens;
+        return components;
     }
 }

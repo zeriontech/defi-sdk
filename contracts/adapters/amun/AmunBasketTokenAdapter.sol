@@ -28,15 +28,15 @@ import { AmunBasket } from "../../interfaces/AmunBasket.sol";
  * @dev Implementation of TokenAdapter abstract contract.
  * @author Timo Hedke <timo@amun.com>
  */
-contract AmunBasketAdapter is TokenAdapter {
+contract AmunBasketTokenAdapter is TokenAdapter {
     /**
-     * @return Array of Component structs with underlying tokens rates for the given asset.
+     * @return components Array of Component structs with underlying tokens rates for the given asset.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
     function getComponents(address token) external view override returns (Component[] memory) {
-        (address[] memory tokens, uint256[] memory amounts) = AmunBasket(token)
-            .calcTokensForAmount(1e18);
-        Component[] memory components = new Component[](tokens.length);
+        (address[] memory tokens, uint256[] memory amounts) =
+            AmunBasket(token).calcTokensForAmount(1e18);
+        components = new Component[](tokens.length);
 
         for (uint256 i = 0; i < tokens.length; i++) {
             components[i] = Component({ token: tokens[i], rate: int256(amounts[i]) });

@@ -30,11 +30,15 @@ import { IVault } from "../../interfaces/IVault.sol";
  */
 contract AmunLiquidityAdapter is TokenAdapter {
     /**
-     * @return Array of Component structs with underlying tokens rates for the given asset.
+     * @return components Array of Component structs with underlying tokens rates for the given asset.
      * @dev Implementation of TokenAdapter abstract contract function.
      */
-    function getComponents(address token) external override returns (Component[] memory) {
-        Component[] memory components = new Component[](1);
+    function getComponents(address token)
+        external
+        override
+        returns (Component[] memory components)
+    {
+        components = new Component[](1);
 
         components[0] = Component({
             token: IVault(token).underlying(),
