@@ -51,18 +51,18 @@ contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "LBIA[1]: should be 1 tokenAmount");
+        require(tokenAmounts.length == 1, "ALIA[1]: should be 1 tokenAmount");
 
         address lendingToken = abi.decode(data, (address));
         require(
             tokenAmounts[0].token == getUnderlyingStablecoin(lendingToken),
-            "LBIA: should be underling stablecoin"
+            "ALIA: should be underling stablecoin"
         );
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = lendingToken;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
-        ERC20(tokenAmounts[0].token).safeApproveMax(lendingToken, amount, "LBIA[1]");
+        ERC20(tokenAmounts[0].token).safeApproveMax(lendingToken, amount, "ALIA[1]");
         try
             AmunLendingToken(lendingToken).create(
                 tokenAmounts[0].token,
@@ -71,27 +71,28 @@ contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
                 0,
                 REFERRAL_CODE
             )
-         {} catch Error(string memory reason) {
+        {} catch Error(string memory reason) {
+            // solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
-            revert("LBIA: join fail");
+            revert("ALIA: create fail");
         }
     }
 
     /**
      * @notice Withdraws tokens from the AmunLending.
      * @param tokenAmounts Array with one element - TokenAmount struct with
-     * AmunLending token address, AmunLending token amount to be redeemed, and amount type.
+     *     AmunLending token address, AmunLending token amount to be redeemed, and amount type.
      * @return tokensToBeWithdrawn Array with amun token underlying.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata data)
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "LBIA[2]: should be 1 tokenAmount");
+        require(tokenAmounts.length == 1, "ALIA[2]: should be 1 tokenAmount");
         address lendingToken = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
@@ -106,22 +107,20 @@ contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
                 0,
                 REFERRAL_CODE
             )
-         {} catch Error(string memory reason) {
+        {} catch Error(string memory reason) {
+            // solhint-disable-previous-line no-empty-blocks
             revert(reason);
         } catch {
-            revert("LBIA: exit fail");
+            revert("ALIA: redeem fail");
         }
     }
 
     function getUnderlyingStablecoin(address lendingToken) internal view returns (address) {
-        address underlyingToken = AmunLendingTokenStorage(
-            AmunLendingToken(lendingToken).limaTokenHelper()
-        )
-            .currentUnderlyingToken();
-        address limaSwap = AmunLendingTokenStorage(
-            AmunLendingToken(lendingToken).limaTokenHelper()
-        )
-            .limaSwap();
+        address limaTokenHelper = AmunLendingToken(lendingToken).limaTokenHelper();
+        address underlyingToken =
+            AmunLendingTokenStorage(limaTokenHelper).currentUnderlyingToken();
+        address limaSwap = AmunLendingTokenStorage(limaTokenHelper).limaSwap();
+
         return AmunAddressStorage(limaSwap).interestTokenToUnderlyingStablecoin(underlyingToken);
     }
 }

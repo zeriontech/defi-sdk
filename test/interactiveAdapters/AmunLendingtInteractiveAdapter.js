@@ -34,9 +34,9 @@ const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
-const TokenAdapter = artifacts.require('AmunLendingAdapter');
+const TokenAdapter = artifacts.require('AmunLendingTokenAdapter');
 
-contract('AmunLendingInteractiveAdapter', () => {
+contract.only('AmunLendingInteractiveAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const usdcAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
@@ -132,7 +132,7 @@ contract('AmunLendingInteractiveAdapter', () => {
   });
 
   describe('Scenario ETH <-> DFI Lending', () => {
-    it.only('should not buy lending with unsupported token', async () => {
+    it('should not buy lending with unsupported token', async () => {
       await router.methods
         .execute(
         // actions
@@ -198,7 +198,7 @@ contract('AmunLendingInteractiveAdapter', () => {
         }));
     });
 
-    it.only('should buy 1 lending token', async () => {
+    it('should buy 1 lending token', async () => {
       // exchange 10 ETH to WETH like we had WETH initially
       await router.methods
         .execute(
@@ -278,7 +278,7 @@ contract('AmunLendingInteractiveAdapter', () => {
         });
     });
 
-    it.only('should sell 1 lending token', async () => {
+    it('should sell 1 lending token', async () => {
       const actions = [
         [
           AMUN_LENDING_ASSET_ADAPTER,
@@ -329,7 +329,7 @@ contract('AmunLendingInteractiveAdapter', () => {
           assert.equal(true, BigInt(result) < BigInt(lendingBalanceBefore));
         });
     });
-    it.only('should fail sell more lending token then own', async () => {
+    it('should fail sell more lending token then own', async () => {
       const actions = [
         [
           AMUN_LENDING_ASSET_ADAPTER,

@@ -1,5 +1,4 @@
 import convertToBytes32 from '../helpers/convertToBytes32';
-import displayToken from '../helpers/displayToken';
 
 const AMUN_LENDING_ADAPTER = convertToBytes32('Amun Lending Adapter');
 const EMPTY_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -7,10 +6,10 @@ const EMPTY_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000
 const ProtocolAdapterRegistry = artifacts.require('ProtocolAdapterRegistry');
 const TokenAdapterRegistry = artifacts.require('TokenAdapterRegistry');
 const ProtocolAdapter = artifacts.require('ERC20ProtocolAdapter');
-const TokenAdapter = artifacts.require('AmunLendingAdapter');
+const TokenAdapter = artifacts.require('AmunLendingTokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract('AmunLendingAdapter', () => {
+contract('AmunLendingTokenAdapter', () => {
   const DROPAddress = '0x78f9c12e15ec36C2AB1bE0b2e5f79B71A9ECdFC8';
 
   let accounts;
