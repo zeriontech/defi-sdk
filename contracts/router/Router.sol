@@ -21,6 +21,7 @@ import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuar
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 import { SignatureVerifier } from "./SignatureVerifier.sol";
 import { IChiToken } from "../interfaces/IChiToken.sol";
@@ -34,11 +35,12 @@ import { Ownable } from "../shared/Ownable.sol";
 import { AmountType, PermitType, SwapType } from "../shared/Enums.sol";
 import {
     BadAbsoluteInputAmount,
-    BadAccountFromSignature,
     BadAmountType,
     BadGetExactInputAmountReturnData,
+    BadSignature,
     ExceedingLimitAmount,
     ExceedingLimitFee,
+    InsufficientAllowance,
     InsufficientMsgValue,
     InsufficientOutputBalanceChange,
     LargeExactInputAmount,
@@ -111,7 +113,6 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         external
         payable
         override
-        nonReentrant
         useCHI
         returns (uint256 inputBalanceChange, uint256 outputBalanceChange)
     {
@@ -129,7 +130,6 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         external
         payable
         override
-        nonReentrant
         useCHI
         returns (uint256 inputBalanceChange, uint256 outputBalanceChange)
     {
@@ -154,9 +154,9 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         returns (uint256 inputBalanceChange, uint256 outputBalanceChange)
     {
         bytes32 hashedData = hashData(input, absoluteOutput, swapDescription, account, salt);
-        address accountFromSignature = getAccountFromSignature(hashedData, signature);
-        if (account != accountFromSignature) {
-            revert BadAccountFromSignature(accountFromSignature, account);
+
+        if (SignatureChecker.isValidSignatureNow(account, hashedData, signature)) {
+            revert BadSignature();
         }
 
         markHashUsed(hashedData, account);
@@ -331,11 +331,11 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
         uint256 exactInputAmount,
         SwapDescription calldata swapDescription
     ) internal {
-        if (msg.value < absoluteInputAmount) {
-            revert InsufficientMsgValue(msg.value, absoluteInputAmount);
-        }
-
         uint256 feeAmount = getFeeAmount(absoluteInputAmount, exactInputAmount, swapDescription);
+
+        if (msg.value < exactInputAmount + feeAmount) {
+            revert InsufficientMsgValue(msg.value, exactInputAmount + feeAmount);
+        }
 
         if (feeAmount > 0) {
             Base.transferEther(swapDescription.fee.beneficiary, feeAmount, "R: fee");
@@ -373,15 +373,20 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
             return;
         }
 
-        if (absoluteInputAmount > IERC20(token).allowance(account, address(this))) {
+        uint256 feeAmount = getFeeAmount(absoluteInputAmount, exactInputAmount, swapDescription);
+
+        uint256 allowance = IERC20(token).allowance(account, address(this));
+        if (allowance < exactInputAmount + feeAmount) {
+            if (permit.permitCallData.length == 0) {
+                revert InsufficientAllowance(allowance, exactInputAmount + feeAmount);
+            }
+
             Address.functionCall(
                 token,
                 abi.encodePacked(getPermitSelector(permit.permitType), permit.permitCallData),
                 "R: permit"
             );
         }
-
-        uint256 feeAmount = getFeeAmount(absoluteInputAmount, exactInputAmount, swapDescription);
 
         if (feeAmount > 0) {
             SafeERC20.safeTransferFrom(

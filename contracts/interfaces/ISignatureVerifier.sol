@@ -48,14 +48,4 @@ interface ISignatureVerifier {
         address account,
         uint256 salt
     ) external view returns (bytes32 hashedData);
-
-    /**
-     * @param hashedData Hash to be checked.
-     * @param signature EIP712 signature.
-     * @return account Account that signed the hashed data.
-     */
-    function getAccountFromSignature(bytes32 hashedData, bytes memory signature)
-        external
-        pure
-        returns (address payable account);
 }

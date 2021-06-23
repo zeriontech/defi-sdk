@@ -145,10 +145,6 @@ describe('SignatureVerifier', () => {
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData, wallet.address)).to.be.false;
 
-    expect(
-      await router.getAccountFromSignature(hashedData, ethers.utils.joinSignature(signature)),
-    ).to.be.equal(wallet.address);
-
     await router.functions[EXECUTE_SIGNATURE](
       // input
       [

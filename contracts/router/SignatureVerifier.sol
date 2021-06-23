@@ -18,7 +18,6 @@
 pragma solidity 0.8.4;
 
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
-import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 import { ISignatureVerifier } from "../interfaces/ISignatureVerifier.sol";
 import { UsedHash } from "../shared/Errors.sol";
@@ -119,18 +118,6 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
         uint256 salt
     ) public view override returns (bytes32 hashedData) {
         return _hashTypedDataV4(hash(input, requiredOutput, swapDescription, account, salt));
-    }
-
-    /**
-     * @inheritdoc ISignatureVerifier
-     */
-    function getAccountFromSignature(bytes32 hashedData, bytes memory signature)
-        public
-        pure
-        override
-        returns (address payable account)
-    {
-        return payable(ECDSA.recover(hashedData, signature));
     }
 
     /**

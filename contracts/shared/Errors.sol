@@ -19,7 +19,6 @@ pragma solidity 0.8.4;
 
 import { ActionType, AmountType, PermitType, SwapType } from "./Enums.sol";
 
-error BadAccountFromSignature(address accountFromSignature, address requiredAccount);
 error BadAbsoluteInputAmount(uint256 absoluteInputAmount, uint256 requiredAbsoluteInputAmount);
 error BadAmountType(AmountType amountType, AmountType requiredAmountType);
 error BadGetExactInputAmountCallData(bytes callData);
@@ -28,10 +27,12 @@ error BadCallBytesCallData(bytes callData);
 error BadLength(uint256 length, uint256 requiredLength);
 error BadMsgSender(address msgSender, address requiredMsgSender);
 error BadProtocolAdapterName(bytes32 protocolAdapterName);
+error BadSignature();
 
 error ExceedingLimitAmount(uint256 amount);
 error ExceedingLimitFee(uint256 fee);
 
+error InsufficientAllowance(uint256 allowance, uint256 requiredAllowance);
 error InsufficientMsgValue(uint256 msgValue, uint256 requiredMsgValue);
 error InsufficientOutputBalanceChange(
     uint256 outputBalanceChange,
