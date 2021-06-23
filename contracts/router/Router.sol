@@ -490,7 +490,13 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
 
         if (swapType == SwapType.FixedInputs) {
             if (swapDescription.fee.share > 0) {
-                return (absoluteInputAmount * (DELIMITER - swapDescription.fee.share)) / DELIMITER;
+                /*
+                 * Calculate exactInputAmount in such a way that
+                 * feeAmount is a share of exactInputAmount.
+                 * In this case, absoluteInputAmount is
+                 * the total amount of exactInputAmount and feeAmount.
+                 */
+                return absoluteInputAmount * DELIMITER / (DELIMITER + swapDescription.fee.share);
             }
 
             return absoluteInputAmount;
@@ -536,20 +542,21 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
             revert NonePermitType();
         }
 
-        // Constants of non-value type not yet implemented,
-        // so we have to use else-if's.
-        //    bytes4[3] internal constant PERMIT_SELECTORS = [
-        //        // PermitType.EIP2612
-        //        // keccak256(abi.encodePacked('permit(address,address,uint256,uint256,uint8,bytes32,bytes32)'))
-        //        0xd505accf,
-        //        // PermitType.DAI
-        //        // keccak256(abi.encodePacked('permit(address,address,uint256,uint256,bool,uint8,bytes32,bytes32)'))
-        //        0x8fcbaf0c,
-        //        // PermitType.Yearn
-        //        // keccak256(abi.encodePacked('permit(address,address,uint256,uint256,bytes)'))
-        //        0x9fd5a6cf
-        //    ];
-
+        /*
+         * Constants of non-value type not yet implemented,
+         * so we have to use else-if's.
+         *    bytes4[3] internal constant PERMIT_SELECTORS = [
+         *        // PermitType.EIP2612
+         *        // keccak256(abi.encodePacked('permit(address,address,uint256,uint256,uint8,bytes32,bytes32)'))
+         *        0xd505accf,
+         *        // PermitType.DAI
+         *        // keccak256(abi.encodePacked('permit(address,address,uint256,uint256,bool,uint8,bytes32,bytes32)'))
+         *        0x8fcbaf0c,
+         *        // PermitType.Yearn
+         *        // keccak256(abi.encodePacked('permit(address,address,uint256,uint256,bytes)'))
+         *        0x9fd5a6cf
+         *    ];
+         */
         if (permitType == PermitType.EIP2612) {
             return IEIP2612.permit.selector;
         }
