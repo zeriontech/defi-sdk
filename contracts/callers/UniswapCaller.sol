@@ -17,8 +17,6 @@
 
 pragma solidity 0.8.4;
 
-import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
 import { BaseCaller } from "./BaseCaller.sol";
 import { ICaller } from "../interfaces/ICaller.sol";
 import { IUniswapV2Pair } from "../interfaces/IUniswapV2Pair.sol";
@@ -36,7 +34,7 @@ import { AbsoluteInput } from "../shared/Structs.sol";
 /**
  * @title Uniswap caller that executes swaps on UniswapV2-like pools.
  */
-contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
+contract UniswapCaller is ICaller, BaseCaller {
     address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     /**
@@ -49,7 +47,7 @@ contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
      *     - amount Amount of the token which is fixed (see swapType).
      * @dev Implementation of Caller interface function.
      */
-    function callBytes(bytes calldata callData) external payable override nonReentrant {
+    function callBytes(bytes calldata callData) external payable override {
         address payable account = getAccount();
         (address[] memory pairs, bool[] memory directions, SwapType swapType, uint256 amount) =
             abi.decode(callData, (address[], bool[], SwapType, uint256));

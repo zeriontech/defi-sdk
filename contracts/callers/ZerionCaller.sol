@@ -17,7 +17,6 @@
 
 pragma solidity 0.8.4;
 
-import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { BaseCaller } from "./BaseCaller.sol";
@@ -38,7 +37,7 @@ import { Action, TokenAmount } from "../shared/Structs.sol";
 /**
  * @title Zerion caller that executes actions.
  */
-contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
+contract ZerionCaller is ICaller, BaseCaller {
     address internal immutable protocolAdapterRegistry_;
 
     /**
@@ -73,7 +72,7 @@ contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
      * @param callData ABI-encoded parameters:
      *     - actions Array with actions to be executed.
      */
-    function callBytes(bytes calldata callData) external payable override nonReentrant {
+    function callBytes(bytes calldata callData) external payable override {
         address payable account = getAccount();
         Action[] memory actions = abi.decode(callData, (Action[]));
 
