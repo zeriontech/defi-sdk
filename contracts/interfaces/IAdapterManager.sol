@@ -42,8 +42,7 @@ interface IAdapterManager {
      * @param adaptersNamesAndAddresses Array of the new adapters' names and addresses.
      * @dev Can be called only by this contract's owner.
      */
-    function setAdapters(AdapterNameAndAddress[] calldata adaptersNamesAndAddresses)
-        external;
+    function setAdapters(AdapterNameAndAddress[] calldata adaptersNamesAndAddresses) external;
 
     /**
      * @param name Name of the adapter.

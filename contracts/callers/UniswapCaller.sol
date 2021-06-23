@@ -31,7 +31,7 @@ import {
     ZeroAmountOut,
     ZeroLiquidity
 } from "../shared/Errors.sol";
-import { AbsoluteInput} from "../shared/Structs.sol";
+import { AbsoluteInput } from "../shared/Structs.sol";
 
 /**
  * @title Uniswap caller that executes swaps on UniswapV2-like pools.
@@ -50,9 +50,9 @@ contract UniswapCaller is ICaller, BaseCaller, ReentrancyGuard {
      * @dev Implementation of Caller interface function.
      */
     function callBytes(bytes calldata callData) external payable override nonReentrant {
+        address payable account = getAccount();
         (address[] memory pairs, bool[] memory directions, SwapType swapType, uint256 amount) =
             abi.decode(callData, (address[], bool[], SwapType, uint256));
-        address payable account = getAccount();
 
         uint256[] memory amounts =
             (swapType == SwapType.FixedInputs)

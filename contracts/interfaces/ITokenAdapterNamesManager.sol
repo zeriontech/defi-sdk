@@ -42,27 +42,23 @@ interface ITokenAdapterNamesManager {
      * @param tokensAndAdapterNames Array of tokens addresses and new token adapters' names.
      * @dev Can be called only by this contract's owner.
      */
-    function setTokenAdapterNamesByHashes(
-        TokenAndAdapterName[] calldata tokensAndAdapterNames
-    ) external;
+    function setTokenAdapterNamesByHashes(TokenAndAdapterName[] calldata tokensAndAdapterNames)
+        external;
 
     /**
      * @notice Sets token adapters' names by tokens addresses.
      * @param tokensAndAdapterNames Array of tokens addresses and new token adapters' names.
      * @dev Can be called only by this contract's owner.
      */
-    function setTokenAdapterNamesByTokens(
-        TokenAndAdapterName[] calldata tokensAndAdapterNames
-    ) external;
+    function setTokenAdapterNamesByTokens(TokenAndAdapterName[] calldata tokensAndAdapterNames)
+        external;
 
     /**
      * @notice Sets token adapters' names using hashes.
      * @param hashesAndAdapterNames Array of hashes and new token adapters' names.
      * @dev Can be called only by this contract's owner.
      */
-    function setTokenAdapterNames(
-        HashAndAdapterName[] calldata hashesAndAdapterNames
-    ) external;
+    function setTokenAdapterNames(HashAndAdapterName[] calldata hashesAndAdapterNames) external;
 
     /**
      * @param token Address of token.

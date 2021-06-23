@@ -34,9 +34,11 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
     /**
      * @inheritdoc ITokenAdapterNamesManager
      */
-    function setTokenAdapterNamesByHashes(
-        TokenAndAdapterName[] calldata tokensAndAdapterNames
-    ) external override onlyOwner {
+    function setTokenAdapterNamesByHashes(TokenAndAdapterName[] calldata tokensAndAdapterNames)
+        external
+        override
+        onlyOwner
+    {
         uint256 length = tokensAndAdapterNames.length;
         if (length == 0) {
             revert ZeroLength();
@@ -53,9 +55,11 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
     /**
      * @inheritdoc ITokenAdapterNamesManager
      */
-    function setTokenAdapterNamesByTokens(
-        TokenAndAdapterName[] calldata tokensAndAdapterNames
-    ) external override onlyOwner {
+    function setTokenAdapterNamesByTokens(TokenAndAdapterName[] calldata tokensAndAdapterNames)
+        external
+        override
+        onlyOwner
+    {
         uint256 length = tokensAndAdapterNames.length;
         if (length == 0) {
             revert ZeroLength();
@@ -72,9 +76,11 @@ abstract contract TokenAdapterNamesManager is ITokenAdapterNamesManager, Ownable
     /**
      * @inheritdoc ITokenAdapterNamesManager
      */
-    function setTokenAdapterNames(
-        HashAndAdapterName[] calldata hashesAndAdapterNames
-    ) external override onlyOwner {
+    function setTokenAdapterNames(HashAndAdapterName[] calldata hashesAndAdapterNames)
+        external
+        override
+        onlyOwner
+    {
         uint256 length = hashesAndAdapterNames.length;
         if (length == 0) {
             revert ZeroLength();

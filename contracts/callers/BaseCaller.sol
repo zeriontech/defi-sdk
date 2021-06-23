@@ -17,6 +17,8 @@
 
 pragma solidity 0.8.4;
 
+import { BadCallBytesCallData } from "../shared/Errors.sol";
+
 /**
  * @title Base caller that provides `getAccount` function.
  */
@@ -26,19 +28,18 @@ abstract contract BaseCaller {
      * @return account Address of account that receives the resulting funds.
      */
     function getAccount() internal pure returns (address payable account) {
-        // require(msg.data.length > 32, "BC: bad calldata");
+        if (msg.data.length < 32) {
+            revert BadCallBytesCallData(msg.data);
+        }
+
         // solhint-disable-next-line no-inline-assembly
         assembly {
             // Type conversion will leave only lase 20 bytes from `calldataload()` call.
-            account :=
+            account := calldataload(
                 // Load last 32 bytes of calldata.
-                calldataload(
-                    // Calldata size, decreased by 32 bytes (1 slot).
-                    sub(
-                        calldatasize(),
-                        32
-                    )
-                )
+                // Calldata size, decreased by 32 bytes (1 slot).
+                sub(calldatasize(), 32)
+            )
         }
 
         return account;

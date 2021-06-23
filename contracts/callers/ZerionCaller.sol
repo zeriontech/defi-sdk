@@ -74,8 +74,8 @@ contract ZerionCaller is ICaller, BaseCaller, ReentrancyGuard {
      *     - actions Array with actions to be executed.
      */
     function callBytes(bytes calldata callData) external payable override nonReentrant {
-        Action[] memory actions = abi.decode(callData, (Action[]));
         address payable account = getAccount();
+        Action[] memory actions = abi.decode(callData, (Action[]));
 
         address[][] memory tokensToBeWithdrawn = new address[][](actions.length);
 

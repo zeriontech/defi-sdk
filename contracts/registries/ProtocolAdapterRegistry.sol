@@ -29,7 +29,6 @@ import { AdapterBalance, TokenBalance, AdapterTokens } from "../shared/Structs.s
  * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterManager {
-
     /**
      * @inheritdoc IProtocolAdapterRegistry
      */
@@ -64,9 +63,9 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
         }
 
         adapterBalances = getNonZeroAdapterBalances(
-                adapterBalances,
-                getNonZeroAdapterBalancesNumber(adapterBalances)
-            );
+            adapterBalances,
+            getNonZeroAdapterBalancesNumber(adapterBalances)
+        );
 
         return adapterBalances;
     }
@@ -87,7 +86,10 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
         TokenBalance[] memory tokenBalances =
             getTokenBalances(adapter, adapterTokens.tokens, account);
 
-        adapterBalance = AdapterBalance({ name: adapterTokens.name, tokenBalances: tokenBalances });
+        adapterBalance = AdapterBalance({
+            name: adapterTokens.name,
+            tokenBalances: tokenBalances
+        });
 
         return adapterBalance;
     }
@@ -109,12 +111,12 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
             getTokenBalances(adapter, adapterTokens.tokens, account);
 
         nonZeroAdapterBalance = AdapterBalance({
-                name: adapterTokens.name,
-                tokenBalances: getNonZeroTokenBalances(
-                    tokenBalances,
-                    getNonZeroTokenBalancesNumber(tokenBalances)
-                )
-            });
+            name: adapterTokens.name,
+            tokenBalances: getNonZeroTokenBalances(
+                tokenBalances,
+                getNonZeroTokenBalancesNumber(tokenBalances)
+            )
+        });
 
         return nonZeroAdapterBalance;
     }

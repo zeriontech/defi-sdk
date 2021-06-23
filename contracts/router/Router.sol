@@ -56,6 +56,7 @@ import {
     TokenAmount
 } from "../shared/Structs.sol";
 
+// solhint-disable code-complexity
 contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), ReentrancyGuard {
     uint256 internal constant FEE_LIMIT = 1e16; // 1%
     uint256 internal constant DELIMITER = 1e18; // 100%
@@ -254,7 +255,10 @@ contract Router is IRouter, Ownable, SignatureVerifier("Zerion Router", "2"), Re
             revert LargeInputBalanceChange(inputBalanceChange, absoluteInputAmount);
         }
         if (outputBalanceChange < absoluteOutput.absoluteAmount) {
-            revert InsufficientOutputBalanceChange(outputBalanceChange, absoluteOutput.absoluteAmount);
+            revert InsufficientOutputBalanceChange(
+                outputBalanceChange,
+                absoluteOutput.absoluteAmount
+            );
         }
 
         // Emit event so one could track the swap.
