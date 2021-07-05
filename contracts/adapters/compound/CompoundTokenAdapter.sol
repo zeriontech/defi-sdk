@@ -90,8 +90,14 @@ contract CompoundTokenAdapter is TokenAdapter {
     function getUnderlying(address token) internal view returns (address) {
         if (token == CETH || token == CRETH) {
             return ETH;
-        } else {
-            return CToken(token).underlying();
         }
+
+        address underlying = CToken(token).underlying();
+
+        if (underlying == address(0)) {
+            return ETH;
+        }
+
+        return underlying;
     }
 }
