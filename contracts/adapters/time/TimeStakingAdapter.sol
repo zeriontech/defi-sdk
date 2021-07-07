@@ -28,13 +28,6 @@ interface ITimeWarpPool {
     function getReward(address, uint32) external view returns (uint256, uint32);
 }
 
-
-interface IUniswapV2Pair {
-    function totalSupply() external view returns (uint256);
-
-    function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast);
-}
-
 /**
  * @title Adapter for Time protocol (staking).
  * @dev Implementation of ProtocolAdapter interface.
