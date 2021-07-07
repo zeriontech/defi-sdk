@@ -22,17 +22,6 @@ import {ProtocolAdapter} from "../ProtocolAdapter.sol";
 
 interface ITimeWarpPool {
     function userStacked(address) external view returns (uint256);
-
-    function userLastReward(address) external view returns (uint32);
-
-    function getReward(address, uint32) external view returns (uint256, uint32);
-}
-
-
-interface IUniswapV2Pair {
-    function totalSupply() external view returns (uint256);
-
-    function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast);
 }
 
 /**
@@ -40,25 +29,20 @@ interface IUniswapV2Pair {
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract TimeStakingAdapter is ProtocolAdapter {
+contract TimeEthLpStakingAdapter is ProtocolAdapter {
 
     string public constant overflow adapterType = "Asset";
 
     string public constant overflow tokenType = "ERC20";
 
-    address internal constant STACKING_POOL_TIME = 0xa106dd3Bc6C42B3f28616FfAB615c7d494Eb629D;
+    address internal constant STACKING_POOL_TIME_ETH_LP = 0x55c825983783c984890bA89F7d7C9575814D83F2;
 
     /**
      * @return Amount of staked TIME tokens for a given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address, address account) external view override returns (uint256) {
-        uint256 totalBalance = 0;
-        totalBalance += ITimeWarpPool(STACKING_POOL_TIME).userStacked(account);
-        uint32 lastReward = ITimeWarpPool(STACKING_POOL_TIME).userLastReward(account);
-        (uint256 amount,) = ITimeWarpPool(STACKING_POOL_TIME).getReward(account, lastReward);
-        totalBalance += amount;
-        return totalBalance;
+        return ITimeWarpPool(STACKING_POOL_TIME_ETH_LP).userStacked(account);
     }
 }
 
