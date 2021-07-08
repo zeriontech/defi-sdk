@@ -35,17 +35,19 @@ interface ITimeWarpPool {
  */
 contract TimeStakingAdapter is ProtocolAdapter {
 
-    string public constant overflow adapterType = "Asset";
+    string public constant override adapterType = "Asset";
 
-    string public constant overflow tokenType = "ERC20";
+    string public constant override tokenType = "ERC20";
 
+    address internal constant TIME = 0x6531f133e6DeeBe7F2dcE5A0441aA7ef330B4e53;
     address internal constant STACKING_POOL_TIME = 0xa106dd3Bc6C42B3f28616FfAB615c7d494Eb629D;
 
     /**
      * @return Amount of staked TIME tokens for a given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
-    function getBalance(address, address account) external view override returns (uint256) {
+    function getBalance(address token, address account) external view override returns (uint256) {
+        if (token != TIME) return 0;
         uint256 totalBalance = 0;
         totalBalance += ITimeWarpPool(STACKING_POOL_TIME).userStacked(account);
         uint32 lastReward = ITimeWarpPool(STACKING_POOL_TIME).userLastReward(account);
@@ -54,4 +56,3 @@ contract TimeStakingAdapter is ProtocolAdapter {
         return totalBalance;
     }
 }
-
