@@ -21,7 +21,7 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
 /**
- * @title Adapter for iearn.finance protocol.
+ * @title Adapter for Unigii protocol.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
@@ -29,7 +29,7 @@ contract UnagiiVaultAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "ERC20";
+    string public constant override tokenType = "Unagii token";
 
     /**
      * @return Amount of Unagii Vault Tokens owned by the given account.
