@@ -39,7 +39,7 @@ contract TimeStakingAdapter is ProtocolAdapter {
 
     string public constant override tokenType = "ERC20";
 
-    address internal constant TIME = 0x6531f133e6DeeBe7F2dcE5A0441aA7ef330B4e53;
+    address internal constant TIME = 0x485d17A6f1B8780392d53D64751824253011A260;
     address internal constant STACKING_POOL_TIME = 0xa106dd3Bc6C42B3f28616FfAB615c7d494Eb629D;
 
     /**
