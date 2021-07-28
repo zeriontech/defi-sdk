@@ -171,7 +171,10 @@ contract.only('GUniInteractiveAdapter', () => {
         ],
         // inputs
         [
-          [wethAddress, web3.utils.toWei('0.3', 'ether'), AMOUNT_ABSOLUTE],
+          [
+            [wethAddress, web3.utils.toWei('0.3', 'ether'), AMOUNT_ABSOLUTE],
+            [0, EMPTY_BYTES],
+          ],
         ],
         // fee
         [0, ZERO],
@@ -201,7 +204,10 @@ contract.only('GUniInteractiveAdapter', () => {
         ],
         // inputs
         [
-          [wethAddress, web3.utils.toWei('0.3', 'ether'), AMOUNT_ABSOLUTE],
+          [
+            [wethAddress, web3.utils.toWei('0.3', 'ether'), AMOUNT_ABSOLUTE],
+            [0, EMPTY_BYTES],
+          ],
         ],
         // fee
         [0, ZERO],
@@ -253,8 +259,14 @@ contract.only('GUniInteractiveAdapter', () => {
           ],
         ],
         [
-          [daiAddress, convertToShare(50), AMOUNT_ABSOLUTE],
-          [fraxAddress, convertToShare(50), AMOUNT_ABSOLUTE],
+          [
+            [daiAddress, convertToShare(50), AMOUNT_ABSOLUTE],
+            [0, EMPTY_BYTES],
+          ],
+          [
+            [fraxAddress, convertToShare(50), AMOUNT_ABSOLUTE],
+            [0, EMPTY_BYTES],
+          ],
         ],
         [0, ZERO],
         [
@@ -268,36 +280,6 @@ contract.only('GUniInteractiveAdapter', () => {
     });
 
     it('should buy G-UNI with existing DAI and FRAX', async () => {
-      /* await FRAX.methods.approve(router.options.address, web3.utils.toWei('0.3', 'ether'))
-        .send({
-          from: accounts[0],
-          gas: 1000000,
-        });
-      await router.methods.execute(
-        // actions
-        [
-          [
-            UNISWAP_V2_EXCHANGE_ADAPTER,
-            ACTION_DEPOSIT,
-            [
-              [wethAddress, web3.utils.toWei('0.3', 'ether'), AMOUNT_ABSOLUTE],
-            ],
-            web3.eth.abi.encodeParameter('address[]', [wethAddress, daiAddress]),
-          ],
-        ],
-        // inputs
-        [
-          [wethAddress, web3.utils.toWei('0.3', 'ether'), AMOUNT_ABSOLUTE],
-        ],
-        // fee
-        [0, ZERO],
-        // outputs
-        [],
-      )
-        .send({
-          gas: 10000000,
-          from: accounts[0],
-        }); */
       let daiAmount;
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
@@ -344,8 +326,14 @@ contract.only('GUniInteractiveAdapter', () => {
           ],
         ],
         [
-          [daiAddress, convertToShare(0.5), AMOUNT_RELATIVE],
-          [fraxAddress, convertToShare(0.5), AMOUNT_RELATIVE],
+          [
+            [daiAddress, convertToShare(0.5), AMOUNT_RELATIVE],
+            [0, EMPTY_BYTES],
+          ],
+          [
+            [fraxAddress, convertToShare(0.5), AMOUNT_RELATIVE],
+            [0, EMPTY_BYTES],
+          ],
         ],
         [0, ZERO],
         [
@@ -426,7 +414,10 @@ contract.only('GUniInteractiveAdapter', () => {
           ],
         ],
         [
-          [daiFraxAddress, convertToShare(1), AMOUNT_RELATIVE],
+          [
+            [daiFraxAddress, convertToShare(1), AMOUNT_RELATIVE],
+            [0, EMPTY_BYTES],
+          ],
         ],
         [0, ZERO],
         [],

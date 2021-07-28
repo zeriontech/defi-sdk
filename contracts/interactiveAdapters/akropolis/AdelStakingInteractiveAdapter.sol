@@ -18,27 +18,13 @@
 pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { InteractiveAdapter } from "../InteractiveAdapter.sol";
+import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
+import { AdelStaking } from "../../interfaces/AdelStaking.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
-import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
-import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 
-/**
- * @dev Staking contract interface.
- * Only the functions required for AkroStakingAdapter contract are added.
- */
-interface AdelStaking {
-    function stake(uint256 amout, bytes calldata _data) external;
-
-    function stakeFor(
-        address _user,
-        uint256 _amount,
-        bytes memory _data
-    ) external;
-
-    function unstakeAllUnlocked(bytes calldata _data) external returns (uint256);
-}
 
 /**
  * @title Interactive Adapter for ADEL Staking protocol.
@@ -62,14 +48,14 @@ contract AdelStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * ADEL token address, token amount to be stake, and amount type.
      * @param data user address encoded in bytes data
-     * @return tokensToBeWithdrawn empty array
+     * @return empty array
      * @dev Implementation of InteractiveAdapter function.
      */
     function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
-        returns (address[] memory tokensToBeWithdrawn)
+        returns (address[] memory)
     {
         require(
             tokenAmounts.length == 1 && tokenAmounts[0].token == ADEL,
@@ -91,6 +77,8 @@ contract AdelStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         } catch {
             revert("ADELIA: stake fail");
         }
+
+        return new address[](0);
     }
 
     /**

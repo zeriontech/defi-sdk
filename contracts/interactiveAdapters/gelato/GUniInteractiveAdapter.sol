@@ -15,15 +15,15 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.7.3;
+pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../shared/ERC20.sol";
+import { InteractiveAdapter } from "../InteractiveAdapter.sol";
+import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
+import { ERC20 } from "../../interfaces/ERC20.sol";
+import { IGUniPool } from "../../interfaces/IGUniPool.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
-import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
-import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-import { IGUniPool } from "../../interfaces/IGUniPool.sol";
 
 /**
  * @title Interactive adapter for G-UNI protocol (fungible lp tokens on Uniswap v3).
@@ -62,15 +62,16 @@ contract GUniInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
             amount1Max
         );
 
-        ERC20(tokenAmounts[0].token).safeApprove(pair, amount0, "GUIA[1]");
-        ERC20(tokenAmounts[1].token).safeApprove(pair, amount1, "GUIA[2]");
+        ERC20(tokenAmounts[0].token).safeApproveMax(pair, amount0, "GUIA[1]");
+        ERC20(tokenAmounts[1].token).safeApproveMax(pair, amount1, "GUIA[2]");
 
-        // solhint-disable-next-line no-empty-blocks
         try IGUniPool(pair).mint(mintAmount, address(this)) returns (
             uint256,
             uint256,
             uint128
-        ) {} catch Error(string memory reason) {
+        ) {
+            // solhint-disable-previous-line no-empty-blocks
+        } catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("GUIA: deposit fail");
