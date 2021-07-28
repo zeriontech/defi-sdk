@@ -23,17 +23,15 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
-import { GUniPool } from "../../interfaces/GUniPool.sol";
+import { IGUniPool } from "../../interfaces/IGUniPool.sol";
 
 /**
  * @title Interactive adapter for G-UNI protocol (fungible lp tokens on Uniswap v3).
  * @dev Implementation of InteractiveAdapter abstract contract.
- * @author Igor Sobolev <sobolev@zerion.io>
+ * @author kassandra.eth <ari@gelato.digital>
  */
 contract GUniInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
-
-    address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     /**
      * @notice Deposits tokens to the G-UNI position (on Uniswap V3 pair).
@@ -59,7 +57,7 @@ contract GUniInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         uint256 amount0Max = getAbsoluteAmountDeposit(tokenAmounts[0]);
         uint256 amount1Max = getAbsoluteAmountDeposit(tokenAmounts[1]);
 
-        (uint256 amount0, uint256 amount1, uint256 mintAmount) = GUniPool(pair).getMintAmounts(
+        (uint256 amount0, uint256 amount1, uint256 mintAmount) = IGUniPool(pair).getMintAmounts(
             amount0Max,
             amount1Max
         );
@@ -68,7 +66,7 @@ contract GUniInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         ERC20(tokenAmounts[1].token).safeApprove(pair, amount1, "GUIA[2]");
 
         // solhint-disable-next-line no-empty-blocks
-        try GUniPool(pair).mint(mintAmount, address(this)) returns (
+        try IGUniPool(pair).mint(mintAmount, address(this)) returns (
             uint256,
             uint256,
             uint128
@@ -94,30 +92,31 @@ contract GUniInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     {
         require(tokenAmounts.length == 1, "GUIA: should be 1 tokenAmount");
 
-        address token = tokenAmounts[0].token;
+        address pair = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         // solhint-disable-next-line no-empty-blocks
-        try GUniPool(token).burn(amount, address(this)) returns (
+        try IGUniPool(pair).burn(amount, address(this)) returns (
             uint256 amount0,
             uint256 amount1,
             uint128
         ) {
+            require(amount0 > 0 || amount1 > 0, "GUIA: received 0 tokens on burn");
             if (amount0 > 0 && amount1 > 0) {
                 tokensToBeWithdrawn = new address[](2);
-                tokensToBeWithdrawn[0] = GUniPool(token).token0();
-                tokensToBeWithdrawn[1] = GUniPool(token).token1();
+                tokensToBeWithdrawn[0] = IGUniPool(pair).token0();
+                tokensToBeWithdrawn[1] = IGUniPool(pair).token1();
             } else if (amount1 == 0) {
                 tokensToBeWithdrawn = new address[](1);
-                tokensToBeWithdrawn[0] = GUniPool(token).token0();
+                tokensToBeWithdrawn[0] = IGUniPool(pair).token0();
             } else {
                 tokensToBeWithdrawn = new address[](1);
-                tokensToBeWithdrawn[0] = GUniPool(token).token1();
+                tokensToBeWithdrawn[0] = IGUniPool(pair).token1();
             }
         } catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("ULIA: withdraw fail");
+            revert("GUIA: withdraw fail");
         }
     }
 }
