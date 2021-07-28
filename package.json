@@ -6,7 +6,6 @@
     "test": "test"
   },
   "scripts": {
-    "postinstall": "husky install",
     "compile": "npx truffle compile",
     "deploy:development": "npx truffle deploy --network development",
     "deploy:mainnet": "npx truffle deploy --network mainnet",
