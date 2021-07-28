@@ -20,7 +20,7 @@ module.exports = {
       gasLimit: 10000000,
     },
     mainnet: {
-      provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`, 0),
+      provider: () => new HDWalletProvider(process.env.MNEMONIC, `wss://mainnet.infura.io/ws/v3/${process.env.INFURA_API_KEY}`, 0),
       network_id: 1,
       gas: 2000000,
       gasPrice: 20000000000,

@@ -6,6 +6,10 @@ const GUNI_V1_ADAPTER = web3.eth.abi.encodeParameter(
   'bytes32',
   web3.utils.toHex('G-UNI'),
 ).slice(0, -2);
+const UNISWAP_V2_ADAPTER = web3.eth.abi.encodeParameter(
+  'bytes32',
+  web3.utils.toHex('Uniswap V2'),
+).slice(0, -2);
 const WETH_ADAPTER = web3.eth.abi.encodeParameter(
   'bytes32',
   web3.utils.toHex('Weth'),
@@ -13,7 +17,7 @@ const WETH_ADAPTER = web3.eth.abi.encodeParameter(
 const ASSET_ADAPTER = '01';
 const EXCHANGE_ADAPTER = '03';
 const GUNI_V1_ASSET_ADAPTER = `${GUNI_V1_ADAPTER}${ASSET_ADAPTER}`;
-const UNISWAP_V2_EXCHANGE_ADAPTER = `${GUNI_V1_ADAPTER}${EXCHANGE_ADAPTER}`;
+const UNISWAP_V2_EXCHANGE_ADAPTER = `${UNISWAP_V2_ADAPTER}${EXCHANGE_ADAPTER}`;
 const WETH_ASSET_ADAPTER = `${WETH_ADAPTER}${ASSET_ADAPTER}`;
 
 const ACTION_DEPOSIT = 1;
@@ -32,7 +36,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract('GUniInteractiveAdapter', () => {
+contract.only('GUniInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const daiFraxAddress = '0xb1Cfdc7370550f5e421E1bf0BF3CADFaDF3C4141';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -46,6 +50,7 @@ contract('GUniInteractiveAdapter', () => {
   let protocolAdapterAddress;
   let uniswapAdapterAddress;
   let wethAdapterAddress;
+  let WETH;
   let DAI;
   let FRAX;
   let DAIFRAX;
@@ -108,6 +113,10 @@ contract('GUniInteractiveAdapter', () => {
         DAI = result.contract;
       });
     await ERC20.at(wethAddress)
+      .then((result) => {
+        WETH = result.contract;
+      });
+    await ERC20.at(fraxAddress)
       .then((result) => {
         FRAX = result.contract;
       });
@@ -335,8 +344,8 @@ contract('GUniInteractiveAdapter', () => {
           ],
         ],
         [
-          [daiAddress, convertToShare(50), AMOUNT_ABSOLUTE],
-          [fraxAddress, convertToShare(50), AMOUNT_ABSOLUTE],
+          [daiAddress, convertToShare(0.5), AMOUNT_RELATIVE],
+          [fraxAddress, convertToShare(0.5), AMOUNT_RELATIVE],
         ],
         [0, ZERO],
         [
@@ -350,68 +359,6 @@ contract('GUniInteractiveAdapter', () => {
         .then((receipt) => {
           console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
         });
-      await router.methods.execute(
-        [
-          [
-            UNISWAP_V2_ASSET_ADAPTER,
-            ACTION_DEPOSIT,
-            [
-              [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
-              [fraxAddress, convertToShare(1), AMOUNT_RELATIVE],
-            ],
-            web3.eth.abi.encodeParameters(
-              ['address'],
-              [daiFraxAddress],
-            ),
-          ],
-        ],
-        [
-          [daiAddress, convertToShare(10), AMOUNT_ABSOLUTE],
-          [fraxAddress, convertToShare(10), AMOUNT_ABSOLUTE],
-        ],
-        [0, ZERO],
-        [
-          [daiFraxAddress, 0],
-        ],
-      )
-        .send({
-          from: accounts[0],
-          gas: 1000000,
-        })
-        .then((receipt) => {
-          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
-        });
-      /* await router.methods.execute(
-        [
-          [
-            UNISWAP_V2_ASSET_ADAPTER,
-            ACTION_DEPOSIT,
-            [
-              [fraxAddress, convertToShare(1), AMOUNT_RELATIVE],
-              [daiAddress, convertToShare(1), AMOUNT_RELATIVE],
-            ],
-            web3.eth.abi.encodeParameters(
-              ['address'],
-              [daiFraxAddress],
-            ),
-          ],
-        ],
-        [
-          [daiAddress, convertToShare(10), AMOUNT_ABSOLUTE],
-          [wethAddress, convertToShare(0.1), AMOUNT_ABSOLUTE],
-        ],
-        [0, ZERO],
-        [
-          [daiFraxAddress, 0],
-        ],
-      )
-        .send({
-          from: accounts[0],
-          gas: 1000000,
-        })
-        .then((receipt) => {
-          console.log(`called router for ${receipt.cumulativeGasUsed} gas`);
-        }); */
       await DAI.methods['balanceOf(address)'](accounts[0])
         .call()
         .then((result) => {
@@ -470,7 +417,7 @@ contract('GUniInteractiveAdapter', () => {
       await router.methods.execute(
         [
           [
-            UNISWAP_V2_ASSET_ADAPTER,
+            GUNI_V1_ASSET_ADAPTER,
             ACTION_WITHDRAW,
             [
               [daiFraxAddress, convertToShare(1), AMOUNT_RELATIVE],
