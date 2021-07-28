@@ -116,8 +116,21 @@ struct AbsoluteTokenAmount {
     uint256 absoluteAmount;
 }
 
-enum ActionType { None, Deposit, Withdraw }
+enum ActionType {
+    None,
+    Deposit,
+    Withdraw
+}
 
-enum AmountType { None, Relative, Absolute }
+enum AmountType {
+    None,
+    Relative,
+    Absolute
+}
 
-enum PermitType { None, EIP2612, DAI, Yearn }
+enum PermitType {
+    None,
+    EIP2612,
+    DAI,
+    Yearn
+}

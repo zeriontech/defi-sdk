@@ -54,12 +54,11 @@ contract DodoV2AssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = pool;
 
-        (uint256 baseAmount, uint256 quoteAmount) =
-            getAmounts(
-                pool,
-                getAbsoluteAmountDeposit(tokenAmounts[0]),
-                getAbsoluteAmountDeposit(tokenAmounts[1])
-            );
+        (uint256 baseAmount, uint256 quoteAmount) = getAmounts(
+            pool,
+            getAbsoluteAmountDeposit(tokenAmounts[0]),
+            getAbsoluteAmountDeposit(tokenAmounts[1])
+        );
 
         ERC20(tokenAmounts[0].token).safeTransfer(pool, baseAmount, "D2AIA[1]");
         ERC20(tokenAmounts[1].token).safeTransfer(pool, quoteAmount, "D2AIA[2]");

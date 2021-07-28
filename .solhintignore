@@ -1,3 +1,2 @@
 node_modules
-./contracts/Migrations.sol
 ./contracts/adapters/maker/MakerAdapter.sol

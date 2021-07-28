@@ -25,7 +25,11 @@ import { SafeERC20 } from "../shared/SafeERC20.sol";
 import { BaseRouter } from "./BaseRouter.sol";
 import { Input, Fee } from "../shared/Structs.sol";
 
-enum FactoryType { None, Uniswap, SushiSwap }
+enum FactoryType {
+    None,
+    Uniswap,
+    SushiSwap
+}
 
 contract UniswapRouter is BaseRouter {
     using SafeERC20 for ERC20;
@@ -68,8 +72,12 @@ contract UniswapRouter is BaseRouter {
         require(path[0] == input.tokenAmount.token, "UR: bad path");
 
         address factory = getFactory(factoryType);
-        uint256 inputAmount =
-            handleTokenInput(msg.sender, pairFor(factory, path[0], path[1]), input, fee);
+        uint256 inputAmount = handleTokenInput(
+            msg.sender,
+            pairFor(factory, path[0], path[1]),
+            input,
+            fee
+        );
 
         uint256[] memory amounts = getAmountsOut(factory, inputAmount, path);
         require(amounts[amounts.length - 1] >= amountOutMin, "UR: bad output");
@@ -134,8 +142,12 @@ contract UniswapRouter is BaseRouter {
         require(path[path.length - 1] == WETH, "UR: bad path[2]");
 
         address factory = getFactory(factoryType);
-        uint256 inputAmount =
-            handleTokenInput(msg.sender, pairFor(factory, path[0], path[1]), input, fee);
+        uint256 inputAmount = handleTokenInput(
+            msg.sender,
+            pairFor(factory, path[0], path[1]),
+            input,
+            fee
+        );
 
         uint256[] memory amounts = getAmountsOut(factory, inputAmount, path);
         require(amounts[amounts.length - 1] >= amountOutMin, "UR: bad output");
@@ -157,8 +169,9 @@ contract UniswapRouter is BaseRouter {
             (address input, address output) = (path[i], path[i + 1]);
             (address token0, ) = sortTokens(input, output);
             uint256 amountOut = amounts[i + 1];
-            (uint256 amount0Out, uint256 amount1Out) =
-                input == token0 ? (uint256(0), amountOut) : (amountOut, uint256(0));
+            (uint256 amount0Out, uint256 amount1Out) = input == token0
+                ? (uint256(0), amountOut)
+                : (amountOut, uint256(0));
             address to = i < length - 1 ? pairFor(factory, output, path[i + 2]) : _to;
             UniswapV2Pair(pairFor(factory, input, output)).swap(
                 amount0Out,
@@ -167,6 +180,48 @@ contract UniswapRouter is BaseRouter {
                 new bytes(0)
             );
         }
+    }
+
+    function getReserves(
+        address factory,
+        address tokenA,
+        address tokenB
+    ) internal view returns (uint256 reserveA, uint256 reserveB) {
+        (address token0, ) = sortTokens(tokenA, tokenB);
+        (uint256 reserve0, uint256 reserve1, ) = UniswapV2Pair(pairFor(factory, tokenA, tokenB))
+            .getReserves();
+        (reserveA, reserveB) = tokenA == token0 ? (reserve0, reserve1) : (reserve1, reserve0);
+    }
+
+    // performs chained getAmountOut calculations on any number of pairs
+    function getAmountsOut(
+        address factory,
+        uint256 amountIn,
+        address[] calldata path
+    ) internal view returns (uint256[] memory) {
+        uint256[] memory amounts = new uint256[](path.length);
+        amounts[0] = amountIn;
+
+        uint256 length = path.length - 1;
+        for (uint256 i = 0; i < length; i++) {
+            (uint256 reserveIn, uint256 reserveOut) = getReserves(factory, path[i], path[i + 1]);
+            amounts[i + 1] = getAmountOut(amounts[i], reserveIn, reserveOut);
+        }
+
+        return amounts;
+    }
+
+    // given an input amount of an asset and pair reserves, returns the maximum output amount of the other asset
+    function getAmountOut(
+        uint256 amountIn,
+        uint256 reserveIn,
+        uint256 reserveOut
+    ) internal pure returns (uint256 amountOut) {
+        require(reserveIn > 0 && reserveOut > 0, "UR: low loquidity");
+        uint256 amountInWithFee = mul_(amountIn, 997);
+        uint256 numerator = mul_(amountInWithFee, reserveOut);
+        uint256 denominator = add_(mul_(reserveIn, 1000), amountInWithFee);
+        amountOut = numerator / denominator;
     }
 
     function pairFor(
@@ -188,48 +243,6 @@ contract UniswapRouter is BaseRouter {
                 )
             )
         );
-    }
-
-    function getReserves(
-        address factory,
-        address tokenA,
-        address tokenB
-    ) internal view returns (uint256 reserveA, uint256 reserveB) {
-        (address token0, ) = sortTokens(tokenA, tokenB);
-        (uint256 reserve0, uint256 reserve1, ) =
-            UniswapV2Pair(pairFor(factory, tokenA, tokenB)).getReserves();
-        (reserveA, reserveB) = tokenA == token0 ? (reserve0, reserve1) : (reserve1, reserve0);
-    }
-
-    // given an input amount of an asset and pair reserves, returns the maximum output amount of the other asset
-    function getAmountOut(
-        uint256 amountIn,
-        uint256 reserveIn,
-        uint256 reserveOut
-    ) internal pure returns (uint256 amountOut) {
-        require(reserveIn > 0 && reserveOut > 0, "UR: low loquidity");
-        uint256 amountInWithFee = mul_(amountIn, 997);
-        uint256 numerator = mul_(amountInWithFee, reserveOut);
-        uint256 denominator = add_(mul_(reserveIn, 1000), amountInWithFee);
-        amountOut = numerator / denominator;
-    }
-
-    // performs chained getAmountOut calculations on any number of pairs
-    function getAmountsOut(
-        address factory,
-        uint256 amountIn,
-        address[] calldata path
-    ) internal view returns (uint256[] memory) {
-        uint256[] memory amounts = new uint256[](path.length);
-        amounts[0] = amountIn;
-
-        uint256 length = path.length - 1;
-        for (uint256 i = 0; i < length; i++) {
-            (uint256 reserveIn, uint256 reserveOut) = getReserves(factory, path[i], path[i + 1]);
-            amounts[i + 1] = getAmountOut(amounts[i], reserveIn, reserveOut);
-        }
-
-        return amounts;
     }
 
     function sortTokens(address tokenA, address tokenB)

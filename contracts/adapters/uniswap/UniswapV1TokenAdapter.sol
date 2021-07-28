@@ -81,13 +81,6 @@ contract UniswapV1TokenAdapter is TokenAdapter {
     }
 
     /**
-     * @return Pool symbol.
-     */
-    function getSymbol(address) internal pure override returns (string memory) {
-        return "UNI-V1";
-    }
-
-    /**
      * @return Pool decimals.
      */
     function getDecimals(address token) internal view override returns (uint8) {
@@ -95,13 +88,21 @@ contract UniswapV1TokenAdapter is TokenAdapter {
     }
 
     function getUnderlyingSymbol(address token) internal view returns (string memory) {
-        (, bytes memory returnData) =
-            token.staticcall(abi.encodeWithSelector(ERC20.symbol.selector));
+        (, bytes memory returnData) = token.staticcall(
+            abi.encodeWithSelector(ERC20.symbol.selector)
+        );
 
         if (returnData.length == 32) {
             return abi.decode(returnData, (bytes32)).toString();
         } else {
             return abi.decode(returnData, (string));
         }
+    }
+
+    /**
+     * @return Pool symbol.
+     */
+    function getSymbol(address) internal pure override returns (string memory) {
+        return "UNI-V1";
     }
 }

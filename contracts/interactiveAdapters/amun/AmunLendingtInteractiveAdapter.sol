@@ -117,8 +117,8 @@ contract AmunLendingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
 
     function getUnderlyingStablecoin(address lendingToken) internal view returns (address) {
         address limaTokenHelper = IAmunLendingToken(lendingToken).limaTokenHelper();
-        address underlyingToken =
-            IAmunLendingTokenStorage(limaTokenHelper).currentUnderlyingToken();
+        address underlyingToken = IAmunLendingTokenStorage(limaTokenHelper)
+            .currentUnderlyingToken();
 
         return YVault(underlyingToken).token();
     }

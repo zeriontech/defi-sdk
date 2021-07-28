@@ -56,16 +56,16 @@ contract PoolTogetherTokenAdapter is TokenAdapter {
     }
 
     /**
-     * @return Pool symbol.
-     */
-    function getSymbol(address) internal pure override returns (string memory) {
-        return "PLT";
-    }
-
-    /**
      * @return Pool decimals.
      */
     function getDecimals(address token) internal view override returns (uint8) {
         return ERC20(BasePool(token).token()).decimals();
+    }
+
+    /**
+     * @return Pool symbol.
+     */
+    function getSymbol(address) internal pure override returns (string memory) {
+        return "PLT";
     }
 }

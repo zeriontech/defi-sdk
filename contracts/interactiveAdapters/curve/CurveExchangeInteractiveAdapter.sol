@@ -58,8 +58,10 @@ contract CurveExchangeInteractiveAdapter is CurveExchangeAdapter, InteractiveAda
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
-        (address toToken, address swap, int128 i, int128 j, bool useUnderlying) =
-            abi.decode(data, (address, address, int128, int128, bool));
+        (address toToken, address swap, int128 i, int128 j, bool useUnderlying) = abi.decode(
+            data,
+            (address, address, int128, int128, bool)
+        );
 
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = toToken;

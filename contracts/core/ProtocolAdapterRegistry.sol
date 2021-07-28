@@ -36,11 +36,15 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
      * @notice Zero values are filtered out!
      */
     function getBalances(address account) external returns (AdapterBalance[] memory) {
-        AdapterBalance[] memory adapterBalances =
-            getAdapterBalances(getProtocolAdapterNames(), account);
+        AdapterBalance[] memory adapterBalances = getAdapterBalances(
+            getProtocolAdapterNames(),
+            account
+        );
 
-        (uint256 nonZeroAdapterBalancesNumber, uint256[] memory nonZeroTokenBalancesNumbers) =
-            getNonZeroAdapterBalancesAndTokenBalancesNumbers(adapterBalances);
+        (
+            uint256 nonZeroAdapterBalancesNumber,
+            uint256[] memory nonZeroTokenBalancesNumbers
+        ) = getNonZeroAdapterBalancesAndTokenBalancesNumbers(adapterBalances);
 
         return
             getNonZeroAdapterBalances(
@@ -161,8 +165,9 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         uint256 nonZeroAdapterBalancesNumber,
         uint256[] memory nonZeroTokenBalancesNumbers
     ) internal pure returns (AdapterBalance[] memory) {
-        AdapterBalance[] memory nonZeroAdapterBalances =
-            new AdapterBalance[](nonZeroAdapterBalancesNumber);
+        AdapterBalance[] memory nonZeroAdapterBalances = new AdapterBalance[](
+            nonZeroAdapterBalancesNumber
+        );
         uint256 length = adapterBalances.length;
         uint256 counter = 0;
 
@@ -194,8 +199,9 @@ contract ProtocolAdapterRegistry is Ownable, ProtocolAdapterManager {
         TokenBalance[] memory tokenBalances,
         uint256 nonZeroTokenBalancesNumber
     ) internal pure returns (TokenBalance[] memory) {
-        TokenBalance[] memory nonZeroTokenBalances =
-            new TokenBalance[](nonZeroTokenBalancesNumber);
+        TokenBalance[] memory nonZeroTokenBalances = new TokenBalance[](
+            nonZeroTokenBalancesNumber
+        );
         uint256 length = tokenBalances.length;
         uint256 counter = 0;
 

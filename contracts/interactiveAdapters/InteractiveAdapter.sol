@@ -52,6 +52,34 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
         virtual
         returns (address[] memory);
 
+    function getAbsoluteAmountWithdraw(TokenAmount calldata tokenAmount)
+        internal
+        virtual
+        returns (uint256)
+    {
+        address token = tokenAmount.token;
+        uint256 amount = tokenAmount.amount;
+        AmountType amountType = tokenAmount.amountType;
+
+        require(
+            amountType == AmountType.Relative || amountType == AmountType.Absolute,
+            "IA: bad amount type"
+        );
+        if (amountType == AmountType.Relative) {
+            require(amount <= DELIMITER, "IA: bad amount");
+
+            int256 balanceSigned = getBalance(token, address(this));
+            uint256 balance = balanceSigned > 0 ? uint256(balanceSigned) : uint256(-balanceSigned);
+            if (amount == DELIMITER) {
+                return balance;
+            } else {
+                return mul_(balance, amount) / DELIMITER;
+            }
+        } else {
+            return amount;
+        }
+    }
+
     function getAbsoluteAmountDeposit(TokenAmount calldata tokenAmount)
         internal
         view
@@ -76,34 +104,6 @@ abstract contract InteractiveAdapter is ProtocolAdapter {
                 balance = ERC20(token).balanceOf(address(this));
             }
 
-            if (amount == DELIMITER) {
-                return balance;
-            } else {
-                return mul_(balance, amount) / DELIMITER;
-            }
-        } else {
-            return amount;
-        }
-    }
-
-    function getAbsoluteAmountWithdraw(TokenAmount calldata tokenAmount)
-        internal
-        virtual
-        returns (uint256)
-    {
-        address token = tokenAmount.token;
-        uint256 amount = tokenAmount.amount;
-        AmountType amountType = tokenAmount.amountType;
-
-        require(
-            amountType == AmountType.Relative || amountType == AmountType.Absolute,
-            "IA: bad amount type"
-        );
-        if (amountType == AmountType.Relative) {
-            require(amount <= DELIMITER, "IA: bad amount");
-
-            int256 balanceSigned = getBalance(token, address(this));
-            uint256 balance = balanceSigned > 0 ? uint256(balanceSigned) : uint256(-balanceSigned);
             if (amount == DELIMITER) {
                 return balance;
             } else {

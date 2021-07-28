@@ -32,18 +32,18 @@ INFO:Detectors:
 ProtocolAdapterRegistry.getAdapterBalance(bytes32,address[],address) (contracts/core/ProtocolAdapterRegistry.sol#157-181) has external calls inside a loop: ProtocolAdapter(adapter).getBalance(tokens[i],account) (contracts/core/ProtocolAdapterRegistry.sol#169-173)
 
 INFO:Detectors:
-Pragma version0.7.3 (contracts/adapters/ProtocolAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Core.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ReentrancyGuard.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/interactiveAdapters/InteractiveAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Helpers.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/SafeERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
+Pragma version0.7.6 (contracts/adapters/ProtocolAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/Core.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/ProtocolAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/ProtocolAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/ReentrancyGuard.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/interactiveAdapters/InteractiveAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/Helpers.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/SafeERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+solc-0.7.6 is not recommended for deployment
 
 INFO:Detectors:
 Low level call in SafeERC20.callOptionalReturn(ERC20,bytes,string,string) (contracts/shared/SafeERC20.sol#86-115):
@@ -55,15 +55,15 @@ Core.ETH (contracts/core/Core.sol#37) is never used in Core (contracts/core/Core
 $ slither contracts/core/Ownable.sol
 
 INFO:Detectors:
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
+Pragma version0.7.6 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+solc-0.7.6 is not recommended for deployment
 
 $ slither contracts/core/ProtocolAdapterManager.sol
 
 INFO:Detectors:
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
+Pragma version0.7.6 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/ProtocolAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+solc-0.7.6 is not recommended for deployment
 
 INFO:Detectors:
 getProtocolAdapterNames() should be declared external:
@@ -85,13 +85,13 @@ INFO:Detectors:
 ProtocolAdapterRegistry.getAdapterBalance(bytes32,address[],address) (contracts/core/ProtocolAdapterRegistry.sol#157-181) has external calls inside a loop: ProtocolAdapter(adapter).getBalance(tokens[i],account) (contracts/core/ProtocolAdapterRegistry.sol#169-173)
 
 INFO:Detectors:
-Pragma version0.7.3 (contracts/adapters/ProtocolAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
+Pragma version0.7.6 (contracts/adapters/ProtocolAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/ProtocolAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/ProtocolAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+solc-0.7.6 is not recommended for deployment
 
 INFO:Detectors:
 getBalance(address,address) should be declared external:
@@ -100,8 +100,8 @@ getBalance(address,address) should be declared external:
 $ slither contracts/core/ReentrancyGuard.sol
 
 INFO:Detectors:
-Pragma version0.7.3 (contracts/core/ReentrancyGuard.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
+Pragma version0.7.6 (contracts/core/ReentrancyGuard.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+solc-0.7.6 is not recommended for deployment
 
 $ slither contracts/core/Router.sol
 
@@ -161,21 +161,21 @@ ECDSA.recover(bytes32,bytes) (contracts/shared/ECDSA.sol#28-70) uses assembly
         - INLINE ASM (contracts/shared/ECDSA.sol#42-46)
 
 INFO:Detectors:
-Pragma version0.7.3 (contracts/adapters/ProtocolAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Core.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ProtocolAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/ReentrancyGuard.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Router.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/SignatureVerifier.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/interactiveAdapters/InteractiveAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ECDSA.sol#5) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Helpers.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/SafeERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
+Pragma version0.7.6 (contracts/adapters/ProtocolAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/Core.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/ProtocolAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/ProtocolAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/ReentrancyGuard.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/Router.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/SignatureVerifier.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/interactiveAdapters/InteractiveAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/ECDSA.sol#5) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/Helpers.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/SafeERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+solc-0.7.6 is not recommended for deployment
 
 INFO:Detectors:
 Low level call in Router.returnLostTokens(address,address) (contracts/core/Router.sol#55-63):
@@ -225,10 +225,10 @@ ECDSA.recover(bytes32,bytes) (contracts/shared/ECDSA.sol#28-70) uses assembly
         - INLINE ASM (contracts/shared/ECDSA.sol#42-46)
 
 INFO:Detectors:
-Pragma version0.7.3 (contracts/core/SignatureVerifier.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ECDSA.sol#5) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
+Pragma version0.7.6 (contracts/core/SignatureVerifier.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/ECDSA.sol#5) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+solc-0.7.6 is not recommended for deployment
 
 INFO:Detectors:
 isHashUsed(bytes32,address) should be declared external:
@@ -240,9 +240,9 @@ hashData(SlitherInternalTopLevelContract6.TransactionData) should be declared ex
 
 $ slither contracts/core/TokenAdapterManager.sol
 INFO:Detectors:
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/TokenAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
+Pragma version0.7.6 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/TokenAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+solc-0.7.6 is not recommended for deployment
 
 INFO:Detectors:
 getTokenAdapterAddress(bytes32) should be declared external:
@@ -254,12 +254,12 @@ TokenAdapterNamesManager.getTokenHash(address) (contracts/core/TokenAdapterNames
         - INLINE ASM (contracts/core/TokenAdapterNamesManager.sol#157-159)
 
 INFO:Detectors:
-Pragma version0.7.3 (contracts/adapters/TokenAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/TokenAdapterNamesManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
+Pragma version0.7.6 (contracts/adapters/TokenAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/TokenAdapterNamesManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+solc-0.7.6 is not recommended for deployment
 
 INFO:Detectors:
 getMetadata(address) should be declared external:
@@ -287,14 +287,14 @@ TokenAdapterNamesManager.getTokenHash(address) (contracts/core/TokenAdapterNames
         - INLINE ASM (contracts/core/TokenAdapterNamesManager.sol#157-159)
 
 INFO:Detectors:
-Pragma version0.7.3 (contracts/adapters/TokenAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/TokenAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/TokenAdapterNamesManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/core/TokenAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-Pragma version0.7.3 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
-solc-0.7.3 is not recommended for deployment
+Pragma version0.7.6 (contracts/adapters/TokenAdapter.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/Ownable.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/TokenAdapterManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/TokenAdapterNamesManager.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/core/TokenAdapterRegistry.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/ERC20.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+Pragma version0.7.6 (contracts/shared/Structs.sol#18) necessitates a version too recent to be trusted. Consider deploying with 0.6.11
+solc-0.7.6 is not recommended for deployment
 
 INFO:Detectors:
 getMetadata(address) should be declared external:

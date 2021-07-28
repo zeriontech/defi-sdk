@@ -19,20 +19,20 @@ pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
 abstract contract Ownable {
-    modifier onlyOwner {
-        require(msg.sender == owner_, "O: only owner");
-        _;
-    }
-
-    modifier onlyPendingOwner {
-        require(msg.sender == pendingOwner_, "O: only pending owner");
-        _;
-    }
-
     address private owner_;
     address private pendingOwner_;
 
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    modifier onlyOwner() {
+        require(msg.sender == owner_, "O: only owner");
+        _;
+    }
+
+    modifier onlyPendingOwner() {
+        require(msg.sender == pendingOwner_, "O: only pending owner");
+        _;
+    }
 
     /**
      * @notice Initializes owner variable with msg.sender address.

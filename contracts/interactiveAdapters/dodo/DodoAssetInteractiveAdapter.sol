@@ -60,8 +60,9 @@ contract DodoAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
 
         ERC20(token).safeApproveMax(dodo, amount, "DAIA");
 
-        function(uint256) external returns (uint256) dodoDeposit =
-            isBaseToken(token, dodo) ? DODO(dodo).depositBase : DODO(dodo).depositQuote;
+        function(uint256) external returns (uint256) dodoDeposit = isBaseToken(token, dodo)
+            ? DODO(dodo).depositBase
+            : DODO(dodo).depositQuote;
 
         // solhint-disable-next-line no-empty-blocks
         try dodoDeposit(amount) returns (uint256) {} catch Error(string memory reason) {
@@ -94,10 +95,9 @@ contract DodoAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter
         address dodo = DODOLpToken(token)._OWNER_();
 
         if (tokenAmounts[0].amount == 1e18 && tokenAmounts[0].amountType == AmountType.Relative) {
-            function() external returns (uint256) dodoWithdraw =
-                isBaseToken(toToken, dodo)
-                    ? DODO(dodo).withdrawAllBase
-                    : DODO(dodo).withdrawAllQuote;
+            function() external returns (uint256) dodoWithdraw = isBaseToken(toToken, dodo)
+                ? DODO(dodo).withdrawAllBase
+                : DODO(dodo).withdrawAllQuote;
 
             // solhint-disable-next-line no-empty-blocks
             try dodoWithdraw() returns (uint256) {} catch Error(string memory reason) {

@@ -42,9 +42,9 @@ contract AmunLendingTokenAdapter is TokenAdapter {
         returns (Component[] memory components)
     {
         uint256 underlyingAmount = IAmunLendingToken(token).getUnderlyingTokenBalanceOf(1e18);
-        address underlyingToken =
-            IAmunLendingTokenStorage(IAmunLendingToken(token).limaTokenHelper())
-                .currentUnderlyingToken();
+        address underlyingToken = IAmunLendingTokenStorage(
+            IAmunLendingToken(token).limaTokenHelper()
+        ).currentUnderlyingToken();
 
         components = new Component[](1);
 

@@ -93,10 +93,9 @@ contract AmunLiquidityInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
 
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
-        try IAmunVault(token).withdraw(amount, REFERRAL_CODE) {} catch Error(
-            string memory reason
-        ) {
+        try IAmunVault(token).withdraw(amount, REFERRAL_CODE) {
             // solhint-disable-previous-line no-empty-blocks
+        } catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("LBIA: withdraw fail");

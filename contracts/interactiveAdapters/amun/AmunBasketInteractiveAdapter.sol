@@ -122,8 +122,8 @@ contract AmunBasketInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
         TokenAmount[] calldata tokenAmounts,
         uint256[] memory absoluteAmounts
     ) internal view returns (uint256) {
-        uint256 totalSupply =
-            ERC20(basket).totalSupply() + IAmunBasket(basket).calcOutStandingAnnualizedFee();
+        uint256 totalSupply = ERC20(basket).totalSupply() +
+            IAmunBasket(basket).calcOutStandingAnnualizedFee();
         uint256 entryFee = IAmunBasket(basket).getEntryFee();
         uint256 minimumBasketAmount = type(uint256).max;
         uint256 tempAmount;

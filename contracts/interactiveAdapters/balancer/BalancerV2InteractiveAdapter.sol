@@ -102,14 +102,9 @@ contract BalancerV2InteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapte
 
         (tokensToBeWithdrawn, , ) = Vault(vault).getPoolTokens(poolId);
 
-        bytes memory userData =
-            data.length == 0
-                ? abi.encode(1, getAbsoluteAmountWithdraw(tokenAmounts[0]))
-                : abi.encode(
-                    0,
-                    getAbsoluteAmountWithdraw(tokenAmounts[0]),
-                    abi.decode(data, (uint8))
-                );
+        bytes memory userData = data.length == 0
+            ? abi.encode(1, getAbsoluteAmountWithdraw(tokenAmounts[0]))
+            : abi.encode(0, getAbsoluteAmountWithdraw(tokenAmounts[0]), abi.decode(data, (uint8)));
         try
             Vault(vault).exitPool(
                 poolId,

@@ -18,15 +18,7 @@
 pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
-import {
-    AbsoluteTokenAmount,
-    Action,
-    AmountType,
-    Fee,
-    Input,
-    PermitType,
-    TokenAmount
-} from "../shared/Structs.sol";
+import { AbsoluteTokenAmount, Action, AmountType, Fee, Input, PermitType, TokenAmount } from "../shared/Structs.sol";
 import { ERC20 } from "../interfaces/ERC20.sol";
 import { SafeERC20 } from "../shared/SafeERC20.sol";
 import { Helpers } from "../shared/Helpers.sol";
@@ -68,7 +60,7 @@ contract Router is
      *     perTokenBurnCost = 6148
      *     otherRefunds = 0
      */
-    modifier useCHI {
+    modifier useCHI() {
         uint256 gasStart = gasleft();
         _;
         uint256 gasSpent = 21000 + gasStart - gasleft() + 7 * msg.data.length;
@@ -213,8 +205,11 @@ contract Router is
         AbsoluteTokenAmount[] memory modifiedOutputs = modifyOutputs(requiredOutputs, inputs);
 
         // Call Core contract with all provided ETH, actions, expected outputs and account address
-        AbsoluteTokenAmount[] memory actualOutputs =
-            Core(payable(core_)).executeActions(actions, modifiedOutputs, payable(account));
+        AbsoluteTokenAmount[] memory actualOutputs = Core(payable(core_)).executeActions(
+            actions,
+            modifiedOutputs,
+            payable(account)
+        );
 
         // Emit event so one could track account and fees of this tx.
         emit Executed(account, fee.share, fee.beneficiary);
@@ -262,8 +257,9 @@ contract Router is
         returns (AbsoluteTokenAmount[] memory)
     {
         uint256 ethInput = msg.value > 0 ? 1 : 0;
-        AbsoluteTokenAmount[] memory modifiedOutputs =
-            new AbsoluteTokenAmount[](requiredOutputs.length + inputs.length + ethInput);
+        AbsoluteTokenAmount[] memory modifiedOutputs = new AbsoluteTokenAmount[](
+            requiredOutputs.length + inputs.length + ethInput
+        );
 
         for (uint256 i = 0; i < requiredOutputs.length; i++) {
             modifiedOutputs[i] = requiredOutputs[i];

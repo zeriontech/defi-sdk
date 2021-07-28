@@ -24,10 +24,6 @@ abstract contract ReentrancyGuard {
 
     uint256 internal guard_;
 
-    constructor() {
-        guard_ = UNLOCKED;
-    }
-
     modifier nonReentrant() {
         require(guard_ == UNLOCKED, "RG: locked");
 
@@ -35,6 +31,10 @@ abstract contract ReentrancyGuard {
 
         _;
 
+        guard_ = UNLOCKED;
+    }
+
+    constructor() {
         guard_ = UNLOCKED;
     }
 }

@@ -107,8 +107,9 @@ contract SushiExchangeInteractiveAdapter is InteractiveAdapter, SushiExchangeAda
             (address input, address output) = (path[i], path[i + 1]);
             (address token0, ) = SushiLibrary.sortTokens(input, output);
             uint256 amountOut = amounts[i + 1];
-            (uint256 amount0Out, uint256 amount1Out) =
-                input == token0 ? (uint256(0), amountOut) : (amountOut, uint256(0));
+            (uint256 amount0Out, uint256 amount1Out) = input == token0
+                ? (uint256(0), amountOut)
+                : (amountOut, uint256(0));
 
             UniswapV2Pair(SushiLibrary.pairFor(FACTORY, input, output)).swap(
                 amount0Out,

@@ -39,8 +39,8 @@ contract AmunBasketTokenAdapter is TokenAdapter {
         override
         returns (Component[] memory components)
     {
-        (address[] memory tokens, uint256[] memory amounts) =
-            IAmunBasket(token).calcTokensForAmount(1e18);
+        (address[] memory tokens, uint256[] memory amounts) = IAmunBasket(token)
+            .calcTokensForAmount(1e18);
         components = new Component[](tokens.length);
 
         for (uint256 i = 0; i < tokens.length; i++) {

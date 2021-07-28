@@ -18,13 +18,7 @@
 pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
-import {
-    Action,
-    TokenAmount,
-    AbsoluteTokenAmount,
-    ActionType,
-    AmountType
-} from "../shared/Structs.sol";
+import { Action, TokenAmount, AbsoluteTokenAmount, ActionType, AmountType } from "../shared/Structs.sol";
 import { InteractiveAdapter } from "../interactiveAdapters/InteractiveAdapter.sol";
 import { ERC20 } from "../interfaces/ERC20.sol";
 import { ProtocolAdapterRegistry } from "./ProtocolAdapterRegistry.sol";
@@ -108,10 +102,8 @@ contract Core is ReentrancyGuard, Base {
      * @return List of tokens addresses to be returned by the action.
      */
     function executeAction(Action calldata action) internal returns (address[] memory) {
-        address adapter =
-            ProtocolAdapterRegistry(protocolAdapterRegistry_).getProtocolAdapterAddress(
-                action.protocolAdapterName
-            );
+        address adapter = ProtocolAdapterRegistry(protocolAdapterRegistry_)
+            .getProtocolAdapterAddress(action.protocolAdapterName);
         require(adapter != address(0), "C: bad name");
         require(
             action.actionType == ActionType.Deposit || action.actionType == ActionType.Withdraw,
@@ -125,9 +117,10 @@ contract Core is ReentrancyGuard, Base {
             selector = InteractiveAdapter.withdraw.selector;
         }
 
-        (bool success, bytes memory returnData) =
-            // solhint-disable-next-line avoid-low-level-calls
-            adapter.delegatecall(
+        (
+            bool success,
+            bytes memory returnData // solhint-disable-next-line avoid-low-level-calls
+        ) = adapter.delegatecall(
                 abi.encodeWithSelector(selector, action.tokenAmounts, action.data)
             );
 

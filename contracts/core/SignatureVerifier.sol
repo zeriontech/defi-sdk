@@ -18,14 +18,7 @@
 pragma solidity 0.7.6;
 pragma experimental ABIEncoderV2;
 
-import {
-    Action,
-    Input,
-    TokenAmount,
-    Permit,
-    AbsoluteTokenAmount,
-    Fee
-} from "../shared/Structs.sol";
+import { Action, Input, TokenAmount, Permit, AbsoluteTokenAmount, Fee } from "../shared/Structs.sol";
 import { ECDSA } from "../shared/ECDSA.sol";
 
 contract SignatureVerifier {
@@ -101,19 +94,6 @@ contract SignatureVerifier {
     }
 
     /**
-     * @param hashedData Hash to be checked.
-     * @param signature EIP-712 signature.
-     * @return Account that signed the hashed data.
-     */
-    function getAccountFromSignature(bytes32 hashedData, bytes memory signature)
-        public
-        pure
-        returns (address payable)
-    {
-        return payable(ECDSA.recover(hashedData, signature));
-    }
-
-    /**
      * @param actions Action structs array to be hashed.
      * @param inputs Input structs array to be hashed.
      * @param fee Fee struct to be hashed.
@@ -130,10 +110,9 @@ contract SignatureVerifier {
         address account,
         uint256 salt
     ) public view returns (bytes32) {
-        bytes32 domainSeparator =
-            keccak256(
-                abi.encode(DOMAIN_SEPARATOR_TYPEHASH, nameHash_, getChainId(), address(this))
-            );
+        bytes32 domainSeparator = keccak256(
+            abi.encode(DOMAIN_SEPARATOR_TYPEHASH, nameHash_, getChainId(), address(this))
+        );
 
         return
             keccak256(
@@ -144,6 +123,19 @@ contract SignatureVerifier {
                     hash(actions, inputs, fee, requiredOutputs, account, salt)
                 )
             );
+    }
+
+    /**
+     * @param hashedData Hash to be checked.
+     * @param signature EIP-712 signature.
+     * @return Account that signed the hashed data.
+     */
+    function getAccountFromSignature(bytes32 hashedData, bytes memory signature)
+        public
+        pure
+        returns (address payable)
+    {
+        return payable(ECDSA.recover(hashedData, signature));
     }
 
     /**
