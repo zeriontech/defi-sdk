@@ -34,18 +34,18 @@ import { CEther } from "../../interfaces/CEther.sol";
 contract CompoundAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
-    address internal constant CETH = 0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5;
     address internal constant COMP = 0xc00e94Cb662C3520282E6f5717214004A7f26888;
-    address internal constant REGISTRY = 0xAc41dB9741F869E432575952748e7064d299614D;
 
     /**
      * @notice Deposits tokens to the Compound protocol.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * underlying token address, underlying token amount to be deposited, and amount type.
+     * @param data ABI-encoded additional parameters:
+     *     - cToken - cToken address.
      * @return tokensToBeWithdrawn Array with two elements - cToken and COMP addresses.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata)
+    function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
         external
         payable
         override
@@ -56,17 +56,15 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
+        address cToken = abi.decode(data, (address));
+
         tokensToBeWithdrawn = new address[](2);
         tokensToBeWithdrawn[0] = COMP;
+        tokensToBeWithdrawn[1] = cToken;
 
         if (token == ETH) {
-            tokensToBeWithdrawn[1] = CETH;
-
-            CEther(CETH).mint{ value: amount }();
+            CEther(cToken).mint{ value: amount }();
         } else {
-            address cToken = CompoundRegistry(REGISTRY).getCToken(token);
-            tokensToBeWithdrawn[1] = cToken;
-
             ERC20(token).safeApproveMax(cToken, amount, "CAIA");
             require(CToken(cToken).mint(amount) == 0, "CAIA: deposit failed");
         }
@@ -93,7 +91,7 @@ contract CompoundAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAda
         tokensToBeWithdrawn = new address[](2);
         tokensToBeWithdrawn[0] = COMP;
 
-        if (token == CETH) {
+        if (CToken(token).underlying() == ETH) {
             tokensToBeWithdrawn[1] = ETH;
         } else {
             tokensToBeWithdrawn[1] = CToken(token).underlying();
