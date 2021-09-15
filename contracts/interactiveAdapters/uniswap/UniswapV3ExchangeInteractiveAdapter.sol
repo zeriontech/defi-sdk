@@ -26,21 +26,20 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { ISwapRouter } from "../../interfaces/ISwapRouter.sol";
 
 /**
- * @title Interactive adapter for Uniswap V3 protocol (single exchange).
+ * @title Interactive adapter for Uniswap V3 protocol (exactInput).
  * @dev Implementation of InteractiveAdapter abstract contract.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExchangeAdapter {
+contract UniswapV3ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExchangeAdapter {
     using SafeERC20 for ERC20;
 
-    address internal constant SWAP_ROUTER = 0x0000000000000000000000000000000000000000;
+    address internal constant SWAP_ROUTER = 0xE592427A0AEce92De3Edee1F18E0157C05861564;
 
     /**
-     * @notice Exchange tokens using Uniswap pool.
+     * @notice Exchange tokens using Uniswap v3 SwapRouter.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * "from" token address, "from" token amount, and amount type.
-     * @param data ABI-encoded additional parameter:
-     *     - path - Uniswap exchange path starting from tokens[0].
+     * @param data Uniswap v3 exchange path & out address.
      * @return tokensToBeWithdrawn Array with one element - token address to be exchanged to.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -50,29 +49,39 @@ contract UniswapV2ExchangeInteractiveAdapter is InteractiveAdapter, UniswapExcha
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "Uv2EIA: should be 1 tokenAmount");
-
-        (bytes memory path, address tokenToBeWithdrawn) = abi.decode(data, (bytes, address));
+        require(tokenAmounts.length == 1, "Uv3EIA: should be 1 tokenAmount");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
+        bytes memory path;
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = tokenToBeWithdrawn;
+        (path, tokensToBeWithdrawn[0]) = abi.decode(data, (bytes, address));
 
         ERC20(token).safeApproveMax(SWAP_ROUTER, amount, "Uv3EIA");
-        ISwapRouter(SWAP_ROUTER).exactInput(ISwapRouter.ExactInputParams({
-            path: path,
-            recipient: address(this),
-            // solhint-disable-next-line not-rely-on-time
-            deadline: block.timestamp,
-            amountIn: amount,
-            amountOutMinimum: 0
-        }));
+
+        try
+            ISwapRouter(SWAP_ROUTER).exactInput(
+                ISwapRouter.ExactInputParams({
+                    path: path,
+                    recipient: address(this),
+                    // solhint-disable-next-line not-rely-on-time
+                    deadline: block.timestamp,
+                    amountIn: amount,
+                    amountOutMinimum: 0
+                })
+            )
+        returns (uint256) {
+            // solhint-disable-previous-line no-empty-blocks
+        } catch Error(string memory reason) {
+            revert(reason);
+        } catch {
+            revert("Uv3EIA: swap fail");
+        }
     }
 
     /**
-     * @notice Withdraw functionality is not supported.
+     * @notice Withdraw functionality is not supported, yet. However, it's possible to implement.
      * @dev Implementation of InteractiveAdapter function.
      */
     function withdraw(TokenAmount[] calldata, bytes calldata)

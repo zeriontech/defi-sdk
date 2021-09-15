@@ -28,31 +28,31 @@
   "license": "LGPL-3.0-only",
   "repository": "https://github.com/zeriontech/defi-sdk",
   "dependencies": {
-    "@babel/core": "7.14.8",
-    "@babel/preset-env": "7.14.8",
-    "@babel/register": "7.14.5",
-    "@truffle/hdwallet-provider": "1.4.2",
-    "core-js": "3.15.2",
+    "@babel/core": "7.15.0",
+    "@babel/preset-env": "7.15.0",
+    "@babel/register": "7.15.3",
+    "@truffle/hdwallet-provider": "1.5.0",
+    "core-js": "3.16.4",
     "dotenv": "10.0.0",
     "regenerator-runtime": "0.13.9",
-    "truffle": "5.4.2"
+    "truffle": "5.4.8"
   },
   "devDependencies": {
     "@codechecks/client": "0.1.11",
-    "eslint": "7.31.0",
+    "eslint": "7.32.0",
     "eslint-config-airbnb-base": "14.2.1",
-    "eslint-plugin-import": "2.23.4",
+    "eslint-plugin-import": "2.24.2",
     "eth-gas-reporter": "0.2.22",
     "ganache-cli": "6.12.2",
-    "husky": "7.0.1",
-    "lint-staged": "11.1.1",
-    "mrm": "3.0.5",
+    "husky": "7.0.2",
+    "lint-staged": "11.1.2",
+    "mrm": "3.0.8",
     "pinst": "2.1.6",
     "prettier": "2.3.2",
     "prettier-plugin-solidity": "1.0.0-beta.17",
     "solhint": "3.3.6",
     "solhint-plugin-prettier": "0.0.5",
-    "solidity-coverage": "0.7.16",
-    "truffle-plugin-verify": "0.5.11"
+    "solidity-coverage": "0.7.17",
+    "truffle-plugin-verify": "0.5.12"
   }
 }

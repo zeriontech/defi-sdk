@@ -65,11 +65,7 @@ contract GUniInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         ERC20(tokenAmounts[0].token).safeApproveMax(pair, amount0, "GUIA[1]");
         ERC20(tokenAmounts[1].token).safeApproveMax(pair, amount1, "GUIA[2]");
 
-        try IGUniPool(pair).mint(mintAmount, address(this)) returns (
-            uint256,
-            uint256,
-            uint128
-        ) {
+        try IGUniPool(pair).mint(mintAmount, address(this)) returns (uint256, uint256, uint128) {
             // solhint-disable-previous-line no-empty-blocks
         } catch Error(string memory reason) {
             revert(reason);

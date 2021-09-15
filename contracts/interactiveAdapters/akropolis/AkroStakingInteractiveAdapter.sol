@@ -25,16 +25,10 @@ import { ERC20 } from "../../interfaces/ERC20.sol";
 import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 
-
 /**
  * @title Interactive Adapter for Akropolis Staking protocol.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Alexander Mazaletskiy <am@akropolis.io>
- */
-
-/**
- * @title Interactive adapter for Compound protocol.
- * @dev Implementation of InteractiveAdapter abstract contract.
  */
 contract AkroStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
@@ -70,7 +64,7 @@ contract AkroStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         address userAddress = abi.decode(data, (address));
 
         // solhint-disable-next-line no-empty-blocks
-        try AkroStaking(STAKING).stakeFor(userAddress, amount, "0x")  {} catch Error(
+        try AkroStaking(STAKING).stakeFor(userAddress, amount, "0x") {} catch Error(
             string memory reason
         ) {
             revert(reason);
@@ -103,7 +97,7 @@ contract AkroStakingInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapt
         tokensToBeWithdrawn[0] = abi.decode(data, (address));
 
         // solhint-disable-next-line no-empty-blocks
-        try AkroStaking(STAKING).unstakeAllUnlocked("0x")  {} catch Error(string memory reason) {
+        try AkroStaking(STAKING).unstakeAllUnlocked("0x") {} catch Error(string memory reason) {
             revert(reason);
         } catch {
             revert("AKROIA: unstake fail");
