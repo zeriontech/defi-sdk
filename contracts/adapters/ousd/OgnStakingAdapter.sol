@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Zerion Inc. <https://zerion.io>
+// Copyright (C) 2021 Zerion Inc. <https://zerion.io>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,23 +20,35 @@ import { ERC20 } from "../../ERC20.sol";
 import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 
 
+interface SingleAssetStaking {
+    function totalCurrentHoldings(address) external view returns (uint256);
+}
+
+
 /**
- * @title Adapter for Unigii protocol.
+ * @title Asset adapter for OGN staking.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UnagiiVaultAdapter is ProtocolAdapter {
+contract OgnStakingAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "Unagii token";
+    string public constant override tokenType = "ERC20";
+
+
+    address internal constant OGN = 0x8207c1FfC5B6804F6024322CcF34F29c3541Ae26;
+    address internal constant OGN_STAKING = 0x501804B374EF06fa9C427476147ac09F1551B9A0;
 
     /**
-     * @return Amount of Unagii Vault Tokens owned by the given account.
-     * @param token Address of the vault token.
+     * @return Amount of OGN staked by the given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        return ERC20(token).balanceOf(account);
+        if (token == OGN) {
+            return SingleAssetStaking(OGN_STAKING).totalCurrentHoldings(account);
+        }
+
+        return 0;
     }
 }

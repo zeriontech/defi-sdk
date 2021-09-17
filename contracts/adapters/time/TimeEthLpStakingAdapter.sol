@@ -16,27 +16,34 @@
 pragma solidity 0.6.5;
 pragma experimental ABIEncoderV2;
 
-import { ERC20 } from "../../ERC20.sol";
-import { ProtocolAdapter } from "../ProtocolAdapter.sol";
+import {ERC20} from "../../ERC20.sol";
+import {ProtocolAdapter} from "../ProtocolAdapter.sol";
 
+
+interface ITimeWarpPool {
+    function userStacked(address) external view returns (uint256);
+}
 
 /**
- * @title Adapter for Unigii protocol.
+ * @title Adapter for Time protocol (staking).
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UnagiiVaultAdapter is ProtocolAdapter {
+contract TimeEthLpStakingAdapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "Unagii token";
+    string public constant override tokenType = "ERC20";
+
+    address internal constant TIME_ETH_LP = 0x1d474d4B4A62b0Ad0C819841eB2C74d1c5050524;
+    address internal constant STACKING_POOL_TIME_ETH_LP = 0x55c825983783c984890bA89F7d7C9575814D83F2;
 
     /**
-     * @return Amount of Unagii Vault Tokens owned by the given account.
-     * @param token Address of the vault token.
+     * @return Amount of staked TIME tokens for a given account.
      * @dev Implementation of ProtocolAdapter interface function.
      */
     function getBalance(address token, address account) external view override returns (uint256) {
-        return ERC20(token).balanceOf(account);
+        if (token != TIME_ETH_LP) return 0;
+        return ITimeWarpPool(STACKING_POOL_TIME_ETH_LP).userStacked(account);
     }
 }
