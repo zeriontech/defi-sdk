@@ -27,11 +27,11 @@ interface UnagiiVaultV2 {
 }
 
 /**
- * @title Token adapter for Unagii Vaults.
+ * @title Token adapter for Unagii Vaults V2.
  * @dev Implementation of TokenAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
-contract UnagiiVaultTokenAdapter is TokenAdapter {
+contract UnagiiVaultV2TokenAdapter is TokenAdapter {
 
     /**
      * @return TokenMetadata struct with ERC20-style token info.

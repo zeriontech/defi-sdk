@@ -24,7 +24,7 @@ interface UnagiiVaultV2 {
 }
 
 /**
- * @title Adapter for iearn.finance protocol.
+ * @title Adapter for Unagii V2 protocol.
  * @dev Implementation of ProtocolAdapter interface.
  * @author Igor Sobolev <sobolev@zerion.io>
  */
@@ -32,10 +32,10 @@ contract UnagiiVaultV2Adapter is ProtocolAdapter {
 
     string public constant override adapterType = "Asset";
 
-    string public constant override tokenType = "ERC20";
+    string public constant override tokenType = "UnagiiV2 token";
 
     /**
-     * @return Amount of Unagii Vault Tokens owned by the given account.
+     * @return Amount of Unagii Vault V2 Tokens owned by the given account.
      * @param token Address of the vault token.
      * @dev Implementation of ProtocolAdapter interface function.
      */

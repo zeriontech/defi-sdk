@@ -98,6 +98,8 @@ const UniswapV1TokenAdapter = artifacts.require('UniswapV1TokenAdapter');
 const UniswapV2TokenAdapter = artifacts.require('UniswapV2TokenAdapter');
 const UnagiiVaultAdapter = artifacs.require('UnagiiVaultAdapter');
 const UnagiiVaultTokenAdapter = artifacs.require('UnagiiVaultTokenAdapter');
+const UnagiiVaultV2Adapter = artifacs.require('UnagiiVaultV2Adapter');
+const UnagiiVaultV2TokenAdapter = artifacs.require('UnagiiVaultV2TokenAdapter');
 const AdapterRegistry = artifacts.require('AdapterRegistry');
 
 const antAddress = '0x960b236A07cf122663c4303350609A66A7B288C0';
@@ -453,6 +455,12 @@ const unagiiVaultDAIAddress = '0x4aD0b81f92B16624BBcF46FC0030cFBBf8d02376';
 const unagiiVaultUSDTAddress = '0x178Bf8fD04b47D2De3eF3f6b3D112106375ad584';
 const unagiiVaultWBTCAddress = '0x3aF5Ba94C29a8407785f5f6d90eF5d69a8EB2436';
 const unagiiVaultETHAddress = '0x77607588222e01bf892a29Abab45796A2047fc7b';
+
+const unagiiVaultV2USDCAddress = '';
+const unagiiVaultV2DAIAddress = '0x9ce3018375d305CE3C3303A26eF62D3d2EB8561A';
+const unagiiVaultV2USDTAddress = '';
+const unagiiVaultV2WBTCAddress = '';
+const unagiiVaultV2ETHAddress = '';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
@@ -977,6 +985,14 @@ const unagiiVaultAdapterTokens = [
   unagiiVaultUSDTAddress,
   unagiiVaultWBTCAddress,
   unagiiVaultETHAddress,
+];
+
+const unagiiVaultV2AdapterTokens = [
+  unagiiVaultV2USDCAddress,
+  unagiiVaultV2DAIAddress,
+  unagiiVaultV2USDTAddress,
+  unagiiVaultV2WBTCAddress,
+  unagiiVaultV2ETHAddress,
 ];
 
 let protocolNames = [];
@@ -1635,6 +1651,18 @@ module.exports = async (deployer, network, accounts) => {
     '0',
   ]);
 
+  await deployer.deploy(UnagiiVaultV2Adapter, { from: accounts[0] });
+  adapters.push([UnagiiVaultV2Adapter.address]);
+  tokens.push([unagiiVaultV2AdapterTokens]);
+  protocolNames.push('Unagii V2');
+  metadata.push([
+    'Unagii V2',
+    'DeFi yields on auto-pilot.',
+    'unagii.com',
+    'protocol-icons.s3.amazonaws.com/unagii.png',
+    '0',
+  ]);
+
   await deployer.deploy(ERC20TokenAdapter, { from: accounts[0] })
     .then(() => {
       tokenAdapters.push(
@@ -1783,6 +1811,12 @@ module.exports = async (deployer, network, accounts) => {
     .then(() => {
       tokenAdapters.push(
         UnagiiVaultTokenAdapter.address,
+      );
+    });
+  await deployer.deploy(UnagiiVaultV2TokenAdapter, { from: accounts[0] })
+    .then(() => {
+      tokenAdapters.push(
+        UnagiiVaultV2TokenAdapter.address,
       );
     });
   await deployer.deploy(LinkswapTokenAdapter, { from: accounts[0] })
