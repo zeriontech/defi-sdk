@@ -26,7 +26,6 @@ contract('ClusterTokenInteractiveAdapter', () => {
     const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
     const polyClusterAddress = '0x4964B3B599B82C3FdDC56e3A9Ffd77d48c6AF0f0';
     const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-    const clusterExternalAdapterAddress = '0x0c1520153044bE0bd29D93E356c1BABfa4996c6A';
     let encodedData;
 
     let accounts;
@@ -79,9 +78,6 @@ contract('ClusterTokenInteractiveAdapter', () => {
           .then((result) => {
             clusterTokenInstance = result.contract;
           });
-        clusterExternalAdapter = await ClusterExternalAdapter.at(clusterExternalAdapterAddress);
-        const role = await clusterExternalAdapter.PROTOCOL_ROLE();
-        await clusterExternalAdapter.grantRole(role, core.options.address);
     });
 
     describe('ETH <-> PolyCluster', async() => {

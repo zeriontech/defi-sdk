@@ -35,7 +35,7 @@ import { IExternalAdapter } from "../../interfaces/IExternalAdapter.sol";
 contract ClusterTokenInteractiveAdapter is InteractiveAdapter, DeHiveProtocolAdapter {
     using SafeERC20 for ERC20;
 
-    address internal constant EXTERNAL_ADAPTER = address(0x0c1520153044bE0bd29D93E356c1BABfa4996c6A);
+    address internal constant EXTERNAL_ADAPTER = address(0xaf63F200148fe942280C10220aCD0780006BBA91);
     /**
      * @notice Deposits tokens to the DeHive ClusterToken.
      * @param tokenAmounts Array with one element - TokenAmount struct with
@@ -62,7 +62,6 @@ contract ClusterTokenInteractiveAdapter is InteractiveAdapter, DeHiveProtocolAda
         tokensToBeWithdrawn[0] = clusterToken;
         tokensToBeWithdrawn[1] = ETH;
 
-        //require(false, "error 2");
         // solhint-disable-next-line no-empty-blocks
         try IExternalAdapter(EXTERNAL_ADAPTER).deposit{value: amount}(clusterToken) {} catch Error(string memory reason) {
             revert(reason);
