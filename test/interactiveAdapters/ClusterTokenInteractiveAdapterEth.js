@@ -15,7 +15,7 @@ const EMPTY_BYTES = '0x';
 const ZERO = '0x0000000000000000000000000000000000000000';
 
 const ProtocolAdapterRegistry = artifacts.require('./ProtocolAdapterRegistry');
-const InteractiveAdapter = artifacts.require('./ClusterTokenInteractiveAdapter');
+const InteractiveAdapter = artifacts.require('./ClusterTokenInteractiveAdapterETH');
 const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
@@ -24,7 +24,7 @@ const ClusterExternalAdapter = artifacts.require('./IExternalAdapter');
 
 contract('ClusterTokenInteractiveAdapter', () => {
     const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-    const polyClusterAddress = '0x4964B3B599B82C3FdDC56e3A9Ffd77d48c6AF0f0';
+    const decrClusterAddress = '0x6Bc3F65Fc50E49060e21eD6996be96ee4B404752';
     const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
     let encodedData;
 
@@ -34,11 +34,10 @@ contract('ClusterTokenInteractiveAdapter', () => {
     let protocolAdapterRegistry;
     let protocolAdapterAddress;
     let clusterTokenInstance;
-    let clusterExternalAdapter;
 
     beforeEach(async () => {
         accounts = await web3.eth.getAccounts();
-        encodedData = web3.eth.abi.encodeParameter('address', polyClusterAddress);
+        encodedData = web3.eth.abi.encodeParameter('address', decrClusterAddress);
         await InteractiveAdapter.new({ from: accounts[0] })
           .then((result) => {
             protocolAdapterAddress = result.address;
@@ -74,18 +73,18 @@ contract('ClusterTokenInteractiveAdapter', () => {
           .then((result) => {
             router = result.contract;
           });
-        await ERC20.at(polyClusterAddress)
+        await ERC20.at(decrClusterAddress)
           .then((result) => {
             clusterTokenInstance = result.contract;
           });
     });
 
-    describe('ETH <-> PolyCluster', async() => {
-        it('Should not be correct ETH -> PolyCluster if 2 tokens', async() => {
+    describe('ETH <-> decrCluster', async() => {
+        it('Should not be correct ETH -> decrCluster if 2 tokens', async() => {
             await clusterTokenInstance.methods['balanceOf(address)'](accounts[0])
             .call()
             .then((result) => {
-              console.log(`polycluster amount before is ${web3.utils.fromWei(result, 'ether')}`);
+              console.log(`decrCluster amount before is ${web3.utils.fromWei(result, 'ether')}`);
             });
             await web3.eth.getBalance(accounts[0])
             .then((result) => {
@@ -114,11 +113,11 @@ contract('ClusterTokenInteractiveAdapter', () => {
                 }));
         });
 
-        it('Should not be correct DAI -> PolyCluster', async() => {
+        it('Should not be correct DAI -> decrCluster', async() => {
             await clusterTokenInstance.methods['balanceOf(address)'](accounts[0])
             .call()
             .then((result) => {
-              console.log(`polycluster amount before is ${web3.utils.fromWei(result, 'ether')}`);
+              console.log(`decrCluster amount before is ${web3.utils.fromWei(result, 'ether')}`);
             });
             await web3.eth.getBalance(accounts[0])
             .then((result) => {
@@ -146,11 +145,11 @@ contract('ClusterTokenInteractiveAdapter', () => {
                 }));
         });
 
-        it('Should be correct ETH -> PolyCluster deposit', async() => {
+        it('Should be correct ETH -> decrCluster deposit', async() => {
             await clusterTokenInstance.methods['balanceOf(address)'](accounts[0])
             .call()
             .then((result) => {
-              console.log(`polycluster amount before is ${web3.utils.fromWei(result, 'ether')}`);
+              console.log(`decrCluster amount before is ${web3.utils.fromWei(result, 'ether')}`);
             });
             await web3.eth.getBalance(accounts[0])
             .then((result) => {
@@ -182,7 +181,7 @@ contract('ClusterTokenInteractiveAdapter', () => {
             await clusterTokenInstance.methods['balanceOf(address)'](accounts[0])
             .call()
             .then((result) => {
-                console.log(`polycluster amount after is ${web3.utils.fromWei(result, 'ether')}`);
+                console.log(`decrCluster amount after is ${web3.utils.fromWei(result, 'ether')}`);
             });
             await web3.eth.getBalance(accounts[0])
             .then((result) => {
@@ -199,19 +198,19 @@ contract('ClusterTokenInteractiveAdapter', () => {
             });
         });
 
-        it('Should not be correct ETH <- Polycluster withdraw if 2 tokens', async() => {
-            let polyClusterAmount;
+        it('Should not be correct ETH <- decrCluster withdraw if 2 tokens', async() => {
+            let decrClusterAmount;
             await clusterTokenInstance.methods['balanceOf(address)'](accounts[0])
               .call()
               .then((result) => {
-                polyClusterAmount = result;
-                console.log(`polycluster amount before is ${web3.utils.fromWei(result, 'ether')}`);
+                decrClusterAmount = result;
+                console.log(`decrCluster amount before is ${web3.utils.fromWei(result, 'ether')}`);
               });
             await web3.eth.getBalance(accounts[0])
               .then((result) => {
                 console.log(` eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
               });
-            await clusterTokenInstance.methods.approve(router.options.address, (polyClusterAmount * 2).toString())
+            await clusterTokenInstance.methods.approve(router.options.address, (decrClusterAmount * 2).toString())
               .send({
                 gas: 10000000,
                 from: accounts[0],
@@ -222,15 +221,15 @@ contract('ClusterTokenInteractiveAdapter', () => {
                   CLUSTER_TOKEN_ADAPTER,
                   ACTION_WITHDRAW,
                   [
-                    [polyClusterAddress, polyClusterAmount, AMOUNT_ABSOLUTE],
-                    [polyClusterAddress, polyClusterAmount, AMOUNT_ABSOLUTE]
+                    [decrClusterAddress, decrClusterAmount, AMOUNT_ABSOLUTE],
+                    [decrClusterAddress, decrClusterAmount, AMOUNT_ABSOLUTE]
                   ],
                   EMPTY_BYTES,
                 ],
               ],
               [
                 [
-                  [polyClusterAddress, polyClusterAmount, AMOUNT_ABSOLUTE],
+                  [decrClusterAddress, decrClusterAmount, AMOUNT_ABSOLUTE],
                   [0, EMPTY_BYTES]
                 ]
               ],
@@ -244,19 +243,19 @@ contract('ClusterTokenInteractiveAdapter', () => {
               }));
         });
 
-        it('Should be correct ETH <- PolyCluster withdraw', async() => {
-            let polyClusterAmount;
+        it('Should be correct ETH <- decrCluster withdraw', async() => {
+            let decrClusterAmount;
             await clusterTokenInstance.methods['balanceOf(address)'](accounts[0])
               .call()
               .then((result) => {
-                polyClusterAmount = result;
-                console.log(`polycluster amount before is ${web3.utils.fromWei(result, 'ether')}`);
+                decrClusterAmount = result;
+                console.log(`decrCluster amount before is ${web3.utils.fromWei(result, 'ether')}`);
               });
             await web3.eth.getBalance(accounts[0])
               .then((result) => {
                 console.log(` eth amount before is ${web3.utils.fromWei(result, 'ether')}`);
               });
-            await clusterTokenInstance.methods.approve(router.options.address, (polyClusterAmount * 2).toString())
+            await clusterTokenInstance.methods.approve(router.options.address, (decrClusterAmount * 2).toString())
               .send({
                 gas: 10000000,
                 from: accounts[0],
@@ -267,14 +266,14 @@ contract('ClusterTokenInteractiveAdapter', () => {
                   CLUSTER_TOKEN_ADAPTER,
                   ACTION_WITHDRAW,
                   [
-                    [polyClusterAddress, polyClusterAmount, AMOUNT_ABSOLUTE]
+                    [decrClusterAddress, decrClusterAmount, AMOUNT_ABSOLUTE]
                   ],
                   EMPTY_BYTES,
                 ],
               ],
               [
                 [
-                  [polyClusterAddress, polyClusterAmount, AMOUNT_ABSOLUTE],
+                  [decrClusterAddress, decrClusterAmount, AMOUNT_ABSOLUTE],
                   [0, EMPTY_BYTES]
                 ]
               ],
@@ -292,7 +291,7 @@ contract('ClusterTokenInteractiveAdapter', () => {
             await clusterTokenInstance.methods['balanceOf(address)'](accounts[0])
             .call()
             .then((result) => {
-                console.log(`polycluster amount after is ${web3.utils.fromWei(result, 'ether')}`);
+                console.log(`decrCluster amount after is ${web3.utils.fromWei(result, 'ether')}`);
             });
             await web3.eth.getBalance(accounts[0])
             .then((result) => {

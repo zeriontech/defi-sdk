@@ -32,10 +32,10 @@ import { IExternalAdapter } from "../../interfaces/IExternalAdapter.sol";
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
 
-contract ClusterTokenInteractiveAdapter is InteractiveAdapter, DeHiveProtocolAdapter {
+contract ClusterTokenInteractiveAdapterETH is InteractiveAdapter, DeHiveProtocolAdapter {
     using SafeERC20 for ERC20;
 
-    address internal constant EXTERNAL_ADAPTER = address(0xaf63F200148fe942280C10220aCD0780006BBA91);
+    address internal constant EXTERNAL_ADAPTER = address(0xE45713a2D7d87bd7A55d84da55aEb9EC21067870);
     /**
      * @notice Deposits tokens to the DeHive ClusterToken.
      * @param tokenAmounts Array with one element - TokenAmount struct with
