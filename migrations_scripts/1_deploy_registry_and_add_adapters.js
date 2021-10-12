@@ -456,11 +456,11 @@ const unagiiVaultUSDTAddress = '0x178Bf8fD04b47D2De3eF3f6b3D112106375ad584';
 const unagiiVaultWBTCAddress = '0x3aF5Ba94C29a8407785f5f6d90eF5d69a8EB2436';
 const unagiiVaultETHAddress = '0x77607588222e01bf892a29Abab45796A2047fc7b';
 
-const unagiiVaultV2USDCAddress = '';
+const unagiiVaultV2USDCAddress = '0x7f75d72886D6A8677321E5602d18948aBCb4281A';
 const unagiiVaultV2DAIAddress = '0x9ce3018375d305CE3C3303A26eF62D3d2EB8561A';
-const unagiiVaultV2USDTAddress = '';
-const unagiiVaultV2WBTCAddress = '';
-const unagiiVaultV2ETHAddress = '';
+const unagiiVaultV2USDTAddress = '0x1Eb06EaE3263a35619dC87812a8e7Ec811B59E63';
+const unagiiVaultV2WBTCAddress = '0xB088D7C71ea9eBAed981c103Fc3019B59950d2C9';
+const unagiiVaultV2ETHAddress = '0x8eF11c51a666C53Aeeec504f120cd1435E451342';
 
 const aaveAssetAdapterTokens = [
   aDaiAddress,
