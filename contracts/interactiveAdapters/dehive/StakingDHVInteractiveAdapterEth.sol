@@ -35,8 +35,8 @@ import { IStakingPools } from "../../interfaces/IStakingPools.sol";
 contract StakingDHVInteractiveAdapterPoly is InteractiveAdapter, StakingDHVAdapter {
     using SafeERC20 for ERC20;
 
-    address internal constant STAKING_DHV = address(0x88cFC1bc9aEb80f6C8f5d310d6C3761c2a646Df7);
-    address internal constant DHV_TOKEN = address(0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26);
+    address internal constant STAKING_DHV = address(0x04595f9010F79422a9b411ef963e4dd1F7107704);
+    address internal constant DHV_TOKEN = address(0x62Dc4817588d53a056cBbD18231d91ffCcd34b2A);
     /**
      * @notice Deposits tokens to the DeHive StakingDHV.
      * @param tokenAmounts Array with one element - TokenAmount struct with

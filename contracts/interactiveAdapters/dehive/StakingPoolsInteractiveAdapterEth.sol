@@ -32,16 +32,16 @@ import { IStakingPools } from "../../interfaces/IStakingPools.sol";
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
 
-contract StakingDHVInteractiveAdapterPoly is InteractiveAdapter, StakingDHVAdapter {
+contract StakingPoolsInteractiveAdapterEth is InteractiveAdapter, StakingDHVAdapter {
     using SafeERC20 for ERC20;
 
-    address internal constant STAKING_DHV = address(0x88cFC1bc9aEb80f6C8f5d310d6C3761c2a646Df7);
-    address internal constant DHV_TOKEN = address(0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26);
+    address internal constant STAKING_POOLS = address(0x4964B3B599B82C3FdDC56e3A9Ffd77d48c6AF0f0);
     /**
-     * @notice Deposits tokens to the DeHive StakingDHV.
+     * @notice Deposits tokens to the DeHive StakingPools.
      * @param tokenAmounts Array with one element - TokenAmount struct with
-     * DHV address, DHV amount to be deposited, and amount type.
+     * staked token address,staked token to be deposited, and amount type.
      * @param data ABI-encoded additional parameters:
+           - poolId - ID of pool for staked token in StakingPools.
      *     - userAddress - Address of user address.
      * @return tokensToBeWithdrawn Empty array.
      * @dev Implementation of InteractiveAdapter function.
@@ -53,23 +53,22 @@ contract StakingDHVInteractiveAdapterPoly is InteractiveAdapter, StakingDHVAdapt
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "StakingDHV: should be one token[1]");
-        require(tokenAmounts[0].token == DHV_TOKEN, "StakingDHV: should be DHV[2]");
+        require(tokenAmounts.length == 1, "StakingPools: should be one token[1]");
 
-        address userAddress = abi.decode(data, (address));
+        (uint256 poolId, address userAddress) = abi.decode(data, (uint256, address));
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
-        ERC20(tokenAmounts[0].token).safeApprove(STAKING_DHV, amount, "DHV");
+        ERC20(tokenAmounts[0].token).safeApprove(STAKING_POOLS, amount, "DHV");
         // solhint-disable-next-line no-empty-blocks
-        try IStakingPools(STAKING_DHV).depositFor(0, amount, userAddress) {} catch Error(string memory reason) {
+        try IStakingPools(STAKING_POOLS).depositFor(poolId, amount, userAddress) {} catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("StakingDHV: deposit fail");
+            revert("StakingPools: deposit fail");
         }
     }
 
     /**
-     * @notice Withdraws tokens from the DeHive StakingDHV.
+     * @notice Withdraws tokens from the DeHive StakingPools.
      * @param tokenAmounts Empty array.
      * @return tokensToBeWithdrawn Empty array.
      * @dev Implementation of InteractiveAdapter function.
@@ -81,6 +80,6 @@ contract StakingDHVInteractiveAdapterPoly is InteractiveAdapter, StakingDHVAdapt
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        revert("StakingDHV: Can't withdraw");
+        revert("StakingPools: Can't withdraw");
     }
 }
