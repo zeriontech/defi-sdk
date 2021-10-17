@@ -30,6 +30,7 @@ contract ClusterTokenAdapter is TokenAdapter {
     /**
      * @return Array of Component structs with underlying tokens rates for the given token.
      * @dev Implementation of TokenAdapter abstract contract function.
+     * @param token Cluster address
      */
     function getComponents(address token) external override view returns (Component[] memory) {
         address[] memory underlyings = IClusterToken(token).getUnderlyings();

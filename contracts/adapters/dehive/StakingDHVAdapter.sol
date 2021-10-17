@@ -29,9 +29,23 @@ contract StakingDHVAdapter is ProtocolAdapter {
     /**
      * @dev MUST return amount and type of the given token
      * locked on the protocol by the given account.
+     * @param token DHV address
+     * @param account User's account
      */
     function getBalance(address token, address account) public override view returns (int256) {
-        uint256 amount = IStakingPools(token).userInfo(0, account);
+        address STAKING_DHV_ETH = address(0x04595f9010F79422a9b411ef963e4dd1F7107704);
+        address DHV_TOKEN_ETH = address(0x62Dc4817588d53a056cBbD18231d91ffCcd34b2A);
+        
+        address STAKING_DHV_POLY = address(0x88cFC1bc9aEb80f6C8f5d310d6C3761c2a646Df7);
+        address DHV_TOKEN_POLY = address(0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26);
+
+        uint256 amount = 0;
+        if (token == DHV_TOKEN_ETH) {
+            amount = IStakingPools(STAKING_DHV_ETH).userInfo(0, account);
+        }
+        else if (token == DHV_TOKEN_POLY) {
+            amount = IStakingPools(STAKING_DHV_POLY).userInfo(0, account);
+        }
         return int256(amount);
     }
 }
