@@ -24,7 +24,6 @@ import { IStakingPools } from "../../interfaces/IStakingPools.sol";
 /**
  * @title DHV Staking adapter for DeHive protocol.
  * @dev Implementation of ProtocolAdapter abstract contract.
- * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract StakingDHVAdapter is ProtocolAdapter {
     /**

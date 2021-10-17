@@ -25,7 +25,6 @@ import { IClusterToken } from "../../interfaces/IClusterToken.sol";
 /**
  * @title Token adapter for ClusterTokens.
  * @dev Implementation of TokenAdapter abstract contract.
- * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract ClusterTokenAdapter is TokenAdapter {
     /**
