@@ -91,7 +91,7 @@ contract VisorInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
         // solhint-disable-next-line no-empty-blocks
         try IHypervisor(pair).withdraw(amount, address(this), address(this)) returns (
             uint256 amount0,
-            uint256 amount1,
+            uint256 amount1
         ) {
             require(amount0 > 0 || amount1 > 0, "HVIA: received 0 tokens on burn");
             if (amount0 > 0 && amount1 > 0) {
