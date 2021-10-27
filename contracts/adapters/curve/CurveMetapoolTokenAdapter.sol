@@ -61,13 +61,23 @@ contract CurveMetapoolTokenAdapter is TokenAdapter {
      */
     function getComponents(address token) external view override returns (Component[] memory) {
 
-        Component[] memory underlyingComponents = new Component[](2);
+        uint256 length = 0;
+        while (true) {
+            try stableswap(token).coins(length) returns (address) {
+                length++;
+            } catch {
+                break;
+            }
+        }
 
-        for (uint256 i = 0; i < 2; i++) {
+        Component[] memory underlyingComponents = new Component[](length);
+
+        uint256 totalSupply = ERC20(token).totalSupply();
+        for (uint256 i = 0; i < length; i++) {
             underlyingComponents[i] = Component({
                 token: stableswap(token).coins(i),
                 tokenType: "ERC20",
-                rate: stableswap(token).balances(i) * 1e18 / ERC20(token).totalSupply()
+                rate: totalSupply == 0 ? 0 : stableswap(token).balances(i) * 1e18 / totalSupply
             });
         }
 
