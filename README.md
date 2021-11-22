@@ -15,15 +15,30 @@ If you have any questions about DeFi SDK, feel free to reach out to us on our [D
 
 ## Features
 
-### Tracking
-
-#### 💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, dYdX*, etc.
+**💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, dYdX*, etc.**
 > How much debt does `0xdead..beef` have on Compound?
 
-#### 📊Get the underlying components of complex derivative ERC20 tokens
+**📊Get the underlying components of complex derivative ERC20 tokens**
 > How much `cUSDC` vs `ETH` does `ETHMACOAPY` have?
 
-### Trading
+**✨Interact with multiple DeFi protocols in a unified way**
+> See [How to interact with DeFi SDK contracts](docs/interacting.md)
+
+## Addresses
+
+**AdapterRegistry** contract is deployed to the mainnet and its source code is verified on [etherscan](https://etherscan.io/address/0x06fe76b2f432fdfecaef1a7d4f6c3d41b5861672#code){target=_blank}.
+
+All the deployed contracts' addresses are available [here](docs/addresses.md).
+
+
+## How to Add Your Adapter
+
+The full instructions on how to add a custom adapter to the **AdapterRegistry** contract may be found in our [wiki](../../wiki/Adding-new-adapters).
+
+If you have questions and/or want to add your adapter to Zerion reach out to us on our [Discord server](https://go.zerion.io/discord).
+
+
+## Trading
 
 * Trade any ERC20 token
 * Two types of amounts: absolute (usual amount) and relative (percentage of balance)
@@ -47,27 +62,39 @@ The project (Router contract and its dependencies) is fully covered with tests.
 
 Fees are applied so that return amount = actual output amount / (1 + fee percentage).
 
-#### Set environment
+### Set environment
 
 Rename `.env.sample` file to `.env`, and fill in the env variables.
 
 `INFURA_API_KEY` is required for Router contract tests as it uses mainnet forking feature.
 
-#### Compile contracts
+### Compile contracts
 
 `npm run compile`
 
-#### Run tests
+### Run tests
 
 `npm run test`
 
-#### Run Solidity code coverage
+### Run Solidity code coverage
 
 `npm run coverage`
 
-#### Run Solidity and JS linters
+Currently, unsupported files are ignored.
+
+### Run Solidity and JS linters
 
 `npm run lint`
+
+Currently, unsupported files are ignored.
+
+### Run all the migrations scripts
+
+`npm run deploy:network`, `network` is either `development` or `mainnet`.
+
+### Serve docs
+
+`npm run docs:serve`
 
 ## License
 
