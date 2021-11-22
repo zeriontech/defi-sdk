@@ -33,7 +33,7 @@ All the deployed contracts' addresses are available [here](docs/addresses.md).
 
 ## How to Add Your Adapter
 
-The full instructions on how to add a custom adapter to the **AdapterRegistry** contract may be found in our [docs](docs/creating-your-adapters/read-only-adapters.md).
+The full instructions on how to add a custom adapter to the **AdapterRegistry** contract may be found in our [docs](docs/creating-your-adapters/index.md).
 
 If you have questions and/or want to add your adapter to Zerion reach out to us on our [Discord server](https://go.zerion.io/discord).
 
