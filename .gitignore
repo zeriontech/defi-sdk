@@ -2,6 +2,7 @@ node_modules/
 .idea/
 .vscode/
 build/
+site/
 coverage
 artifacts
 cache
