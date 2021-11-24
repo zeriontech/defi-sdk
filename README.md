@@ -26,7 +26,7 @@ If you have any questions about DeFi SDK, feel free to reach out to us on our [D
 
 ## Addresses
 
-**AdapterRegistry** contract is deployed to the mainnet and its source code is verified on [etherscan](https://etherscan.io/address/0x06fe76b2f432fdfecaef1a7d4f6c3d41b5861672#code){target=_blank}.
+**AdapterRegistry** contract is deployed to the mainnet and its source code is verified on [etherscan](https://etherscan.io/address/0x06fe76b2f432fdfecaef1a7d4f6c3d41b5861672#code).
 
 All the deployed contracts' addresses are available [here](docs/addresses.md).
 
