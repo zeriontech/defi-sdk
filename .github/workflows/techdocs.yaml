@@ -5,9 +5,9 @@ on:
     branches:
       - master
       - add-docs
-    #paths:
-    #  - "docs/**"
-    #  - "mkdocs.yml"
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
 
 jobs:
   publish-techdocs-site:
