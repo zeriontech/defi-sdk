@@ -32,11 +32,11 @@ import { IStakingPools } from "../../interfaces/IStakingPools.sol";
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
 
-contract StakingDHVInteractiveAdapterEth is InteractiveAdapter, StakingDHVAdapter {
+contract StakingDHVInteractiveAdapterBSC is InteractiveAdapter, StakingDHVAdapter {
     using SafeERC20 for ERC20;
 
-    address internal constant STAKING_DHV = address(0x04595f9010F79422a9b411ef963e4dd1F7107704);
-    address internal constant DHV_TOKEN = address(0x62Dc4817588d53a056cBbD18231d91ffCcd34b2A);
+    address internal constant STAKING_DHV = address(0x35f28aA0B2F34eFF17d2830135312ab2a777De36);
+    address internal constant DHV_TOKEN = address(0x58759Dd469ae5631C42cf8a473992335575b58D7);
     /**
      * @notice Deposits tokens to the DeHive StakingDHV.
      * @param tokenAmounts Array with one element - TokenAmount struct with
@@ -58,7 +58,6 @@ contract StakingDHVInteractiveAdapterEth is InteractiveAdapter, StakingDHVAdapte
 
         address userAddress = abi.decode(data, (address));
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
-
 
         ERC20(tokenAmounts[0].token).safeApprove(STAKING_DHV, amount, "DHV");
         // solhint-disable-next-line no-empty-blocks

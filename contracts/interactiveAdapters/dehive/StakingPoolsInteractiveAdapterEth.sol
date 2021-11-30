@@ -55,7 +55,7 @@ contract StakingPoolsInteractiveAdapterEth is InteractiveAdapter, StakingDHVAdap
     {
         require(tokenAmounts.length == 1, "StakingPools: should be one token[1]");
 
-        (uint256 poolId, address userAddress) = abi.decode(data, (uint256, address));
+       (uint256 poolId, address userAddress) = abi.decode(data, (uint256, address));
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         ERC20(tokenAmounts[0].token).safeApprove(STAKING_POOLS, amount, "DHV");
