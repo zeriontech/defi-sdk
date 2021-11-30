@@ -69,6 +69,7 @@ contract StakingPoolsInteractiveAdapterEth is InteractiveAdapter, StakingDHVAdap
 
     /**
      * @notice Withdraws tokens from the DeHive StakingPools.
+     * Should be performed through the platform
      * @param tokenAmounts Empty array.
      * @return tokensToBeWithdrawn Empty array.
      * @dev Implementation of InteractiveAdapter function.

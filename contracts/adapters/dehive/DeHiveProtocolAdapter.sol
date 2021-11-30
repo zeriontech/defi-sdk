@@ -24,7 +24,6 @@ import { ProtocolAdapter } from "../ProtocolAdapter.sol";
 /**
  * @title Cluster adapter for DeHive protocol.
  * @dev Implementation of ProtocolAdapter abstract contract.
- * @author Igor Sobolev <sobolev@zerion.io>
  */
 contract DeHiveProtocolAdapter is ProtocolAdapter {
     /**

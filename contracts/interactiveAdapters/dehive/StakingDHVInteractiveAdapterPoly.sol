@@ -70,6 +70,7 @@ contract StakingDHVInteractiveAdapterPoly is InteractiveAdapter, StakingDHVAdapt
 
     /**
      * @notice Withdraws tokens from the DeHive StakingDHV.
+     * Should be performed through the platform
      * @param tokenAmounts Empty array.
      * @return tokensToBeWithdrawn Empty array.
      * @dev Implementation of InteractiveAdapter function.
