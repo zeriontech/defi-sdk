@@ -1,5 +1,4 @@
 import signTypedData from '../helpers/signTypedData';
-import { wethAddress, ethAddress } from '../helpers/tokens';
 
 const { expect } = require('chai');
 
@@ -12,60 +11,48 @@ const { AddressZero } = ethers.constants;
 const AMOUNT_ABSOLUTE = 2;
 const SWAP_FIXED_INPUTS = 1;
 const EMPTY_BYTES = '0x';
-const EXECUTE_SIGNATURE =
-  'execute(((address,uint256,uint8),(uint8,bytes)),(address,uint256),(uint8,(uint256,address),address,address,bytes),address,uint256,bytes)';
-const EXECUTE_WITH_CHI_SIGNATURE =
-  'executeWithCHI(((address,uint256,uint8),(uint8,bytes)),(address,uint256),(uint8,(uint256,address),address,address,bytes),address,uint256,bytes)';
+const FUTURE_TIMESTAMP = 1893456000;
+
+const zeroFee = [ethers.BigNumber.from('0'), AddressZero];
+const zeroPermit = ['0', EMPTY_BYTES];
+const zeroSignature = ['0', EMPTY_BYTES];
 
 describe('SignatureVerifier', () => {
   let owner;
-  let notOwner;
   let Router;
   let mockCaller;
   let router;
   let wallet;
-  let weth;
 
   before(async () => {
     Router = await ethers.getContractFactory('Router');
 
-    [owner, notOwner] = await ethers.getSigners();
+    [owner] = await ethers.getSigners();
 
     [wallet] = provider.getWallets();
 
-    const weth9 = await ethers.getContractAt('IWETH9', wethAddress);
-
-    await weth9.connect(wallet).deposit({
-      value: ethers.utils.parseEther('1'),
-      gasLimit: 1000000,
-    });
-
     mockCaller = await deployMockContract(owner, CallerArtifacts.abi);
     await mockCaller.mock.callBytes.returns();
-
-    weth = await ethers.getContractAt('IERC20', wethAddress, owner);
   });
 
   beforeEach(async () => {
     router = await Router.deploy();
   });
 
-  it('should be correct signer for execute', async () => {
-    let amount = await weth.balanceOf(notOwner.address);
-    await weth.connect(wallet).approve(router.address, '100');
+  it.only('should be correct account signature', async () => {
     const typedData = {
       types: {
         Execute: [
           { name: 'input', type: 'Input' },
-          { name: 'requiredOutput', type: 'AbsoluteTokenAmount' },
+          { name: 'output', type: 'AbsoluteTokenAmount' },
           { name: 'swapDescription', type: 'SwapDescription' },
-          { name: 'account', type: 'address' },
           { name: 'salt', type: 'uint256' },
         ],
         SwapDescription: [
           { name: 'swapType', type: 'uint8' },
-          { name: 'fee', type: 'Fee' },
-          { name: 'destination', type: 'address' },
+          { name: 'protocolFee', type: 'Fee' },
+          { name: 'marketplaceFee', type: 'Fee' },
+          { name: 'account', type: 'address' },
           { name: 'caller', type: 'address' },
           { name: 'callData', type: 'bytes' },
         ],
@@ -100,8 +87,8 @@ describe('SignatureVerifier', () => {
       message: {
         input: {
           tokenAmount: {
-            token: wethAddress,
-            amount: '100',
+            token: AddressZero,
+            amount: '0',
             amountType: AMOUNT_ABSOLUTE,
           },
           permit: {
@@ -109,114 +96,133 @@ describe('SignatureVerifier', () => {
             permitCallData: EMPTY_BYTES,
           },
         },
-        requiredOutput: {
-          token: ethAddress,
+        output: {
+          token: AddressZero,
           absoluteAmount: '0',
         },
         swapDescription: {
           swapType: SWAP_FIXED_INPUTS,
-          fee: {
+          protocolFee: {
             share: '0',
             beneficiary: AddressZero,
           },
-          destination: notOwner.address,
+          marketplaceFee: {
+            share: '0',
+            beneficiary: AddressZero,
+          },
+          account: wallet.address,
           caller: mockCaller.address,
           callData: EMPTY_BYTES,
         },
-        account: wallet.address,
         salt: 0,
       },
     };
+    const salt = '0';
     const signature = await signTypedData(wallet, typedData);
+    const input = [[AddressZero, '0', AMOUNT_ABSOLUTE], zeroPermit];
+    const output = [AddressZero, '0'];
+    const swapDescription = [
+      SWAP_FIXED_INPUTS,
+      zeroFee,
+      zeroFee,
+      wallet.address,
+      mockCaller.address,
+      EMPTY_BYTES,
+    ];
+
     const hashedData = await router.hashData(
       // input
-      [
-        [wethAddress, '100', AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
-      ],
+      input,
       // output
-      [ethAddress, '0'],
+      output,
       // swap description
-      [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-      wallet.address,
-      0,
+      swapDescription,
+      // double usage protection param
+      salt,
     );
-
+    console.log(hashedData);
     // eslint-disable-next-line no-unused-expressions
-    expect(await router.isHashUsed(hashedData, wallet.address)).to.be.false;
+    expect(await router.isHashUsed(hashedData)).to.be.false;
 
-    await router.functions[EXECUTE_SIGNATURE](
+    const accountSignature = [salt, ethers.utils.joinSignature(signature)];
+    console.log(accountSignature);
+    // signature is valid the first time
+    await router.execute(
       // input
-      [
-        [wethAddress, '100', AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
-      ],
+      input,
       // output
-      [ethAddress, '0'],
+      output,
       // swap description
-      [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-      wallet.address,
-      0,
-      ethers.utils.joinSignature(signature),
+      swapDescription,
+      // account signature
+      accountSignature,
+      // protocol fee signature
+      zeroSignature,
     );
-
-    expect(await weth.balanceOf(notOwner.address)).to.be.equal(
-      ethers.BigNumber.from(amount).add('100'),
+    // signature is valid the first time
+    await router.execute(
+      // input
+      input,
+      // output
+      output,
+      // swap description
+      swapDescription,
+      // account signature
+      accountSignature,
+      // protocol fee signature
+      zeroSignature,
     );
 
     // eslint-disable-next-line no-unused-expressions
-    expect(await router.isHashUsed(hashedData, wallet.address)).to.be.true;
+    expect(await router.isHashUsed(hashedData)).to.be.true;
 
-    // await expect(
-    //   router.functions[EXECUTE_SIGNATURE](
-    //     // input
-    //     [
-    //       [wethAddress, '100', AMOUNT_ABSOLUTE],
-    //       ['0', EMPTY_BYTES],
-    //     ],
-    //     // output
-    //     [ethAddress, '0'],
-    //     // swap description
-    //   [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-    //     wallet.address,
-    //     0,
-    //     ethers.utils.joinSignature(signature),
-    //   ),
-    // ).to.be.reverted;
+    // signature is not valid twice
+    await expect(
+      router.execute(
+        // input
+        input,
+        // output
+        output,
+        // swap description
+        swapDescription,
+        // account signature
+        accountSignature,
+        // protocol fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
 
-    // await expect(
-    //   router.functions[EXECUTE_SIGNATURE](
-    //     // input
-    //     [
-    //       [wethAddress, '100', AMOUNT_ABSOLUTE],
-    //       ['0', EMPTY_BYTES],
-    //     ],
-    //     // output
-    //     [ethAddress, '0'],
-    //     // swap description
-    //   [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-    //     wallet.address,
-    //     1,
-    //     ethers.utils.joinSignature(signature),
-    //   ),
-    // ).to.be.reverted;
+    // signature is not valid if change double usage protection param
+    await expect(
+      router.execute(
+        // input
+        input,
+        // output
+        output,
+        // swap description
+        swapDescription,
+        // account signature
+        ['1', accountSignature[1]],
+        // protocol fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
   });
 
-  it('should be correct signer for execute with CHI', async () => {
-    await weth.connect(wallet).approve(router.address, '100');
+  it('should be correct protocol fee signature', async () => {
     const typedData = {
       types: {
         Execute: [
           { name: 'input', type: 'Input' },
-          { name: 'requiredOutput', type: 'AbsoluteTokenAmount' },
+          { name: 'output', type: 'AbsoluteTokenAmount' },
           { name: 'swapDescription', type: 'SwapDescription' },
-          { name: 'account', type: 'address' },
           { name: 'salt', type: 'uint256' },
         ],
         SwapDescription: [
           { name: 'swapType', type: 'uint8' },
-          { name: 'fee', type: 'Fee' },
-          { name: 'destination', type: 'address' },
+          { name: 'protocolFee', type: 'Fee' },
+          { name: 'marketplaceFee', type: 'Fee' },
+          { name: 'account', type: 'address' },
           { name: 'caller', type: 'address' },
           { name: 'callData', type: 'bytes' },
         ],
@@ -251,8 +257,8 @@ describe('SignatureVerifier', () => {
       message: {
         input: {
           tokenAmount: {
-            token: wethAddress,
-            amount: '100',
+            token: AddressZero,
+            amount: '0',
             amountType: AMOUNT_ABSOLUTE,
           },
           permit: {
@@ -260,55 +266,144 @@ describe('SignatureVerifier', () => {
             permitCallData: EMPTY_BYTES,
           },
         },
-        requiredOutput: {
-          token: ethAddress,
+        output: {
+          token: AddressZero,
           absoluteAmount: '0',
         },
         swapDescription: {
           swapType: SWAP_FIXED_INPUTS,
-          fee: {
+          protocolFee: {
+            share: '1',
+            beneficiary: owner.address,
+          },
+          marketplaceFee: {
             share: '0',
             beneficiary: AddressZero,
           },
-          destination: notOwner.address,
+          account: wallet.address,
           caller: mockCaller.address,
           callData: EMPTY_BYTES,
         },
-        account: wallet.address,
-        salt: 0,
+        salt: FUTURE_TIMESTAMP,
       },
     };
     const signature = await signTypedData(wallet, typedData);
-
-    await router.functions[EXECUTE_WITH_CHI_SIGNATURE](
-      // input
-      [
-        [wethAddress, '100', AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
-      ],
-      // output
-      [ethAddress, '0'],
-      // swap description
-      [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
+    const input = [[AddressZero, '0', AMOUNT_ABSOLUTE], zeroPermit];
+    const output = [AddressZero, '0'];
+    const protocolFee = [ethers.BigNumber.from('1'), owner.address];
+    const swapDescription = [
+      SWAP_FIXED_INPUTS,
+      protocolFee,
+      zeroFee,
       wallet.address,
-      0,
-      ethers.utils.joinSignature(signature),
+      mockCaller.address,
+      EMPTY_BYTES,
+    ];
+
+    const protocolFeeSignature = [FUTURE_TIMESTAMP, ethers.utils.joinSignature(signature)];
+
+    // signature is not valid if exceeds limit fee
+    await expect(
+      router.execute(
+        // input
+        input,
+        // output
+        output,
+        // swap description
+        swapDescription,
+        // account signature
+        zeroSignature,
+        // protocol fee signature
+        protocolFeeSignature,
+      ),
+    ).to.be.reverted;
+
+    await router.setProtocolFeeDefault(protocolFee);
+    expect(await router.getProtocolFeeDefault()).to.deep.equal(protocolFee);
+
+    // signature is not valid with wrong signer
+    await expect(
+      router.execute(
+        // input
+        input,
+        // output
+        output,
+        // swap description
+        swapDescription,
+        // account signature
+        zeroSignature,
+        // protocol fee signature
+        protocolFeeSignature,
+      ),
+    ).to.be.reverted;
+
+    await router.setProtocolFeeSigner(wallet.address);
+    expect(await router.getProtocolFeeSigner()).to.be.equal(wallet.address);
+
+    // signature is valid the first time
+    await router.execute(
+      // input
+      input,
+      // output
+      output,
+      // swap description
+      swapDescription,
+      // account signature
+      zeroSignature,
+      // protocol fee signature
+      protocolFeeSignature,
     );
-    // await expect(
-    //   router.functions[EXECUTE_WITH_CHI_SIGNATURE](
-    //     // input
-    //     [
-    //       [wethAddress, '100', AMOUNT_ABSOLUTE],
-    //       ['0', EMPTY_BYTES],
-    //     ],
-    //     // output
-    //     [ethAddress, '0'],
-    //     // swap description
-    //   [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-    //     wallet.address,
-    //     1,
-    //     ethers.utils.joinSignature(signature),
-    //   ),
-    // ).to.be.reverted;
+
+    // signature is valid twice
+    await router.execute(
+      // input
+      input,
+      // output
+      output,
+      // swap description
+      swapDescription,
+      // account signature
+      zeroSignature,
+      // protocol fee signature
+      protocolFeeSignature,
+    );
+
+    // signature is not valid if change timestamp
+    await expect(
+      router.execute(
+        // input
+        input,
+        // output
+        output,
+        // swap description
+        swapDescription,
+        // account signature
+        zeroSignature,
+        // protocol fee signature
+        [FUTURE_TIMESTAMP + 1, protocolFeeSignature[1]],
+      ),
+    ).to.be.reverted;
+
+    // skip time to future timestamp
+    await hre.network.provider.request({
+      method: 'evm_setNextBlockTimestamp',
+      params: [FUTURE_TIMESTAMP + 1],
+    });
+
+    // signature is not valid if passed deadline
+    await expect(
+      router.execute(
+        // input
+        input,
+        // output
+        output,
+        // swap description
+        swapDescription,
+        // account signature
+        zeroSignature,
+        // protocol fee signature
+        protocolFeeSignature,
+      ),
+    ).to.be.reverted;
   });
 });

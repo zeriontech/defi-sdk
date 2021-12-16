@@ -15,148 +15,72 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
-import { SwapType } from "../shared/Enums.sol";
-import { AbsoluteTokenAmount, Input, SwapDescription } from "../shared/Structs.sol";
+import {
+    AbsoluteTokenAmount,
+    Input,
+    SwapDescription,
+    AccountSignature,
+    ProtocolFeeSignature,
+    Fee
+} from "../shared/Structs.sol";
 
-interface IRouter {
+import { ITokensHandler } from "./ITokensHandler.sol";
+import { ISignatureVerifier } from "./ISignatureVerifier.sol";
+
+interface IRouter is ITokensHandler, ISignatureVerifier {
     /**
-     * @notice Emits swap info.
-     * @param inputToken Input token of the swap.
-     * @param absoluteInputAmount Max amount of input token to be spent.
-     * @param absoluteInputAmount Actual amount of input token spent.
-     * @param outputToken Output token of the swap.
-     * @param absoluteOutputAmount Max amount of output token to be spent.
-     * @param actualOutputAmount Actual amount of output token spent.
-     * @param swapType Swap type (fixed inputs or fixed outputs).
-     * @param share Fee share.
-     * @param beneficiary Fee beneficiary.
-     * @param destination Destination for the input token.
-     * @param core Address of the core contract.
-     * @param account Address that swapped tokens.
-     * @param sender Address that called the Router contract.
+     * @notice Emits swap info
+     * @param inputToken Input token address
+     * @param absoluteInputAmount Max amount of input token to be taken from the account address
+     * @param inputBalanceChange Actual amount of input token taken from the account address
+     * @param outputToken Output token address
+     * @param absoluteOutputAmount Min amount of output token to be returned to the account address
+     * @param returnedAmount Actual amount of tokens returned to the account address
+     * @param protocolFeeAmount Protocol fee amount
+     * @param marketplaceFeeAmount Marketplace fee amount
+     * @param swapDescription Swap parameters
+     * @param sender Address that called the Router contract
      */
     event Executed(
         address indexed inputToken,
         uint256 absoluteInputAmount,
-        uint256 actualInputAmount,
+        uint256 inputBalanceChange,
         address indexed outputToken,
         uint256 absoluteOutputAmount,
-        uint256 actualOutputAmount,
-        SwapType swapType,
-        uint256 share,
-        address beneficiary,
-        address destination,
-        address core,
-        address indexed account,
+        uint256 returnedAmount,
+        uint256 protocolFeeAmount,
+        uint256 marketplaceFeeAmount,
+        SwapDescription swapDescription,
         address sender
     );
 
     /**
-     * @notice Executes actions and returns tokens to account.
-     * Uses CHI tokens previously approved by the msg.sender.
-     * @param input Token and amount (relative or absolute) to be taken from the account address.
-     * Permit type and calldata may provided if possible.
-     * @param absoluteOutput Token and absolute amount requirement for the returned token.
-     * @param swapDescription Swap description with the following elements:
-     *     - Whether the inputs or outputs are fixed.
-     *     - Fee share and beneficiary address.
-     *     - Address of the destination for the tokens transfer.
-     *     - Address of the Caller contract to be called.
-     *     - Calldata for the call to the Caller contract.
-     * @param account Address of the account that will receive the returned tokens.
-     * @param salt Number that makes this data unique.
-     * @param signature EIP712-compatible signature of data.
-     * @return inputBalanceChange Input token balance change.
-     * @return outputBalanceChange Output token balance change.
-     */
-    function executeWithCHI(
-        Input calldata input,
-        AbsoluteTokenAmount calldata absoluteOutput,
-        SwapDescription calldata swapDescription,
-        address account,
-        uint256 salt,
-        bytes calldata signature
-    ) external payable returns (uint256 inputBalanceChange, uint256 outputBalanceChange);
-
-    /**
-     * @notice Executes actions and returns tokens to account.
-     * Uses CHI tokens previously approved by the msg.sender.
-     * @param input Token and amount (relative or absolute) to be taken from the account address.
-     * Permit type and calldata may provided if possible.
-     * @param absoluteOutput Token and absolute amount requirement for the returned token.
-     * @param swapDescription Swap description with the following elements:
-     *     - Whether the inputs or outputs are fixed.
-     *     - Fee share and beneficiary address.
-     *     - Address of the destination for the tokens transfer.
-     *     - Address of the Caller contract to be called.
-     *     - Calldata for the call to the Caller contract.
-     * @return inputBalanceChange Input token balance change.
-     * @return outputBalanceChange Output token balance change.
-     */
-    function executeWithCHI(
-        Input calldata input,
-        AbsoluteTokenAmount calldata absoluteOutput,
-        SwapDescription calldata swapDescription
-    ) external payable returns (uint256 inputBalanceChange, uint256 outputBalanceChange);
-
-    /**
-     * @notice Executes actions and returns tokens to account.
-     * @param input Token and amount (relative or absolute) to be taken from the account address.
-     * Permit type and calldata may provided if possible.
-     * @param absoluteOutput Token and absolute amount requirement for the returned token.
-     * @param swapDescription Swap description with the following elements:
-     *     - Whether the inputs or outputs are fixed.
-     *     - Fee share and beneficiary address.
-     *     - Address of the destination for the tokens transfer.
-     *     - Address of the Caller contract to be called.
-     *     - Calldata for the call to the Caller contract.
-     * @param account Address of the account that will receive the returned tokens.
-     * @param salt Number that makes this data unique.
-     * @param signature EIP712-compatible signature of data.
-     * @return inputBalanceChange Input token balance change.
-     * @return outputBalanceChange Output token balance change.
+     * @notice Main function executing the swaps
+     * @param input Token and amount (relative or absolute) to be taken from the account address,
+     * also, permit type and call data may provided if required
+     * @param absoluteOutput Token and absolute amount requirement
+     *     to be returned to the account address
+     * @param swapDescription Swap description with the following elements:\n
+     *     - Whether the inputs or outputs are fixed
+     *     - Protocol fee share and beneficiary address
+     *     - Marketplace fee share and beneficiary address
+     *     - Address of the account executing the swap
+     *     - Address of the Caller contract to be called
+     *     - Calldata for the call to the Caller contract
+     * @param accountSignature Signature for the relayed transaction
+     *     (checks that account address is the one who actually did a signature)
+     * @param protocolFeeSignature Signature for the discounted protocol fee
+     *     (checks that current protocol fee signer is the one who actually did a signature)
+     * @return inputBalanceChange Input token balance change
+     * @return outputBalanceChange Output token balance change (including fees)
      */
     function execute(
         Input calldata input,
         AbsoluteTokenAmount calldata absoluteOutput,
         SwapDescription calldata swapDescription,
-        address account,
-        uint256 salt,
-        bytes calldata signature
+        AccountSignature calldata accountSignature,
+        ProtocolFeeSignature calldata protocolFeeSignature
     ) external payable returns (uint256 inputBalanceChange, uint256 outputBalanceChange);
-
-    /**
-     * @notice Executes actions and returns tokens to account.
-     * @param input Token and amount (relative or absolute) to be taken from the account address.
-     * Permit type and calldata may provided if possible.
-     * @param absoluteOutput Token and absolute amount requirement for the returned token.
-     * @param swapDescription Swap description with the following elements:
-     *     - Whether the inputs or outputs are fixed.
-     *     - Fee share and beneficiary address.
-     *     - Address of the destination for the tokens transfer.
-     *     - Address of the Caller contract to be called.
-     *     - Calldata for the call to the Caller contract.
-     * @return inputBalanceChange Input token balance change.
-     * @return outputBalanceChange Output token balance change.
-     */
-    function execute(
-        Input calldata input,
-        AbsoluteTokenAmount calldata absoluteOutput,
-        SwapDescription calldata swapDescription
-    ) external payable returns (uint256 inputBalanceChange, uint256 outputBalanceChange);
-
-    /**
-     * @notice Returns tokens mistakenly sent to this contract.
-     * @param token Address of token.
-     * @param beneficiary Address that will receive tokens.
-     * @param amount Amount of tokens to return.
-     * @dev Can be called only by this contract's owner.
-     */
-    function returnLostTokens(
-        address token,
-        address payable beneficiary,
-        uint256 amount
-    ) external;
 }

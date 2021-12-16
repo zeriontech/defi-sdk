@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
 import { HashAndAdapterName, TokenAndAdapterName } from "../shared/Structs.sol";
 
@@ -40,7 +40,7 @@ interface ITokenAdapterNamesManager {
     /**
      * @notice Sets token adapters' names by tokens' hashes using tokens addresses.
      * @param tokensAndAdapterNames Array of tokens addresses and new token adapters' names.
-     * @dev Can be called only by this contract's owner.
+     * @dev Can be called only by the owner.
      */
     function setTokenAdapterNamesByHashes(TokenAndAdapterName[] calldata tokensAndAdapterNames)
         external;
@@ -48,7 +48,7 @@ interface ITokenAdapterNamesManager {
     /**
      * @notice Sets token adapters' names by tokens addresses.
      * @param tokensAndAdapterNames Array of tokens addresses and new token adapters' names.
-     * @dev Can be called only by this contract's owner.
+     * @dev Can be called only by the owner.
      */
     function setTokenAdapterNamesByTokens(TokenAndAdapterName[] calldata tokensAndAdapterNames)
         external;
@@ -56,7 +56,7 @@ interface ITokenAdapterNamesManager {
     /**
      * @notice Sets token adapters' names using hashes.
      * @param hashesAndAdapterNames Array of hashes and new token adapters' names.
-     * @dev Can be called only by this contract's owner.
+     * @dev Can be called only by the owner.
      */
     function setTokenAdapterNames(HashAndAdapterName[] calldata hashesAndAdapterNames) external;
 

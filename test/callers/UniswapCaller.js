@@ -5,25 +5,26 @@ const { expect } = require('chai');
 
 const { ethers } = require('hardhat');
 
-const { AddressZero } = ethers.constants;
-
 const AMOUNT_ABSOLUTE = 2;
 const SWAP_FIXED_INPUTS = 1;
 const SWAP_FIXED_OUTPUTS = 2;
 const EMPTY_BYTES = '0x';
-const EXECUTE_SIGNATURE =
-  'execute(((address,uint256,uint8),(uint8,bytes)),(address,uint256),(uint8,(uint256,address),address,address,bytes))';
 
 const uniDaiWethAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
 
+const zeroPermit = ['0', EMPTY_BYTES];
+const zeroSignature = ['0', EMPTY_BYTES];
+
 describe('UniswapCaller', () => {
   let owner;
+  let notOwner;
   let caller;
   let Router;
   let Caller;
   let router;
   let weth;
   let dai;
+  let protocolFeeDefault;
   const logger = new ethers.utils.Logger('1');
   const abiCoder = new ethers.utils.AbiCoder();
 
@@ -31,7 +32,7 @@ describe('UniswapCaller', () => {
     Caller = await ethers.getContractFactory('UniswapCaller');
     Router = await ethers.getContractFactory('Router');
 
-    [owner] = await ethers.getSigners();
+    [owner, notOwner] = await ethers.getSigners();
 
     const weth9 = await ethers.getContractAt('IWETH9', wethAddress);
 
@@ -44,293 +45,480 @@ describe('UniswapCaller', () => {
 
     weth = await ethers.getContractAt('IERC20', wethAddress, owner);
     dai = await ethers.getContractAt('IERC20', daiAddress, owner);
+
+    await buyTokenOnUniswap(owner, daiAddress);
+    protocolFeeDefault = [ethers.utils.parseUnits('0.01', 18), notOwner.address];
   });
 
   beforeEach(async () => {
     router = await Router.deploy();
   });
 
-  it('should not execute uni weth -> dai swap (fixed outputs) with empty path', async () => {
-    await buyTokenOnUniswap(owner, daiAddress);
+  it('should not do weth -> dai trade with high slippage', async () => {
     await weth.approve(router.address, ethers.utils.parseUnits('1', 18));
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+
     await expect(
-      router.functions[EXECUTE_SIGNATURE](
+      router.functions.execute(
         // input
-        [
-          [wethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
-        ],
-        // outputs
-        [daiAddress, ethers.utils.parseUnits('1000', 18)],
+        [[weth.address, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [daiAddress, ethers.utils.parseUnits('5000', 18)],
         // swap description
         [
-          SWAP_FIXED_OUTPUTS,
-          ['0', AddressZero],
-          uniDaiWethAddress,
+          SWAP_FIXED_INPUTS,
+          protocolFeeDefault,
+          protocolFeeDefault,
+          owner.address,
           caller.address,
           abiCoder.encode(
-            ['bytes'],
+            ['address[]', 'bool[]', 'uint8', 'uint256', 'bool'],
             [
-              abiCoder.encode(
-                ['address[]', 'bool[]', 'uint8', 'uint256'],
-                [[], [false], 2, ethers.utils.parseUnits('1000', 18)],
-              ),
+              [uniDaiWethAddress],
+              [false],
+              SWAP_FIXED_INPUTS,
+              ethers.utils.parseUnits('1', 18),
+              false,
             ],
           ),
         ],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
       ),
     ).to.be.reverted;
   });
 
-  it('should not execute uni weth -> dai swap (fixed outputs) with 0 output', async () => {
+  it('should do weth -> dai trade', async () => {
     await weth.approve(router.address, ethers.utils.parseUnits('1', 18));
-    await expect(
-      router.functions[EXECUTE_SIGNATURE](
-        // input
-        [
-          [wethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
-        ],
-        // outputs
-        [daiAddress, ethers.utils.parseUnits('0', 18)],
-        // swap description
-        [
-          SWAP_FIXED_OUTPUTS,
-          ['0', AddressZero],
-          uniDaiWethAddress,
-          caller.address,
-          abiCoder.encode(
-            ['bytes'],
-            [
-              abiCoder.encode(
-                ['address[]', 'bool[]', 'uint8', 'uint256'],
-                [[uniDaiWethAddress], [false], 2, ethers.utils.parseUnits('0', 18)],
-              ),
-            ],
-          ),
-        ],
-      ),
-    ).to.be.reverted;
-  });
+    await router.setProtocolFeeDefault(protocolFeeDefault);
 
-  it('should execute uni weth -> dai swap (fixed outputs)', async () => {
-    await buyTokenOnUniswap(owner, daiAddress);
-    await weth.approve(router.address, ethers.utils.parseUnits('1', 18));
     logger.info(
       `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
     );
-    const tx = await router.functions[EXECUTE_SIGNATURE](
+    logger.info(
+      `weth balance is ${ethers.utils.formatUnits(await weth.balanceOf(owner.address), 18)}`,
+    );
+    const tx = await router.functions.execute(
       // input
-      [
-        [wethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
-      ],
-      // outputs
+      [[weth.address, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
+      // output
       [daiAddress, ethers.utils.parseUnits('1000', 18)],
       // swap description
       [
-        SWAP_FIXED_OUTPUTS,
-        ['0', AddressZero],
-        uniDaiWethAddress,
+        SWAP_FIXED_INPUTS,
+        protocolFeeDefault,
+        protocolFeeDefault,
+        owner.address,
         caller.address,
         abiCoder.encode(
-          ['bytes'],
+          ['address[]', 'bool[]', 'uint8', 'uint256', 'bool'],
           [
-            abiCoder.encode(
-              ['address[]', 'bool[]', 'uint8', 'uint256'],
-              [[uniDaiWethAddress], [false], 2, ethers.utils.parseUnits('1000', 18)],
-            ),
+            [uniDaiWethAddress],
+            [false],
+            SWAP_FIXED_INPUTS,
+            ethers.utils.parseUnits('1', 18),
+            false,
           ],
         ),
       ],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
     );
     logger.info(`Called router for ${(await tx.wait()).gasUsed} gas`);
     logger.info(
       `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
     );
+    logger.info(
+      `weth balance is ${ethers.utils.formatUnits(await weth.balanceOf(owner.address), 18)}`,
+    );
   });
 
-  it('should execute uni eth -> dai swap (fixed outputs)', async () => {
+  it('should do eth -> dai trade', async () => {
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+
     logger.info(
       `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
     );
-    logger.info(`eth balance is ${ethers.utils.formatUnits(await owner.getBalance(), 18)}`);
-    const tx = await router.functions[EXECUTE_SIGNATURE](
+    const tx = await router.functions.execute(
       // input
-      [
-        [ethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
-      ],
-      // outputs
-      [daiAddress, ethers.utils.parseUnits('100', 18)],
+      [[ethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
+      // output
+      [daiAddress, ethers.utils.parseUnits('1000', 18)],
       // swap description
       [
-        SWAP_FIXED_OUTPUTS,
-        ['0', AddressZero],
-        uniDaiWethAddress,
+        SWAP_FIXED_INPUTS,
+        protocolFeeDefault,
+        protocolFeeDefault,
+        owner.address,
         caller.address,
         abiCoder.encode(
-          ['bytes'],
+          ['address[]', 'bool[]', 'uint8', 'uint256', 'bool'],
           [
-            abiCoder.encode(
-              ['address[]', 'bool[]', 'uint8', 'uint256'],
-              [[uniDaiWethAddress], [false], 2, ethers.utils.parseUnits('100', 18)],
-            ),
+            [uniDaiWethAddress],
+            [false],
+            SWAP_FIXED_INPUTS,
+            ethers.utils.parseUnits('1', 18),
+            false,
           ],
         ),
       ],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
       {
-        value: ethers.utils.parseUnits('1', 18),
+        value: ethers.utils.parseEther('1'),
       },
     );
     logger.info(`Called router for ${(await tx.wait()).gasUsed} gas`);
     logger.info(
       `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
     );
-    logger.info(`eth balance is ${ethers.utils.formatUnits(await owner.getBalance(), 18)}`);
   });
 
-  it('should not execute uni weth -> dai swap (fixed inputs) with 0 input', async () => {
-    await weth.approve(router.address, ethers.utils.parseUnits('1', 18));
+  it('should not do eth -> dai trade with high slippage', async () => {
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+
     await expect(
-      router.functions[EXECUTE_SIGNATURE](
-        // i  nput
-        [
-          [wethAddress, '0', AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
-        ],
-        // output
-        [daiAddress, '0'],
-        // swap description
-        [
-          SWAP_FIXED_INPUTS,
-          ['0', AddressZero],
-          uniDaiWethAddress,
-          caller.address,
-          abiCoder.encode(
-            ['bytes'],
-            [
-              abiCoder.encode(
-                ['address[]', 'bool[]', 'uint8', 'uint256'],
-                [[uniDaiWethAddress], [false], 1, '0'],
-              ),
-            ],
-          ),
-        ],
-      ),
-    ).to.be.reverted;
-  });
-
-  it('should execute uni weth -> dai swap (fixed inputs)', async () => {
-    await weth.approve(router.address, ethers.utils.parseUnits('1', 18));
-    logger.info(
-      `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
-    );
-    logger.info(
-      `weth balance is ${ethers.utils.formatUnits(await weth.balanceOf(owner.address), 18)}`,
-    );
-    const tx = await router.functions[EXECUTE_SIGNATURE](
-      // input
-      [
-        [wethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
-      ],
-      // output
-      [daiAddress, ethers.utils.parseUnits('100', 18)],
-      // swap description
-      [
-        SWAP_FIXED_INPUTS,
-        ['0', AddressZero],
-        uniDaiWethAddress,
-        caller.address,
-        abiCoder.encode(
-          ['bytes'],
-          [
-            abiCoder.encode(
-              ['address[]', 'bool[]', 'uint8', 'uint256'],
-              [[uniDaiWethAddress], [false], 1, ethers.utils.parseUnits('1', 18)],
-            ),
-          ],
-        ),
-      ],
-    );
-    logger.info(`Called router for ${(await tx.wait()).gasUsed} gas`);
-    logger.info(
-      `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
-    );
-    logger.info(
-      `weth balance is ${ethers.utils.formatUnits(await weth.balanceOf(owner.address), 18)}`,
-    );
-  });
-
-  it('should not execute uni eth -> dai swap (fixed inputs) with empty path', async () => {
-    await expect(
-      router.functions[EXECUTE_SIGNATURE](
+      router.functions.execute(
         // input
-        [
-          [ethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
-        ],
+        [[ethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [daiAddress, ethers.utils.parseUnits('100', 18)],
+        [daiAddress, ethers.utils.parseUnits('5000', 18)],
         // swap description
         [
-          SWAP_FIXED_INPUTS,
-          ['0', AddressZero],
-          uniDaiWethAddress,
+          SWAP_FIXED_OUTPUTS,
+          protocolFeeDefault,
+          protocolFeeDefault,
+          owner.address,
           caller.address,
           abiCoder.encode(
-            ['bytes'],
+            ['address[]', 'bool[]', 'uint8', 'uint256', 'bool'],
             [
-              abiCoder.encode(
-                ['address[]', 'bool[]', 'uint8', 'uint256'],
-                [[], [false], 1, ethers.utils.parseUnits('1', 18)],
-              ),
+              [uniDaiWethAddress],
+              [false],
+              SWAP_FIXED_OUTPUTS,
+              ethers.utils.parseUnits('5000', 18),
+              false,
             ],
           ),
         ],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
         {
-          value: ethers.utils.parseUnits('1', 18),
+          value: ethers.utils.parseEther('1'),
         },
       ),
     ).to.be.reverted;
   });
 
-  it('should execute uni eth -> dai swap (fixed inputs)', async () => {
+  it('should do dai -> eth trade with 0 input', async () => {
+    await dai.approve(router.address, ethers.utils.parseUnits('4000', 18));
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+
+    await expect(
+      router.functions.execute(
+        // input
+        [[daiAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [ethAddress, ethers.utils.parseUnits('0', 18)],
+        // swap description
+        [
+          SWAP_FIXED_INPUTS,
+          protocolFeeDefault,
+          protocolFeeDefault,
+          owner.address,
+          caller.address,
+          abiCoder.encode(
+            ['address[]', 'bool[]', 'uint8', 'uint256', 'bool'],
+            [
+              [uniDaiWethAddress],
+              [true],
+              SWAP_FIXED_INPUTS,
+              ethers.utils.parseUnits('0', 18),
+              true,
+            ],
+          ),
+        ],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should do dai -> eth trade', async () => {
+    await dai.approve(router.address, ethers.utils.parseUnits('4000', 18));
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+
     logger.info(
       `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
     );
-    const tx = await router.functions[EXECUTE_SIGNATURE](
+    const tx = await router.functions.execute(
       // input
-      [
-        [ethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
-      ],
+      [[daiAddress, ethers.utils.parseUnits('4000', 18), AMOUNT_ABSOLUTE], zeroPermit],
       // output
-      [daiAddress, ethers.utils.parseUnits('100', 18)],
+      [ethAddress, ethers.utils.parseUnits('0.1', 18)],
       // swap description
       [
         SWAP_FIXED_INPUTS,
-        ['0', AddressZero],
-        uniDaiWethAddress,
+        protocolFeeDefault,
+        protocolFeeDefault,
+        owner.address,
         caller.address,
         abiCoder.encode(
-          ['bytes'],
+          ['address[]', 'bool[]', 'uint8', 'uint256', 'bool'],
           [
-            abiCoder.encode(
-              ['address[]', 'bool[]', 'uint8', 'uint256'],
-              [[uniDaiWethAddress], [false], 1, ethers.utils.parseUnits('1', 18)],
-            ),
+            [uniDaiWethAddress],
+            [true],
+            SWAP_FIXED_INPUTS,
+            ethers.utils.parseUnits('4000', 18),
+            true,
           ],
         ),
       ],
-      {
-        value: ethers.utils.parseUnits('1', 18),
-      },
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
     );
     logger.info(`Called router for ${(await tx.wait()).gasUsed} gas`);
     logger.info(
       `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
     );
+  });
+
+  it('should do dai -> weth trade with 0 output', async () => {
+    await dai.approve(router.address, ethers.utils.parseUnits('5000', 18));
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+
+    await expect(
+      router.functions.execute(
+        // input
+        [[daiAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [wethAddress, ethers.utils.parseUnits('0', 18)],
+        // swap description
+        [
+          SWAP_FIXED_OUTPUTS,
+          protocolFeeDefault,
+          protocolFeeDefault,
+          owner.address,
+          caller.address,
+          abiCoder.encode(
+            ['address[]', 'bool[]', 'uint8', 'uint256', 'bool'],
+            [
+              [uniDaiWethAddress],
+              [true],
+              SWAP_FIXED_OUTPUTS,
+              ethers.utils.parseUnits('0', 18),
+              false,
+            ],
+          ),
+        ],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should not do dai -> weth trade with empty path', async () => {
+    await dai.approve(router.address, ethers.utils.parseUnits('1', 18));
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+
+    await expect(
+      router.functions.execute(
+        // input
+        [[daiAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [wethAddress, ethers.utils.parseUnits('1', 18)],
+        // swap description
+        [
+          SWAP_FIXED_OUTPUTS,
+          protocolFeeDefault,
+          protocolFeeDefault,
+          owner.address,
+          caller.address,
+          abiCoder.encode(
+            ['address[]', 'bool[]', 'uint8', 'uint256', 'bool'],
+            [
+              [],
+              [],
+              SWAP_FIXED_OUTPUTS,
+              ethers.utils.parseUnits((1 / 0.98).toString(), 18),
+              false,
+            ],
+          ),
+        ],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should not do dai -> weth trade with bad directions length', async () => {
+    await dai.approve(router.address, ethers.utils.parseUnits('5000', 18));
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+
+    await expect(
+      router.functions.execute(
+        // input
+        [[daiAddress, ethers.utils.parseUnits('5000', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [wethAddress, ethers.utils.parseUnits('1', 18)],
+        // swap description
+        [
+          SWAP_FIXED_OUTPUTS,
+          protocolFeeDefault,
+          protocolFeeDefault,
+          owner.address,
+          caller.address,
+          abiCoder.encode(
+            ['address[]', 'bool[]', 'uint8', 'uint256', 'bool'],
+            [
+              [uniDaiWethAddress],
+              [true, false],
+              SWAP_FIXED_OUTPUTS,
+              ethers.utils.parseUnits((1 / 0.98).toString(), 18),
+              false,
+            ],
+          ),
+        ],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should do dai -> weth trade', async () => {
+    await dai.approve(router.address, ethers.utils.parseUnits('5000', 18));
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+
+    logger.info(
+      `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
+    );
+    logger.info(
+      `weth balance is ${ethers.utils.formatUnits(await weth.balanceOf(owner.address), 18)}`,
+    );
+    const tx = await router.functions.execute(
+      // input
+      [[daiAddress, ethers.utils.parseUnits('5000', 18), AMOUNT_ABSOLUTE], zeroPermit],
+      // output
+      [wethAddress, ethers.utils.parseUnits('1', 18)],
+      // swap description
+      [
+        SWAP_FIXED_OUTPUTS,
+        protocolFeeDefault,
+        protocolFeeDefault,
+        owner.address,
+        caller.address,
+        abiCoder.encode(
+          ['address[]', 'bool[]', 'uint8', 'uint256', 'bool'],
+          [
+            [uniDaiWethAddress],
+            [true],
+            SWAP_FIXED_OUTPUTS,
+            ethers.utils.parseUnits((1 / 0.98).toString(), 18),
+            false,
+          ],
+        ),
+      ],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
+    );
+    logger.info(`Called router for ${(await tx.wait()).gasUsed} gas`);
+    logger.info(
+      `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
+    );
+    logger.info(
+      `weth balance is ${ethers.utils.formatUnits(await weth.balanceOf(owner.address), 18)}`,
+    );
+  });
+
+  it('should not do dai -> weth trade with high token slippage', async () => {
+    await dai.approve(router.address, ethers.utils.parseUnits('3000', 18));
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+
+    await expect(
+      router.functions.execute(
+        // input
+        [[daiAddress, ethers.utils.parseUnits('3000', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [wethAddress, ethers.utils.parseUnits('1', 18)],
+        // swap description
+        [
+          SWAP_FIXED_OUTPUTS,
+          protocolFeeDefault,
+          protocolFeeDefault,
+          owner.address,
+          caller.address,
+          abiCoder.encode(
+            ['address[]', 'bool[]', 'uint8', 'uint256', 'bool'],
+            [
+              [uniDaiWethAddress],
+              [true],
+              SWAP_FIXED_OUTPUTS,
+              ethers.utils.parseUnits('1', 18),
+              false,
+            ],
+          ),
+        ],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should not do dai -> weth trade with not enough liquidity', async () => {
+    await dai.approve(router.address, ethers.utils.parseUnits('5000', 18));
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+
+    await expect(
+      router.functions.execute(
+        // input
+        [[daiAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [wethAddress, ethers.utils.parseUnits('1', 18)],
+        // swap description
+        [
+          SWAP_FIXED_OUTPUTS,
+          protocolFeeDefault,
+          protocolFeeDefault,
+          owner.address,
+          caller.address,
+          abiCoder.encode(
+            ['address[]', 'bool[]', 'uint8', 'uint256', 'bool'],
+            [
+              [uniDaiWethAddress],
+              [true],
+              SWAP_FIXED_OUTPUTS,
+              ethers.utils.parseUnits('20000', 18),
+              false,
+            ],
+          ),
+        ],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
   });
 });

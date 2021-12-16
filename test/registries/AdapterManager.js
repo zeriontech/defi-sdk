@@ -5,7 +5,7 @@ const ProtocolAdapterArtifacts = require('../../artifacts/contracts/protocolAdap
 
 const { deployMockContract } = waffle;
 
-describe('AdapterManager', () => {
+describe.skip('AdapterManager', () => {
   let owner;
   let AdapterRegistry;
   let mockProtocolAdapter;
@@ -28,22 +28,13 @@ describe('AdapterManager', () => {
   });
 
   it('should not set adapters with 0 length', async () => {
-    await expect(
-      adapterRegistry.setAdapters(
-        [],
-      ),
-    ).to.be.reverted;
+    await expect(adapterRegistry.setAdapters([])).to.be.reverted;
   });
 
   it('should set adapters', async () => {
-    await adapterRegistry.setAdapters(
-      [
-        [
-          ethers.utils.formatBytes32String('Mock'),
-          mockProtocolAdapter.address,
-        ],
-      ],
-    );
+    await adapterRegistry.setAdapters([
+      [ethers.utils.formatBytes32String('Mock'), mockProtocolAdapter.address],
+    ]);
 
     let address = await adapterRegistry.getAdapterAddress(
       ethers.utils.formatBytes32String('Mock'),
@@ -52,25 +43,15 @@ describe('AdapterManager', () => {
   });
 
   it('should perlace adapters', async () => {
-    await adapterRegistry.setAdapters(
-      [
-        [
-          ethers.utils.formatBytes32String('Mock'),
-          mockProtocolAdapter.address,
-        ],
-      ],
-    );
+    await adapterRegistry.setAdapters([
+      [ethers.utils.formatBytes32String('Mock'), mockProtocolAdapter.address],
+    ]);
 
     const newMockProtocolAdapter = await deployMockContract(owner, ProtocolAdapterArtifacts.abi);
 
-    await adapterRegistry.setAdapters(
-      [
-        [
-          ethers.utils.formatBytes32String('Mock'),
-          newMockProtocolAdapter.address,
-        ],
-      ],
-    );
+    await adapterRegistry.setAdapters([
+      [ethers.utils.formatBytes32String('Mock'), newMockProtocolAdapter.address],
+    ]);
 
     let address = await adapterRegistry.getAdapterAddress(
       ethers.utils.formatBytes32String('Mock'),

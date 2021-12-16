@@ -15,7 +15,7 @@ const EMPTY_BYTES = '0x';
 const EXECUTE_SIGNATURE =
   'execute(((address,uint256,uint8),(uint8,bytes)),(address,uint256),(uint8,(uint256,address),address,address,bytes))';
 
-describe('ZerionCaller', () => {
+describe.skip('ZerionCaller', () => {
   let owner;
   let ProtocolAdapterRegistry;
   let Caller;
@@ -48,14 +48,9 @@ describe('ZerionCaller', () => {
     protocolAdapterRegistry = await ProtocolAdapterRegistry.deploy();
     caller = await Caller.deploy(protocolAdapterRegistry.address);
     mockInteractiveAdapter = await MockInteractiveAdapter.deploy();
-    await protocolAdapterRegistry.setAdapters(
-      [
-        [
-          ethers.utils.formatBytes32String('Mock'),
-          mockInteractiveAdapter.address,
-        ],
-      ],
-    );
+    await protocolAdapterRegistry.setAdapters([
+      [ethers.utils.formatBytes32String('Mock'), mockInteractiveAdapter.address],
+    ]);
   });
 
   beforeEach(async () => {

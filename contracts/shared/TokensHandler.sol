@@ -17,23 +17,24 @@
 
 pragma solidity 0.8.10;
 
-import { IProtocolAdapter } from "../interfaces/IProtocolAdapter.sol";
+import { ITokensHandler } from "../interfaces/ITokensHandler.sol";
 
-/**
- * @title Protocol adapter abstract contract.
- * @dev getBalance() function MUST be implemented.
- * @author Igor Sobolev <sobolev@zerion.io>
- */
-abstract contract ProtocolAdapter is IProtocolAdapter {
+import { Base } from "./Base.sol";
+import { Ownable } from "./Ownable.sol";
+
+abstract contract TokensHandler is ITokensHandler, Ownable {
+    receive() external payable {
+        // solhint-disable-previous-line no-empty-blocks
+    }
+
     /**
-     * @dev MUST return amount of the given token locked on the protocol by the given account.
-     * @param token Address of the token to check balance of.
-     * @param token Address of the account to check balance of.
-     * @return balance Balance of the given token for the given account.
+     * @inheritdoc ITokensHandler
      */
-    function getBalance(address token, address account)
-        public
-        virtual
-        override
-        returns (int256 balance);
+    function returnLostTokens(
+        address token,
+        address payable beneficiary,
+        uint256 amount
+    ) external onlyOwner {
+        Base.transfer(token, beneficiary, amount);
+    }
 }

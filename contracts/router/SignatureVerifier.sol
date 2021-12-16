@@ -15,14 +15,16 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 
 import { ISignatureVerifier } from "../interfaces/ISignatureVerifier.sol";
-import { UsedHash } from "../shared/Errors.sol";
+import { BadHash } from "../shared/Errors.sol";
 import {
     AbsoluteTokenAmount,
+    AccountSignature,
+    ProtocolFeeSignature,
     Fee,
     Input,
     Permit,
@@ -31,16 +33,15 @@ import {
 } from "../shared/Structs.sol";
 
 contract SignatureVerifier is ISignatureVerifier, EIP712 {
-    mapping(bytes32 => mapping(address => bool)) internal isHashUsed_;
+    mapping(bytes32 => bool) private isHashUsed_;
 
     bytes32 internal constant EXECUTE_TYPEHASH =
         keccak256(
             abi.encodePacked(
                 "Execute(",
                 "Input input,",
-                "AbsoluteTokenAmount requiredOutput,",
+                "AbsoluteTokenAmount output,",
                 "SwapDescription swapDescription,",
-                "address account,",
                 "uint256 salt",
                 ")",
                 "AbsoluteTokenAmount(address token,uint256 absoluteAmount)",
@@ -49,8 +50,9 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
                 "Permit(uint8 permitType,bytes permitCallData)",
                 "SwapDescription(",
                 "uint8 swapType,",
-                "Fee fee,",
-                "address destination,",
+                "Fee protocolFee,",
+                "Fee marketplaceFee,",
+                "address account,",
                 "address caller,",
                 "bytes callData",
                 ")",
@@ -64,8 +66,9 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
             abi.encodePacked(
                 "SwapDescription(",
                 "uint8 swapType,",
-                "Fee fee,",
-                "address destination,",
+                "Fee protocolFee,",
+                "Fee marketplaceFee,",
+                "address account,",
                 "address caller,",
                 "bytes callData",
                 ")",
@@ -98,13 +101,13 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
     /**
      * @inheritdoc ISignatureVerifier
      */
-    function isHashUsed(bytes32 hashToCheck, address account)
+    function isHashUsed(bytes32 hashToCheck)
         public
         view
         override
         returns (bool hashUsed)
     {
-        return isHashUsed_[hashToCheck][account];
+        return isHashUsed_[hashToCheck];
     }
 
     /**
@@ -112,39 +115,35 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
      */
     function hashData(
         Input memory input,
-        AbsoluteTokenAmount memory requiredOutput,
+        AbsoluteTokenAmount memory output,
         SwapDescription memory swapDescription,
-        address account,
         uint256 salt
     ) public view override returns (bytes32 hashedData) {
-        return _hashTypedDataV4(hash(input, requiredOutput, swapDescription, account, salt));
+        return _hashTypedDataV4(hash(input, output, swapDescription, salt));
     }
 
     /**
      * @dev Marks hash as used by the given account.
      * @param hashToMark Hash to be marked as used one.
-     * @param account Account using the hash.
      */
-    function markHashUsed(bytes32 hashToMark, address account) internal {
-        if (isHashUsed_[hashToMark][account]) {
-            revert UsedHash(hashToMark, account);
-        }
-        isHashUsed_[hashToMark][account] = true;
+    function markHashUsed(bytes32 hashToMark) internal {
+        if (isHashUsed_[hashToMark]) revert BadHash(hashToMark);
+
+        isHashUsed_[hashToMark] = true;
     }
 
     /**
-     * @param input Input struct to be hashed.
-     * @param requiredOutput AbsoluteTokenAmount struct to be hashed.
-     * @param swapDescription SwapDescription struct to be hashed.
-     * @param account Account address to be hashed.
-     * @param salt Salt parameter preventing double-spending to be hashed.
-     * @return Execute data hashed.
+     * @param input Input described in `hashDada()` function
+     * @param output Outut described in `hashDada()` function
+     * @param swapDescription Swap parameters described in `hashDada()` function
+     * @param salt Salt parameter preventing double-spending
+     * @dev `deadline` from ProtocolFeeSignature is also passed as `salt` param to this function
+     * @return `execute()` function data hashed
      */
     function hash(
         Input memory input,
-        AbsoluteTokenAmount memory requiredOutput,
+        AbsoluteTokenAmount memory output,
         SwapDescription memory swapDescription,
-        address account,
         uint256 salt
     ) internal pure returns (bytes32) {
         return
@@ -152,25 +151,24 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
                 abi.encode(
                     EXECUTE_TYPEHASH,
                     hash(input),
-                    hash(requiredOutput),
+                    hash(output),
                     hash(swapDescription),
-                    account,
                     salt
                 )
             );
     }
 
     /**
-     * @param input Input struct to be hashed.
-     * @return Hashed Input structs array.
+     * @param input Input struct to be hashed
+     * @return Hashed Input structs array
      */
     function hash(Input memory input) internal pure returns (bytes32) {
         return keccak256(abi.encode(INPUT_TYPEHASH, hash(input.tokenAmount), hash(input.permit)));
     }
 
     /**
-     * @param tokenAmount TokenAmount struct to be hashed.
-     * @return Hashed TokenAmount struct.
+     * @param tokenAmount TokenAmount struct to be hashed
+     * @return Hashed TokenAmount struct
      */
     function hash(TokenAmount memory tokenAmount) internal pure returns (bytes32) {
         return
@@ -185,8 +183,8 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
     }
 
     /**
-     * @param permit Permit struct to be hashed.
-     * @return Hashed Permit struct.
+     * @param permit Permit struct to be hashed
+     * @return Hashed Permit struct
      */
     function hash(Permit memory permit) internal pure returns (bytes32) {
         return
@@ -200,8 +198,8 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
     }
 
     /**
-     * @param absoluteTokenAmount AbsoluteTokenAmount struct to be hashed.
-     * @return Hashed AbsoluteTokenAmount struct.
+     * @param absoluteTokenAmount AbsoluteTokenAmount struct to be hashed
+     * @return Hashed AbsoluteTokenAmount struct
      */
     function hash(AbsoluteTokenAmount memory absoluteTokenAmount) internal pure returns (bytes32) {
         return
@@ -215,8 +213,8 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
     }
 
     /**
-     * @param swapDescription SwapDescription struct to be hashed.
-     * @return Hashed SwapDescription struct.
+     * @param swapDescription SwapDescription struct to be hashed
+     * @return Hashed SwapDescription struct
      */
     function hash(SwapDescription memory swapDescription) internal pure returns (bytes32) {
         return
@@ -224,8 +222,9 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
                 abi.encode(
                     SWAP_DESCRIPTION_TYPEHASH,
                     swapDescription.swapType,
-                    hash(swapDescription.fee),
-                    swapDescription.destination,
+                    hash(swapDescription.protocolFee),
+                    hash(swapDescription.marketplaceFee),
+                    swapDescription.account,
                     swapDescription.caller,
                     keccak256(abi.encodePacked(swapDescription.callData))
                 )
@@ -233,8 +232,8 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
     }
 
     /**
-     * @param fee Fee struct to be hashed.
-     * @return Hashed Fee struct.
+     * @param fee Fee struct to be hashed
+     * @return Hashed Fee struct
      */
     function hash(Fee memory fee) internal pure returns (bytes32) {
         return keccak256(abi.encode(FEE_TYPEHASH, fee.share, fee.beneficiary));

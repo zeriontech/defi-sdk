@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
@@ -312,12 +312,11 @@ contract TokenAdapterRegistry is
         if (token == ETH) {
             return 18;
         }
-        bytes memory returnData =
-            Address.functionStaticCall(
-                token,
-                abi.encodePacked(ERC20.decimals.selector),
-                "TAR: decimals"
-            );
+        bytes memory returnData = Address.functionStaticCall(
+            token,
+            abi.encodePacked(ERC20.decimals.selector),
+            "TAR: decimals"
+        );
 
         if (returnData.length < 32) {
             return 0;

@@ -15,12 +15,29 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
-enum ActionType { None, Deposit, Withdraw }
+enum ActionType {
+    None,
+    Deposit,
+    Withdraw
+}
 
-enum AmountType { None, Relative, Absolute }
+enum AmountType {
+    None,
+    Relative,
+    Absolute
+}
 
-enum SwapType { None, FixedInputs, FixedOutputs }
+enum SwapType {
+    None,
+    FixedInputs,
+    FixedOutputs
+}
 
-enum PermitType { None, EIP2612, DAI, Yearn }
+enum PermitType {
+    None,
+    EIP2612,
+    DAI,
+    Yearn
+}

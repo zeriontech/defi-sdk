@@ -7,7 +7,7 @@ const TokenAdapterArtifacts = require('../../artifacts/contracts/tokenAdapters/T
 const { deployMockContract } = waffle;
 const { AddressZero, HashZero } = ethers.constants;
 
-describe('TokenAdapterRegistry', () => {
+describe.skip('TokenAdapterRegistry', () => {
   let owner;
   let AdapterRegistry;
   let mockTokenAdapter;
@@ -23,14 +23,7 @@ describe('TokenAdapterRegistry', () => {
 
   beforeEach(async () => {
     adapterRegistry = await AdapterRegistry.deploy();
-    await adapterRegistry.setAdapters(
-      [
-        [
-          HashZero,
-          mockTokenAdapter.address,
-        ],
-      ],
-    );
+    await adapterRegistry.setAdapters([[HashZero, mockTokenAdapter.address]]);
     await mockTokenAdapter.mock.getUnderlyingTokenBalances.returns([]);
     await mockTokenAdapter.mock.getMetadata.returns(['Name', 'Symbol', 18]);
   });
@@ -53,9 +46,9 @@ describe('TokenAdapterRegistry', () => {
   });
 
   it('should get empty final full token balance for address', async () => {
-    const [fullTokenBalance] = await adapterRegistry.callStatic[
-      'getFullTokenBalances(address[])'
-    ]([ethAddress]);
+    const [fullTokenBalance] = await adapterRegistry.callStatic['getFullTokenBalances(address[])'](
+      [ethAddress],
+    );
 
     expect(fullTokenBalance.base.tokenBalance.token).to.be.equal(ethAddress);
     expect(fullTokenBalance.base.tokenBalance.amount).to.be.equal(

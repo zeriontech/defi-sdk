@@ -31,15 +31,13 @@ describe('Ownable', () => {
   });
 
   it('should not propose ownership by not pending owner', async () => {
-    await expect(
-      notOwnerRouter.setPendingOwner(notOwner.address),
-    ).to.be.revertedWith('O: only owner');
+    await expect(notOwnerRouter.setPendingOwner(notOwner.address)).to.be.revertedWith(
+      'O: only owner',
+    );
   });
 
   it('should not accept ownership by not pending owner', async () => {
-    await expect(
-      router.setOwner(),
-    ).to.be.revertedWith('O: only pending owner');
+    await expect(router.setOwner()).to.be.revertedWith('O: only pending owner');
   });
 
   it('should accept ownership by pending owner', async () => {

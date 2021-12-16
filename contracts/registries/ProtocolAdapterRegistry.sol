@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
 import { AdapterManager } from "./AdapterManager.sol";
 import { IProtocolAdapter } from "../interfaces/IProtocolAdapter.sol";
@@ -83,8 +83,11 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
             revert BadProtocolAdapterName(adapterTokens.name);
         }
 
-        TokenBalance[] memory tokenBalances =
-            getTokenBalances(adapter, adapterTokens.tokens, account);
+        TokenBalance[] memory tokenBalances = getTokenBalances(
+            adapter,
+            adapterTokens.tokens,
+            account
+        );
 
         adapterBalance = AdapterBalance({
             name: adapterTokens.name,
@@ -107,8 +110,11 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
             revert BadProtocolAdapterName(adapterTokens.name);
         }
 
-        TokenBalance[] memory tokenBalances =
-            getTokenBalances(adapter, adapterTokens.tokens, account);
+        TokenBalance[] memory tokenBalances = getTokenBalances(
+            adapter,
+            adapterTokens.tokens,
+            account
+        );
 
         nonZeroAdapterBalance = AdapterBalance({
             name: adapterTokens.name,

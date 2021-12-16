@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
 import { AdapterNameAndAddress } from "../shared/Structs.sol";
 
@@ -40,7 +40,7 @@ interface IAdapterManager {
     /**
      * @notice Sets adapters (adds, updates or removes).
      * @param adaptersNamesAndAddresses Array of the new adapters' names and addresses.
-     * @dev Can be called only by this contract's owner.
+     * @dev Can be called only by the owner.
      */
     function setAdapters(AdapterNameAndAddress[] calldata adaptersNamesAndAddresses) external;
 

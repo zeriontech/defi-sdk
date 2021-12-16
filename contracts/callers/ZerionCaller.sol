@@ -15,11 +15,10 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
-import { BaseCaller } from "./BaseCaller.sol";
 import { IAdapterManager } from "../interfaces/IAdapterManager.sol";
 import { ICaller } from "../interfaces/ICaller.sol";
 import { IInteractiveAdapter } from "../interfaces/IInteractiveAdapter.sol";
@@ -29,23 +28,23 @@ import {
     BadMsgSender,
     BadProtocolAdapterName,
     NoneActionType,
-    NotImplemented,
     ZeroProtocolAdapterRegistry
 } from "../shared/Errors.sol";
 import { Action, TokenAmount } from "../shared/Structs.sol";
+import { TokensHandler } from "../shared/TokensHandler.sol";
 
 /**
- * @title Zerion caller that executes actions.
+ * @title Zerion caller that executes actions
  */
-contract ZerionCaller is ICaller, BaseCaller {
+contract ZerionCaller is ICaller, TokensHandler {
     address internal immutable protocolAdapterRegistry_;
 
     /**
-     * @notice Emits action info.
-     * @param protocolAdapterName Name of protocol adapter.
-     * @param actionType Type of action: deposit or withdraw.
-     * @param tokenAmounts Array of TokenAmount structs for the tokens used in this action.
-     * @param data ABI-encoded additional parameters.
+     * @notice Emits action info
+     * @param protocolAdapterName Name of protocol adapter
+     * @param actionType Type of action: deposit or withdraw
+     * @param tokenAmounts Array of TokenAmount structs for the tokens used in this action
+     * @param data ABI-encoded additional parameters
      */
     event ExecutedAction(
         bytes32 indexed protocolAdapterName,
@@ -55,8 +54,8 @@ contract ZerionCaller is ICaller, BaseCaller {
     );
 
     /**
-     * @notice Sets ProtocolAdapterRegistry contract address, which is immutable.
-     * @param protocolAdapterRegistry Address of the ProtocolAdapterRegistry contract.
+     * @notice Sets ProtocolAdapterRegistry contract address, which is immutable
+     * @param protocolAdapterRegistry Address of the ProtocolAdapterRegistry contract
      */
     constructor(address protocolAdapterRegistry) {
         if (protocolAdapterRegistry == address(0)) {
@@ -67,13 +66,11 @@ contract ZerionCaller is ICaller, BaseCaller {
     }
 
     /**
-     * @notice Main external function:
-     *     executes actions and returns tokens to the account.
+     * @notice Main external function: executes actions and returns tokens to the `msg.sender`
      * @param callData ABI-encoded parameters:
-     *     - actions Array with actions to be executed.
+     *     - actions Array with actions to be executed
      */
     function callBytes(bytes calldata callData) external payable override {
-        address payable account = getAccount();
         Action[] memory actions = abi.decode(callData, (Action[]));
 
         address[][] memory tokensToBeWithdrawn = new address[][](actions.length);
@@ -90,55 +87,44 @@ contract ZerionCaller is ICaller, BaseCaller {
             );
         }
 
-        returnTokens(tokensToBeWithdrawn, account);
+        returnTokens(tokensToBeWithdrawn);
     }
 
     /**
-     * @notice Executes one action via external call.
-     * @param action Action struct.
-     * @dev Can be called only by this contract.
-     * This function is used to create cross-protocol adapters.
-     * @return tokensToBeWithdrawn Array of tokens to be returned to the account.
+     * @notice Executes one action via external call
+     * @param action Action struct
+     * @dev Can be called only by this contract
+     * This function is used to create cross-protocol adapters
+     * @return tokensToBeWithdrawn Array of tokens to be returned to the `msg.sender`
      */
     function executeExternal(Action memory action)
         external
         returns (address[] memory tokensToBeWithdrawn)
     {
-        if (msg.sender != address(this)) {
-            revert BadMsgSender(msg.sender, address(this));
-        }
+        if (msg.sender != address(this)) revert BadMsgSender(msg.sender, address(this));
 
         return executeAction(action);
     }
 
     /**
-     * @return protocolAdapterRegistry Address of the ProtocolAdapterRegistry contract used.
+     * @return protocolAdapterRegistry Address of the ProtocolAdapterRegistry contract used
      */
     function getProtocolAdapterRegistry() external view returns (address protocolAdapterRegistry) {
         return protocolAdapterRegistry_;
     }
 
     /**
-     * @notice Always reverts as there is no fixed outputs case.
-     * @dev Implementation of Caller interface function.
-     */
-    function getExactInputAmount(bytes calldata) external pure override returns (uint256) {
-        revert NotImplemented();
-    }
-
-    /**
-     * @notice Executes one action and returns the list of tokens to be returned.
-     * @param action Action struct with with action to be executed.
-     * @return tokensToBeWithdrawn Array of tokens to be returned to the account.
+     * @notice Executes one action and returns the list of tokens to be returned
+     * @param action Action struct with with action to be executed
+     * @return tokensToBeWithdrawn Array of tokens to be returned to the `msg.sender`
      */
     function executeAction(Action memory action)
         internal
         returns (address[] memory tokensToBeWithdrawn)
     {
-        address adapter =
-            IAdapterManager(protocolAdapterRegistry_).getAdapterAddress(
-                action.protocolAdapterName
-            );
+        address adapter = IAdapterManager(protocolAdapterRegistry_).getAdapterAddress(
+            action.protocolAdapterName
+        );
 
         if (adapter == address(0)) {
             revert BadProtocolAdapterName(action.protocolAdapterName);
@@ -147,10 +133,9 @@ contract ZerionCaller is ICaller, BaseCaller {
             revert NoneActionType();
         }
 
-        bytes4 selector =
-            (action.actionType == ActionType.Deposit)
-                ? IInteractiveAdapter.deposit.selector
-                : IInteractiveAdapter.withdraw.selector;
+        bytes4 selector = (action.actionType == ActionType.Deposit)
+            ? IInteractiveAdapter.deposit.selector
+            : IInteractiveAdapter.withdraw.selector;
 
         return
             abi.decode(
@@ -163,13 +148,10 @@ contract ZerionCaller is ICaller, BaseCaller {
     }
 
     /**
-     * @notice Returns tokens to the account address.
-     * @param tokensToBeWithdrawn Array with the tokens returned by the adapters.
-     * @param account The address that will receive all the resulting tokens.
+     * @notice Returns tokens to the `msg.sender`
+     * @param tokensToBeWithdrawn Array with the tokens returned by the adapters
      */
-    function returnTokens(address[][] memory tokensToBeWithdrawn, address payable account)
-        internal
-    {
+    function returnTokens(address[][] memory tokensToBeWithdrawn) internal {
         uint256 length;
         uint256 lengthNested;
 
@@ -178,22 +160,9 @@ contract ZerionCaller is ICaller, BaseCaller {
             // TODO check what is cheaper -- to use lengthNested or to define in a loop
             lengthNested = tokensToBeWithdrawn[i].length;
             for (uint256 j = 0; j < lengthNested; j++) {
-                transferPositiveAmount(tokensToBeWithdrawn[i][j], account);
+                address token = tokensToBeWithdrawn[i][j];
+                Base.transfer(token, msg.sender, Base.getBalance(token, address(this)));
             }
-        }
-    }
-
-    /**
-     * @notice Transfers tokens to the account address (if the transfer amount is positive).
-     * @param token Address of the returned token.
-     * @param account The address that will receive the returned token.
-     * @dev This function is compatible only with ERC20 tokens and Ether, not ERC721 tokens.
-     */
-    function transferPositiveAmount(address token, address account) internal {
-        uint256 actualAmount = Base.getBalance(token, address(this));
-
-        if (actualAmount > 0) {
-            Base.transfer(token, account, actualAmount);
         }
     }
 }

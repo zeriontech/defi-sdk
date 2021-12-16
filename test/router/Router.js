@@ -1,66 +1,52 @@
-import signTypedData from '../helpers/signTypedData';
-import buyTokenOnUniswap from '../helpers/buyTokenOnUniswap';
-import { wethAddress, ethAddress, daiAddress, usdcAddress } from '../helpers/tokens';
+// import signTypedData from '../helpers/signTypedData';
+// import buyTokenOnUniswap from '../helpers/buyTokenOnUniswap';
+import { ethAddress } from '../helpers/tokens';
 
 const { expect } = require('chai');
 
 const { waffle, ethers } = require('hardhat');
 const CallerArtifacts = require('../../artifacts/contracts/interfaces/ICaller.sol/ICaller.json');
 const TokenArtifacts = require('../../artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json');
+const DAIArtifacts = require('../../artifacts/contracts/interfaces/IDAIPermit.sol/IDAIPermit.json');
+const EIP2612Artifacts = require('../../artifacts/contracts/interfaces/IEIP2612.sol/IEIP2612.json');
+const YearnArtifacts = require('../../artifacts/contracts/interfaces/IYearnPermit.sol/IYearnPermit.json');
 
-const { deployMockContract, provider } = waffle;
-const { AddressZero, MaxUint256 } = ethers.constants;
+const { deployMockContract } = waffle; // provider
+const { AddressZero } = ethers.constants; // MaxUint256
 
 const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;
 const SWAP_FIXED_INPUTS = 1;
 const SWAP_FIXED_OUTPUTS = 2;
 const EMPTY_BYTES = '0x';
-const FUTURE_TIMESTAMP = 1893456000;
-const EXECUTE_SIGNATURE =
-  'execute(((address,uint256,uint8),(uint8,bytes)),(address,uint256),(uint8,(uint256,address),address,address,bytes))';
-const EXECUTE_WITH_CHI_SIGNATURE =
-  'executeWithCHI(((address,uint256,uint8),(uint8,bytes)),(address,uint256),(uint8,(uint256,address),address,address,bytes))';
+
+const zeroFee = [ethers.BigNumber.from('0'), AddressZero];
+const zeroPermit = ['0', EMPTY_BYTES];
+const zeroSignature = ['0', EMPTY_BYTES];
 
 describe('Router', () => {
   let owner;
   let notOwner;
-  let feeRecipient;
   let Router;
   let mockCaller;
   let mockToken;
   let router;
-  let weth;
-  let dai;
-  let usdc;
 
   before(async () => {
     Router = await ethers.getContractFactory('Router');
 
-    [owner, notOwner, feeRecipient] = await ethers.getSigners();
-
-    const weth9 = await ethers.getContractAt('IWETH9', wethAddress);
-
-    await weth9.deposit({
-      value: ethers.utils.parseUnits('1', 18),
-      gasLimit: 1000000,
-    });
+    [owner, notOwner] = await ethers.getSigners();
 
     mockCaller = await deployMockContract(owner, CallerArtifacts.abi);
-    mockToken = await deployMockContract(owner, TokenArtifacts.abi);
     await mockCaller.mock.callBytes.returns();
 
-    weth = await ethers.getContractAt('IERC20', wethAddress, owner);
-    dai = await ethers.getContractAt('IERC20', daiAddress, owner);
-    usdc = await ethers.getContractAt('IERC20', usdcAddress, owner);
+    mockToken = await deployMockContract(owner, TokenArtifacts.abi);
+    await mockToken.mock.transferFrom.returns(true);
+    await mockToken.mock.transfer.returns(true);
   });
 
   beforeEach(async () => {
     router = await Router.deploy();
-
-    await mockCaller.mock.getExactInputAmount.returns('100');
-    await mockToken.mock.transferFrom.returns(true);
-    await mockToken.mock.transfer.returns(true);
   });
 
   it('should be correct router owner', async () => {
@@ -68,625 +54,494 @@ describe('Router', () => {
   });
 
   it('should return lost tokens', async () => {
-    await weth.transfer(router.address, '1');
-    expect(await weth.balanceOf(router.address)).to.be.equal('1');
-    await router.returnLostTokens(wethAddress, owner.address, '1');
-    expect(await weth.balanceOf(router.address)).to.be.equal('0');
+    await mockToken.mock.balanceOf.returns(1000);
+    await router.returnLostTokens(mockToken.address, owner.address, '1000');
   });
 
   it('should not return lost tokens if receiver cannot receive', async () => {
-    await expect(router.returnLostTokens(ethAddress, router.address, '0')).to.be.reverted;
+    await owner.sendTransaction({ to: router.address, value: ethers.utils.parseEther('1') });
+    await expect(
+      router.returnLostTokens(ethAddress, mockToken.address, ethers.utils.parseEther('1')),
+    ).to.be.reverted;
+  });
+
+  it('should not return lost tokens if receiver is zero', async () => {
+    await mockToken.mock.balanceOf.returns(1000);
+    await expect(router.returnLostTokens(mockToken.address, AddressZero, '1000')).to.be.reverted;
   });
 
   it('should not return lost tokens if called not by the owner', async () => {
+    await mockToken.mock.balanceOf.returns(1000);
+    await expect(router.connect(notOwner).returnLostTokens(mockToken.address, owner.address, '1'))
+      .to.be.reverted;
+  });
+
+  it('should be correct protocol fee signer', async () => {
+    expect(await router.getProtocolFeeSigner()).to.be.equal(AddressZero);
+  });
+
+  it('should not set zero protocol fee signer', async () => {
+    await expect(router.setProtocolFeeSigner(AddressZero)).to.be.reverted;
+  });
+
+  it('should set new protocol fee signer', async () => {
+    await router.setProtocolFeeSigner(owner.address);
+    expect(await router.getProtocolFeeSigner()).to.be.equal(owner.address);
+  });
+
+  it('should be correct protocol fee default', async () => {
+    expect(await router.getProtocolFeeDefault()).to.deep.equal(zeroFee);
+  });
+
+  it('should not set new protocol fee default if it is bad', async () => {
+    const newBaseFee = [ethers.BigNumber.from('1'), AddressZero];
+    await expect(router.setProtocolFeeDefault(newBaseFee)).to.be.reverted;
+  });
+
+  it('should not set new protocol fee default if it is too big', async () => {
+    const newBaseFee = [ethers.utils.parseUnits('1.000000000000000001', 18), owner.address];
+    await expect(router.setProtocolFeeDefault(newBaseFee)).to.be.reverted;
+  });
+
+  it('should set new protocol fee default', async () => {
+    const protocolFeeDefault = [ethers.BigNumber.from('1'), owner.address];
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+    expect(await router.getProtocolFeeDefault()).to.deep.equal(protocolFeeDefault);
+  });
+
+  it('should not change protocol fee share without signature', async () => {
     await expect(
-      router.connect(notOwner).returnLostTokens(ethAddress, owner.address, '1'),
+      router.functions.execute(
+        // input
+        [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [AddressZero, '0'],
+        // swap description
+        [
+          SWAP_FIXED_INPUTS,
+          [ethers.BigNumber.from('1'), AddressZero],
+          zeroFee,
+          owner.address,
+          mockCaller.address,
+          EMPTY_BYTES,
+        ],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should not change protocol fee beneficiary without signature', async () => {
+    await expect(
+      router.functions.execute(
+        // input
+        [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [AddressZero, '0'],
+        // swap description
+        [
+          SWAP_FIXED_INPUTS,
+          [ethers.BigNumber.from('0'), owner.address],
+          zeroFee,
+          owner.address,
+          mockCaller.address,
+          EMPTY_BYTES,
+        ],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should do empty trade', async () => {
+    await router.functions.execute(
+      // input
+      [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+      // output
+      [AddressZero, '0'],
+      // swap description
+      [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
+    );
+  });
+
+  it('should do empty ether trade', async () => {
+    await router.functions.execute(
+      // input
+      [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+      // output
+      [AddressZero, '0'],
+      // swap description
+      [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
+    );
+  });
+
+  it('should not execute with bad amount type', async () => {
+    await expect(
+      router.functions.execute(
+        // input
+        [[AddressZero, ethers.utils.parseUnits('0', 18), '0'], zeroPermit],
+        // output
+        [AddressZero, '0'],
+        // swap description
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should not execute with relative amount for zero token', async () => {
+    await expect(
+      router.functions.execute(
+        // input
+        [[AddressZero, ethers.utils.parseUnits('1', 18), AMOUNT_RELATIVE], zeroPermit],
+        // output
+        [AddressZero, '0'],
+        // swap description
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should not execute with relative amount for ETH', async () => {
+    await expect(
+      router.functions.execute(
+        // input
+        [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_RELATIVE], zeroPermit],
+        // output
+        [AddressZero, '0'],
+        // swap description
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should not execute with relative amount exceeding delimeter', async () => {
+    await expect(
+      router.functions.execute(
+        // input
+        [
+          [
+            mockToken.address,
+            ethers.utils.parseUnits('1.000000000000000001', 18),
+            AMOUNT_RELATIVE,
+          ],
+          zeroPermit,
+        ],
+        // output
+        [AddressZero, '0'],
+        // swap description
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should execute with relative amount equal to delimeter', async () => {
+    await mockToken.mock.balanceOf.returns(1000);
+    await mockToken.mock.allowance.returns(1000);
+    await expect(
+      router.functions.execute(
+        // input
+        [[mockToken.address, ethers.utils.parseUnits('1', 18), AMOUNT_RELATIVE], zeroPermit],
+        // output
+        [AddressZero, '0'],
+        // swap description
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    );
+  });
+
+  it('should execute with relative amount lower than delimeter', async () => {
+    await mockToken.mock.balanceOf.returns(1000);
+    await mockToken.mock.allowance.returns(501);
+    await expect(
+      router.functions.execute(
+        // input
+        [[mockToken.address, ethers.utils.parseUnits('0.5', 18), AMOUNT_RELATIVE], zeroPermit],
+        // output
+        [AddressZero, '0'],
+        // swap description
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    );
+  });
+
+  it('should not execute if eth amount is greater than msg.value', async () => {
+    await expect(
+      router.functions.execute(
+        // input
+        [[ethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [AddressZero, '0'],
+        // swap description
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should not execute if address(0) amount is greater than 0', async () => {
+    await expect(
+      router.functions.execute(
+        // input
+        [[AddressZero, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [AddressZero, '0'],
+        // swap description
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should not execute if no allowance and no permit', async () => {
+    await mockToken.mock.balanceOf.returns(1000);
+    await mockToken.mock.allowance.returns(0);
+    await expect(
+      router.functions.execute(
+        // input
+        [[mockToken.address, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [AddressZero, '0'],
+        // swap description
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
     ).to.be.reverted;
   });
 
   it('should not execute with bad swap type', async () => {
     await expect(
-      router.functions[EXECUTE_SIGNATURE](
+      router.functions.execute(
         // input
-        [
-          [ethAddress, '100', AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
-        ],
+        [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [daiAddress, '0'],
+        [AddressZero, '0'],
         // swap description
-        ['0', ['0', AddressZero], owner.address, mockCaller.address, EMPTY_BYTES],
-        {
-          value: '100',
-        },
+        ['0', zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
       ),
     ).to.be.reverted;
   });
 
-  it('should not execute with bad fee beneficiary', async () => {
+  it('should not execute with bad account without signature', async () => {
     await expect(
-      router.functions[EXECUTE_SIGNATURE](
+      router.functions.execute(
         // input
-        [
-          [ethAddress, '100', AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
-        ],
+        [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [daiAddress, '0'],
+        [AddressZero, '0'],
         // swap description
-        [SWAP_FIXED_INPUTS, ['1', AddressZero], owner.address, mockCaller.address, EMPTY_BYTES],
-        {
-          value: '100',
-        },
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, notOwner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
       ),
     ).to.be.reverted;
   });
 
-  it.skip('should not execute with bad fee share', async () => {
+  it('should execute with fixed outputs', async () => {
+    await router.functions.execute(
+      // input
+      [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+      // output
+      [AddressZero, '0'],
+      // swap description
+      [SWAP_FIXED_OUTPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
+    );
+  });
+
+  it('should execute with non-zero marketplace fee ', async () => {
+    await router.functions.execute(
+      // input
+      [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+      // output
+      [AddressZero, '0'],
+      // swap description
+      [
+        SWAP_FIXED_INPUTS,
+        zeroFee,
+        ['1', owner.address],
+        owner.address,
+        mockCaller.address,
+        EMPTY_BYTES,
+      ],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
+    );
+  });
+
+  it('should not execute with too large marketplace fee', async () => {
     await expect(
-      router.functions[EXECUTE_SIGNATURE](
+      router.functions.execute(
         // input
-        [
-          [ethAddress, '100', AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
-        ],
+        [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [daiAddress, '0'],
+        [AddressZero, '0'],
         // swap description
         [
           SWAP_FIXED_INPUTS,
-          ['10000000000000001', owner.address],
+          zeroFee,
+          [ethers.utils.parseUnits('1.1', 18), owner.address],
           owner.address,
           mockCaller.address,
           EMPTY_BYTES,
         ],
-        {
-          value: '100',
-        },
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
       ),
     ).to.be.reverted;
   });
 
-  it('should not execute with zero caller', async () => {
+  it('should not execute with bad permit type', async () => {
+    await mockToken.mock.balanceOf.returns(1000);
+    await mockToken.mock.allowance.returns(0);
     await expect(
-      router.functions[EXECUTE_SIGNATURE](
+      router.functions.execute(
         // input
         [
-          [ethAddress, '100', AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
-        ],
-        // output
-        [daiAddress, '0'],
-        // swap description
-        [SWAP_FIXED_INPUTS, ['0', AddressZero], owner.address, AddressZero, EMPTY_BYTES],
-        {
-          value: '100',
-        },
-      ),
-    ).to.be.reverted;
-  });
-
-  it('should not execute with bad output requirement', async () => {
-    await weth.approve(router.address, '100');
-    await expect(
-      router.functions[EXECUTE_SIGNATURE](
-        // input
-        [
-          [wethAddress, '100', AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
-        ],
-        // output
-        [ethAddress, '1'],
-        // swap description
-        [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-      ),
-    ).to.be.reverted;
-  });
-
-  it('should execute with good input requirement', async () => {
-    await weth.approve(router.address, '100');
-    await router.functions[EXECUTE_SIGNATURE](
-      // input
-      [
-        [wethAddress, '100', AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
-      ],
-      // output
-      [AddressZero, '0'],
-      // swap description
-      [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-    );
-  });
-
-  it('should execute with good input requirement (with CHI)', async () => {
-    await weth.approve(router.address, '100');
-    await router.functions[EXECUTE_WITH_CHI_SIGNATURE](
-      // input
-      [
-        [wethAddress, '100', AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
-      ],
-      // output
-      [AddressZero, '0'],
-      // swap description
-      [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-    );
-  });
-
-  it('should not execute with bad input requirement (fixed outputs)', async () => {
-    await weth.approve(router.address, '200');
-    await mockCaller.mock.getExactInputAmount.returns('200');
-    await expect(
-      router.functions[EXECUTE_SIGNATURE](
-        // input
-        [
-          [wethAddress, '100', AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
-        ],
-        // output
-        [ethAddress, '0'],
-        // swap description
-        [
-          SWAP_FIXED_OUTPUTS,
-          ['0', AddressZero],
-          notOwner.address,
-          mockCaller.address,
-          EMPTY_BYTES,
-        ],
-      ),
-    ).to.be.reverted;
-  });
-
-  it('should not execute with bad output requirement (fixed outputs)', async () => {
-    await weth.approve(router.address, '100');
-    await expect(
-      router.functions[EXECUTE_SIGNATURE](
-        // input
-        [
-          [wethAddress, '100', AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
-        ],
-        // output
-        [ethAddress, '1'],
-        // swap description
-        [
-          SWAP_FIXED_OUTPUTS,
-          ['0', AddressZero],
-          notOwner.address,
-          mockCaller.address,
-          EMPTY_BYTES,
-        ],
-      ),
-    ).to.be.reverted;
-  });
-
-  it('should execute with good input requirement (fixed outputs)', async () => {
-    await weth.approve(router.address, '100');
-    await router.functions[EXECUTE_SIGNATURE](
-      // input
-      [
-        [wethAddress, '100', AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
-      ],
-      // output
-      [ethAddress, '0'],
-      // swap description
-      [SWAP_FIXED_OUTPUTS, ['0', AddressZero], owner.address, mockCaller.address, EMPTY_BYTES],
-    );
-  });
-
-  it('should execute with AddressZero tokens (absolute amount == 0)', async () => {
-    await router.functions[EXECUTE_SIGNATURE](
-      // input
-      [
-        [AddressZero, '0', AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
-      ],
-      // output
-      [ethAddress, '0'],
-      // swap description
-      [SWAP_FIXED_INPUTS, ['0', AddressZero], owner.address, mockCaller.address, EMPTY_BYTES],
-    );
-  });
-
-  it('should not transfer tokens without allowance', async () => {
-    await weth.approve(router.address, '99');
-    await expect(
-      router.functions[EXECUTE_SIGNATURE](
-        // input
-        [
-          [wethAddress, '100', AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
+          [mockToken.address, ethers.utils.parseUnits('1', 18), AMOUNT_RELATIVE],
+          ['0', '0xd505accf'],
         ],
         // output
         [AddressZero, '0'],
         // swap description
-        [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
       ),
     ).to.be.reverted;
   });
 
-  it('should not transfer tokens with bad amount', async () => {
-    await weth.approve(router.address, '100');
-    await expect(
-      router.functions[EXECUTE_SIGNATURE](
-        // input
-        [
-          [wethAddress, '100', '0'],
-          ['0', EMPTY_BYTES],
-        ],
-        // output
-        [AddressZero, '0'],
-        // swap description
-        [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-      ),
-    ).to.be.reverted;
-  });
-
-  it('should not transfer AddressZero token (absolute amount > 0)', async () => {
-    await expect(
-      router.functions[EXECUTE_SIGNATURE](
-        // input
-        [
-          [AddressZero, '1', AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
-        ],
-        // output
-        [AddressZero, '0'],
-        // swap description
-        [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-      ),
-    ).to.be.reverted;
-  });
-
-  it('should not transfer AddressZero token (relative amount)', async () => {
-    await expect(
-      router.functions[EXECUTE_SIGNATURE](
-        // input
-        [
-          [AddressZero, '1', AMOUNT_RELATIVE],
-          ['0', EMPTY_BYTES],
-        ],
-        // output
-        [AddressZero, '0'],
-        // swap description
-        [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-      ),
-    ).to.be.reverted;
-  });
-
-  it('should transfer token fee correctly', async () => {
-    await weth.approve(router.address, '100');
-    await router.functions[EXECUTE_SIGNATURE](
+  it('should execute with eip2621 permit type', async () => {
+    const mockPermitToken = await deployMockContract(owner, EIP2612Artifacts.abi);
+    await mockPermitToken.mock.transferFrom.returns(true);
+    await mockPermitToken.mock.transfer.returns(true);
+    await mockPermitToken.mock.approve.returns(true);
+    await mockPermitToken.mock.balanceOf.returns(1000);
+    await mockPermitToken.mock.allowance.returns(0);
+    await mockPermitToken.mock.permit.returns();
+    router.functions.execute(
       // input
       [
-        [wethAddress, '100', AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
+        [mockPermitToken.address, ethers.utils.parseUnits('1', 18), AMOUNT_RELATIVE],
+        ['1', '0xd505accf'],
       ],
       // output
       [AddressZero, '0'],
       // swap description
-      [
-        SWAP_FIXED_INPUTS,
-        [ethers.utils.parseUnits('0.01', 18), feeRecipient.address],
-        notOwner.address,
-        mockCaller.address,
-        EMPTY_BYTES,
-      ],
+      [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
     );
-    expect(await weth.balanceOf(feeRecipient.address)).to.be.equal('1');
   });
 
-  it('should not transfer ether if no value', async () => {
-    await expect(
-      router.functions[EXECUTE_SIGNATURE](
-        // input
-        [
-          [ethAddress, '100', AMOUNT_ABSOLUTE],
-          ['0', EMPTY_BYTES],
-        ],
-        // output
-        [AddressZero, '0'],
-        // swap description
-        [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-      ),
-    ).to.be.reverted;
-  });
-
-  it('should transfer ether fee correctly', async () => {
-    let amount = await feeRecipient.getBalance();
-    await router.functions[EXECUTE_SIGNATURE](
+  it('should execute with dai permit type', async () => {
+    const mockPermitToken = await deployMockContract(owner, DAIArtifacts.abi);
+    await mockPermitToken.mock.transferFrom.returns(true);
+    await mockPermitToken.mock.transfer.returns(true);
+    await mockPermitToken.mock.approve.returns(true);
+    await mockPermitToken.mock.balanceOf.returns(1000);
+    await mockPermitToken.mock.allowance.returns(0);
+    await mockPermitToken.mock.permit.returns();
+    router.functions.execute(
       // input
       [
-        [ethAddress, '100', AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
+        [mockPermitToken.address, ethers.utils.parseUnits('1', 18), AMOUNT_RELATIVE],
+        ['2', '0x8fcbaf0c'],
       ],
       // output
       [AddressZero, '0'],
       // swap description
-      [
-        SWAP_FIXED_INPUTS,
-        [ethers.utils.parseUnits('0.01', 18), feeRecipient.address],
-        notOwner.address,
-        mockCaller.address,
-        EMPTY_BYTES,
-      ],
-      {
-        value: '100',
-      },
+      [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
     );
-    expect(await feeRecipient.getBalance()).to.be.equal(ethers.BigNumber.from(amount).add('1'));
   });
 
-  it('should transfer ether without fee correctly', async () => {
-    let amount = await provider.getBalance(mockCaller.address);
-    await router.functions[EXECUTE_SIGNATURE](
+  it('should execute with yearn permit type', async () => {
+    const mockPermitToken = await deployMockContract(owner, YearnArtifacts.abi);
+    await mockPermitToken.mock.transferFrom.returns(true);
+    await mockPermitToken.mock.transfer.returns(true);
+    await mockPermitToken.mock.approve.returns(true);
+    await mockPermitToken.mock.balanceOf.returns(1000);
+    await mockPermitToken.mock.allowance.returns(0);
+    await mockPermitToken.mock.permit.returns();
+    router.functions.execute(
       // input
       [
-        [ethAddress, '100', AMOUNT_ABSOLUTE],
-        ['0', EMPTY_BYTES],
+        [mockPermitToken.address, ethers.utils.parseUnits('1', 18), AMOUNT_RELATIVE],
+        ['3', '0x9fd5a6cf'],
       ],
       // output
       [AddressZero, '0'],
       // swap description
-      [SWAP_FIXED_INPUTS, ['0', AddressZero], AddressZero, mockCaller.address, EMPTY_BYTES],
-      {
-        value: '100',
-      },
+      [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
     );
-    expect(await provider.getBalance(mockCaller.address)).to.be.equal(
-      ethers.BigNumber.from(amount).add('100'),
-    );
-  });
-
-  it('should transfer 100% relative amount', async () => {
-    let amount = await weth.balanceOf(owner.address);
-    await weth.approve(router.address, amount);
-    await router.functions[EXECUTE_SIGNATURE](
-      // input
-      [
-        [wethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_RELATIVE],
-        ['0', EMPTY_BYTES],
-      ],
-      // output
-      [AddressZero, '0'],
-      // swap description
-      [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-    );
-    expect(await weth.balanceOf(owner.address)).to.be.equal('0');
-
-    const weth9 = await ethers.getContractAt('IWETH9', wethAddress);
-    await weth9.deposit({
-      value: ethers.utils.parseUnits('1', 18),
-    });
-  });
-
-  it('should transfer 50% relative amount', async () => {
-    let amount = await weth.balanceOf(owner.address);
-    await weth.approve(router.address, amount);
-    await router.functions[EXECUTE_SIGNATURE](
-      // input
-      [
-        [wethAddress, ethers.utils.parseUnits('0.5', 18), AMOUNT_RELATIVE],
-        ['0', EMPTY_BYTES],
-      ],
-      // output
-      [AddressZero, '0'],
-      // swap description
-      [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-    );
-    expect(await weth.balanceOf(owner.address)).to.be.equal(ethers.BigNumber.from(amount).div(2));
-  });
-
-  it.skip('should not transfer 101% relative amount', async () => {
-    let amount = await weth.balanceOf(owner.address);
-    await weth.approve(router.address, amount);
-    await expect(
-      router.functions[EXECUTE_SIGNATURE](
-        // input
-        [
-          [wethAddress, ethers.utils.parseUnits('1.01', 18), AMOUNT_RELATIVE],
-          ['0', EMPTY_BYTES],
-        ],
-        // output
-        [AddressZero, '0'],
-        // swap description
-        [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-      ),
-    ).to.be.reverted;
-  });
-
-  it.skip('should not transfer DAI with permit with bad signature', async () => {
-    const [wallet] = provider.getWallets();
-    const daiPermit = await ethers.getContractAt('IDAIPermit', daiAddress, wallet);
-
-    await buyTokenOnUniswap(wallet, daiAddress);
-
-    const nonce = await daiPermit.nonces(wallet.address);
-    const typedData = {
-      types: {
-        Permit: [
-          { name: 'holder', type: 'address' },
-          { name: 'spender', type: 'address' },
-          { name: 'nonce', type: 'uint256' },
-          { name: 'expiry', type: 'uint256' },
-          { name: 'allowed', type: 'bool' },
-        ],
-      },
-      domain: {
-        name: 'Dai Stablecoin',
-        version: '1',
-        chainId: '1',
-        verifyingContract: daiAddress,
-      },
-      message: {
-        holder: owner.address,
-        spender: wallet.address,
-        nonce: nonce.toString(),
-        expiry: 0,
-        allowed: 'true',
-      },
-    };
-    const signature = await signTypedData(wallet, typedData);
-    const amount = await dai.balanceOf(wallet.address);
-
-    await expect(
-      router.connect(wallet).functions[EXECUTE_SIGNATURE](
-        // input
-        [
-          [daiAddress, amount, AMOUNT_ABSOLUTE],
-          [
-            '2',
-            `0x${
-              (
-                await daiPermit.populateTransaction.permit(
-                  wallet.address,
-                  router.address,
-                  nonce.toString(),
-                  0,
-                  true,
-                  signature.v,
-                  signature.r,
-                  signature.s,
-                )
-              ).data.slice(10) // slice '0x' and first 4 bytes
-            }`,
-          ],
-        ],
-        // output
-        [AddressZero, '0'],
-        // swap description
-        [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-      ),
-    ).to.be.reverted;
-  });
-
-  it('should transfer DAI with permit', async () => {
-    const [wallet] = provider.getWallets();
-    const daiPermit = await ethers.getContractAt('IDAIPermit', daiAddress, wallet);
-
-    await buyTokenOnUniswap(wallet, daiAddress);
-
-    const nonce = await daiPermit.nonces(wallet.address);
-    const typedData = {
-      types: {
-        Permit: [
-          { name: 'holder', type: 'address' },
-          { name: 'spender', type: 'address' },
-          { name: 'nonce', type: 'uint256' },
-          { name: 'expiry', type: 'uint256' },
-          { name: 'allowed', type: 'bool' },
-        ],
-      },
-      domain: {
-        name: 'Dai Stablecoin',
-        version: '1',
-        chainId: '1',
-        verifyingContract: daiAddress,
-      },
-      message: {
-        holder: wallet.address,
-        spender: router.address,
-        nonce: nonce.toString(),
-        expiry: FUTURE_TIMESTAMP,
-        allowed: 'true',
-      },
-    };
-    const signature = await signTypedData(wallet, typedData);
-    const amount = await dai.balanceOf(wallet.address);
-
-    await router.connect(wallet).functions[EXECUTE_SIGNATURE](
-      // input
-      [
-        [daiAddress, amount, AMOUNT_ABSOLUTE],
-        [
-          '2',
-          `0x${
-            (
-              await daiPermit.populateTransaction.permit(
-                wallet.address,
-                router.address,
-                nonce.toString(),
-                FUTURE_TIMESTAMP,
-                true,
-                signature.v,
-                signature.r,
-                signature.s,
-              )
-            ).data.slice(10) // slice '0x' and first 4 bytes
-          }`,
-        ],
-      ],
-      // output
-      [AddressZero, '0'],
-      // swap description
-      [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-    );
-
-    expect(await dai.balanceOf(wallet.address)).to.be.equal('0');
-  });
-
-  it('should transfer USDC with permit', async () => {
-    const [wallet] = provider.getWallets();
-    const usdcPermit = await ethers.getContractAt('IEIP2612', usdcAddress, wallet);
-
-    await buyTokenOnUniswap(wallet, usdcAddress);
-
-    const nonce = await usdcPermit.nonces(wallet.address);
-    const typedData = {
-      types: {
-        Permit: [
-          { name: 'owner', type: 'address' },
-          { name: 'spender', type: 'address' },
-          { name: 'value', type: 'uint256' },
-          { name: 'nonce', type: 'uint256' },
-          { name: 'deadline', type: 'uint256' },
-        ],
-      },
-      domain: {
-        name: 'USD Coin',
-        version: '2',
-        chainId: '1',
-        verifyingContract: usdcAddress,
-      },
-      message: {
-        owner: wallet.address,
-        spender: router.address,
-        value: MaxUint256,
-        nonce: nonce.toString(),
-        deadline: FUTURE_TIMESTAMP,
-      },
-    };
-    const signature = await signTypedData(wallet, typedData);
-    const amount = await usdc.balanceOf(wallet.address);
-
-    await router.connect(wallet).functions[EXECUTE_SIGNATURE](
-      // input
-      [
-        [usdcAddress, amount, AMOUNT_ABSOLUTE],
-        [
-          1,
-          `0x${
-            (
-              await usdcPermit.populateTransaction.permit(
-                wallet.address,
-                router.address,
-                MaxUint256,
-                FUTURE_TIMESTAMP,
-                signature.v,
-                signature.r,
-                signature.s,
-              )
-            ).data.slice(10) // slice '0x' and first 4 bytes
-          }`,
-        ],
-      ],
-      // output
-      [AddressZero, '0'],
-      // swap description
-      [SWAP_FIXED_INPUTS, ['0', AddressZero], notOwner.address, mockCaller.address, EMPTY_BYTES],
-    );
-
-    expect(await usdc.balanceOf(wallet.address)).to.be.equal('0');
   });
 });

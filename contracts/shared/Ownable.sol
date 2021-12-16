@@ -15,37 +15,38 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
 abstract contract Ownable {
     address private pendingOwner_;
     address private owner_;
 
     /**
-     * @notice Emits old and new pending owners.
-     * @param oldPendingOwner Old pending owner.
-     * @param newPendingOwner New pending owner.
+     * @notice Emits old and new pending owners
+     * @param oldPendingOwner Old pending owner
+     * @param newPendingOwner New pending owner
      */
     event PendingOwnerSet(address indexed oldPendingOwner, address indexed newPendingOwner);
+
     /**
-     * @notice Emits old and new owners.
-     * @param oldOwner Old contract's owner.
-     * @param newOwner New contract's owner.
+     * @notice Emits old and new owners
+     * @param oldOwner Old contract's owner
+     * @param newOwner New contract's owner
      */
     event OwnerSet(address indexed oldOwner, address indexed newOwner);
 
-    modifier onlyPendingOwner {
+    modifier onlyPendingOwner() {
         require(msg.sender == pendingOwner_, "O: only pending owner");
         _;
     }
 
-    modifier onlyOwner {
+    modifier onlyOwner() {
         require(msg.sender == owner_, "O: only owner");
         _;
     }
 
     /**
-     * @notice Initializes owner variable with msg.sender address.
+     * @notice Initializes owner variable with msg.sender address
      */
     constructor() {
         emit OwnerSet(address(0), msg.sender);
@@ -54,9 +55,9 @@ abstract contract Ownable {
     }
 
     /**
-     * @notice Sets pending owner to the `newPendingOwner` address.
-     * The function is callable only by the owner.
+     * @notice Sets pending owner to the `newPendingOwner` address
      * @param newPendingOwner Address of new pending owner
+     * @dev The function is callable only by the owner
      */
     function setPendingOwner(address newPendingOwner) external onlyOwner {
         emit PendingOwnerSet(pendingOwner_, newPendingOwner);
@@ -65,8 +66,8 @@ abstract contract Ownable {
     }
 
     /**
-     * @notice Sets owner to the pending owner.
-     * The function is callable only by the pending owner.
+     * @notice Sets owner to the pending owner
+     * @dev The function is callable only by the pending owner
      */
     function setOwner() external onlyPendingOwner {
         emit OwnerSet(owner_, msg.sender);
@@ -76,16 +77,16 @@ abstract contract Ownable {
     }
 
     /**
-     * @return owner Owner of the contract.
+     * @return owner Owner of the contract
      */
-    function getOwner() external view returns (address owner) {
+    function getOwner() public view returns (address owner) {
         return owner_;
     }
 
     /**
-     * @return pendingOwner Pending owner of the contract.
+     * @return pendingOwner Pending owner of the contract
      */
-    function getPendingOwner() external view returns (address pendingOwner) {
+    function getPendingOwner() public view returns (address pendingOwner) {
         return pendingOwner_;
     }
 }

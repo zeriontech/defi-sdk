@@ -4,14 +4,14 @@ require("regenerator-runtime/runtime");
 require("dotenv").config();
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
-import "hardhat-gas-reporter";
+// import "hardhat-gas-reporter";
 import "hardhat-tracer";
 import "hardhat-docgen";
 import "solidity-coverage";
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.4",
+    version: "0.8.10",
     settings: {
       optimizer: {
         enabled: false,
@@ -28,15 +28,15 @@ const config: HardhatUserConfig = {
       allowUnlimitedContractSize: true,
     },
   },
-  gasReporter: {
-    currency: "USD",
-    enabled: process.env.REPORT_GAS ? true : false,
-    gasPrice: 100,
-  },
+  // gasReporter: {
+  //   currency: "USD",
+  //   enabled: process.env.REPORT_GAS ? true : false,
+  //   gasPrice: 100,
+  // },
   docgen: {
     path: "./docs",
     clear: false,
-    runOnCompile: true,
+    runOnCompile: false,
   },
   mocha: {
     timeout: "200000",

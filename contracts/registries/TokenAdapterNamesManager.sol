@@ -15,10 +15,10 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
 import { ITokenAdapterNamesManager } from "../interfaces/ITokenAdapterNamesManager.sol";
-import { BadLength, ZeroLength } from "../shared/Errors.sol";
+import { ZeroLength } from "../shared/Errors.sol";
 import { Ownable } from "../shared/Ownable.sol";
 import { HashAndAdapterName, TokenAndAdapterName } from "../shared/Structs.sol";
 

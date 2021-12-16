@@ -15,15 +15,16 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
 import { AbsoluteTokenAmount, AbsoluteInput } from "../shared/Structs.sol";
 
-interface ICaller {
-    function callBytes(bytes calldata data) external payable;
+import { ITokensHandler } from "./ITokensHandler.sol";
 
-    function getExactInputAmount(bytes calldata callData)
-        external
-        view
-        returns (uint256 exactInputAmount);
+interface ICaller is ITokensHandler {
+    /**
+     * @notice Main external function: implements all the caller specific logic
+     * @param callData ABI-encoded parameters depending on the caller logic
+     */
+    function callBytes(bytes calldata callData) external payable;
 }

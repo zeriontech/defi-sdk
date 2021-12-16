@@ -5,7 +5,8 @@
     "mark-callable-contracts": ["off"],
     "reason-string": ["error", { "maxLength": 50 }],
     "function-max-lines": ["error", 99],
-    "compiler-version": ["error", "0.8.4"],
+    "max-line-length": ["error", 99],
+    "compiler-version": ["error", "0.8.10"],
     "private-vars-leading-underscore": ["off"],
     "const-name-snakecase": ["off"],
     "func-visibility": [

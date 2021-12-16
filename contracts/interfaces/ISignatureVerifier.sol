@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -25,10 +25,9 @@ import { AbsoluteTokenAmount, Input, SwapDescription } from "../shared/Structs.s
 interface ISignatureVerifier {
     /**
      * @param hashToCheck Hash to be checked.
-     * @param account Address of the hash will be checked for.
      * @return hashUsed True if hash has already been used by this account address.
      */
-    function isHashUsed(bytes32 hashToCheck, address account)
+    function isHashUsed(bytes32 hashToCheck)
         external
         view
         returns (bool hashUsed);
@@ -37,7 +36,6 @@ interface ISignatureVerifier {
      * @param input Input struct to be hashed.
      * @param requiredOutput AbsoluteTokenAmount struct to be hashed.
      * @param swapDescription SwapDescription struct to be hashed.
-     * @param account Account address to be hashed.
      * @param salt Salt parameter preventing double-spending to be hashed.
      * @return hashedData Execute data hashed with domainSeparator.
      */
@@ -45,7 +43,6 @@ interface ISignatureVerifier {
         Input memory input,
         AbsoluteTokenAmount memory requiredOutput,
         SwapDescription memory swapDescription,
-        address account,
         uint256 salt
     ) external view returns (bytes32 hashedData);
 }

@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
 import { ERC20Metadata, TokenBalance } from "../shared/Structs.sol";
 
@@ -25,16 +25,16 @@ import { ERC20Metadata, TokenBalance } from "../shared/Structs.sol";
  */
 interface ITokenAdapter {
     /**
-     * @param tokenBalance TokenBalance struct with token info to get underlying token balances for.
-     * @return underlyingTokenBalances Array of TokenBalance structs with underlying token balances.
+     * @param tokenBalance TokenBalance struct with token info to get underlying token balances for
+     * @return underlyingTokenBalances Array of TokenBalance structs with underlying token balances
      */
     function getUnderlyingTokenBalances(TokenBalance calldata tokenBalance)
         external
         returns (TokenBalance[] memory underlyingTokenBalances);
 
     /**
-     * @param tokenBalance TokenBalance struct with token info to get metadata for.
-     * @return metadata ERC20Metadata struct with IERC20-style token info.
+     * @param tokenBalance TokenBalance struct with token info to get metadata for
+     * @return metadata ERC20Metadata struct with IERC20-style token info
      */
     function getMetadata(TokenBalance calldata tokenBalance)
         external

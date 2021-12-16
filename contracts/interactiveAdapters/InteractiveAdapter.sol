@@ -15,13 +15,13 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
 import { IInteractiveAdapter } from "../interfaces/IInteractiveAdapter.sol";
 import { ProtocolAdapter } from "../protocolAdapters/ProtocolAdapter.sol";
 import { Base } from "../shared/Base.sol";
 import { AmountType } from "../shared/Enums.sol";
-import { ExceedingLimitAmount, NoneAmountType } from "../shared/Errors.sol";
+import { ExceedingDelimiterAmount, NoneAmountType } from "../shared/Errors.sol";
 import { TokenAmount } from "../shared/Structs.sol";
 
 /**
@@ -84,7 +84,7 @@ abstract contract InteractiveAdapter is IInteractiveAdapter, ProtocolAdapter {
         }
 
         if (tokenAmount.amount > DELIMITER) {
-            revert ExceedingLimitAmount(tokenAmount.amount);
+            revert ExceedingDelimiterAmount(tokenAmount.amount);
         }
 
         int256 balanceSigned = getBalance(tokenAmount.token, address(this));
@@ -119,7 +119,7 @@ abstract contract InteractiveAdapter is IInteractiveAdapter, ProtocolAdapter {
         }
 
         if (tokenAmount.amount > DELIMITER) {
-            revert ExceedingLimitAmount(tokenAmount.amount);
+            revert ExceedingDelimiterAmount(tokenAmount.amount);
         }
 
         uint256 balance = Base.getBalance(tokenAmount.token, address(this));

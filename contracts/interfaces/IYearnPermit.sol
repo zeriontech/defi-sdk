@@ -15,9 +15,11 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.4;
+pragma solidity 0.8.10;
 
-interface IYearnPermit {
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+interface IYearnPermit is IERC20 {
     function permit(
         address,
         address,
