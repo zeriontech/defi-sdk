@@ -7,7 +7,7 @@
 [![Discord](https://badgen.net/badge/zerion/Zerion?icon=discord&label=discord)](https://go.zerion.io/discord)
 [![Twitter Follow](https://badgen.net/twitter/follow/zerion_io?icon=twitter)](https://twitter.com/intent/follow?screen_name=zerion_io)
 
-**DeFi SDK** is an open-source system of smart contracts allows you to track balances on diffenert protocola and execute trades with ERC20 tokens.
+**DeFi SDK** is an open-source system of smart contracts allows you to track balances on diffenert protocols and execute trades with ERC20 tokens.
 
 If you have any questions about DeFi SDK, feel free to reach out to us on our [Discord server](https://go.zerion.io/discord).
 
@@ -15,15 +15,24 @@ If you have any questions about DeFi SDK, feel free to reach out to us on our [D
 
 ## Features
 
-* Trades any ERC20 token
+### Tracking
+
+#### 💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, dYdX*, etc.
+> How much debt does `0xdead..beef` have on Compound?
+
+#### 📊Get the underlying components of complex derivative ERC20 tokens
+> How much `cUSDC` vs `ETH` does `ETHMACOAPY` have?
+
+### Trading
+
+* Trade any ERC20 token
 * Two types of amounts: absolute (usual amount) and relative (percentage of balance)
-* Three types of `permit()` function for providing approvals in one transactions (EIP2612, DAI-like, Yearn-like)
+* Three types of `permit()` functions for approving tokens in the same transaction (EIP2612, DAI-like, Yearn-like)
 * Two types of swaps: with fixed input amount or fixed output amount
 * Two types of fees:
   * protocol fee managed by the Router contract owner with possibility of one-time discounts requiring signature of an address with the special role
   * marketplace fee managed by the transaction creator
 * Relayed transactions requiring just an EIP712 signature of the user
-* Requirements for input and output tokens (allowing slippage on both sides)
 
 ## Security Vulnerabilities 🛡
 
