@@ -18,8 +18,8 @@
 pragma solidity 0.8.10;
 
 import { IProtocolFee } from "../interfaces/IProtocolFee.sol";
-import { Ownable } from "../shared/Ownable.sol";
 import { BadFeeShare, ZeroFeeBeneficiary, ZeroSigner } from "../shared/Errors.sol";
+import { Ownable } from "../shared/Ownable.sol";
 import { Fee } from "../shared/Structs.sol";
 
 // solhint-disable code-complexity

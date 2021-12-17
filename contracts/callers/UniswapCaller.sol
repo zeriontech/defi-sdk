@@ -127,6 +127,7 @@ contract UniswapCaller is ICaller, TokensHandler {
         uint256 wethBalance = 0;
         if (unwrap) {
             wethBalance = IERC20(WETH).balanceOf(address(this));
+            // The check always passes, however, left for unusual cases
             if (wethBalance != 0) IWETH9(WETH).withdraw(wethBalance);
         }
 
@@ -214,7 +215,7 @@ contract UniswapCaller is ICaller, TokensHandler {
      * @notice Calculates the returned amount for one swap in case of fixed input amount
      * @param amountIn Amount of the token provided for the swap
      * @param pair Uniswap-like pair
-     * @param direction Exchange direction (`true` means token0 -> token1).
+     * @param direction Exchange direction (`true` means token0 -> token1)
      * @return amountOut Amount returned after the swap
      * @dev Repeats Uniswap's getAmountIn calculations
      */
@@ -237,7 +238,7 @@ contract UniswapCaller is ICaller, TokensHandler {
     /**
      * @notice Returns pool's reserves in 'correct' order (input token, output token)
      * @param pair Uniswap-like pair
-     * @param direction Exchange direction (`true` means token0 -> token1).
+     * @param direction Exchange direction (`true` means token0 -> token1)
      * @return reserveIn Pool reserve for input token
      * @return reserveOut Pool reserve for output token
      */

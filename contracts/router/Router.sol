@@ -31,9 +31,9 @@ import { IYearnPermit } from "../interfaces/IYearnPermit.sol";
 import { Base } from "../shared/Base.sol";
 import { AmountType, PermitType, SwapType } from "../shared/Enums.sol";
 import {
+    BadAbsoluteInputAmount,
     BadAccount,
     BadAccountSignature,
-    BadAbsoluteInputAmount,
     BadAmountType,
     BadFeeAmount,
     BadFeeBeneficiary,
@@ -41,16 +41,14 @@ import {
     BadFeeSignature,
     ExceedingDelimiterAmount,
     ExceedingLimitFee,
+    HighInputBalanceChange,
     InsufficientAllowance,
     InsufficientMsgValue,
     LowOutputBalanceChange,
-    HighInputBalanceChange,
     NoneAmountType,
     NonePermitType,
     NoneSwapType,
-    PassedDeadline,
-    ZeroFeeBeneficiary,
-    ZeroSigner
+    PassedDeadline
 } from "../shared/Errors.sol";
 import { Ownable } from "../shared/Ownable.sol";
 import {
@@ -102,7 +100,8 @@ contract Router is
     }
 
     /**
-     * @dev Executes actions and returns tokens to account
+     * @dev Takse tokens from the user, executes the swap,
+     *     do the security checks, and all the required transfers
      * @dev All the parameters are described in `execute()` function
      */
     function execute(
@@ -116,14 +115,14 @@ contract Router is
             swapDescription.account
         );
 
-        // Transfer input token (msg.value check for ETH) to this address
+        // Transfer input token (`msg.value` check for Ether) to this address
         handleInput(input, absoluteInputAmount, swapDescription.account);
 
         // Calculate the initial balances for input and output tokens
         uint256 initialInputBalance = Base.getBalance(input.tokenAmount.token);
         uint256 initialOutputBalance = Base.getBalance(output.token);
 
-        // Approve tokens (if necessary) and call the caller with the given call data
+        // Approve tokens (if necessary) and call the caller with the provided call data
         approveAndCall(
             input.tokenAmount.token,
             absoluteInputAmount,
@@ -135,7 +134,7 @@ contract Router is
         inputBalanceChange = initialInputBalance - Base.getBalance(input.tokenAmount.token);
         outputBalanceChange = Base.getBalance(output.token) - initialOutputBalance;
 
-        // Refund (if necessary) and distribute return and fees amounts
+        // Refund (if necessary) and distribute output tokens and fees
         {
             // Check input requirements, prevent the underflow
             if (inputBalanceChange > absoluteInputAmount)
@@ -156,17 +155,20 @@ contract Router is
                 revert LowOutputBalanceChange(returnedAmount, output.absoluteAmount);
             }
 
-            // Do all the required transfers
+            // Transfer the refund back to the user
             Base.transfer(input.tokenAmount.token, swapDescription.account, refundAmount);
 
+            // Transfer the output tokens to the user
             Base.transfer(output.token, swapDescription.account, returnedAmount);
 
+            // Transfer protocol fee
             Base.transfer(
                 output.token,
                 swapDescription.protocolFee.beneficiary,
                 protocolFeeAmount
             );
 
+            // Transfer marketplace fee
             Base.transfer(
                 output.token,
                 swapDescription.marketplaceFee.beneficiary,
@@ -210,7 +212,7 @@ contract Router is
     }
 
     /**
-     * @dev Checks `msg.value` to be greater than Ether absolute amount allowed to be taken
+     * @dev Checks `msg.value` to be greater or equal to the Ether absolute amount to be used
      * @param absoluteInputAmount Ether absolute amount to be used
      */
     function handleETHInput(uint256 absoluteInputAmount) internal {
@@ -223,7 +225,7 @@ contract Router is
      * @dev Transfers input token from the accound address to this contract,
      *     calls `permit()` function if allowance is not enough and permit call data is provided
      * @param token Token to be taken from the account address
-     * @param permit Permit type and call data, which used if allowance is not enough
+     * @param permit Permit type and call data, which is used if allowance is not enough
      * @param absoluteInputAmount Input token absolute amount to be taken from the account
      * @param account Address of the account to take tokens from
      */
@@ -344,9 +346,9 @@ contract Router is
     /**
      * @dev Validates protocol fee signature
      * @dev All the parameters are described in `execute()` function
-     * @dev In case of empty signature, protocol fee must be equat to the default one
-     * @dev Signature is valid until th deadline
-     * @dev Custom protocol fee can be only lower than the default one
+     * @dev In case of empty signature, protocol fee must be equal to the default one
+     * @dev Signature is valid only until the deadline
+     * @dev Custom protocol fee can be lower or equal to the default one
      */
     function validateProtocolFeeSignature(
         Input calldata input,
@@ -391,6 +393,7 @@ contract Router is
 
     /**
      * @dev Calculate absolute input amount given token amount from `execute()` function inputs
+     * @dev Can not be used with `address(0)` token or Ether
      * @param tokenAmount Token address, its amount, and amount type
      * @param account Address of the account to transfer token from
      * @return absoluteTokenAmount Absolute token amount
@@ -452,11 +455,18 @@ contract Router is
 
         if (totalFeeShare > DELIMITER) revert BadFeeShare(totalFeeShare, DELIMITER);
 
+        // The most tricky and gentle place connected with fees
+        // We return either the amount the user requested
+        // or the output balance change divided by (1 + fee percentage)
+        // Minus one in the denominator is used to eliminate precision issues
         returnedAmount = (swapDescription.swapType == SwapType.FixedOutputs)
             ? outputAmount
             : (outputBalanceChange * DELIMITER / (DELIMITER + totalFeeShare - 1));
 
         uint256 totalFeeAmount = outputBalanceChange - returnedAmount;
+
+        // This check is important in fixed outputs case as we never actually check that
+        // total output amount is not too large and should always just pass in fixed inputs case
         if (totalFeeAmount * DELIMITER  > totalFeeShare * returnedAmount)
             revert BadFeeAmount(totalFeeAmount, returnedAmount * totalFeeShare / DELIMITER);
 
@@ -493,5 +503,6 @@ contract Router is
         if (permitType == PermitType.EIP2612) return IEIP2612.permit.selector;
         if (permitType == PermitType.DAI) return IDAIPermit.permit.selector;
         if (permitType == PermitType.Yearn) return IYearnPermit.permit.selector;
+        // There is no else case here, however, is marked as uncovered by tests
     }
 }
