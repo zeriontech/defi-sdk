@@ -29,6 +29,17 @@ describe('UniswapCaller', () => {
   const abiCoder = new ethers.utils.AbiCoder();
 
   before(async () => {
+    // await network.provider.request({
+    //   method: "hardhat_reset",
+    //   params: [
+    //     {
+    //       forking: {
+    //         jsonRpcUrl: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    //       },
+    //     },
+    //   ],
+    // });
+
     Caller = await ethers.getContractFactory('UniswapCaller');
     Router = await ethers.getContractFactory('Router');
 
@@ -49,6 +60,13 @@ describe('UniswapCaller', () => {
     await buyTokenOnUniswap(owner, daiAddress);
     protocolFeeDefault = [ethers.utils.parseUnits('0.01', 18), notOwner.address];
   });
+
+  // after(async () => {
+  //   await network.provider.request({
+  //     method: "hardhat_reset",
+  //     params: [],
+  //   });
+  // })
 
   beforeEach(async () => {
     router = await Router.deploy();
@@ -403,6 +421,42 @@ describe('UniswapCaller', () => {
     ).to.be.reverted;
   });
 
+  it('should not do dai -> weth trade with huge fee', async () => {
+    await dai.approve(router.address, ethers.utils.parseUnits('5000', 18));
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+
+    await expect(
+      router.functions.execute(
+        // input
+        [[daiAddress, ethers.utils.parseUnits('5000', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [wethAddress, ethers.utils.parseUnits('1', 18)],
+        // swap description
+        [
+          SWAP_FIXED_OUTPUTS,
+          protocolFeeDefault,
+          protocolFeeDefault,
+          owner.address,
+          caller.address,
+          abiCoder.encode(
+            ['address[]', 'bool[]', 'uint8', 'uint256', 'bool'],
+            [
+              [uniDaiWethAddress],
+              [true],
+              SWAP_FIXED_OUTPUTS,
+              ethers.utils.parseUnits((1 / 0.97).toString(), 18),
+              false,
+            ],
+          ),
+        ],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
   it('should do dai -> weth trade', async () => {
     await dai.approve(router.address, ethers.utils.parseUnits('5000', 18));
     await router.setProtocolFeeDefault(protocolFeeDefault);
@@ -431,7 +485,7 @@ describe('UniswapCaller', () => {
             [uniDaiWethAddress],
             [true],
             SWAP_FIXED_OUTPUTS,
-            ethers.utils.parseUnits((1 / 0.98).toString(), 18),
+            ethers.utils.parseUnits((1 * 1.02).toString(), 18),
             false,
           ],
         ),

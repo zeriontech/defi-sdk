@@ -24,7 +24,7 @@ import { ITokensHandler } from "./ITokensHandler.sol";
 interface ICaller is ITokensHandler {
     /**
      * @notice Main external function: implements all the caller specific logic
-     * @param callData ABI-encoded parameters depending on the caller logic
+     * @param callerCallData ABI-encoded parameters depending on the caller logic
      */
-    function callBytes(bytes calldata callData) external payable;
+    function callBytes(bytes calldata callerCallData) external payable;
 }

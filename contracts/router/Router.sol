@@ -35,6 +35,7 @@ import {
     BadAccountSignature,
     BadAbsoluteInputAmount,
     BadAmountType,
+    BadFeeAmount,
     BadFeeBeneficiary,
     BadFeeShare,
     BadFeeSignature,
@@ -127,7 +128,7 @@ contract Router is
             input.tokenAmount.token,
             absoluteInputAmount,
             swapDescription.caller,
-            swapDescription.callData
+            swapDescription.callerCallData
         );
 
         // Calculate the balance changes for input and output tokens
@@ -258,19 +259,19 @@ contract Router is
      * @dev Approves input tokens (if necessary) and calls the caller with the provided call data
      * @param token Token to be taken from this contract address
      * @param caller Address of the contract that will be called
-     * @param callData Call data for the call to the caller
+     * @param callerCallData Call data for the call to the caller
      */
     function approveAndCall(
         address token,
         uint256 amount,
         address caller,
-        bytes calldata callData
+        bytes calldata callerCallData
     ) internal {
         Base.safeApproveMax(token, caller, amount);
 
         Address.functionCallWithValue(
             caller,
-            abi.encodeWithSelector(ICaller.callBytes.selector, callData),
+            abi.encodeWithSelector(ICaller.callBytes.selector, callerCallData),
             token == ETH ? amount : 0,
             "R: callBytes"
         );
@@ -327,7 +328,6 @@ contract Router is
                 revert BadAccount(swapDescription.account, msg.sender);
             return;
         }
-
         bytes32 hashedData = hashData(input, output, swapDescription, accountSignature.salt);
 
         if (
@@ -454,9 +454,11 @@ contract Router is
 
         returnedAmount = (swapDescription.swapType == SwapType.FixedOutputs)
             ? outputAmount
-            : (outputBalanceChange * (DELIMITER - totalFeeShare)) / DELIMITER;
+            : (outputBalanceChange * DELIMITER / (DELIMITER + totalFeeShare - 1));
 
         uint256 totalFeeAmount = outputBalanceChange - returnedAmount;
+        if (totalFeeAmount * DELIMITER  > totalFeeShare * returnedAmount)
+            revert BadFeeAmount(totalFeeAmount, returnedAmount * totalFeeShare / DELIMITER);
 
         protocolFeeAmount = (totalFeeAmount * swapDescription.protocolFee.share) / totalFeeShare;
         marketplaceFeeAmount = totalFeeAmount - protocolFeeAmount;

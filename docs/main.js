@@ -7863,21 +7863,21 @@
           title: 'Uniswap caller that executes swaps on UniswapV2-like pools.',
           methods: {
             'callBytes(bytes)': {
-              inputs: [{ internalType: 'bytes', name: 'callData', type: 'bytes' }],
+              inputs: [{ internalType: 'bytes', name: 'callerCallData', type: 'bytes' }],
               name: 'callBytes',
               outputs: [],
               stateMutability: 'payable',
               type: 'function',
               details: 'Implementation of Caller interface function.',
               params: {
-                callData:
+                callerCallData:
                   'ABI-encoded parameters:     - pairs Array of uniswap-like pairs;     - directions Array of exchange directions (`true` means token0 -> token1);     - swapType Whether input of output amount is fixed;     - amount Amount of the token which is fixed (see swapType).',
               },
               notice:
                 'Main external function:     executes swap using Uniswap-like pools and returns tokens to the account.',
             },
             'getExactInputAmount(bytes)': {
-              inputs: [{ internalType: 'bytes', name: 'callData', type: 'bytes' }],
+              inputs: [{ internalType: 'bytes', name: 'callerCallData', type: 'bytes' }],
               name: 'getExactInputAmount',
               outputs: [
                 { internalType: 'uint256', name: 'exactAbsoluteInputAmount', type: 'uint256' },
@@ -7886,7 +7886,7 @@
               type: 'function',
               details: 'Implementation of Caller interface function.',
               params: {
-                callData:
+                callerCallData:
                   'ABI-encoded parameters:     - pairs Array of uniswap-like pairs;     - directions Array of exchange directions (`true` means token0 -> token1);     - swapType Whether inputs of outputs are fixed;     - amount Amount of token which is fixed (see swapType);     - account The address that will receive tokens after the last swap.',
               },
               returns: { exactAbsoluteInputAmount: 'The exact amount of the input tokens.' },
@@ -7948,13 +7948,13 @@
           },
           methods: {
             'callBytes(bytes)': {
-              inputs: [{ internalType: 'bytes', name: 'callData', type: 'bytes' }],
+              inputs: [{ internalType: 'bytes', name: 'callerCallData', type: 'bytes' }],
               name: 'callBytes',
               outputs: [],
               stateMutability: 'payable',
               type: 'function',
               params: {
-                callData:
+                callerCallData:
                   'ABI-encoded parameters:     - actions Array with actions to be executed.',
               },
               notice:
@@ -8180,7 +8180,7 @@
               type: 'function',
             },
             'getExactInputAmount(bytes)': {
-              inputs: [{ internalType: 'bytes', name: 'callData', type: 'bytes' }],
+              inputs: [{ internalType: 'bytes', name: 'callerCallData', type: 'bytes' }],
               name: 'getExactInputAmount',
               outputs: [{ internalType: 'uint256', name: 'exactInputAmount', type: 'uint256' }],
               stateMutability: 'view',
@@ -8833,7 +8833,7 @@
                       },
                       { internalType: 'address', name: 'account', type: 'address' },
                       { internalType: 'address', name: 'caller', type: 'address' },
-                      { internalType: 'bytes', name: 'callData', type: 'bytes' },
+                      { internalType: 'bytes', name: 'callerCallData', type: 'bytes' },
                     ],
                     indexed: !1,
                     internalType: 'struct SwapDescription',
@@ -8924,7 +8924,7 @@
                       },
                       { internalType: 'address', name: 'account', type: 'address' },
                       { internalType: 'address', name: 'caller', type: 'address' },
-                      { internalType: 'bytes', name: 'callData', type: 'bytes' },
+                      { internalType: 'bytes', name: 'callerCallData', type: 'bytes' },
                     ],
                     internalType: 'struct SwapDescription',
                     name: 'swapDescription',
@@ -9059,7 +9059,7 @@
                       },
                       { internalType: 'address', name: 'account', type: 'address' },
                       { internalType: 'address', name: 'caller', type: 'address' },
-                      { internalType: 'bytes', name: 'callData', type: 'bytes' },
+                      { internalType: 'bytes', name: 'callerCallData', type: 'bytes' },
                     ],
                     internalType: 'struct SwapDescription',
                     name: 'swapDescription',
@@ -11640,7 +11640,7 @@
                       },
                       { internalType: 'address', name: 'account', type: 'address' },
                       { internalType: 'address', name: 'caller', type: 'address' },
-                      { internalType: 'bytes', name: 'callData', type: 'bytes' },
+                      { internalType: 'bytes', name: 'callerCallData', type: 'bytes' },
                     ],
                     indexed: !1,
                     internalType: 'struct SwapDescription',
@@ -11788,7 +11788,7 @@
                       },
                       { internalType: 'address', name: 'account', type: 'address' },
                       { internalType: 'address', name: 'caller', type: 'address' },
-                      { internalType: 'bytes', name: 'callData', type: 'bytes' },
+                      { internalType: 'bytes', name: 'callerCallData', type: 'bytes' },
                     ],
                     internalType: 'struct SwapDescription',
                     name: 'swapDescription',
@@ -11945,7 +11945,7 @@
                       },
                       { internalType: 'address', name: 'account', type: 'address' },
                       { internalType: 'address', name: 'caller', type: 'address' },
-                      { internalType: 'bytes', name: 'callData', type: 'bytes' },
+                      { internalType: 'bytes', name: 'callerCallData', type: 'bytes' },
                     ],
                     internalType: 'struct SwapDescription',
                     name: 'swapDescription',
@@ -12122,7 +12122,7 @@
                       },
                       { internalType: 'address', name: 'account', type: 'address' },
                       { internalType: 'address', name: 'caller', type: 'address' },
-                      { internalType: 'bytes', name: 'callData', type: 'bytes' },
+                      { internalType: 'bytes', name: 'callerCallData', type: 'bytes' },
                     ],
                     internalType: 'struct SwapDescription',
                     name: 'swapDescription',

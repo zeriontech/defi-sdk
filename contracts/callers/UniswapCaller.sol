@@ -46,22 +46,22 @@ contract UniswapCaller is ICaller, TokensHandler {
     /**
      * @notice Main external function:
      *     executes swap using Uniswap-like pools and returns tokens to the account
-     * @param callData ABI-encoded parameters:
+     * @param callerCallData ABI-encoded parameters:
      *     - pairs Array of uniswap-like pairs
      *     - directions Array of exchange directions (`true` means `token0` -> `token1`)
      *     - swapType Whether input or output amount is fixed
-     *     - fixedSideAmount Amount of the token which is fixed (see swapType)
-     *     - unwrap Bool indicating whether WETH should be unsraped to ETH
+     *     - fixedSideAmount Amount of the token which is fixed (see `swapType`)
+     *     - unwrap Bool indicating whether WETH should be unwrapped to ETH
      * @dev Implementation of Caller interface function
      */
-    function callBytes(bytes calldata callData) external payable override {
+    function callBytes(bytes calldata callerCallData) external payable override {
         (
             address[] memory pairs,
             bool[] memory directions,
             SwapType swapType,
             uint256 fixedSideAmount,
             bool unwrap
-        ) = abi.decode(callData, (address[], bool[], SwapType, uint256, bool));
+        ) = abi.decode(callerCallData, (address[], bool[], SwapType, uint256, bool));
 
         uint256[] memory amounts = (swapType == SwapType.FixedInputs)
             ? getAmountsOut(fixedSideAmount, pairs, directions)
@@ -234,6 +234,13 @@ contract UniswapCaller is ICaller, TokensHandler {
         return numerator / denominator;
     }
 
+    /**
+     * @notice Returns pool's reserves in 'correct' order (input token, output token)
+     * @param pair Uniswap-like pair
+     * @param direction Exchange direction (`true` means token0 -> token1).
+     * @return reserveIn Pool reserve for input token
+     * @return reserveOut Pool reserve for output token
+     */
     function getReserves(address pair, bool direction)
         internal
         view

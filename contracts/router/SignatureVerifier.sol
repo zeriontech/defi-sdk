@@ -54,7 +54,7 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
                 "Fee marketplaceFee,",
                 "address account,",
                 "address caller,",
-                "bytes callData",
+                "bytes callerCallData",
                 ")",
                 "TokenAmount(address token,uint256 amount,uint8 amountType)"
             )
@@ -70,7 +70,7 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
                 "Fee marketplaceFee,",
                 "address account,",
                 "address caller,",
-                "bytes callData",
+                "bytes callerCallData",
                 ")",
                 "Fee(uint256 share,address beneficiary)"
             )
@@ -226,7 +226,7 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
                     hash(swapDescription.marketplaceFee),
                     swapDescription.account,
                     swapDescription.caller,
-                    keccak256(abi.encodePacked(swapDescription.callData))
+                    keccak256(abi.encodePacked(swapDescription.callerCallData))
                 )
             );
     }

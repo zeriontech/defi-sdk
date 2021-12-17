@@ -39,7 +39,7 @@ describe('SignatureVerifier', () => {
     router = await Router.deploy();
   });
 
-  it.only('should be correct account signature', async () => {
+  it('should be correct account signature', async () => {
     const typedData = {
       types: {
         Execute: [
@@ -54,7 +54,7 @@ describe('SignatureVerifier', () => {
           { name: 'marketplaceFee', type: 'Fee' },
           { name: 'account', type: 'address' },
           { name: 'caller', type: 'address' },
-          { name: 'callData', type: 'bytes' },
+          { name: 'callerCallData', type: 'bytes' },
         ],
         Input: [
           { name: 'tokenAmount', type: 'TokenAmount' },
@@ -112,7 +112,7 @@ describe('SignatureVerifier', () => {
           },
           account: wallet.address,
           caller: mockCaller.address,
-          callData: EMPTY_BYTES,
+          callerCallData: EMPTY_BYTES,
         },
         salt: 0,
       },
@@ -130,35 +130,23 @@ describe('SignatureVerifier', () => {
       EMPTY_BYTES,
     ];
 
-    const hashedData = await router.hashData(
-      // input
-      input,
-      // output
-      output,
-      // swap description
-      swapDescription,
-      // double usage protection param
-      salt,
-    );
-    console.log(hashedData);
+    // const hashedData = await router.hashData(
+    //   // input
+    //   input,
+    //   // output
+    //   output,
+    //   // swap description
+    //   swapDescription,
+    //   // double usage protection param
+    //   salt,
+    // );
+    const hashedData = '0x275c0fcf600c6f256b9bd28d8fecdc9245e48b75d4df27502187e6385927368d';
+
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;
 
     const accountSignature = [salt, ethers.utils.joinSignature(signature)];
-    console.log(accountSignature);
-    // signature is valid the first time
-    await router.execute(
-      // input
-      input,
-      // output
-      output,
-      // swap description
-      swapDescription,
-      // account signature
-      accountSignature,
-      // protocol fee signature
-      zeroSignature,
-    );
+
     // signature is valid the first time
     await router.execute(
       // input
@@ -224,7 +212,7 @@ describe('SignatureVerifier', () => {
           { name: 'marketplaceFee', type: 'Fee' },
           { name: 'account', type: 'address' },
           { name: 'caller', type: 'address' },
-          { name: 'callData', type: 'bytes' },
+          { name: 'callerCallData', type: 'bytes' },
         ],
         Input: [
           { name: 'tokenAmount', type: 'TokenAmount' },
@@ -282,7 +270,7 @@ describe('SignatureVerifier', () => {
           },
           account: wallet.address,
           caller: mockCaller.address,
-          callData: EMPTY_BYTES,
+          callerCallData: EMPTY_BYTES,
         },
         salt: FUTURE_TIMESTAMP,
       },

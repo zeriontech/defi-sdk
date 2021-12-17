@@ -91,7 +91,7 @@ struct SwapDescription {
     Fee marketplaceFee;
     address account;
     address caller;
-    bytes callData;
+    bytes callerCallData;
 }
 
 // The struct consists of name of the protocol adapter, action type,

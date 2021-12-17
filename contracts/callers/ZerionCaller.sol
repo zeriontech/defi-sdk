@@ -67,11 +67,11 @@ contract ZerionCaller is ICaller, TokensHandler {
 
     /**
      * @notice Main external function: executes actions and returns tokens to the `msg.sender`
-     * @param callData ABI-encoded parameters:
+     * @param callerCallData ABI-encoded parameters:
      *     - actions Array with actions to be executed
      */
-    function callBytes(bytes calldata callData) external payable override {
-        Action[] memory actions = abi.decode(callData, (Action[]));
+    function callBytes(bytes calldata callerCallData) external payable override {
+        Action[] memory actions = abi.decode(callerCallData, (Action[]));
 
         address[][] memory tokensToBeWithdrawn = new address[][](actions.length);
 

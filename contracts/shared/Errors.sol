@@ -25,6 +25,7 @@ error BadAccount(address account, address msgSender);
 error BadAccountSignature();
 error BadAmountType(AmountType amountType, AmountType requiredAmountType);
 error BadFee(Fee fee, Fee baseProtocolFee);
+error BadFeeAmount(uint256 actualFeeAmount, uint256 expectedFeeAmount);
 error BadFeeSignature();
 error BadFeeShare(uint256 protocolFeeShare, uint256 baseProtocolFeeShare);
 error BadFeeBeneficiary(address protocolFeeBanaficiary, address baseProtocolFeeBeneficiary);

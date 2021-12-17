@@ -19,8 +19,8 @@ Contract locking ether found in :
         But does not have a function to withdraw the ether
 Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#contracts-that-lock-ether
 INFO:Detectors:
-Router.execute(Input,AbsoluteTokenAmount,SwapDescription,address) (contracts/router/Router.sol#234-295) ignores return value by Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),exactInputAmount,R: callBytes) (contracts/router/Router.sol#254-259)
-Router.execute(Input,AbsoluteTokenAmount,SwapDescription,address) (contracts/router/Router.sol#234-295) ignores return value by Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),0,R: callBytes) (contracts/router/Router.sol#254-259)
+Router.execute(Input,AbsoluteTokenAmount,SwapDescription,address) (contracts/router/Router.sol#234-295) ignores return value by Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callerCallData,account),exactInputAmount,R: callBytes) (contracts/router/Router.sol#254-259)
+Router.execute(Input,AbsoluteTokenAmount,SwapDescription,address) (contracts/router/Router.sol#234-295) ignores return value by Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callerCallData,account),0,R: callBytes) (contracts/router/Router.sol#254-259)
 Router.handleTokenInput(address,Permit,uint256,uint256,SwapDescription,address) (contracts/router/Router.sol#376-415) ignores return value by Address.functionCall(token,abi.encodePacked(getPermitSelector(permit.permitType),permit.permitCallData),R: permit) (contracts/router/Router.sol#390-394)
 Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-return
 INFO:Detectors:
@@ -43,7 +43,7 @@ Reentrancy in Router.execute(Input,AbsoluteTokenAmount,SwapDescription,address) 
         External calls:
         - exactInputAmount = getExactInputAmount(absoluteInputAmount,swapDescription) (contracts/router/Router.sol#248)
                 - (success,returndata) = target.staticcall(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#143)
-                - returnData = Address.functionStaticCall(swapDescription.caller,abi.encodePacked(ICaller.getExactInputAmount.selector,swapDescription.callData)) (contracts/router/Router.sol#520-524)
+                - returnData = Address.functionStaticCall(swapDescription.caller,abi.encodePacked(ICaller.getExactInputAmount.selector,swapDescription.callerCallData)) (contracts/router/Router.sol#520-524)
         - handleInput(input,absoluteInputAmount,exactInputAmount,swapDescription,account) (contracts/router/Router.sol#252)
                 - returndata = Address.functionCall(address(token),data,SafeERC20: low-level call failed) (node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol#61)
                 - (success) = to.call{value: amount}(new bytes(0)) (contracts/shared/Base.sol#57)
@@ -53,8 +53,8 @@ Reentrancy in Router.execute(Input,AbsoluteTokenAmount,SwapDescription,address) 
                 - SafeERC20.safeTransferFrom(IERC20(token),account,swapDescription.fee.beneficiary,feeAmount) (contracts/router/Router.sol#401-406)
                 - SafeERC20.safeTransferFrom(IERC20(token),account,swapDescription.destination,exactInputAmount) (contracts/router/Router.sol#409-414)
         - Base.transferEther(account,absoluteInputAmount - inputBalanceChange,R: bad account) (contracts/router/Router.sol#271-275)
-        - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),exactInputAmount,R: callBytes) (contracts/router/Router.sol#254-259)
-        - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),0,R: callBytes) (contracts/router/Router.sol#254-259)
+        - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callerCallData,account),exactInputAmount,R: callBytes) (contracts/router/Router.sol#254-259)
+        - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callerCallData,account),0,R: callBytes) (contracts/router/Router.sol#254-259)
         External calls sending eth:
         - handleInput(input,absoluteInputAmount,exactInputAmount,swapDescription,account) (contracts/router/Router.sol#252)
                 - (success) = to.call{value: amount}(new bytes(0)) (contracts/shared/Base.sol#57)
@@ -72,11 +72,11 @@ Reentrancy in Router.executeWithCHI(Input,AbsoluteTokenAmount,SwapDescription,ad
                 - (success,returndata) = target.call{value: value}(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#119)
                 - Address.functionCall(token,abi.encodePacked(getPermitSelector(permit.permitType),permit.permitCallData),R: permit) (contracts/router/Router.sol#390-394)
                 - Base.transferEther(account,absoluteInputAmount - inputBalanceChange,R: bad account) (contracts/router/Router.sol#271-275)
-                - returnData = Address.functionStaticCall(swapDescription.caller,abi.encodePacked(ICaller.getExactInputAmount.selector,swapDescription.callData)) (contracts/router/Router.sol#520-524)
+                - returnData = Address.functionStaticCall(swapDescription.caller,abi.encodePacked(ICaller.getExactInputAmount.selector,swapDescription.callerCallData)) (contracts/router/Router.sol#520-524)
                 - SafeERC20.safeTransferFrom(IERC20(token),account,swapDescription.fee.beneficiary,feeAmount) (contracts/router/Router.sol#401-406)
                 - SafeERC20.safeTransferFrom(IERC20(token),account,swapDescription.destination,exactInputAmount) (contracts/router/Router.sol#409-414)
-                - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),exactInputAmount,R: callBytes) (contracts/router/Router.sol#254-259)
-                - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),0,R: callBytes) (contracts/router/Router.sol#254-259)
+                - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callerCallData,account),exactInputAmount,R: callBytes) (contracts/router/Router.sol#254-259)
+                - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callerCallData,account),0,R: callBytes) (contracts/router/Router.sol#254-259)
         - useCHI() (contracts/router/Router.sol#116)
                 - IChiToken(CHI).freeFromUpTo(msg.sender,(gasSpent + 25171) / 41852) (contracts/router/Router.sol#67)
         External calls sending eth:
@@ -96,11 +96,11 @@ Reentrancy in Router.executeWithCHI(Input,AbsoluteTokenAmount,SwapDescription) (
                 - (success,returndata) = target.call{value: value}(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#119)
                 - Address.functionCall(token,abi.encodePacked(getPermitSelector(permit.permitType),permit.permitCallData),R: permit) (contracts/router/Router.sol#390-394)
                 - Base.transferEther(account,absoluteInputAmount - inputBalanceChange,R: bad account) (contracts/router/Router.sol#271-275)
-                - returnData = Address.functionStaticCall(swapDescription.caller,abi.encodePacked(ICaller.getExactInputAmount.selector,swapDescription.callData)) (contracts/router/Router.sol#520-524)
+                - returnData = Address.functionStaticCall(swapDescription.caller,abi.encodePacked(ICaller.getExactInputAmount.selector,swapDescription.callerCallData)) (contracts/router/Router.sol#520-524)
                 - SafeERC20.safeTransferFrom(IERC20(token),account,swapDescription.fee.beneficiary,feeAmount) (contracts/router/Router.sol#401-406)
                 - SafeERC20.safeTransferFrom(IERC20(token),account,swapDescription.destination,exactInputAmount) (contracts/router/Router.sol#409-414)
-                - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),exactInputAmount,R: callBytes) (contracts/router/Router.sol#254-259)
-                - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callData,account),0,R: callBytes) (contracts/router/Router.sol#254-259)
+                - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callerCallData,account),exactInputAmount,R: callBytes) (contracts/router/Router.sol#254-259)
+                - Address.functionCallWithValue(swapDescription.caller,abi.encodePacked(ICaller.callBytes.selector,swapDescription.callerCallData,account),0,R: callBytes) (contracts/router/Router.sol#254-259)
         - useCHI() (contracts/router/Router.sol#146)
                 - IChiToken(CHI).freeFromUpTo(msg.sender,(gasSpent + 25171) / 41852) (contracts/router/Router.sol#67)
         External calls sending eth:
