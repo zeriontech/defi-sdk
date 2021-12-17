@@ -30,7 +30,7 @@ library Base {
      * @param token Adress of the token or `ETH` in case of Ether transfer
      * @param account Adress of the account that will receive funds
      * @param amount Amount to be transferred
-     * @dev This function is compatible only with IERC20 tokens and Ether, not ERC721/1155 tokens
+     * @dev This function is compatible only with ERC20 tokens and Ether, not ERC721/ERC1155 tokens
      * @dev Reverts on `address(0)` account, does nothing for `address(0)` token and `0` amount
      */
     function transfer(
