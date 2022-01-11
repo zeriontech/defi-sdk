@@ -52,7 +52,7 @@ describe('UniswapCaller', () => {
       gasLimit: 1000000,
     });
 
-    caller = await Caller.deploy();
+    caller = await Caller.deploy(wethAddress);
 
     weth = await ethers.getContractAt('IERC20', wethAddress, owner);
     dai = await ethers.getContractAt('IERC20', daiAddress, owner);

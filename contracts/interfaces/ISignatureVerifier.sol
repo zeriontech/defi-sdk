@@ -24,25 +24,36 @@ import { AbsoluteTokenAmount, Input, SwapDescription } from "../shared/Structs.s
 
 interface ISignatureVerifier {
     /**
-     * @param hashToCheck Hash to be checked.
-     * @return hashUsed True if hash has already been used by this account address.
+     * @param hashToCheck Hash to be checked
+     * @return hashUsed True if hash has already been used by this account address
      */
-    function isHashUsed(bytes32 hashToCheck)
-        external
-        view
-        returns (bool hashUsed);
+    function isHashUsed(bytes32 hashToCheck) external view returns (bool hashUsed);
 
     /**
-     * @param input Input struct to be hashed.
-     * @param requiredOutput AbsoluteTokenAmount struct to be hashed.
-     * @param swapDescription SwapDescription struct to be hashed.
-     * @param salt Salt parameter preventing double-spending to be hashed.
-     * @return hashedData Execute data hashed with domainSeparator.
+     * @param input Input struct to be hashed
+     * @param requiredOutput AbsoluteTokenAmount struct to be hashed
+     * @param swapDescription SwapDescription struct to be hashed
+     * @param salt Salt parameter preventing double-spending to be hashed
+     * @return hashedData Execute data hashed with domainSeparator
      */
-    function hashData(
+    function hashAccountSignatureData(
         Input memory input,
         AbsoluteTokenAmount memory requiredOutput,
         SwapDescription memory swapDescription,
         uint256 salt
+    ) external view returns (bytes32 hashedData);
+
+    /**
+     * @param input Input struct to be hashed
+     * @param requiredOutput AbsoluteTokenAmount struct to be hashed
+     * @param swapDescription SwapDescription struct to be hashed
+     * @param deadline Deadline showing the timestamp signature is valid up to
+     * @return hashedData Execute data hashed with domainSeparator
+     */
+    function hashProtocolFeeSignatureData(
+        Input memory input,
+        AbsoluteTokenAmount memory requiredOutput,
+        SwapDescription memory swapDescription,
+        uint256 deadline
     ) external view returns (bytes32 hashedData);
 }

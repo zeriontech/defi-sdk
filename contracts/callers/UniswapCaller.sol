@@ -26,6 +26,7 @@ import { IWETH9 } from "../interfaces/IWETH9.sol";
 import { Base } from "../shared/Base.sol";
 import { SwapType } from "../shared/Enums.sol";
 import {
+    BadToken,
     InconsistentPairsAndDirectionsLengths,
     InputSlippage,
     LowLiquidity,
@@ -35,13 +36,21 @@ import {
 } from "../shared/Errors.sol";
 import { AbsoluteInput } from "../shared/Structs.sol";
 import { TokensHandler } from "../shared/TokensHandler.sol";
+import { Weth } from "../shared/Weth.sol";
 
 /**
  * @title Uniswap caller that executes swaps on UniswapV2-like pools
  */
-contract UniswapCaller is ICaller, TokensHandler {
+contract UniswapCaller is ICaller, TokensHandler, Weth {
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-    address internal constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+
+    /**
+     * @notice Sets Wrapped Ether address for the current chain
+     * @param weth Wrapped Ether address
+     */
+    constructor(address weth) Weth(weth) {
+        // solhint-disable-previous-line no-empty-blocks
+    }
 
     /**
      * @notice Main external function:
@@ -51,7 +60,7 @@ contract UniswapCaller is ICaller, TokensHandler {
      *     - directions Array of exchange directions (`true` means `token0` -> `token1`)
      *     - swapType Whether input or output amount is fixed
      *     - fixedSideAmount Amount of the token which is fixed (see `swapType`)
-     *     - unwrap Bool indicating whether WETH should be unwrapped to ETH
+     *     - unwrap Bool indicating whether Wrapped Ether should be unwrapped to Ether
      * @dev Implementation of Caller interface function
      */
     function callBytes(bytes calldata callerCallData) external payable override {
@@ -63,14 +72,14 @@ contract UniswapCaller is ICaller, TokensHandler {
             bool unwrap
         ) = abi.decode(callerCallData, (address[], bool[], SwapType, uint256, bool));
 
-        uint256[] memory amounts = (swapType == SwapType.FixedInputs)
-            ? getAmountsOut(fixedSideAmount, pairs, directions)
-            : getAmountsIn(fixedSideAmount, pairs, directions);
-
         uint256 length = pairs.length;
         if (length == 0) revert ZeroLength();
         if (directions.length != length)
             revert InconsistentPairsAndDirectionsLengths(directions.length, length);
+
+        uint256[] memory amounts = (swapType == SwapType.FixedInputs)
+            ? getAmountsOut(fixedSideAmount, pairs, directions)
+            : getAmountsIn(fixedSideAmount, pairs, directions);
 
         // Take input tokens and transfer to the first pair
         {
@@ -101,12 +110,12 @@ contract UniswapCaller is ICaller, TokensHandler {
                     amount0Out,
                     amount1Out,
                     next < length ? pairs[next] : destination,
-                    new bytes(0)
+                    bytes("")
                 );
             }
         }
 
-        // Unwrap WETH if any and withdraw Ether (in case of Ether refund or `unwrap == true`)
+        // Unwrap weth if any and withdraw Ether (in case of Ether refund or `unwrap == true`)
         withdrawEth(unwrap, amounts[0]);
     }
 
@@ -116,8 +125,9 @@ contract UniswapCaller is ICaller, TokensHandler {
      * @param amount Amount of tokens to be transferred
      */
     function depositWeth(address pair, uint256 amount) internal {
-        IWETH9(WETH).deposit{ value: amount }();
-        Base.transfer(WETH, pair, amount);
+        address weth = getWeth();
+        IWETH9(weth).deposit{ value: amount }();
+        Base.transfer(weth, pair, amount);
     }
 
     /**
@@ -126,9 +136,10 @@ contract UniswapCaller is ICaller, TokensHandler {
     function withdrawEth(bool unwrap, uint256 amount) internal {
         uint256 wethBalance = 0;
         if (unwrap) {
-            wethBalance = IERC20(WETH).balanceOf(address(this));
+            address weth = getWeth();
+            wethBalance = IERC20(weth).balanceOf(address(this));
             // The check always passes, however, left for unusual cases
-            if (wethBalance != 0) IWETH9(WETH).withdraw(wethBalance);
+            if (wethBalance != 0) IWETH9(weth).withdraw(wethBalance);
         }
 
         uint256 ethAmount = msg.value > 0 ? msg.value - amount + wethBalance : wethBalance;

@@ -79,9 +79,7 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
         returns (AdapterBalance memory adapterBalance)
     {
         address adapter = getAdapterAddress(adapterTokens.name);
-        if (adapter == address(0)) {
-            revert BadProtocolAdapterName(adapterTokens.name);
-        }
+        if (adapter == address(0)) revert BadProtocolAdapterName(adapterTokens.name);
 
         TokenBalance[] memory tokenBalances = getTokenBalances(
             adapter,
@@ -106,9 +104,7 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
         returns (AdapterBalance memory nonZeroAdapterBalance)
     {
         address adapter = getAdapterAddress(adapterTokens.name);
-        if (adapter == address(0)) {
-            revert BadProtocolAdapterName(adapterTokens.name);
-        }
+        if (adapter == address(0)) revert BadProtocolAdapterName(adapterTokens.name);
 
         TokenBalance[] memory tokenBalances = getTokenBalances(
             adapter,
@@ -167,9 +163,7 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
         uint256 counter = 0;
 
         for (uint256 i = 0; i < length; i++) {
-            if (adapterBalances[i].tokenBalances.length == 0) {
-                continue;
-            }
+            if (adapterBalances[i].tokenBalances.length == 0) continue;
 
             nonZeroAdapterBalances[counter] = adapterBalances[i];
 
@@ -193,9 +187,7 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
         uint256 counter = 0;
 
         for (uint256 i = 0; i < length; i++) {
-            if (tokenBalances[i].amount == 0) {
-                continue;
-            }
+            if (tokenBalances[i].amount == 0) continue;
 
             nonZeroTokenBalances[counter] = tokenBalances[i];
 
@@ -218,9 +210,7 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
         nonZeroTokenBalancesNumber = 0;
 
         for (uint256 i = 0; i < length; i++) {
-            if (adapterBalances[i].tokenBalances.length > 0) {
-                nonZeroTokenBalancesNumber++;
-            }
+            if (adapterBalances[i].tokenBalances.length > 0) nonZeroTokenBalancesNumber++;
         }
 
         return nonZeroTokenBalancesNumber;
@@ -239,9 +229,7 @@ contract ProtocolAdapterRegistry is IProtocolAdapterRegistry, Ownable, AdapterMa
         nonZeroTokenBalancesNumber = 0;
 
         for (uint256 i = 0; i < length; i++) {
-            if (tokenBalances[i].amount > 0) {
-                nonZeroTokenBalancesNumber++;
-            }
+            if (tokenBalances[i].amount > 0) nonZeroTokenBalancesNumber++;
         }
 
         return nonZeroTokenBalancesNumber;

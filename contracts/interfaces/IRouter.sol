@@ -83,4 +83,15 @@ interface IRouter is ITokensHandler, ISignatureVerifier {
         AccountSignature calldata accountSignature,
         ProtocolFeeSignature calldata protocolFeeSignature
     ) external payable returns (uint256 inputBalanceChange, uint256 outputBalanceChange);
+
+    /**
+     * @notice Function for the account signature cancellation
+     * @notice See `execute()` function for params descriptions
+     */
+    function cancelAccountSignature(
+        Input calldata input,
+        AbsoluteTokenAmount calldata absoluteOutput,
+        SwapDescription calldata swapDescription,
+        AccountSignature calldata accountSignature
+    ) external;
 }

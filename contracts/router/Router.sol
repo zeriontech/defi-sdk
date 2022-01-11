@@ -48,7 +48,9 @@ import {
     NoneAmountType,
     NonePermitType,
     NoneSwapType,
-    PassedDeadline
+    PassedDeadline,
+    ZeroInputToken,
+    ZeroOutputToken
 } from "../shared/Errors.sol";
 import { Ownable } from "../shared/Ownable.sol";
 import {
@@ -76,6 +78,21 @@ contract Router is
     ReentrancyGuard
 {
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+
+    /**
+     * @inheritdoc IRouter
+     */
+    function cancelAccountSignature(
+        Input calldata input,
+        AbsoluteTokenAmount calldata output,
+        SwapDescription calldata swapDescription,
+        AccountSignature calldata accountSignature
+    ) external override nonReentrant {
+        if (msg.sender != swapDescription.account)
+            revert BadAccount(msg.sender, swapDescription.account);
+
+        validateAccountSignature(input, output, swapDescription, accountSignature);
+    }
 
     /**
      * @inheritdoc IRouter
@@ -109,6 +126,8 @@ contract Router is
         AbsoluteTokenAmount calldata output,
         SwapDescription calldata swapDescription
     ) internal returns (uint256 inputBalanceChange, uint256 outputBalanceChange) {
+        if (input.tokenAmount.token == address(0)) revert ZeroInputToken();
+        if (output.token == address(0)) revert ZeroOutputToken();
         // Calculate absolute amount in case it was relative
         uint256 absoluteInputAmount = getAbsoluteInputAmount(
             input.tokenAmount,
@@ -235,13 +254,6 @@ contract Router is
         uint256 absoluteInputAmount,
         address account
     ) internal {
-        if (token == address(0)) {
-            if (absoluteInputAmount > 0) {
-                revert BadAbsoluteInputAmount(absoluteInputAmount, 0);
-            }
-            return;
-        }
-
         uint256 allowance = IERC20(token).allowance(account, address(this));
         if (allowance < absoluteInputAmount) {
             if (permit.permitCallData.length == 0)
@@ -269,13 +281,22 @@ contract Router is
         address caller,
         bytes calldata callerCallData
     ) internal {
+        if (token == ETH) {
+            Address.functionCallWithValue(
+                caller,
+                abi.encodeWithSelector(ICaller.callBytes.selector, callerCallData),
+                amount,
+                "R: payable callBytes failed w/ no reason"
+            );
+            return;
+        }
+
         Base.safeApproveMax(token, caller, amount);
 
-        Address.functionCallWithValue(
+        Address.functionCall(
             caller,
             abi.encodeWithSelector(ICaller.callBytes.selector, callerCallData),
-            token == ETH ? amount : 0,
-            "R: callBytes"
+            "R: callBytes failed w/ no reason"
         );
     }
 
@@ -315,7 +336,7 @@ contract Router is
     }
 
     /**
-     * @dev Validates signature for the account
+     * @dev Validates signature for the account and marks it as used
      * @dev All the parameters are described in `execute()` function
      * @dev In case of empty signature, account address must be equal to the sender address
      */
@@ -326,21 +347,26 @@ contract Router is
         AccountSignature calldata accountSignature
     ) internal {
         if (accountSignature.signature.length == 0) {
-            if (swapDescription.account != msg.sender)
-                revert BadAccount(swapDescription.account, msg.sender);
+            if (msg.sender != swapDescription.account)
+                revert BadAccount(msg.sender, swapDescription.account);
             return;
         }
-        bytes32 hashedData = hashData(input, output, swapDescription, accountSignature.salt);
+        bytes32 hashedAccountSignatureData = hashAccountSignatureData(
+            input,
+            output,
+            swapDescription,
+            accountSignature.salt
+        );
 
         if (
             !SignatureChecker.isValidSignatureNow(
                 swapDescription.account,
-                hashedData,
+                hashedAccountSignatureData,
                 accountSignature.signature
             )
         ) revert BadAccountSignature();
 
-        markHashUsed(hashedData);
+        markHashUsed(hashedAccountSignatureData);
     }
 
     /**
@@ -370,7 +396,7 @@ contract Router is
         if (protocolFee.share > baseProtocolFee.share)
             revert ExceedingLimitFee(protocolFee.share, baseProtocolFee.share);
 
-        bytes32 hashedData = hashData(
+        bytes32 hashedProtocolFeeSignatureData = hashProtocolFeeSignatureData(
             input,
             output,
             swapDescription,
@@ -380,7 +406,7 @@ contract Router is
         if (
             !SignatureChecker.isValidSignatureNow(
                 getProtocolFeeSigner(),
-                hashedData,
+                hashedProtocolFeeSignatureData,
                 protocolFeeSignature.signature
             )
         ) revert BadFeeSignature();
@@ -393,7 +419,7 @@ contract Router is
 
     /**
      * @dev Calculate absolute input amount given token amount from `execute()` function inputs
-     * @dev Can not be used with `address(0)` token or Ether
+     * @dev Relative amount type cannot be used with Ether
      * @param tokenAmount Token address, its amount, and amount type
      * @param account Address of the account to transfer token from
      * @return absoluteTokenAmount Absolute token amount
@@ -409,8 +435,7 @@ contract Router is
 
         if (amountType == AmountType.Absolute) return tokenAmount.amount;
 
-        if (tokenAmount.token == address(0) || tokenAmount.token == ETH)
-            revert BadAmountType(amountType, AmountType.Absolute);
+        if (tokenAmount.token == ETH) revert BadAmountType(amountType, AmountType.Absolute);
 
         if (tokenAmount.amount > DELIMITER) revert ExceedingDelimiterAmount(tokenAmount.amount);
 
@@ -461,14 +486,14 @@ contract Router is
         // Minus one in the denominator is used to eliminate precision issues
         returnedAmount = (swapDescription.swapType == SwapType.FixedOutputs)
             ? outputAmount
-            : (outputBalanceChange * DELIMITER / (DELIMITER + totalFeeShare - 1));
+            : ((outputBalanceChange * DELIMITER) / (DELIMITER + totalFeeShare - 1));
 
         uint256 totalFeeAmount = outputBalanceChange - returnedAmount;
 
         // This check is important in fixed outputs case as we never actually check that
-        // total output amount is not too large and should always just pass in fixed inputs case
-        if (totalFeeAmount * DELIMITER  > totalFeeShare * returnedAmount)
-            revert BadFeeAmount(totalFeeAmount, returnedAmount * totalFeeShare / DELIMITER);
+        // total fee amount is not too large and should always just pass in fixed inputs case
+        if (totalFeeAmount * DELIMITER > totalFeeShare * returnedAmount)
+            revert BadFeeAmount(totalFeeAmount, (returnedAmount * totalFeeShare) / DELIMITER);
 
         protocolFeeAmount = (totalFeeAmount * swapDescription.protocolFee.share) / totalFeeShare;
         marketplaceFeeAmount = totalFeeAmount - protocolFeeAmount;

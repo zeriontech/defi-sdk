@@ -17,6 +17,9 @@
 
 pragma solidity 0.8.10;
 
+/**
+ * @title Abstract contract with basic Ownable functionality and two-step ownership transfer
+ */
 abstract contract Ownable {
     address private pendingOwner_;
     address private owner_;
@@ -79,14 +82,14 @@ abstract contract Ownable {
     /**
      * @return owner Owner of the contract
      */
-    function getOwner() public view returns (address owner) {
+    function getOwner() external view returns (address owner) {
         return owner_;
     }
 
     /**
      * @return pendingOwner Pending owner of the contract
      */
-    function getPendingOwner() public view returns (address pendingOwner) {
+    function getPendingOwner() external view returns (address pendingOwner) {
         return pendingOwner_;
     }
 }

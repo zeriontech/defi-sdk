@@ -17,7 +17,7 @@ const { AddressZero } = ethers.constants; // MaxUint256
 const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;
 const SWAP_FIXED_INPUTS = 1;
-const SWAP_FIXED_OUTPUTS = 2;
+// const SWAP_FIXED_OUTPUTS = 2;
 const EMPTY_BYTES = '0x';
 
 const zeroFee = [ethers.BigNumber.from('0'), AddressZero];
@@ -113,9 +113,9 @@ describe('Router', () => {
     await expect(
       router.functions.execute(
         // input
-        [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [AddressZero, '0'],
+        [ethAddress, '0'],
         // swap description
         [
           SWAP_FIXED_INPUTS,
@@ -137,9 +137,9 @@ describe('Router', () => {
     await expect(
       router.functions.execute(
         // input
-        [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [AddressZero, '0'],
+        [ethAddress, '0'],
         // swap description
         [
           SWAP_FIXED_INPUTS,
@@ -157,27 +157,12 @@ describe('Router', () => {
     ).to.be.reverted;
   });
 
-  it('should do empty trade', async () => {
-    await router.functions.execute(
-      // input
-      [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
-      // output
-      [AddressZero, '0'],
-      // swap description
-      [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
-      // account signature
-      zeroSignature,
-      // fee signature
-      zeroSignature,
-    );
-  });
-
   it('should do empty ether trade', async () => {
     await router.functions.execute(
       // input
       [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
       // output
-      [AddressZero, '0'],
+      [ethAddress, '0'],
       // swap description
       [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
       // account signature
@@ -187,11 +172,45 @@ describe('Router', () => {
     );
   });
 
-  it('should not execute with bad amount type', async () => {
+  it('should not do trade with low return amount', async () => {
     await expect(
       router.functions.execute(
         // input
-        [[AddressZero, ethers.utils.parseUnits('0', 18), '0'], zeroPermit],
+        [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [ethAddress, '1'],
+        // swap description
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should not do trade with zero input token', async () => {
+    await expect(
+      router.functions.execute(
+        // input
+        [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [ethAddress, '0'],
+        // swap description
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
+  it('should not do trade with zero output token', async () => {
+    await expect(
+      router.functions.execute(
+        // input
+        [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
         [AddressZero, '0'],
         // swap description
@@ -204,13 +223,13 @@ describe('Router', () => {
     ).to.be.reverted;
   });
 
-  it('should not execute with relative amount for zero token', async () => {
+  it('should not execute with bad amount type', async () => {
     await expect(
       router.functions.execute(
         // input
-        [[AddressZero, ethers.utils.parseUnits('1', 18), AMOUNT_RELATIVE], zeroPermit],
+        [[ethAddress, ethers.utils.parseUnits('0', 18), '0'], zeroPermit],
         // output
-        [AddressZero, '0'],
+        [ethAddress, '0'],
         // swap description
         [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
         // account signature
@@ -227,7 +246,7 @@ describe('Router', () => {
         // input
         [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_RELATIVE], zeroPermit],
         // output
-        [AddressZero, '0'],
+        [ethAddress, '0'],
         // swap description
         [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
         // account signature
@@ -251,7 +270,7 @@ describe('Router', () => {
           zeroPermit,
         ],
         // output
-        [AddressZero, '0'],
+        [ethAddress, '0'],
         // swap description
         [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
         // account signature
@@ -265,19 +284,17 @@ describe('Router', () => {
   it('should execute with relative amount equal to delimeter', async () => {
     await mockToken.mock.balanceOf.returns(1000);
     await mockToken.mock.allowance.returns(1000);
-    await expect(
-      router.functions.execute(
-        // input
-        [[mockToken.address, ethers.utils.parseUnits('1', 18), AMOUNT_RELATIVE], zeroPermit],
-        // output
-        [AddressZero, '0'],
-        // swap description
-        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
-        // account signature
-        zeroSignature,
-        // fee signature
-        zeroSignature,
-      ),
+    await router.functions.execute(
+      // input
+      [[mockToken.address, ethers.utils.parseUnits('1', 18), AMOUNT_RELATIVE], zeroPermit],
+      // output
+      [ethAddress, '0'],
+      // swap description
+      [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
     );
   });
 
@@ -289,7 +306,7 @@ describe('Router', () => {
         // input
         [[mockToken.address, ethers.utils.parseUnits('0.5', 18), AMOUNT_RELATIVE], zeroPermit],
         // output
-        [AddressZero, '0'],
+        [ethAddress, '0'],
         // swap description
         [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
         // account signature
@@ -306,24 +323,7 @@ describe('Router', () => {
         // input
         [[ethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [AddressZero, '0'],
-        // swap description
-        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
-        // account signature
-        zeroSignature,
-        // fee signature
-        zeroSignature,
-      ),
-    ).to.be.reverted;
-  });
-
-  it('should not execute if address(0) amount is greater than 0', async () => {
-    await expect(
-      router.functions.execute(
-        // input
-        [[AddressZero, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
-        // output
-        [AddressZero, '0'],
+        [ethAddress, '0'],
         // swap description
         [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
         // account signature
@@ -342,7 +342,7 @@ describe('Router', () => {
         // input
         [[mockToken.address, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [AddressZero, '0'],
+        [ethAddress, '0'],
         // swap description
         [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
         // account signature
@@ -357,9 +357,9 @@ describe('Router', () => {
     await expect(
       router.functions.execute(
         // input
-        [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [AddressZero, '0'],
+        [ethAddress, '0'],
         // swap description
         ['0', zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
         // account signature
@@ -374,9 +374,9 @@ describe('Router', () => {
     await expect(
       router.functions.execute(
         // input
-        [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [AddressZero, '0'],
+        [ethAddress, '0'],
         // swap description
         [SWAP_FIXED_INPUTS, zeroFee, zeroFee, notOwner.address, mockCaller.address, EMPTY_BYTES],
         // account signature
@@ -387,27 +387,12 @@ describe('Router', () => {
     ).to.be.reverted;
   });
 
-  it('should execute with fixed outputs', async () => {
-    await router.functions.execute(
-      // input
-      [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
-      // output
-      [AddressZero, '0'],
-      // swap description
-      [SWAP_FIXED_OUTPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
-      // account signature
-      zeroSignature,
-      // fee signature
-      zeroSignature,
-    );
-  });
-
   it('should execute with non-zero marketplace fee ', async () => {
     await router.functions.execute(
       // input
-      [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+      [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
       // output
-      [AddressZero, '0'],
+      [ethAddress, '0'],
       // swap description
       [
         SWAP_FIXED_INPUTS,
@@ -428,9 +413,9 @@ describe('Router', () => {
     await expect(
       router.functions.execute(
         // input
-        [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [AddressZero, '0'],
+        [ethAddress, '0'],
         // swap description
         [
           SWAP_FIXED_INPUTS,
@@ -459,7 +444,7 @@ describe('Router', () => {
           ['0', '0xd505accf'],
         ],
         // output
-        [AddressZero, '0'],
+        [ethAddress, '0'],
         // swap description
         [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
         // account signature
@@ -485,7 +470,7 @@ describe('Router', () => {
         ['1', '0xd505accf'],
       ],
       // output
-      [AddressZero, '0'],
+      [ethAddress, '0'],
       // swap description
       [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
       // account signature
@@ -510,7 +495,7 @@ describe('Router', () => {
         ['2', '0x8fcbaf0c'],
       ],
       // output
-      [AddressZero, '0'],
+      [ethAddress, '0'],
       // swap description
       [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
       // account signature
@@ -535,7 +520,7 @@ describe('Router', () => {
         ['3', '0x9fd5a6cf'],
       ],
       // output
-      [AddressZero, '0'],
+      [ethAddress, '0'],
       // swap description
       [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
       // account signature

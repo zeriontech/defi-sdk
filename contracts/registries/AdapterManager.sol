@@ -40,9 +40,7 @@ abstract contract AdapterManager is IAdapterManager, Ownable {
         onlyOwner
     {
         uint256 length = adaptersNamesAndAddresses.length;
-        if (length == 0) {
-            revert ZeroLength();
-        }
+        if (length == 0) revert ZeroLength();
 
         for (uint256 i = 0; i < length; i++) {
             setAdapter(adaptersNamesAndAddresses[i].name, adaptersNamesAndAddresses[i].adapter);

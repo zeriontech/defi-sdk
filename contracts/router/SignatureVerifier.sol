@@ -20,7 +20,7 @@ pragma solidity 0.8.10;
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 
 import { ISignatureVerifier } from "../interfaces/ISignatureVerifier.sol";
-import { BadHash } from "../shared/Errors.sol";
+import { UsedHash } from "../shared/Errors.sol";
 import {
     AbsoluteTokenAmount,
     AccountSignature,
@@ -35,14 +35,38 @@ import {
 contract SignatureVerifier is ISignatureVerifier, EIP712 {
     mapping(bytes32 => bool) private isHashUsed_;
 
-    bytes32 internal constant EXECUTE_TYPEHASH =
+    bytes32 internal constant ACCOUNT_SIGNATURE_TYPEHASH =
         keccak256(
             abi.encodePacked(
-                "Execute(",
+                "AccountSignature(",
                 "Input input,",
                 "AbsoluteTokenAmount output,",
                 "SwapDescription swapDescription,",
                 "uint256 salt",
+                ")",
+                "AbsoluteTokenAmount(address token,uint256 absoluteAmount)",
+                "Fee(uint256 share,address beneficiary)",
+                "Input(TokenAmount tokenAmount,Permit permit)",
+                "Permit(uint8 permitType,bytes permitCallData)",
+                "SwapDescription(",
+                "uint8 swapType,",
+                "Fee protocolFee,",
+                "Fee marketplaceFee,",
+                "address account,",
+                "address caller,",
+                "bytes callerCallData",
+                ")",
+                "TokenAmount(address token,uint256 amount,uint8 amountType)"
+            )
+        );
+    bytes32 internal constant PROTOCOL_FEE_SIGNATURE_TYPEHASH =
+        keccak256(
+            abi.encodePacked(
+                "ProtocolFeeSignature(",
+                "Input input,",
+                "AbsoluteTokenAmount output,",
+                "SwapDescription swapDescription,",
+                "uint256 deadline",
                 ")",
                 "AbsoluteTokenAmount(address token,uint256 absoluteAmount)",
                 "Fee(uint256 share,address beneficiary)",
@@ -101,25 +125,38 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
     /**
      * @inheritdoc ISignatureVerifier
      */
-    function isHashUsed(bytes32 hashToCheck)
-        public
-        view
-        override
-        returns (bool hashUsed)
-    {
+    function isHashUsed(bytes32 hashToCheck) external view override returns (bool hashUsed) {
         return isHashUsed_[hashToCheck];
     }
 
     /**
      * @inheritdoc ISignatureVerifier
      */
-    function hashData(
+    function hashAccountSignatureData(
         Input memory input,
         AbsoluteTokenAmount memory output,
         SwapDescription memory swapDescription,
         uint256 salt
     ) public view override returns (bytes32 hashedData) {
-        return _hashTypedDataV4(hash(input, output, swapDescription, salt));
+        return
+            _hashTypedDataV4(
+                hash(ACCOUNT_SIGNATURE_TYPEHASH, input, output, swapDescription, salt)
+            );
+    }
+
+    /**
+     * @inheritdoc ISignatureVerifier
+     */
+    function hashProtocolFeeSignatureData(
+        Input memory input,
+        AbsoluteTokenAmount memory output,
+        SwapDescription memory swapDescription,
+        uint256 deadline
+    ) public view override returns (bytes32 hashedData) {
+        return
+            _hashTypedDataV4(
+                hash(PROTOCOL_FEE_SIGNATURE_TYPEHASH, input, output, swapDescription, deadline)
+            );
     }
 
     /**
@@ -127,12 +164,13 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
      * @param hashToMark Hash to be marked as used one.
      */
     function markHashUsed(bytes32 hashToMark) internal {
-        if (isHashUsed_[hashToMark]) revert BadHash(hashToMark);
+        if (isHashUsed_[hashToMark]) revert UsedHash(hashToMark);
 
         isHashUsed_[hashToMark] = true;
     }
 
     /**
+     * @param typehash The required signature typehash
      * @param input Input described in `hashDada()` function
      * @param output Outut described in `hashDada()` function
      * @param swapDescription Swap parameters described in `hashDada()` function
@@ -141,6 +179,7 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
      * @return `execute()` function data hashed
      */
     function hash(
+        bytes32 typehash,
         Input memory input,
         AbsoluteTokenAmount memory output,
         SwapDescription memory swapDescription,
@@ -148,13 +187,7 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
     ) internal pure returns (bytes32) {
         return
             keccak256(
-                abi.encode(
-                    EXECUTE_TYPEHASH,
-                    hash(input),
-                    hash(output),
-                    hash(swapDescription),
-                    salt
-                )
+                abi.encode(typehash, hash(input), hash(output), hash(swapDescription), salt)
             );
     }
 

@@ -17,27 +17,25 @@
 
 pragma solidity 0.8.10;
 
-import { ITokensHandler } from "../interfaces/ITokensHandler.sol";
-
-import { Base } from "./Base.sol";
-import { Ownable } from "./Ownable.sol";
-
 /**
- * @title Abstract contract returning tokens lost on the contract
+ * @title Abstract contract storing Wrapped Ether address for the current chain
  */
-abstract contract TokensHandler is ITokensHandler, Ownable {
-    receive() external payable {
-        // solhint-disable-previous-line no-empty-blocks
+abstract contract Weth {
+    address private immutable weth_;
+
+    /**
+     * @notice Sets Wrapped Ether address for the current chain
+     * @param weth Wrapped Ether address
+     */
+    constructor(address weth) {
+        weth_ = weth;
     }
 
     /**
-     * @inheritdoc ITokensHandler
+     * @notice Returns Wrapped Ether address for the current chain
+     * @return weth Wrapped Ether address
      */
-    function returnLostTokens(
-        address token,
-        address payable beneficiary,
-        uint256 amount
-    ) external onlyOwner {
-        Base.transfer(token, beneficiary, amount);
+    function getWeth() public view returns (address weth) {
+        return weth_;
     }
 }
