@@ -126,20 +126,20 @@ contract Router is
         AbsoluteTokenAmount calldata output,
         SwapDescription calldata swapDescription
     ) internal returns (uint256 inputBalanceChange, uint256 outputBalanceChange) {
-        if (input.tokenAmount.token == address(0)) revert ZeroInputToken();
-        if (output.token == address(0)) revert ZeroOutputToken();
         // Calculate absolute amount in case it was relative
         uint256 absoluteInputAmount = getAbsoluteInputAmount(
             input.tokenAmount,
             swapDescription.account
         );
 
-        // Transfer input token (`msg.value` check for Ether) to this address
-        handleInput(input, absoluteInputAmount, swapDescription.account);
+        // Transfer input token (`msg.value` check for Ether) to this address,
+        // except for the case of `address(0)` input token address
+        if (input.tokenAmount.token != address(0))
+            handleInput(input, absoluteInputAmount, swapDescription.account);
 
         // Calculate the initial balances for input and output tokens
-        uint256 initialInputBalance = Base.getBalance(input.tokenAmount.token);
-        uint256 initialOutputBalance = Base.getBalance(output.token);
+        uint256 initialInputBalance = getBalance(input.tokenAmount.token);
+        uint256 initialOutputBalance = getBalance(output.token);
 
         // Approve tokens (if necessary) and call the caller with the provided call data
         approveAndCall(
@@ -150,8 +150,8 @@ contract Router is
         );
 
         // Calculate the balance changes for input and output tokens
-        inputBalanceChange = initialInputBalance - Base.getBalance(input.tokenAmount.token);
-        outputBalanceChange = Base.getBalance(output.token) - initialOutputBalance;
+        inputBalanceChange = initialInputBalance - getBalance(input.tokenAmount.token);
+        outputBalanceChange = getBalance(output.token) - initialOutputBalance;
 
         // Refund (if necessary) and distribute output tokens and fees
         {
@@ -174,25 +174,29 @@ contract Router is
                 revert LowOutputBalanceChange(returnedAmount, output.absoluteAmount);
             }
 
-            // Transfer the refund back to the user
+            // Transfer the refund back to the user,
+            // the only transfer in case of `address(0)` output token address
             Base.transfer(input.tokenAmount.token, swapDescription.account, refundAmount);
 
-            // Transfer the output tokens to the user
-            Base.transfer(output.token, swapDescription.account, returnedAmount);
+            // Do the rest of transfers if necessary
+            if (output.token != address(0)) {
+                // Transfer the output tokens to the user
+                Base.transfer(output.token, swapDescription.account, returnedAmount);
 
-            // Transfer protocol fee
-            Base.transfer(
-                output.token,
-                swapDescription.protocolFee.beneficiary,
-                protocolFeeAmount
-            );
+                // Transfer protocol fee
+                Base.transfer(
+                    output.token,
+                    swapDescription.protocolFee.beneficiary,
+                    protocolFeeAmount
+                );
 
-            // Transfer marketplace fee
-            Base.transfer(
-                output.token,
-                swapDescription.marketplaceFee.beneficiary,
-                marketplaceFeeAmount
-            );
+                // Transfer marketplace fee
+                Base.transfer(
+                    output.token,
+                    swapDescription.marketplaceFee.beneficiary,
+                    marketplaceFeeAmount
+                );
+            }
 
             // Emit event so one could track the swap
             emitExecuted(
@@ -442,6 +446,17 @@ contract Router is
         if (tokenAmount.amount == DELIMITER) return IERC20(tokenAmount.token).balanceOf(account);
 
         return (IERC20(tokenAmount.token).balanceOf(account) * tokenAmount.amount) / DELIMITER;
+    }
+
+    /**
+     * @notice Calculates the token balance for `this` contract address
+     * @param token Adress of the token
+     * @dev Returns 0 for `address(0)` token address
+     */
+    function getBalance(address token) internal view returns (uint256) {
+        if (token == address(0)) return uint256(0);
+
+        return Base.getBalance(token, address(this));
     }
 
     /**

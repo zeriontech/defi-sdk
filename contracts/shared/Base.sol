@@ -85,13 +85,4 @@ library Base {
 
         return IERC20(token).balanceOf(account);
     }
-
-    /**
-     * @notice Calculates the token balance for `this` contract address
-     * @param token Adress of the token
-     * @dev Should not be used with `address(0)` token address
-     */
-    function getBalance(address token) internal view returns (uint256) {
-        return getBalance(token, address(this));
-    }
 }

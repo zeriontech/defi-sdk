@@ -59,9 +59,13 @@ interface IRouter is ITokensHandler, ISignatureVerifier {
     /**
      * @notice Main function executing the swaps
      * @param input Token and amount (relative or absolute) to be taken from the account address,
-     * also, permit type and call data may provided if required
+     *     also, permit type and call data may provided if required
+     * @dev `address(0)` may be used as input token address,
+     *     in this case no tokens will be taken from the user, `inputBalanceChange` will be zero
      * @param absoluteOutput Token and absolute amount requirement
      *     to be returned to the account address
+     * @dev `address(0)` may be used as input token address,
+     *     in this case no tokens will be returned to the user, `outputBalanceChange` will be zero
      * @param swapDescription Swap description with the following elements:\n
      *     - Whether the inputs or outputs are fixed
      *     - Protocol fee share and beneficiary address
