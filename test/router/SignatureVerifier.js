@@ -4,7 +4,7 @@ import { ethAddress } from '../helpers/tokens';
 const { expect } = require('chai');
 
 const { waffle, ethers } = require('hardhat');
-const CallerArtifacts = require('../../artifacts/contracts/callers/ZerionCaller.sol/ZerionCaller.json');
+const CallerArtifacts = require('../../artifacts/contracts/callers/SimpleCaller.sol/SimpleCaller.json');
 
 const { deployMockContract, provider } = waffle;
 const { AddressZero } = ethers.constants;
@@ -18,7 +18,7 @@ const zeroFee = [ethers.BigNumber.from('0'), AddressZero];
 const zeroPermit = ['0', EMPTY_BYTES];
 const zeroSignature = ['0', EMPTY_BYTES];
 
-describe('SignatureVerifier', () => {
+describe.only('SignatureVerifier', () => {
   let owner;
   let notOwner;
   let Router;
@@ -142,7 +142,7 @@ describe('SignatureVerifier', () => {
     //   // double usage protection param
     //   salt,
     // );
-    const hashedData = '0x9539df1abbc40752ca8b9a403529fb2043e12291c4db5d1dda2b0a7767e8ca94';
+    const hashedData = '0x323239fa50e451282a8c9abc62c090179ad9d14e2bf1e024261fddf73b339aeb';
 
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;
@@ -300,7 +300,7 @@ describe('SignatureVerifier', () => {
     //   // double usage protection param
     //   salt,
     // );
-    const hashedData = '0xd4177ebab7e0d38c28cec29760ce325750befd4a4d3b5c27e7679f972d2af046';
+    const hashedData = '0x08a08bada576a615ef922017ef5b0c9df686aae374a2922ca52449741691acae';
 
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;

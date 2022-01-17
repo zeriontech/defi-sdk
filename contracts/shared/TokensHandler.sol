@@ -33,11 +33,7 @@ abstract contract TokensHandler is ITokensHandler, Ownable {
     /**
      * @inheritdoc ITokensHandler
      */
-    function returnLostTokens(
-        address token,
-        address payable beneficiary,
-        uint256 amount
-    ) external onlyOwner {
-        Base.transfer(token, beneficiary, amount);
+    function returnLostTokens(address token, address payable beneficiary) external onlyOwner {
+        Base.transfer(token, beneficiary, Base.getBalance(token));
     }
 }

@@ -55,24 +55,24 @@ describe('Router', () => {
 
   it('should return lost tokens', async () => {
     await mockToken.mock.balanceOf.returns(1000);
-    await router.returnLostTokens(mockToken.address, owner.address, '1000');
+    await router.returnLostTokens(mockToken.address, owner.address);
   });
 
   it('should not return lost tokens if receiver cannot receive', async () => {
     await owner.sendTransaction({ to: router.address, value: ethers.utils.parseEther('1') });
     await expect(
-      router.returnLostTokens(ethAddress, mockToken.address, ethers.utils.parseEther('1')),
+      router.returnLostTokens(ethAddress, mockToken.address),
     ).to.be.reverted;
   });
 
   it('should not return lost tokens if receiver is zero', async () => {
     await mockToken.mock.balanceOf.returns(1000);
-    await expect(router.returnLostTokens(mockToken.address, AddressZero, '1000')).to.be.reverted;
+    await expect(router.returnLostTokens(mockToken.address, AddressZero)).to.be.reverted;
   });
 
   it('should not return lost tokens if called not by the owner', async () => {
     await mockToken.mock.balanceOf.returns(1000);
-    await expect(router.connect(notOwner).returnLostTokens(mockToken.address, owner.address, '1'))
+    await expect(router.connect(notOwner).returnLostTokens(mockToken.address, owner.address))
       .to.be.reverted;
   });
 
@@ -189,11 +189,26 @@ describe('Router', () => {
     ).to.be.reverted;
   });
 
-  it('should not do trade with zero input token', async () => {
+  it('should do trade with zero input token', async () => {
+    await router.functions.execute(
+      // input
+      [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+      // output
+      [ethAddress, '0'],
+      // swap description
+      [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
+    );
+  });
+
+  it('should do trade with zero input token and non-zero amount', async () => {
     await expect(
       router.functions.execute(
         // input
-        [[AddressZero, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        [[AddressZero, '1', AMOUNT_ABSOLUTE], zeroPermit],
         // output
         [ethAddress, '0'],
         // swap description
@@ -206,13 +221,28 @@ describe('Router', () => {
     ).to.be.reverted;
   });
 
-  it('should not do trade with zero output token', async () => {
+  it('should do trade with zero output token', async () => {
+    await router.functions.execute(
+      // input
+      [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
+      // output
+      [AddressZero, '0'],
+      // swap description
+      [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
+    );
+  });
+
+  it('should not do trade with zero output tokenand non-zero amount', async () => {
     await expect(
       router.functions.execute(
         // input
         [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [AddressZero, '0'],
+        [AddressZero, '1'],
         // swap description
         [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
         // account signature

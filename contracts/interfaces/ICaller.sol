@@ -17,14 +17,15 @@
 
 pragma solidity 0.8.10;
 
-import { AbsoluteTokenAmount, AbsoluteInput } from "../shared/Structs.sol";
+import { AbsoluteTokenAmount } from "../shared/Structs.sol";
 
 import { ITokensHandler } from "./ITokensHandler.sol";
 
 interface ICaller is ITokensHandler {
     /**
      * @notice Main external function: implements all the caller specific logic
+     * @param input AbsoluteTokenAmount struct with input token and absolute amount
      * @param callerCallData ABI-encoded parameters depending on the caller logic
      */
-    function callBytes(bytes calldata callerCallData) external payable;
+    function callBytes(AbsoluteTokenAmount calldata input, bytes calldata callerCallData) external;
 }

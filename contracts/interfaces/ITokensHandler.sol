@@ -22,12 +22,7 @@ interface ITokensHandler {
      * @notice Returns tokens mistakenly sent to this contract
      * @param token Address of token
      * @param beneficiary Address that will receive tokens
-     * @param amount Amount of tokens to return
      * @dev Can be called only by the owner
      */
-    function returnLostTokens(
-        address token,
-        address payable beneficiary,
-        uint256 amount
-    ) external;
+    function returnLostTokens(address token, address payable beneficiary) external;
 }

@@ -61,11 +61,11 @@ interface IRouter is ITokensHandler, ISignatureVerifier {
      * @param input Token and amount (relative or absolute) to be taken from the account address,
      *     also, permit type and call data may provided if required
      * @dev `address(0)` may be used as input token address,
-     *     in this case no tokens will be taken from the user, `inputBalanceChange` will be zero
+     *     in this case no tokens will be taken from the user
      * @param absoluteOutput Token and absolute amount requirement
      *     to be returned to the account address
-     * @dev `address(0)` may be used as input token address,
-     *     in this case no tokens will be returned to the user, `outputBalanceChange` will be zero
+     * @dev `address(0)` may be used as output token address,
+     *     in this case no tokens will be returned to the user, no fees are applied
      * @param swapDescription Swap description with the following elements:\n
      *     - Whether the inputs or outputs are fixed
      *     - Protocol fee share and beneficiary address
@@ -76,7 +76,8 @@ interface IRouter is ITokensHandler, ISignatureVerifier {
      * @param accountSignature Signature for the relayed transaction
      *     (checks that account address is the one who actually did a signature)
      * @param protocolFeeSignature Signature for the discounted protocol fee
-     *     (checks that current protocol fee signer is the one who actually did a signature)
+     *     (checks that current protocol fee signer is the one who actually did a signature),
+     *     this signature may be reused multiple times until the deadline
      * @return inputBalanceChange Input token balance change
      * @return outputBalanceChange Output token balance change (including fees)
      */

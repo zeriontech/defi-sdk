@@ -57,7 +57,7 @@ contract ProtocolFee is IProtocolFee, Ownable {
      * @inheritdoc IProtocolFee
      */
     function setProtocolFeeDefault(Fee calldata protocolFeeDefault) external override onlyOwner {
-        if (protocolFeeDefault.share > 0 && protocolFeeDefault.beneficiary == address(0))
+        if (protocolFeeDefault.share > uint256(0) && protocolFeeDefault.beneficiary == address(0))
             revert ZeroFeeBeneficiary();
         if (protocolFeeDefault.share > DELIMITER)
             revert BadFeeShare(protocolFeeDefault.share, DELIMITER);

@@ -110,13 +110,6 @@ struct Input {
     Permit permit;
 }
 
-// The struct consists of token address, its absolute amount,
-// as well as permit type and call data
-struct AbsoluteInput {
-    AbsoluteTokenAmount absoluteTokenAmount;
-    Permit permit;
-}
-
 // The struct consists of permit type and call data
 struct Permit {
     PermitType permitType;

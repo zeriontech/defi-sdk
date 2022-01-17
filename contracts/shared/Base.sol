@@ -21,7 +21,7 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
-import { FailedEtherTransfer, ZeroAccount, ZeroOutputToken } from "./Errors.sol";
+import { FailedEtherTransfer, ZeroAccount } from "./Errors.sol";
 
 /**
  * @title Library unifying transfer, approval, and getting balance for ERC20 tokens and Ether
@@ -67,7 +67,7 @@ library Base {
     ) internal {
         uint256 allowance = IERC20(token).allowance(address(this), spender);
         if (allowance < amount) {
-            if (allowance > 0) {
+            if (allowance > uint256(0)) {
                 IERC20(token).approve(spender, 0);
             }
             IERC20(token).approve(spender, type(uint256).max);
@@ -84,5 +84,16 @@ library Base {
         if (token == ETH) return account.balance;
 
         return IERC20(token).balanceOf(account);
+    }
+
+    /**
+     * @notice Calculates the token balance for `this` contract address
+     * @param token Adress of the token
+     * @dev Returns 0 for zero token address in order to handle empty token case
+     */
+    function getBalance(address token) internal view returns (uint256) {
+        if (token == address(0)) return uint256(0);
+
+        return Base.getBalance(token, address(this));
     }
 }

@@ -31,7 +31,7 @@ import { IYearnPermit } from "../interfaces/IYearnPermit.sol";
 import { Base } from "../shared/Base.sol";
 import { AmountType, PermitType, SwapType } from "../shared/Enums.sol";
 import {
-    BadAbsoluteInputAmount,
+    BadAmount,
     BadAccount,
     BadAccountSignature,
     BadAmountType,
@@ -48,9 +48,7 @@ import {
     NoneAmountType,
     NonePermitType,
     NoneSwapType,
-    PassedDeadline,
-    ZeroInputToken,
-    ZeroOutputToken
+    PassedDeadline
 } from "../shared/Errors.sol";
 import { Ownable } from "../shared/Ownable.sol";
 import {
@@ -132,28 +130,27 @@ contract Router is
             swapDescription.account
         );
 
-        // Transfer input token (`msg.value` check for Ether) to this address,
-        // except for the case of `address(0)` input token address
-        if (input.tokenAmount.token != address(0))
-            handleInput(input, absoluteInputAmount, swapDescription.account);
+        // Transfer input token (`msg.value` check for Ether) to this contract address,
+        // except for the case of zero input token address
+        address inputToken = input.tokenAmount.token;
+        if (inputToken != address(0))
+            handleInput(inputToken, absoluteInputAmount, input.permit, swapDescription.account);
 
-        // Calculate the initial balances for input and output tokens
-        uint256 initialInputBalance = getBalance(input.tokenAmount.token);
-        uint256 initialOutputBalance = getBalance(output.token);
+        // No need to save initial balances, so the following code is placed in a separate block
+        {
+            // Calculate the initial balances for input and output tokens
+            uint256 initialInputBalance = Base.getBalance(inputToken);
+            uint256 initialOutputBalance = Base.getBalance(output.token);
 
-        // Approve tokens (if necessary) and call the caller with the provided call data
-        approveAndCall(
-            input.tokenAmount.token,
-            absoluteInputAmount,
-            swapDescription.caller,
-            swapDescription.callerCallData
-        );
+            // Transfer tokens and call the caller with the provided call data
+            transferAndCall(inputToken, absoluteInputAmount, swapDescription);
 
-        // Calculate the balance changes for input and output tokens
-        inputBalanceChange = initialInputBalance - getBalance(input.tokenAmount.token);
-        outputBalanceChange = getBalance(output.token) - initialOutputBalance;
+            // Calculate the balance changes for input and output tokens
+            inputBalanceChange = initialInputBalance - Base.getBalance(inputToken);
+            outputBalanceChange = Base.getBalance(output.token) - initialOutputBalance;
+        }
 
-        // Refund (if necessary) and distribute output tokens and fees
+        // Return the remaining input tokens (if necessary) and distribute output tokens and fees
         {
             // Check input requirements, prevent the underflow
             if (inputBalanceChange > absoluteInputAmount)
@@ -167,18 +164,16 @@ contract Router is
                 uint256 returnedAmount,
                 uint256 protocolFeeAmount,
                 uint256 marketplaceFeeAmount
-            ) = getReturnedAmounts(swapDescription, outputBalanceChange, output.absoluteAmount);
+            ) = getReturnedAmounts(swapDescription, output, outputBalanceChange);
 
             // Check output requirements, prevent revert on transfers
-            if (returnedAmount < output.absoluteAmount) {
+            if (returnedAmount < output.absoluteAmount)
                 revert LowOutputBalanceChange(returnedAmount, output.absoluteAmount);
-            }
 
-            // Transfer the refund back to the user,
-            // the only transfer in case of `address(0)` output token address
-            Base.transfer(input.tokenAmount.token, swapDescription.account, refundAmount);
+            // Transfer the refund back to the user
+            Base.transfer(inputToken, swapDescription.account, refundAmount);
 
-            // Do the rest of transfers if necessary
+            // Do the rest of transfers in case output token address is not zero
             if (output.token != address(0)) {
                 // Transfer the output tokens to the user
                 Base.transfer(output.token, swapDescription.account, returnedAmount);
@@ -218,29 +213,31 @@ contract Router is
     /**
      * @dev Transfers input token from the accound address to this contract,
      *     calls `permit()` function if allowance is not enough and permit call data is provided
-     * @param input Input described in `execute()` function
-     * @param absoluteInputAmount Input token absolute amount allowed to be taken from the account
+     * @param token Input token address (may be Ether)
+     * @param amount Input token amount
+     * @param permit Permit type and call data, which is used if allowance is not enough
      * @param account Address of the account to take tokens from
      */
     function handleInput(
-        Input calldata input,
-        uint256 absoluteInputAmount,
+        address token,
+        uint256 amount,
+        Permit calldata permit,
         address account
     ) internal {
-        if (input.tokenAmount.token == ETH) {
-            handleETHInput(absoluteInputAmount);
+        if (token == ETH) {
+            handleETHInput(amount);
         } else {
-            handleTokenInput(input.tokenAmount.token, input.permit, absoluteInputAmount, account);
+            handleTokenInput(token, amount, permit, account);
         }
     }
 
     /**
      * @dev Checks `msg.value` to be greater or equal to the Ether absolute amount to be used
-     * @param absoluteInputAmount Ether absolute amount to be used
+     * @param amount Ether absolute amount to be used
      */
-    function handleETHInput(uint256 absoluteInputAmount) internal {
-        if (msg.value < absoluteInputAmount) {
-            revert InsufficientMsgValue(msg.value, absoluteInputAmount);
+    function handleETHInput(uint256 amount) internal {
+        if (msg.value < amount) {
+            revert InsufficientMsgValue(msg.value, amount);
         }
     }
 
@@ -248,20 +245,20 @@ contract Router is
      * @dev Transfers input token from the accound address to this contract,
      *     calls `permit()` function if allowance is not enough and permit call data is provided
      * @param token Token to be taken from the account address
+     * @param amount Input token absolute amount to be taken from the account
      * @param permit Permit type and call data, which is used if allowance is not enough
-     * @param absoluteInputAmount Input token absolute amount to be taken from the account
      * @param account Address of the account to take tokens from
      */
     function handleTokenInput(
         address token,
+        uint256 amount,
         Permit calldata permit,
-        uint256 absoluteInputAmount,
         address account
     ) internal {
         uint256 allowance = IERC20(token).allowance(account, address(this));
-        if (allowance < absoluteInputAmount) {
-            if (permit.permitCallData.length == 0)
-                revert InsufficientAllowance(allowance, absoluteInputAmount);
+        if (allowance < amount) {
+            if (permit.permitCallData.length == uint256(0))
+                revert InsufficientAllowance(allowance, amount);
 
             Address.functionCall(
                 token,
@@ -270,36 +267,29 @@ contract Router is
             );
         }
 
-        SafeERC20.safeTransferFrom(IERC20(token), account, address(this), absoluteInputAmount);
+        SafeERC20.safeTransferFrom(IERC20(token), account, address(this), amount);
     }
 
     /**
-     * @dev Approves input tokens (if necessary) and calls the caller with the provided call data
+     * @dev Transfers input tokens (if necessary) and calls the caller with the provided call data
      * @param token Token to be taken from this contract address
-     * @param caller Address of the contract that will be called
-     * @param callerCallData Call data for the call to the caller
+     * @param amount Amount of the token to be sent to the caller
+     * @param swapDescription Swap parameters described in `execute()` function
      */
-    function approveAndCall(
+    function transferAndCall(
         address token,
         uint256 amount,
-        address caller,
-        bytes calldata callerCallData
+        SwapDescription calldata swapDescription
     ) internal {
-        if (token == ETH) {
-            Address.functionCallWithValue(
-                caller,
-                abi.encodeWithSelector(ICaller.callBytes.selector, callerCallData),
-                amount,
-                "R: payable callBytes failed w/ no reason"
-            );
-            return;
-        }
-
-        Base.safeApproveMax(token, caller, amount);
+        if (token != address(0)) Base.transfer(token, swapDescription.caller, amount);
 
         Address.functionCall(
-            caller,
-            abi.encodeWithSelector(ICaller.callBytes.selector, callerCallData),
+            swapDescription.caller,
+            abi.encodeWithSelector(
+                ICaller.callBytes.selector,
+                AbsoluteTokenAmount({ token: token, absoluteAmount: amount }),
+                swapDescription.callerCallData
+            ),
             "R: callBytes failed w/ no reason"
         );
     }
@@ -350,7 +340,7 @@ contract Router is
         SwapDescription calldata swapDescription,
         AccountSignature calldata accountSignature
     ) internal {
-        if (accountSignature.signature.length == 0) {
+        if (accountSignature.signature.length == uint256(0)) {
             if (msg.sender != swapDescription.account)
                 revert BadAccount(msg.sender, swapDescription.account);
             return;
@@ -389,7 +379,7 @@ contract Router is
         Fee memory baseProtocolFee = getProtocolFeeDefault();
         Fee memory protocolFee = swapDescription.protocolFee;
 
-        if (protocolFeeSignature.signature.length == 0) {
+        if (protocolFeeSignature.signature.length == uint256(0)) {
             if (protocolFee.share != baseProtocolFee.share)
                 revert BadFeeShare(protocolFee.share, baseProtocolFee.share);
             if (protocolFee.beneficiary != baseProtocolFee.beneficiary)
@@ -423,7 +413,8 @@ contract Router is
 
     /**
      * @dev Calculate absolute input amount given token amount from `execute()` function inputs
-     * @dev Relative amount type cannot be used with Ether
+     * @dev Relative amount type cannot be used with Ether or zero token address
+     * @dev Only zero amount can be used with zero token address
      * @param tokenAmount Token address, its amount, and amount type
      * @param account Address of the account to transfer token from
      * @return absoluteTokenAmount Absolute token amount
@@ -434,29 +425,23 @@ contract Router is
         returns (uint256 absoluteTokenAmount)
     {
         AmountType amountType = tokenAmount.amountType;
+        address token = tokenAmount.token;
+        uint256 amount = tokenAmount.amount;
 
         if (amountType == AmountType.None) revert NoneAmountType();
 
-        if (amountType == AmountType.Absolute) return tokenAmount.amount;
+        if (token == address(0) && amount != uint256(0)) revert BadAmount(amount, uint256(0));
 
-        if (tokenAmount.token == ETH) revert BadAmountType(amountType, AmountType.Absolute);
+        if (amountType == AmountType.Absolute) return amount;
 
-        if (tokenAmount.amount > DELIMITER) revert ExceedingDelimiterAmount(tokenAmount.amount);
+        if (token == ETH || token == address(0))
+            revert BadAmountType(amountType, AmountType.Absolute);
 
-        if (tokenAmount.amount == DELIMITER) return IERC20(tokenAmount.token).balanceOf(account);
+        if (amount > DELIMITER) revert ExceedingDelimiterAmount(amount);
 
-        return (IERC20(tokenAmount.token).balanceOf(account) * tokenAmount.amount) / DELIMITER;
-    }
+        if (amount == DELIMITER) return IERC20(token).balanceOf(account);
 
-    /**
-     * @notice Calculates the token balance for `this` contract address
-     * @param token Adress of the token
-     * @dev Returns 0 for `address(0)` token address
-     */
-    function getBalance(address token) internal view returns (uint256) {
-        if (token == address(0)) return uint256(0);
-
-        return Base.getBalance(token, address(this));
+        return (IERC20(token).balanceOf(account) * amount) / DELIMITER;
     }
 
     /**
@@ -467,16 +452,17 @@ contract Router is
      *     - In case of fixed outputs, returned amount is `outputAmount`
      *         This proves that outputs are fixed
      * @param swapDescription Swap parameters described in `execute()` function
-     * @param outputAmount Output token absolute amount required to be returned
+     * @param output Output token and absolute amount required to be returned
      * @param outputBalanceChange Output token absolute amount actually returned
      * @return returnedAmount Amount of output token returned to the account
      * @return protocolFeeAmount Amount of output token sent to the protocol fee beneficiary
      * @return marketplaceFeeAmount Amount of output token sent to the marketplace fee beneficiary
+     * @dev Returns all zeroes in case of zero output token
      */
     function getReturnedAmounts(
         SwapDescription calldata swapDescription,
-        uint256 outputBalanceChange,
-        uint256 outputAmount
+        AbsoluteTokenAmount calldata output,
+        uint256 outputBalanceChange
     )
         internal
         pure
@@ -488,10 +474,16 @@ contract Router is
     {
         if (swapDescription.swapType == SwapType.None) revert NoneSwapType();
 
+        if (output.token == address(0)) {
+            if (output.absoluteAmount != uint256(0))
+                revert BadAmount(output.absoluteAmount, uint256(0));
+            return (0, 0, 0);
+        }
+
         uint256 totalFeeShare = swapDescription.protocolFee.share +
             swapDescription.marketplaceFee.share;
 
-        if (totalFeeShare == 0) return (outputBalanceChange, 0, 0);
+        if (totalFeeShare == uint256(0)) return (outputBalanceChange, 0, 0);
 
         if (totalFeeShare > DELIMITER) revert BadFeeShare(totalFeeShare, DELIMITER);
 
@@ -500,7 +492,7 @@ contract Router is
         // or the output balance change divided by (1 + fee percentage)
         // Minus one in the denominator is used to eliminate precision issues
         returnedAmount = (swapDescription.swapType == SwapType.FixedOutputs)
-            ? outputAmount
+            ? output.absoluteAmount
             : ((outputBalanceChange * DELIMITER) / (DELIMITER + totalFeeShare - 1));
 
         uint256 totalFeeAmount = outputBalanceChange - returnedAmount;
