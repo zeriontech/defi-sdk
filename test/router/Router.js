@@ -6,7 +6,7 @@ const { expect } = require('chai');
 
 const { waffle, ethers } = require('hardhat');
 const CallerArtifacts = require('../../artifacts/contracts/interfaces/ICaller.sol/ICaller.json');
-const TokenArtifacts = require('../../artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json');
+const TokenArtifacts = require('../../artifacts/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json');
 const DAIArtifacts = require('../../artifacts/contracts/interfaces/IDAIPermit.sol/IDAIPermit.json');
 const EIP2612Artifacts = require('../../artifacts/contracts/interfaces/IEIP2612.sol/IEIP2612.json');
 const YearnArtifacts = require('../../artifacts/contracts/interfaces/IYearnPermit.sol/IYearnPermit.json');
