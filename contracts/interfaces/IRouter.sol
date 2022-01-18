@@ -78,8 +78,6 @@ interface IRouter is ITokensHandler, ISignatureVerifier {
      * @param protocolFeeSignature Signature for the discounted protocol fee
      *     (checks that current protocol fee signer is the one who actually did a signature),
      *     this signature may be reused multiple times until the deadline
-     * @return inputBalanceChange Input token balance change
-     * @return outputBalanceChange Output token balance change (including fees)
      */
     function execute(
         Input calldata input,
@@ -87,7 +85,21 @@ interface IRouter is ITokensHandler, ISignatureVerifier {
         SwapDescription calldata swapDescription,
         AccountSignature calldata accountSignature,
         ProtocolFeeSignature calldata protocolFeeSignature
-    ) external payable returns (uint256 inputBalanceChange, uint256 outputBalanceChange);
+    ) external payable;
+
+    /**
+     * @notice Main function estimating the swaps
+     * @notice All the parameters are described in `execute()` function
+     * @dev Reverts at the end of execution with `Estimate` error
+     * @dev Returns all the balance changes and gas estimation in revert message
+     */
+    function estimate(
+        Input calldata input,
+        AbsoluteTokenAmount calldata absoluteOutput,
+        SwapDescription calldata swapDescription,
+        AccountSignature calldata accountSignature,
+        ProtocolFeeSignature calldata protocolFeeSignature
+    ) external payable;
 
     /**
      * @notice Function for the account signature cancellation

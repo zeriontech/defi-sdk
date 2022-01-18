@@ -39,6 +39,7 @@ import {
     BadFeeBeneficiary,
     BadFeeShare,
     BadFeeSignature,
+    Estimate,
     ExceedingDelimiterAmount,
     ExceedingLimitFee,
     HighInputBalanceChange,
@@ -89,7 +90,7 @@ contract Router is
         if (msg.sender != swapDescription.account)
             revert BadAccount(msg.sender, swapDescription.account);
 
-        validateAccountSignature(input, output, swapDescription, accountSignature);
+        validateAndExpireAccountSignature(input, output, swapDescription, accountSignature);
     }
 
     /**
@@ -101,21 +102,46 @@ contract Router is
         SwapDescription calldata swapDescription,
         AccountSignature calldata accountSignature,
         ProtocolFeeSignature calldata protocolFeeSignature
-    )
-        external
-        payable
-        override
-        nonReentrant
-        returns (uint256 inputBalanceChange, uint256 outputBalanceChange)
-    {
+    ) external payable override nonReentrant {
         validateProtocolFeeSignature(input, output, swapDescription, protocolFeeSignature);
-        validateAccountSignature(input, output, swapDescription, accountSignature);
+        validateAndExpireAccountSignature(input, output, swapDescription, accountSignature);
 
-        return execute(input, output, swapDescription);
+        execute(input, output, swapDescription);
     }
 
     /**
-     * @dev Takse tokens from the user, executes the swap,
+     * @inheritdoc IRouter
+     */
+    function estimate(
+        Input calldata input,
+        AbsoluteTokenAmount calldata output,
+        SwapDescription calldata swapDescription,
+        AccountSignature calldata accountSignature,
+        ProtocolFeeSignature calldata protocolFeeSignature
+    ) external payable override {
+        uint256 initialGas = gasleft();
+
+        validateProtocolFeeSignature(input, output, swapDescription, protocolFeeSignature);
+        validateAndExpireAccountSignature(input, output, swapDescription, accountSignature);
+
+        (
+            uint256 inputBalanceChange,
+            uint256 returnedAmount,
+            uint256 protocolFeeAmount,
+            uint256 marketplaceFeeAmount
+        ) = execute(input, output, swapDescription);
+
+        revert Estimate(
+            inputBalanceChange,
+            returnedAmount,
+            protocolFeeAmount,
+            marketplaceFeeAmount,
+            initialGas - gasleft()
+        );
+    }
+
+    /**
+     * @dev Take tokens from the user, executes the swap,
      *     do the security checks, and all the required transfers
      * @dev All the parameters are described in `execute()` function
      */
@@ -123,7 +149,15 @@ contract Router is
         Input calldata input,
         AbsoluteTokenAmount calldata output,
         SwapDescription calldata swapDescription
-    ) internal returns (uint256 inputBalanceChange, uint256 outputBalanceChange) {
+    )
+        internal
+        returns (
+            uint256 inputBalanceChange,
+            uint256 returnedAmount,
+            uint256 protocolFeeAmount,
+            uint256 marketplaceFeeAmount
+        )
+    {
         // Calculate absolute amount in case it was relative
         uint256 absoluteInputAmount = getAbsoluteInputAmount(
             input.tokenAmount,
@@ -131,83 +165,70 @@ contract Router is
         );
 
         // Transfer input token (`msg.value` check for Ether) to this contract address,
-        // except for the case of zero input token address
+        // do nothing in case of zero input token address
         address inputToken = input.tokenAmount.token;
-        if (inputToken != address(0))
-            handleInput(inputToken, absoluteInputAmount, input.permit, swapDescription.account);
+        handleInput(inputToken, absoluteInputAmount, input.permit, swapDescription.account);
 
-        // No need to save initial balances, so the following code is placed in a separate block
-        {
-            // Calculate the initial balances for input and output tokens
-            uint256 initialInputBalance = Base.getBalance(inputToken);
-            uint256 initialOutputBalance = Base.getBalance(output.token);
+        // Calculate the initial balances for input and output tokens
+        uint256 initialInputBalance = Base.getBalance(inputToken);
+        uint256 initialOutputBalance = Base.getBalance(output.token);
 
-            // Transfer tokens and call the caller with the provided call data
-            transferAndCall(inputToken, absoluteInputAmount, swapDescription);
+        // Transfer tokens and call the caller with the provided call data
+        transferAndCall(inputToken, absoluteInputAmount, swapDescription);
 
-            // Calculate the balance changes for input and output tokens
-            inputBalanceChange = initialInputBalance - Base.getBalance(inputToken);
-            outputBalanceChange = Base.getBalance(output.token) - initialOutputBalance;
-        }
+        // Calculate the balance changes for input and output tokens
+        inputBalanceChange = initialInputBalance - Base.getBalance(inputToken);
+        uint256 outputBalanceChange = Base.getBalance(output.token) - initialOutputBalance;
 
-        // Return the remaining input tokens (if necessary) and distribute output tokens and fees
-        {
-            // Check input requirements, prevent the underflow
-            if (inputBalanceChange > absoluteInputAmount)
-                revert HighInputBalanceChange(inputBalanceChange, absoluteInputAmount);
+        // Check input requirements, prevent the underflow
+        if (inputBalanceChange > absoluteInputAmount)
+            revert HighInputBalanceChange(inputBalanceChange, absoluteInputAmount);
 
-            // Calculate the refund amount
-            uint256 refundAmount = absoluteInputAmount - inputBalanceChange;
+        // Calculate the refund amount
+        uint256 refundAmount = absoluteInputAmount - inputBalanceChange;
 
-            // Calculate returned output token amount and fees amounts
-            (
-                uint256 returnedAmount,
-                uint256 protocolFeeAmount,
-                uint256 marketplaceFeeAmount
-            ) = getReturnedAmounts(swapDescription, output, outputBalanceChange);
+        // Calculate returned output token amount and fees amounts
+        (returnedAmount, protocolFeeAmount, marketplaceFeeAmount) = getReturnedAmounts(
+            swapDescription,
+            output,
+            outputBalanceChange
+        );
 
-            // Check output requirements, prevent revert on transfers
-            if (returnedAmount < output.absoluteAmount)
-                revert LowOutputBalanceChange(returnedAmount, output.absoluteAmount);
+        // Check output requirements, prevent revert on transfers
+        if (returnedAmount < output.absoluteAmount)
+            revert LowOutputBalanceChange(returnedAmount, output.absoluteAmount);
 
-            // Transfer the refund back to the user
-            Base.transfer(inputToken, swapDescription.account, refundAmount);
+        // Transfer the refund back to the user,
+        // `refundAmount` should be zero in zero input token case
+        Base.transfer(inputToken, swapDescription.account, refundAmount);
 
-            // Do the rest of transfers in case output token address is not zero
-            if (output.token != address(0)) {
-                // Transfer the output tokens to the user
-                Base.transfer(output.token, swapDescription.account, returnedAmount);
+        // Transfer the output tokens to the user
+        Base.transfer(output.token, swapDescription.account, returnedAmount);
 
-                // Transfer protocol fee
-                Base.transfer(
-                    output.token,
-                    swapDescription.protocolFee.beneficiary,
-                    protocolFeeAmount
-                );
+        // Transfer protocol fee
+        Base.transfer(output.token, swapDescription.protocolFee.beneficiary, protocolFeeAmount);
 
-                // Transfer marketplace fee
-                Base.transfer(
-                    output.token,
-                    swapDescription.marketplaceFee.beneficiary,
-                    marketplaceFeeAmount
-                );
-            }
+        // Transfer marketplace fee
+        Base.transfer(
+            output.token,
+            swapDescription.marketplaceFee.beneficiary,
+            marketplaceFeeAmount
+        );
 
-            // Emit event so one could track the swap
-            emitExecuted(
-                input,
-                output,
-                swapDescription,
-                absoluteInputAmount,
-                inputBalanceChange,
-                returnedAmount,
-                protocolFeeAmount,
-                marketplaceFeeAmount
-            );
-        }
+        // Emit event so one could track the swap
+        emitExecuted(
+            input,
+            output,
+            swapDescription,
+            absoluteInputAmount,
+            inputBalanceChange,
+            returnedAmount,
+            protocolFeeAmount,
+            marketplaceFeeAmount
+        );
 
         // Return this contract's balance changes (output balance includes fee)
-        return (inputBalanceChange, outputBalanceChange);
+        return (inputBalanceChange, returnedAmount, protocolFeeAmount, marketplaceFeeAmount);
     }
 
     /**
@@ -217,6 +238,7 @@ contract Router is
      * @param amount Input token amount
      * @param permit Permit type and call data, which is used if allowance is not enough
      * @param account Address of the account to take tokens from
+     * @dev Do nothing for zero input token address
      */
     function handleInput(
         address token,
@@ -224,11 +246,11 @@ contract Router is
         Permit calldata permit,
         address account
     ) internal {
-        if (token == ETH) {
-            handleETHInput(amount);
-        } else {
-            handleTokenInput(token, amount, permit, account);
-        }
+        if (token == address(0)) return;
+
+        if (token == ETH) return handleETHInput(amount);
+
+        handleTokenInput(token, amount, permit, account);
     }
 
     /**
@@ -236,9 +258,7 @@ contract Router is
      * @param amount Ether absolute amount to be used
      */
     function handleETHInput(uint256 amount) internal {
-        if (msg.value < amount) {
-            revert InsufficientMsgValue(msg.value, amount);
-        }
+        if (msg.value < amount) revert InsufficientMsgValue(msg.value, amount);
     }
 
     /**
@@ -333,11 +353,11 @@ contract Router is
     }
 
     /**
-     * @dev Validates signature for the account and marks it as used
+     * @dev Validates signature for the account, reverts on used signatures, and marks it as used
      * @dev All the parameters are described in `execute()` function
      * @dev In case of empty signature, account address must be equal to the sender address
      */
-    function validateAccountSignature(
+    function validateAndExpireAccountSignature(
         Input calldata input,
         AbsoluteTokenAmount calldata output,
         SwapDescription calldata swapDescription,
@@ -367,7 +387,7 @@ contract Router is
     }
 
     /**
-     * @dev Validates protocol fee signature
+     * @dev Validates protocol fee signature, reverts on expired signatures
      * @dev All the parameters are described in `execute()` function
      * @dev In case of empty signature, protocol fee must be equal to the default one
      * @dev Signature is valid only until the deadline

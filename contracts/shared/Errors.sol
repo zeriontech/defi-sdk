@@ -33,6 +33,13 @@ error BadLength(uint256 length, uint256 requiredLength);
 error BadMsgSender(address msgSender, address requiredMsgSender);
 error BadProtocolAdapterName(bytes32 protocolAdapterName);
 error BadToken(address token);
+error Estimate(
+    uint256 inputBalanceChange,
+    uint256 returnedAmount,
+    uint256 protocolFeeAmount,
+    uint256 marketplaceFeeAmount,
+    uint256 gasEstimation
+);
 error ExceedingDelimiterAmount(uint256 amount);
 error ExceedingLimitFee(uint256 feeShare, uint256 feeLimit);
 error FailedEtherTransfer(address to);
@@ -50,7 +57,7 @@ error NoneSwapType();
 error PassedDeadline(uint256 timestamp, uint256 deadline);
 error TooLowBaseFeeShare(uint256 baseProtocolFeeShare, uint256 baseProtocolFeeShareLimit);
 error UsedHash(bytes32 hash);
-error ZeroAccount();
+error ZeroReceiver();
 error ZeroAmountIn();
 error ZeroAmountOut();
 error ZeroFeeBeneficiary();

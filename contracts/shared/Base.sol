@@ -21,7 +21,7 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
-import { FailedEtherTransfer, ZeroAccount } from "./Errors.sol";
+import { FailedEtherTransfer, ZeroReceiver } from "./Errors.sol";
 
 /**
  * @title Library unifying transfer, approval, and getting balance for ERC20 tokens and Ether
@@ -31,25 +31,25 @@ library Base {
 
     /**
      * @notice Transfers tokens or Ether
-     * @param token Adress of the token or `ETH` in case of Ether transfer
-     * @param account Adress of the account that will receive funds
+     * @param token Address of the token or `ETH` in case of Ether transfer
+     * @param receiver Address of the account that will receive funds
      * @param amount Amount to be transferred
      * @dev This function is compatible only with ERC20 tokens and Ether, not ERC721/ERC1155 tokens
-     * @dev Reverts on `address(0)` account, does nothing for `0` amount
-     * @dev Should not be used with `address(0)` token address
+     * @dev Reverts on zero `receiver`, does nothing for zero amount
+     * @dev Should not be used with zero token address
      */
     function transfer(
         address token,
-        address account,
+        address receiver,
         uint256 amount
     ) internal {
         if (amount == uint256(0)) return;
-        if (account == address(0)) revert ZeroAccount();
+        if (receiver == address(0)) revert ZeroReceiver();
 
         if (token == ETH) {
-            Address.sendValue(payable(account), amount);
+            Address.sendValue(payable(receiver), amount);
         } else {
-            SafeERC20.safeTransfer(IERC20(token), account, amount);
+            SafeERC20.safeTransfer(IERC20(token), receiver, amount);
         }
     }
 
@@ -58,7 +58,7 @@ library Base {
      * @param token Adress of the token
      * @param spender Address to approve tokens to
      * @param amount Tokens amount to be approved
-     * @dev Should not be used with `address(0)` or ETH token address
+     * @dev Should not be used with zero or `ETH` token address
      */
     function safeApproveMax(
         address token,
@@ -78,7 +78,7 @@ library Base {
      * @notice Calculates the token balance for the given account
      * @param token Adress of the token
      * @param account Adress of the account
-     * @dev Should not be used with `address(0)` token address
+     * @dev Should not be used with zero token address
      */
     function getBalance(address token, address account) internal view returns (uint256) {
         if (token == ETH) return account.balance;
@@ -89,7 +89,7 @@ library Base {
     /**
      * @notice Calculates the token balance for `this` contract address
      * @param token Adress of the token
-     * @dev Returns 0 for zero token address in order to handle empty token case
+     * @dev Returns `0` for zero token address in order to handle empty token case
      */
     function getBalance(address token) internal view returns (uint256) {
         if (token == address(0)) return uint256(0);
