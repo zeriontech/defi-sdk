@@ -100,6 +100,45 @@ describe('SimpleCaller', () => {
     logger.info(`Called router for ${(await tx.wait()).gasUsed} gas`);
   });
 
+  it('should not do eth -> weth trade with ', async () => {
+    const initialBalance = await weth.balanceOf(owner.address);
+    const tx = await router.functions.execute(
+      // input
+      [[ethAddress, ethers.utils.parseUnits('2', 18), AMOUNT_ABSOLUTE], zeroPermit],
+      // output
+      [weth.address, ethers.utils.parseUnits('2', 18)],
+      // swap description
+      [
+        SWAP_FIXED_INPUTS,
+        protocolFeeDefault,
+        protocolFeeDefault,
+        owner.address,
+        caller.address,
+        abiCoder.encode(
+          ['address', 'address', 'address', 'bytes', 'address'],
+          [
+            ethAddress,
+            AddressZero,
+            weth.address,
+            '0x',
+            weth.address,
+          ],
+        ),
+      ],
+      // account signature
+      zeroSignature,
+      // fee signature
+      zeroSignature,
+      {
+        value: ethers.utils.parseUnits('2', 18),
+      },
+    );
+    expect(
+      (await weth.balanceOf(owner.address)).sub(initialBalance),
+    ).to.be.equal(ethers.utils.parseUnits('2', 18));
+    logger.info(`Called router for ${(await tx.wait()).gasUsed} gas`);
+  });
+
   it('should estimate eth -> weth trade', async () => {
     await expect(
       router.functions.estimate(
@@ -133,7 +172,7 @@ describe('SimpleCaller', () => {
           value: ethers.utils.parseUnits('2', 18),
         },
       ),
-    ).to.be.revertedWith('Estimate(2000000000000000000, 2000000000000000000, 0, 0, 105985)');
+    ).to.be.revertedWith('Estimate(2000000000000000000, 2000000000000000000, 0, 0, ');
   });
 
   it('should do zero -> weth trade', async () => {

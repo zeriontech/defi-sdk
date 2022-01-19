@@ -167,14 +167,22 @@ contract Router is
         // Transfer input token (`msg.value` check for Ether) to this contract address,
         // do nothing in case of zero input token address
         address inputToken = input.tokenAmount.token;
-        handleInput(inputToken, absoluteInputAmount, input.permit, swapDescription.account);
+        if (inputToken != address(0))
+            handleInput(inputToken, absoluteInputAmount, input.permit, swapDescription.account);
 
         // Calculate the initial balances for input and output tokens
         uint256 initialInputBalance = Base.getBalance(inputToken);
         uint256 initialOutputBalance = Base.getBalance(output.token);
 
-        // Transfer tokens and call the caller with the provided call data
-        transferAndCall(inputToken, absoluteInputAmount, swapDescription);
+        // Transfer tokens to the caller and call the caller with the provided call data
+        Base.transfer(inputToken, swapDescription.caller, absoluteInputAmount);
+
+        // Using encodeCall here to ensure that types of parameters are correct
+        Address.functionCall(
+            swapDescription.caller,
+            abi.encodeWithSelector(ICaller.callBytes.selector, swapDescription.callerCallData),
+            "R: callBytes failed w/ no reason"
+        );
 
         // Calculate the balance changes for input and output tokens
         inputBalanceChange = initialInputBalance - Base.getBalance(inputToken);
@@ -189,7 +197,9 @@ contract Router is
 
         // Calculate returned output token amount and fees amounts
         (returnedAmount, protocolFeeAmount, marketplaceFeeAmount) = getReturnedAmounts(
-            swapDescription,
+            swapDescription.swapType,
+            swapDescription.protocolFee,
+            swapDescription.marketplaceFee,
             output,
             outputBalanceChange
         );
@@ -199,16 +209,19 @@ contract Router is
             revert LowOutputBalanceChange(returnedAmount, output.absoluteAmount);
 
         // Transfer the refund back to the user,
-        // `refundAmount` should be zero in zero input token case
+        // do nothing in zero input token case as `refundAmount` is zero
         Base.transfer(inputToken, swapDescription.account, refundAmount);
 
-        // Transfer the output tokens to the user
+        // Transfer the output tokens to the user,
+        // do nothing in zero output token case as `returnedAmount` is zero
         Base.transfer(output.token, swapDescription.account, returnedAmount);
 
-        // Transfer protocol fee
+        // Transfer protocol fee,
+        // do nothing in zero output token case as `protocolFeeAmount` is zero
         Base.transfer(output.token, swapDescription.protocolFee.beneficiary, protocolFeeAmount);
 
-        // Transfer marketplace fee
+        // Transfer marketplace fee,
+        // do nothing in zero output token case as `marketplaceFeeAmount` is zero
         Base.transfer(
             output.token,
             swapDescription.marketplaceFee.beneficiary,
@@ -227,7 +240,8 @@ contract Router is
             marketplaceFeeAmount
         );
 
-        // Return this contract's balance changes (output balance includes fee)
+        // Return this contract's balance changes,
+        // output token balance change is split into 3 values
         return (inputBalanceChange, returnedAmount, protocolFeeAmount, marketplaceFeeAmount);
     }
 
@@ -291,30 +305,6 @@ contract Router is
     }
 
     /**
-     * @dev Transfers input tokens (if necessary) and calls the caller with the provided call data
-     * @param token Token to be taken from this contract address
-     * @param amount Amount of the token to be sent to the caller
-     * @param swapDescription Swap parameters described in `execute()` function
-     */
-    function transferAndCall(
-        address token,
-        uint256 amount,
-        SwapDescription calldata swapDescription
-    ) internal {
-        Base.transfer(token, swapDescription.caller, amount);
-
-        // Using encodeCall here to ensure that types of parameters are correct
-        Address.functionCall(
-            swapDescription.caller,
-            abi.encodeCall(
-                ICaller(swapDescription.caller).callBytes,
-                (swapDescription.callerCallData)
-            ),
-            "R: callBytes failed w/ no reason"
-        );
-    }
-
-    /**
      * @notice Emits Executed event
      * @param input Input described in `execute()` function
      * @param output Output described in `execute()` function
@@ -350,7 +340,7 @@ contract Router is
     }
 
     /**
-     * @dev Validates signature for the account, reverts on used signatures, and marks it as used
+     * @dev Validates signature for the account (reverts on used signatures) and marks it as used
      * @dev All the parameters are described in `execute()` function
      * @dev In case of empty signature, account address must be equal to the sender address
      */
@@ -384,7 +374,7 @@ contract Router is
     }
 
     /**
-     * @dev Validates protocol fee signature, reverts on expired signatures
+     * @dev Validates protocol fee signature (reverts on expired signatures)
      * @dev All the parameters are described in `execute()` function
      * @dev In case of empty signature, protocol fee must be equal to the default one
      * @dev Signature is valid only until the deadline
@@ -450,7 +440,7 @@ contract Router is
 
         if (amountType == AmountType.None) revert NoneAmountType();
 
-        if (token == address(0) && amount != uint256(0)) revert BadAmount(amount, uint256(0));
+        if (token == address(0) && amount > uint256(0)) revert BadAmount(amount, uint256(0));
 
         if (amountType == AmountType.Absolute) return amount;
 
@@ -471,7 +461,9 @@ contract Router is
      *         This shows that actual fee is a share of output
      *     - In case of fixed outputs, returned amount is `outputAmount`
      *         This proves that outputs are fixed
-     * @param swapDescription Swap parameters described in `execute()` function
+     * @param swapType Whether the inputs or outputs are fixed
+     * @param protocolFee Protocol fee share and beneficiary address
+     * @param marketplaceFee Marketplace fee share and beneficiary address
      * @param output Output token and absolute amount required to be returned
      * @param outputBalanceChange Output token absolute amount actually returned
      * @return returnedAmount Amount of output token returned to the account
@@ -480,7 +472,9 @@ contract Router is
      * @dev Returns all zeroes in case of zero output token
      */
     function getReturnedAmounts(
-        SwapDescription calldata swapDescription,
+        SwapType swapType,
+        Fee calldata protocolFee,
+        Fee calldata marketplaceFee,
         AbsoluteTokenAmount calldata output,
         uint256 outputBalanceChange
     )
@@ -492,18 +486,19 @@ contract Router is
             uint256 marketplaceFeeAmount
         )
     {
-        if (swapDescription.swapType == SwapType.None) revert NoneSwapType();
+        if (swapType == SwapType.None) revert NoneSwapType();
 
+        uint256 outputAbsoluteAmount = output.absoluteAmount;
         if (output.token == address(0)) {
-            if (output.absoluteAmount != uint256(0))
-                revert BadAmount(output.absoluteAmount, uint256(0));
-            return (0, 0, 0);
+            if (outputAbsoluteAmount > uint256(0))
+                revert BadAmount(outputAbsoluteAmount, uint256(0));
+            return (uint256(0), uint256(0), uint256(0));
         }
 
-        uint256 totalFeeShare = swapDescription.protocolFee.share +
-            swapDescription.marketplaceFee.share;
+        uint256 protocolFeeShare = protocolFee.share;
+        uint256 totalFeeShare = protocolFeeShare + marketplaceFee.share;
 
-        if (totalFeeShare == uint256(0)) return (outputBalanceChange, 0, 0);
+        if (totalFeeShare == uint256(0)) return (outputBalanceChange, uint256(0), uint256(0));
 
         if (totalFeeShare > DELIMITER) revert BadFeeShare(totalFeeShare, DELIMITER);
 
@@ -511,9 +506,9 @@ contract Router is
         // We return either the amount the user requested
         // or the output balance change divided by (1 + fee percentage)
         // Minus one in the denominator is used to eliminate precision issues
-        returnedAmount = (swapDescription.swapType == SwapType.FixedOutputs)
-            ? output.absoluteAmount
-            : ((outputBalanceChange * DELIMITER) / (DELIMITER + totalFeeShare - 1));
+        returnedAmount = (swapType == SwapType.FixedOutputs)
+            ? outputAbsoluteAmount
+            : ((outputBalanceChange * DELIMITER) / (DELIMITER + totalFeeShare - uint256(1)));
 
         uint256 totalFeeAmount = outputBalanceChange - returnedAmount;
 
@@ -522,7 +517,7 @@ contract Router is
         if (totalFeeAmount * DELIMITER > totalFeeShare * returnedAmount)
             revert BadFeeAmount(totalFeeAmount, (returnedAmount * totalFeeShare) / DELIMITER);
 
-        protocolFeeAmount = (totalFeeAmount * swapDescription.protocolFee.share) / totalFeeShare;
+        protocolFeeAmount = (totalFeeAmount * protocolFeeShare) / totalFeeShare;
         marketplaceFeeAmount = totalFeeAmount - protocolFeeAmount;
     }
 

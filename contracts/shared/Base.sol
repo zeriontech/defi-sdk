@@ -55,7 +55,7 @@ library Base {
 
     /**
      * @notice Safely approves type(uint256).max tokens
-     * @param token Adress of the token
+     * @param token Address of the token
      * @param spender Address to approve tokens to
      * @param amount Tokens amount to be approved
      * @dev Should not be used with zero or `ETH` token address
@@ -68,7 +68,7 @@ library Base {
         uint256 allowance = IERC20(token).allowance(address(this), spender);
         if (allowance < amount) {
             if (allowance > uint256(0)) {
-                IERC20(token).approve(spender, 0);
+                IERC20(token).approve(spender, uint256(0));
             }
             IERC20(token).approve(spender, type(uint256).max);
         }
@@ -76,8 +76,8 @@ library Base {
 
     /**
      * @notice Calculates the token balance for the given account
-     * @param token Adress of the token
-     * @param account Adress of the account
+     * @param token Address of the token
+     * @param account Address of the account
      * @dev Should not be used with zero token address
      */
     function getBalance(address token, address account) internal view returns (uint256) {
@@ -88,7 +88,7 @@ library Base {
 
     /**
      * @notice Calculates the token balance for `this` contract address
-     * @param token Adress of the token
+     * @param token Address of the token
      * @dev Returns `0` for zero token address in order to handle empty token case
      */
     function getBalance(address token) internal view returns (uint256) {

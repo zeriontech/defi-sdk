@@ -75,9 +75,9 @@ contract UniswapCaller is ICaller, TokensHandler, Weth {
         ) = abi.decode(callerCallData, (address, address, address[], bool[], SwapType, uint256));
 
         uint256 length = pairs.length;
-        if (length == 0) revert ZeroLength();
+        if (length == uint256(0)) revert ZeroLength();
         if (directions.length != length)
-            revert InconsistentPairsAndDirectionsLengths(directions.length, length);
+            revert InconsistentPairsAndDirectionsLengths(length, directions.length);
 
         uint256[] memory amounts = (swapType == SwapType.FixedInputs)
             ? getAmountsOut(fixedSideAmount, pairs, directions)
@@ -143,7 +143,7 @@ contract UniswapCaller is ICaller, TokensHandler, Weth {
         address weth = getWeth();
         uint256 wethBalance = IERC20(weth).balanceOf(address(this));
         // The check always passes, however, left for unusual cases
-        if (wethBalance != 0) IWETH9(weth).withdraw(wethBalance);
+        if (wethBalance > uint256(0)) IWETH9(weth).withdraw(wethBalance);
     }
 
     /**
@@ -164,7 +164,7 @@ contract UniswapCaller is ICaller, TokensHandler, Weth {
         amountsIn = new uint256[](length + 1);
         amountsIn[length] = amountOut;
 
-        for (uint256 i = length; i != uint256(0); i--) {
+        for (uint256 i = length; i > uint256(0); i--) {
             uint256 prev = i - 1;
             amountsIn[prev] = getAmountIn(amountsIn[i], pairs[prev], directions[prev]);
         }
