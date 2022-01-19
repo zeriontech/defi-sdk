@@ -17,14 +17,16 @@
 
 pragma solidity 0.8.11;
 
-import { AbsoluteTokenAmount } from "../shared/Structs.sol";
-
-import { ITokensHandler } from "./ITokensHandler.sol";
-
-interface ICaller is ITokensHandler {
-    /**
-     * @notice Main external function: implements all the caller specific logic
-     * @param callerCallData ABI-encoded parameters depending on the caller logic
-     */
-    function callBytes(bytes calldata callerCallData) external;
+/**
+ * @dev UniswapV2Router02 contract interface.
+ * The UniswapV2Router02 contract is available here
+ * github.com/Uniswap/uniswap-v2-periphery/blob/master/contracts/UniswapV2Router02.sol.
+ */
+interface IUniswapV2Router02 {
+    function swapExactETHForTokens(
+        uint256,
+        address[] calldata,
+        address,
+        uint256
+    ) external payable;
 }

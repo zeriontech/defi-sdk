@@ -204,7 +204,7 @@ describe('Router', () => {
     );
   });
 
-  it('should do trade with zero input token and non-zero amount', async () => {
+  it('should not do trade with zero input token and non-zero amount', async () => {
     await expect(
       router.functions.execute(
         // input

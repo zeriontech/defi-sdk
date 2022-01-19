@@ -301,17 +301,14 @@ contract Router is
         uint256 amount,
         SwapDescription calldata swapDescription
     ) internal {
-        if (token != address(0)) Base.transfer(token, swapDescription.caller, amount);
+        Base.transfer(token, swapDescription.caller, amount);
 
         // Using encodeCall here to ensure that types of parameters are correct
         Address.functionCall(
             swapDescription.caller,
             abi.encodeCall(
                 ICaller(swapDescription.caller).callBytes,
-                (
-                    AbsoluteTokenAmount({ token: token, absoluteAmount: amount }),
-                    swapDescription.callerCallData
-                )
+                (swapDescription.callerCallData)
             ),
             "R: callBytes failed w/ no reason"
         );

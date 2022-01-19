@@ -17,14 +17,33 @@
 
 pragma solidity 0.8.11;
 
-import { AbsoluteTokenAmount } from "../shared/Structs.sol";
+/**
+ * @dev UniswapV2Pair contract interface.
+ * The UniswapV2Pair contract is available here
+ * github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2Pair.sol.
+ */
+interface IUniswapV2Pair {
+    function mint(address) external returns (uint256);
 
-import { ITokensHandler } from "./ITokensHandler.sol";
+    function burn(address) external returns (uint256, uint256);
 
-interface ICaller is ITokensHandler {
-    /**
-     * @notice Main external function: implements all the caller specific logic
-     * @param callerCallData ABI-encoded parameters depending on the caller logic
-     */
-    function callBytes(bytes calldata callerCallData) external;
+    function swap(
+        uint256,
+        uint256,
+        address,
+        bytes calldata
+    ) external;
+
+    function getReserves()
+        external
+        view
+        returns (
+            uint112,
+            uint112,
+            uint32
+        );
+
+    function token0() external view returns (address);
+
+    function token1() external view returns (address);
 }

@@ -28,6 +28,7 @@ import { TokensHandler } from "../shared/TokensHandler.sol";
 
 /**
  * @title Simple caller that passes through any call and forwards return tokens
+ * @dev It also works in fixed outputs case, when input token overhead is refunded
  */
 contract SimpleCaller is ICaller, TokensHandler {
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -35,83 +36,64 @@ contract SimpleCaller is ICaller, TokensHandler {
     /**
      * @notice Main external function: decodes `callerCallData` bytes,
      *     executes external call, and returns tokens back to `msg.sender` (i.e. Router contract)
-     * @param input AbsoluteTokenAmount struct with input token and absolute amount
      * @param callerCallData ABI-encoded parameters:
-     *     - inputToken Address of the token that should be taken by the external call target
-     *     - inputAmount Amount of input token that should be taken by the external call target
+     *     - inputToken Address of the token that should be approved to the allowance target
      *     - allowanceTarget Address to approve `inputToken` to
      *     - callTarget Address to forward the external call to
      *     - callData Call data to be used in the external call
      *     - outputToken Address of the token that should be returned
-     * @dev `target` cannot be zero
-     * @dev In case of non-zero input token, refund is returned back to `msg.sender`
-     * @dev In case of zero `outputToken`, nothing is returned back to `msg.sender`
+     * @dev Call target cannot be zero
      */
-    function callBytes(AbsoluteTokenAmount calldata input, bytes calldata callerCallData)
+    function callBytes(bytes calldata callerCallData)
         external
         override
     {
         (
+            address inputToken,
             address allowanceTarget,
             address payable callTarget,
             bytes memory callData,
             address outputToken
-        ) = abi.decode(callerCallData, (address, address, bytes, address));
+        ) = abi.decode(callerCallData, (address, address, address, bytes, address));
         if (callTarget == address(0)) revert ZeroTarget();
 
-        // No need to save initial balance, so the following code is placed in a separate block
-        uint256 inputBalanceChange;
-        {
-            // Calculate the initial balances for input and output tokens
-            uint256 initialInputBalance = Base.getBalance(input.token);
+        // Approve tokens to the allowance target, call the call target
+        approveAndCall(inputToken, allowanceTarget, callTarget, callData);
 
-            approveAndCall(input, allowanceTarget, callTarget, callData);
-
-            // Calculate the balance changes for input and output tokens
-            inputBalanceChange = initialInputBalance - Base.getBalance(input.token);
-        }
-
-        // In case of non-zero input token, return the remaining amount back to `msg.sender`
-        if (input.token != address(0)) {
-            // Check input requirements, prevent the underflow
-            if (inputBalanceChange > input.absoluteAmount)
-                revert HighInputBalanceChange(inputBalanceChange, input.absoluteAmount);
-
-            // Transfer the remaining amount back to `msg.sender`
-            Base.transfer(input.token, msg.sender, input.absoluteAmount - inputBalanceChange);
-        }
+        // In case of non-zero input token, transfer the remaining amount back to `msg.sender`
+        Base.transfer(inputToken, msg.sender, Base.getBalance(inputToken));
 
         // In case of non-zero output token, transfer the total balance to `msg.sender`
-        if (outputToken != address(0))
-            Base.transfer(outputToken, msg.sender, Base.getBalance(outputToken, address(this)));
+        Base.transfer(outputToken, msg.sender, Base.getBalance(outputToken));
     }
 
     /**
      * @dev Approves input tokens (if necessary) and calls the target with the provided call data
      * @dev Approval and allowance check for `address(0)` token address are skipped
-     * @param input AbsoluteTokenAmount struct with input token and absolute amount
+     * @param inputToken Address of the token that should be approved to the allowance target
      * @param allowanceTarget Address to approve `inputToken` to
      * @param callTarget Address to forward the external call to
      * @param callData Call data for the call to the target
      */
     function approveAndCall(
-        AbsoluteTokenAmount calldata input,
+        address inputToken,
         address allowanceTarget,
         address callTarget,
         bytes memory callData
     ) internal {
-        if (input.token == ETH) {
+        uint256 amount = Base.getBalance(inputToken);
+        if (inputToken == ETH) {
             Address.functionCallWithValue(
                 callTarget,
                 callData,
-                input.absoluteAmount,
+                amount,
                 "SC: payable call failed w/ no reason"
             );
             return;
         }
 
-        if (input.token != address(0) && allowanceTarget != address(0))
-            Base.safeApproveMax(input.token, allowanceTarget, input.absoluteAmount);
+        if (inputToken != address(0) && allowanceTarget != address(0))
+            Base.safeApproveMax(inputToken, allowanceTarget, amount);
 
         Address.functionCall(callTarget, callData, "SC: call failed w/ no reason");
     }

@@ -17,14 +17,25 @@
 
 pragma solidity 0.8.11;
 
-import { AbsoluteTokenAmount } from "../shared/Structs.sol";
+/**
+ * @title Abstract contract storing Wrapped Ether address for the current chain
+ */
+abstract contract Weth {
+    address private immutable weth_;
 
-import { ITokensHandler } from "./ITokensHandler.sol";
-
-interface ICaller is ITokensHandler {
     /**
-     * @notice Main external function: implements all the caller specific logic
-     * @param callerCallData ABI-encoded parameters depending on the caller logic
+     * @notice Sets Wrapped Ether address for the current chain
+     * @param weth Wrapped Ether address
      */
-    function callBytes(bytes calldata callerCallData) external;
+    constructor(address weth) {
+        weth_ = weth;
+    }
+
+    /**
+     * @notice Returns Wrapped Ether address for the current chain
+     * @return weth Wrapped Ether address
+     */
+    function getWeth() public view returns (address weth) {
+        return weth_;
+    }
 }
