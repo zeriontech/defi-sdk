@@ -32,8 +32,6 @@ import {
     TokenAmount
 } from "../shared/Structs.sol";
 
-import "hardhat/console.sol";
-
 contract SignatureVerifier is ISignatureVerifier, EIP712 {
     mapping(bytes32 => bool) private isHashUsed_;
 
@@ -140,9 +138,6 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
         SwapDescription memory swapDescription,
         uint256 salt
     ) public view override returns (bytes32 hashedData) {
-        console.logBytes32(_hashTypedDataV4(
-                hash(ACCOUNT_SIGNATURE_TYPEHASH, input, output, swapDescription, salt)
-            ));
         return
             _hashTypedDataV4(
                 hash(ACCOUNT_SIGNATURE_TYPEHASH, input, output, swapDescription, salt)
