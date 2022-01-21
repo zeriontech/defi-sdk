@@ -252,7 +252,7 @@ contract Router is
      * @param amount Input token amount
      * @param permit Permit type and call data, which is used if allowance is not enough
      * @param account Address of the account to take tokens from
-     * @dev Do nothing for zero input token address
+     * @dev This function should not be caller with zero token address
      */
     function handleInput(
         address token,
@@ -260,8 +260,6 @@ contract Router is
         Permit calldata permit,
         address account
     ) internal {
-        if (token == address(0)) return;
-
         if (token == ETH) return handleETHInput(amount);
 
         handleTokenInput(token, amount, permit, account);
@@ -495,8 +493,9 @@ contract Router is
             return (uint256(0), uint256(0), uint256(0));
         }
 
-        uint256 protocolFeeShare = protocolFee.share;
-        uint256 totalFeeShare = protocolFeeShare + marketplaceFee.share;
+        if (outputBalanceChange == uint256(0)) return (uint256(0), uint256(0), uint256(0));
+
+        uint256 totalFeeShare = protocolFee.share + marketplaceFee.share;
 
         if (totalFeeShare == uint256(0)) return (outputBalanceChange, uint256(0), uint256(0));
 
@@ -505,19 +504,18 @@ contract Router is
         // The most tricky and gentle place connected with fees
         // We return either the amount the user requested
         // or the output balance change divided by (1 + fee percentage)
-        // Minus one in the denominator is used to eliminate precision issues
+        // Plus one in the fixed inputs case is used to eliminate precision issues
         returnedAmount = (swapType == SwapType.FixedOutputs)
-            ? outputAbsoluteAmount
-            : ((outputBalanceChange * DELIMITER) / (DELIMITER + totalFeeShare - uint256(1)));
+            ? output.absoluteAmount
+            : ((outputBalanceChange * DELIMITER) / (DELIMITER + totalFeeShare)) + uint256(1);
 
         uint256 totalFeeAmount = outputBalanceChange - returnedAmount;
-
         // This check is important in fixed outputs case as we never actually check that
         // total fee amount is not too large and should always just pass in fixed inputs case
         if (totalFeeAmount * DELIMITER > totalFeeShare * returnedAmount)
             revert BadFeeAmount(totalFeeAmount, (returnedAmount * totalFeeShare) / DELIMITER);
 
-        protocolFeeAmount = (totalFeeAmount * protocolFeeShare) / totalFeeShare;
+        protocolFeeAmount = (totalFeeAmount * protocolFee.share) / totalFeeShare;
         marketplaceFeeAmount = totalFeeAmount - protocolFeeAmount;
     }
 

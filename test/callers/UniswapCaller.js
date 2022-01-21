@@ -201,6 +201,45 @@ describe('UniswapCaller', () => {
     );
   });
 
+  it('should not do eth -> dai trade with too large marketplace fee', async () => {
+    await router.setProtocolFeeDefault(protocolFeeDefault);
+
+    await expect(
+      router.functions.execute(
+        // input
+        [[ethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        // output
+        [daiAddress, ethers.utils.parseUnits('1000', 18)],
+        // swap description
+        [
+          SWAP_FIXED_INPUTS,
+          protocolFeeDefault,
+          [ethers.utils.parseUnits('1.1', 18), owner.address],
+          owner.address,
+          caller.address,
+          abiCoder.encode(
+            ['address', 'address', 'address[]', 'bool[]', 'uint8', 'uint256'],
+            [
+              ethAddress,
+              daiAddress,
+              [uniDaiWethAddress],
+              [false],
+              SWAP_FIXED_INPUTS,
+              ethers.utils.parseUnits('1', 18),
+            ],
+          ),
+        ],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+        {
+          value: ethers.utils.parseEther('1'),
+        },
+      ),
+    ).to.be.reverted;
+  });
+
   it('should not do eth -> dai trade with high slippage', async () => {
     await router.setProtocolFeeDefault(protocolFeeDefault);
 
@@ -241,7 +280,7 @@ describe('UniswapCaller', () => {
   });
 
   it('should do dai -> eth trade with 0 input', async () => {
-    await dai.approve(router.address, ethers.utils.parseUnits('4000', 18));
+    await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
     await router.setProtocolFeeDefault(protocolFeeDefault);
 
     await expect(
@@ -278,7 +317,7 @@ describe('UniswapCaller', () => {
   });
 
   it('should do dai -> eth trade', async () => {
-    await dai.approve(router.address, ethers.utils.parseUnits('4000', 18));
+    await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
     await router.setProtocolFeeDefault(protocolFeeDefault);
 
     logger.info(
@@ -286,7 +325,7 @@ describe('UniswapCaller', () => {
     );
     const tx = await router.functions.execute(
       // input
-      [[daiAddress, ethers.utils.parseUnits('4000', 18), AMOUNT_ABSOLUTE], zeroPermit],
+      [[daiAddress, ethers.utils.parseUnits('500', 18), AMOUNT_ABSOLUTE], zeroPermit],
       // output
       [ethAddress, ethers.utils.parseUnits('0.1', 18)],
       // swap description
@@ -304,7 +343,7 @@ describe('UniswapCaller', () => {
             [uniDaiWethAddress],
             [true],
             SWAP_FIXED_INPUTS,
-            ethers.utils.parseUnits('4000', 18),
+            ethers.utils.parseUnits('500', 18),
           ],
         ),
       ],
@@ -320,7 +359,7 @@ describe('UniswapCaller', () => {
   });
 
   it('should do dai -> weth trade with 0 output', async () => {
-    await dai.approve(router.address, ethers.utils.parseUnits('5000', 18));
+    await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
     await router.setProtocolFeeDefault(protocolFeeDefault);
 
     await expect(
@@ -400,9 +439,9 @@ describe('UniswapCaller', () => {
     await expect(
       router.functions.execute(
         // input
-        [[daiAddress, ethers.utils.parseUnits('5000', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        [[daiAddress, ethers.utils.parseUnits('500', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [wethAddress, ethers.utils.parseUnits('1', 18)],
+        [wethAddress, ethers.utils.parseUnits('0.1', 18)],
         // swap description
         [
           SWAP_FIXED_OUTPUTS,
@@ -437,9 +476,9 @@ describe('UniswapCaller', () => {
     await expect(
       router.functions.execute(
         // input
-        [[daiAddress, ethers.utils.parseUnits('5000', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        [[daiAddress, ethers.utils.parseUnits('500', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [wethAddress, ethers.utils.parseUnits('1', 18)],
+        [wethAddress, ethers.utils.parseUnits('0.1', 18)],
         // swap description
         [
           SWAP_FIXED_OUTPUTS,
@@ -468,7 +507,7 @@ describe('UniswapCaller', () => {
   });
 
   it('should do dai -> weth trade', async () => {
-    await dai.approve(router.address, ethers.utils.parseUnits('5000', 18));
+    await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
     await router.setProtocolFeeDefault(protocolFeeDefault);
 
     logger.info(
@@ -479,9 +518,9 @@ describe('UniswapCaller', () => {
     );
     const tx = await router.functions.execute(
       // input
-      [[daiAddress, ethers.utils.parseUnits('5000', 18), AMOUNT_ABSOLUTE], zeroPermit],
+      [[daiAddress, ethers.utils.parseUnits('500', 18), AMOUNT_ABSOLUTE], zeroPermit],
       // output
-      [wethAddress, ethers.utils.parseUnits('1', 18)],
+      [wethAddress, ethers.utils.parseUnits('0.1', 18)],
       // swap description
       [
         SWAP_FIXED_OUTPUTS,
@@ -497,7 +536,7 @@ describe('UniswapCaller', () => {
             [uniDaiWethAddress],
             [true],
             SWAP_FIXED_OUTPUTS,
-            ethers.utils.parseUnits((1 * 1.02).toString(), 18),
+            ethers.utils.parseUnits('0.102', 18).toString(), // 0.1 * 1.02
           ],
         ),
       ],
@@ -516,13 +555,13 @@ describe('UniswapCaller', () => {
   });
 
   it('should not do dai -> weth trade with high token slippage', async () => {
-    await dai.approve(router.address, ethers.utils.parseUnits('3000', 18));
+    await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
     await router.setProtocolFeeDefault(protocolFeeDefault);
 
     await expect(
       router.functions.execute(
         // input
-        [[daiAddress, ethers.utils.parseUnits('3000', 18), AMOUNT_ABSOLUTE], zeroPermit],
+        [[daiAddress, ethers.utils.parseUnits('500', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
         [wethAddress, ethers.utils.parseUnits('1', 18)],
         // swap description
@@ -553,7 +592,7 @@ describe('UniswapCaller', () => {
   });
 
   it('should not do dai -> weth trade with not enough liquidity', async () => {
-    await dai.approve(router.address, ethers.utils.parseUnits('5000', 18));
+    await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
     await router.setProtocolFeeDefault(protocolFeeDefault);
 
     await expect(
@@ -561,7 +600,7 @@ describe('UniswapCaller', () => {
         // input
         [[daiAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
         // output
-        [wethAddress, ethers.utils.parseUnits('1', 18)],
+        [wethAddress, ethers.utils.parseUnits('0', 18)],
         // swap description
         [
           SWAP_FIXED_OUTPUTS,

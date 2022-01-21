@@ -44,10 +44,7 @@ contract SimpleCaller is ICaller, TokensHandler {
      *     - outputToken Address of the token that should be returned
      * @dev Call target cannot be zero
      */
-    function callBytes(bytes calldata callerCallData)
-        external
-        override
-    {
+    function callBytes(bytes calldata callerCallData) external override {
         (
             address inputToken,
             address allowanceTarget,

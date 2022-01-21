@@ -236,7 +236,7 @@ describe('Router', () => {
     );
   });
 
-  it('should not do trade with zero output tokenand non-zero amount', async () => {
+  it('should not do trade with zero output token and non-zero amount', async () => {
     await expect(
       router.functions.execute(
         // input
@@ -437,30 +437,6 @@ describe('Router', () => {
       // fee signature
       zeroSignature,
     );
-  });
-
-  it('should not execute with too large marketplace fee', async () => {
-    await expect(
-      router.functions.execute(
-        // input
-        [[ethAddress, ethers.utils.parseUnits('0', 18), AMOUNT_ABSOLUTE], zeroPermit],
-        // output
-        [ethAddress, '0'],
-        // swap description
-        [
-          SWAP_FIXED_INPUTS,
-          zeroFee,
-          [ethers.utils.parseUnits('1.1', 18), owner.address],
-          owner.address,
-          mockCaller.address,
-          EMPTY_BYTES,
-        ],
-        // account signature
-        zeroSignature,
-        // fee signature
-        zeroSignature,
-      ),
-    ).to.be.reverted;
   });
 
   it('should not execute with bad permit type', async () => {
