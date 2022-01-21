@@ -245,10 +245,10 @@ contract Router is
     }
 
     /**
-     * @dev Does nothing in zero input token address case
-     * @dev Checks `msg.value` in Ether case
      * @dev In ERC20 token case, transfers input token from the accound address to this contract,
      *     calls `permit()` function if allowance is not enough and permit call data is provided
+     * @dev Checks `msg.value` in Ether case
+     * @dev Does nothing in zero input token address case
      * @param token Input token address (may be Ether or zero)
      * @param amount Input token amount
      * @param permit Permit type and call data, which is used if allowance is not enough
