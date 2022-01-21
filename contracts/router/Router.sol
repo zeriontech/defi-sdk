@@ -167,8 +167,7 @@ contract Router is
         // Transfer input token (`msg.value` check for Ether) to this contract address,
         // do nothing in case of zero input token address
         address inputToken = input.tokenAmount.token;
-        if (inputToken != address(0))
-            handleInput(inputToken, absoluteInputAmount, input.permit, swapDescription.account);
+        handleInput(inputToken, absoluteInputAmount, input.permit, swapDescription.account);
 
         // Calculate the initial balances for input and output tokens
         uint256 initialInputBalance = Base.getBalance(inputToken);
@@ -246,13 +245,14 @@ contract Router is
     }
 
     /**
-     * @dev Transfers input token from the accound address to this contract,
+     * @dev Does nothing in zero input token address case
+     * @dev Checks `msg.value` in Ether case
+     * @dev In ERC20 token case, transfers input token from the accound address to this contract,
      *     calls `permit()` function if allowance is not enough and permit call data is provided
-     * @param token Input token address (may be Ether)
+     * @param token Input token address (may be Ether or zero)
      * @param amount Input token amount
      * @param permit Permit type and call data, which is used if allowance is not enough
      * @param account Address of the account to take tokens from
-     * @dev This function should not be caller with zero token address
      */
     function handleInput(
         address token,
@@ -260,6 +260,8 @@ contract Router is
         Permit calldata permit,
         address account
     ) internal {
+        if (token == address(0)) return;
+
         if (token == ETH) return handleETHInput(amount);
 
         handleTokenInput(token, amount, permit, account);
