@@ -4,7 +4,7 @@ require("regenerator-runtime/runtime");
 require("dotenv").config();
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
-// import "hardhat-gas-reporter";
+import "@nomiclabs/hardhat-etherscan";
 import "hardhat-tracer";
 import "hardhat-docgen";
 import "solidity-coverage";
@@ -28,12 +28,10 @@ const config: HardhatUserConfig = {
       gas: 10000000,
       allowUnlimitedContractSize: true,
     },
+    "truffle-dashboard": {
+      url: "http://localhost:24012/rpc"
+    }
   },
-  // gasReporter: {
-  //   currency: "USD",
-  //   enabled: process.env.REPORT_GAS ? true : false,
-  //   gasPrice: 100,
-  // },
   docgen: {
     path: "./docs",
     clear: false,

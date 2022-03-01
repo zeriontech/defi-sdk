@@ -174,8 +174,7 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
      * @param input Input described in `hashDada()` function
      * @param output Outut described in `hashDada()` function
      * @param swapDescription Swap parameters described in `hashDada()` function
-     * @param salt Salt parameter preventing double-spending
-     * @dev `deadline` from ProtocolFeeSignature is also passed as `salt` param to this function
+     * @param saltOrDeadline Salt/deadline parameter preventing double-spending
      * @return `execute()` function data hashed
      */
     function hash(
@@ -183,11 +182,17 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
         Input memory input,
         AbsoluteTokenAmount memory output,
         SwapDescription memory swapDescription,
-        uint256 salt
+        uint256 saltOrDeadline
     ) internal pure returns (bytes32) {
         return
             keccak256(
-                abi.encode(typehash, hash(input), hash(output), hash(swapDescription), salt)
+                abi.encode(
+                    typehash,
+                    hash(input),
+                    hash(output),
+                    hash(swapDescription),
+                    saltOrDeadline
+                )
             );
     }
 

@@ -45,7 +45,7 @@ import {
     HighInputBalanceChange,
     InsufficientAllowance,
     InsufficientMsgValue,
-    LowOutputBalanceChange,
+    LowActualOutputAmount,
     NoneAmountType,
     NonePermitType,
     NoneSwapType,
@@ -153,7 +153,7 @@ contract Router is
         internal
         returns (
             uint256 inputBalanceChange,
-            uint256 returnedAmount,
+            uint256 actualOutputAmount,
             uint256 protocolFeeAmount,
             uint256 marketplaceFeeAmount
         )
@@ -173,10 +173,10 @@ contract Router is
         uint256 initialInputBalance = Base.getBalance(inputToken);
         uint256 initialOutputBalance = Base.getBalance(output.token);
 
-        // Transfer tokens to the caller and call the caller with the provided call data
+        // Transfer tokens to the caller
         Base.transfer(inputToken, swapDescription.caller, absoluteInputAmount);
 
-        // Using encodeCall here to ensure that types of parameters are correct
+        // Call caller's `callBytes()` function with the provided calldata
         Address.functionCall(
             swapDescription.caller,
             abi.encodeWithSelector(ICaller.callBytes.selector, swapDescription.callerCallData),
@@ -195,7 +195,7 @@ contract Router is
         uint256 refundAmount = absoluteInputAmount - inputBalanceChange;
 
         // Calculate returned output token amount and fees amounts
-        (returnedAmount, protocolFeeAmount, marketplaceFeeAmount) = getReturnedAmounts(
+        (actualOutputAmount, protocolFeeAmount, marketplaceFeeAmount) = getReturnedAmounts(
             swapDescription.swapType,
             swapDescription.protocolFee,
             swapDescription.marketplaceFee,
@@ -204,16 +204,16 @@ contract Router is
         );
 
         // Check output requirements, prevent revert on transfers
-        if (returnedAmount < output.absoluteAmount)
-            revert LowOutputBalanceChange(returnedAmount, output.absoluteAmount);
+        if (actualOutputAmount < output.absoluteAmount)
+            revert LowActualOutputAmount(actualOutputAmount, output.absoluteAmount);
 
         // Transfer the refund back to the user,
         // do nothing in zero input token case as `refundAmount` is zero
         Base.transfer(inputToken, swapDescription.account, refundAmount);
 
         // Transfer the output tokens to the user,
-        // do nothing in zero output token case as `returnedAmount` is zero
-        Base.transfer(output.token, swapDescription.account, returnedAmount);
+        // do nothing in zero output token case as `actualOutputAmount` is zero
+        Base.transfer(output.token, swapDescription.account, actualOutputAmount);
 
         // Transfer protocol fee,
         // do nothing in zero output token case as `protocolFeeAmount` is zero
@@ -234,14 +234,14 @@ contract Router is
             swapDescription,
             absoluteInputAmount,
             inputBalanceChange,
-            returnedAmount,
+            actualOutputAmount,
             protocolFeeAmount,
             marketplaceFeeAmount
         );
 
         // Return this contract's balance changes,
         // output token balance change is split into 3 values
-        return (inputBalanceChange, returnedAmount, protocolFeeAmount, marketplaceFeeAmount);
+        return (inputBalanceChange, actualOutputAmount, protocolFeeAmount, marketplaceFeeAmount);
     }
 
     /**

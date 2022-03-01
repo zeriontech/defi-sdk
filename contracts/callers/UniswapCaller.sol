@@ -29,7 +29,7 @@ import {
     BadToken,
     InconsistentPairsAndDirectionsLengths,
     InputSlippage,
-    LowLiquidity,
+    LowReserve,
     ZeroAmountIn,
     ZeroAmountOut,
     ZeroLength
@@ -213,7 +213,7 @@ contract UniswapCaller is ICaller, TokensHandler, Weth {
         if (amountOut == uint256(0)) revert ZeroAmountOut();
 
         (uint256 reserveIn, uint256 reserveOut) = getReserves(pair, direction);
-        if (reserveOut < amountOut) revert LowLiquidity(reserveOut, amountOut);
+        if (reserveOut < amountOut) revert LowReserve(reserveOut, amountOut);
 
         uint256 numerator = reserveIn * amountOut * 1000;
         uint256 denominator = (reserveOut - amountOut) * 997;

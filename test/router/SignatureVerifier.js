@@ -142,7 +142,7 @@ describe('SignatureVerifier', () => {
     //   // double usage protection param
     //   salt,
     // );
-    const hashedData = '0x83c323c36a91cd8a691de086df6f1df3a3f32213c4ccb3cd24134f231c6ed63b';
+    const hashedData = '0x8861d407dbe21fdb4e2006c56841af7b36123147d834b1a5186ede1943d1c81d';
 
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;
@@ -300,7 +300,7 @@ describe('SignatureVerifier', () => {
     //   // double usage protection param
     //   salt,
     // );
-    const hashedData = '0xd4af849ac2bf9ac524111583b3d2faea64f0dfa2196811f7ce905331bdbe207c';
+    const hashedData = '0x938233db9be8181c7d8597d1c9884a2f9557bbfa7ee2a6b4c6a53cf9d1d72552';
 
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;

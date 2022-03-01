@@ -48,8 +48,8 @@ error InconsistentPairsAndDirectionsLengths(uint256 pairsLength, uint256 directi
 error InputSlippage(uint256 amount, uint256 requiredAmount);
 error InsufficientAllowance(uint256 allowance, uint256 requiredAllowance);
 error InsufficientMsgValue(uint256 msgValue, uint256 requiredMsgValue);
-error LowOutputBalanceChange(uint256 outputBalanceChange, uint256 requiredOutputBalanceChange);
-error LowLiquidity(uint256 reserve, uint256 requiredReserve);
+error LowActualOutputAmount(uint256 actualOutputAmount, uint256 requiredActualOutputAmount);
+error LowReserve(uint256 reserve, uint256 requiredReserve);
 error NoneActionType();
 error NoneAmountType();
 error NonePermitType();

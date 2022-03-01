@@ -8,19 +8,22 @@
   "scripts": {
     "postinstall": "husky install",
     "compile": "npx hardhat compile",
-    "deploy:development": "npx hardhat deploy --network development",
-    "deploy:mainnet": "npx hardhat deploy --network mainnet",
-    "deploy:kovan": "npx hardhat deploy --network kovan",
     "test": "npx hardhat test --show-stack-traces",
     "coverage": "npx hardhat coverage --network hardhat",
     "lint:solhint": "npx solhint \"contracts/**/*.sol\"",
     "lint:eslint": "eslint .",
-    "lint": "npm run lint:solhint && npm run lint:eslint"
+    "lint": "npm run lint:solhint && npm run lint:eslint",
+    "slither": "slither . --filter-paths \"node_modules\"",
+    "truffle-dashboard": "npx truffle dashboard",
+    "deploy:router:truffle-dashboard": "npx hardhat run scripts/1_deploy_router.js --network truffle-dashboard",
+    "deploy:sc:truffle-dashboard": "npx hardhat run scripts/2_deploy_simple_caller.js --network truffle-dashboard",
+    "initialize:router:truffle-dashboard": "npx hardhat run scripts/3_setup_router_fee.js --network truffle-dashboard",
+    "verify:polygon": "npx hardhat verify < address > --network polygon"
   },
   "lint-staged": {
     ".": "npx prettier --write",
     "test/**/*.js": "npx eslint --fix",
-    "migrations_scripts/*.js": "npx eslint --fix"
+    "scripts/*.js": "npx eslint --fix"
   },
   "author": "Zerion Inc.",
   "license": "LGPL-3.0-only",
@@ -34,6 +37,7 @@
     "@babel/register": "7.16.5",
     "@codechecks/client": "0.1.12",
     "@nomiclabs/hardhat-ethers": "2.0.3",
+    "@nomiclabs/hardhat-etherscan": "^3.0.1",
     "@nomiclabs/hardhat-waffle": "2.0.1",
     "@types/chai": "4.3.0",
     "@types/mocha": "9.0.0",
@@ -61,6 +65,7 @@
     "solhint": "3.3.6",
     "solhint-plugin-prettier": "0.0.5",
     "solidity-coverage": "0.7.17",
+    "truffle": "^5.5.2",
     "ts-node": "10.4.0",
     "typescript": "4.5.4"
   }
