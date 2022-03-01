@@ -1,12 +1,12 @@
-import deploymentAddresses from './deployment_test';
+import deploymentAddresses from './deployment';
 
 try {
   (async () => {
     const Contract = await ethers.getContractFactory('Router');
-    const contract = await Contract.attach(deploymentAddresses.Router);
+    const contract = await Contract.attach(deploymentAddresses.router);
 
     const feeSignerTx = await contract.functions.setProtocolFeeSigner(
-      '0x014040C6A9cd6366f8fa858535b7DdfAc507dB20',
+      '0x1e126951a7CB895543E4E4c7B2D1398b3C3d09fC',
     );
     console.log(`Setting fee signer tx hash: ${feeSignerTx.hash}`);
 

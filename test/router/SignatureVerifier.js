@@ -27,9 +27,9 @@ describe('SignatureVerifier', () => {
   let wallet;
 
   before(async () => {
-    [, notOwner,,, owner] = await ethers.getSigners();
+    [owner, notOwner] = await ethers.getSigners();
 
-    [,,,, wallet] = provider.getWallets();
+    [wallet] = provider.getWallets();
     Router = await ethers.getContractFactory('Router', owner);
 
     mockCaller = await deployMockContract(owner, CallerArtifacts.abi);
@@ -141,7 +141,7 @@ describe('SignatureVerifier', () => {
     //   // double usage protection param
     //   salt,
     // );
-    const hashedData = '0xf25f8d239088ea005481aa99294c526c59108ba1fb601a6e5279f7e0c016cc90';
+    const hashedData = '0xff1b428ba6686cc8f472b47a4b4aa277a88bc4423d23c836ab30e75eef64982d';
 
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;
@@ -299,7 +299,7 @@ describe('SignatureVerifier', () => {
     //   // double usage protection param
     //   salt,
     // );
-    const hashedData = '0xd1f8882d42112d37c31fcdd61dc46601af9c87d63c5c0515e644ffd4a2053a8f';
+    const hashedData = '0x5e345966889a41b22e7b9a6c1771b0554019404d1838c7890ee4bd70c46f0c11';
 
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;

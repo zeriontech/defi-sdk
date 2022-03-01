@@ -18,7 +18,7 @@
     "deploy:router:truffle-dashboard": "npx hardhat run scripts/1_deploy_router.js --network truffle-dashboard",
     "deploy:sc:truffle-dashboard": "npx hardhat run scripts/2_deploy_simple_caller.js --network truffle-dashboard",
     "initialize:router:truffle-dashboard": "npx hardhat run scripts/3_setup_router_fee.js --network truffle-dashboard",
-    "verify:polygon": "npx hardhat verify < address > --network polygon"
+    "verify": "npx hardhat run scripts/4_verify.js"
   },
   "lint-staged": {
     ".": "npx prettier --write",
