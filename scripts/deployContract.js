@@ -8,8 +8,8 @@ async function deployAsync(contractName) {
   return contract.address;
 }
 
-const deploy = (contractName) => {
+const deployContract = (contractName) => {
   return deployAsync(contractName);
 };
 
-export default deploy;
+export default deployContract;

@@ -1,7 +1,7 @@
-import deploy from './deploy';
+import deployContract from './deployContract';
 
 try {
-  deploy('SimpleCaller');
+  deployContract('SimpleCaller');
 } catch (error) {
   console.error(error);
   process.exit(1);
