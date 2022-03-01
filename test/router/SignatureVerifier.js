@@ -27,11 +27,10 @@ describe('SignatureVerifier', () => {
   let wallet;
 
   before(async () => {
-    Router = await ethers.getContractFactory('Router');
+    [, notOwner,,, owner] = await ethers.getSigners();
 
-    [owner, notOwner] = await ethers.getSigners();
-
-    [wallet] = provider.getWallets();
+    [,,,, wallet] = provider.getWallets();
+    Router = await ethers.getContractFactory('Router', owner);
 
     mockCaller = await deployMockContract(owner, CallerArtifacts.abi);
     await mockCaller.mock.callBytes.returns();
@@ -142,7 +141,7 @@ describe('SignatureVerifier', () => {
     //   // double usage protection param
     //   salt,
     // );
-    const hashedData = '0x5acc3d6596c88c685c751f32296f9f98e98a10c4586731535391eee172826fd2';
+    const hashedData = '0xf25f8d239088ea005481aa99294c526c59108ba1fb601a6e5279f7e0c016cc90';
 
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;
@@ -300,7 +299,7 @@ describe('SignatureVerifier', () => {
     //   // double usage protection param
     //   salt,
     // );
-    const hashedData = '0x4d8cd3b6f35228b05b5dded2cb85345120cc473198464678df8467d25da242dc';
+    const hashedData = '0xd1f8882d42112d37c31fcdd61dc46601af9c87d63c5c0515e644ffd4a2053a8f';
 
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;
@@ -460,7 +459,7 @@ describe('SignatureVerifier', () => {
         // protocol fee signature
         protocolFeeSignature,
       ),
-    ).to.be.reverted;
+    ).to.be.revertedWith('ExceedingLimitFee(1, 0)');
 
     await router.setProtocolFeeDefault(protocolFee);
     expect(await router.getProtocolFeeDefault()).to.deep.equal(protocolFee);
@@ -479,7 +478,7 @@ describe('SignatureVerifier', () => {
         // protocol fee signature
         protocolFeeSignature,
       ),
-    ).to.be.reverted;
+    ).to.be.revertedWith('BadFeeSignature()');
 
     await router.setProtocolFeeSigner(wallet.address);
     expect(await router.getProtocolFeeSigner()).to.be.equal(wallet.address);
@@ -526,7 +525,7 @@ describe('SignatureVerifier', () => {
         // protocol fee signature
         [FUTURE_TIMESTAMP + 1, protocolFeeSignature[1]],
       ),
-    ).to.be.reverted;
+    ).to.be.revertedWith('BadFeeSignature()');
 
     // skip time to future timestamp
     await hre.network.provider.request({
@@ -548,6 +547,6 @@ describe('SignatureVerifier', () => {
         // protocol fee signature
         protocolFeeSignature,
       ),
-    ).to.be.reverted;
+    ).to.be.revertedWith('PassedDeadline');
   });
 });
