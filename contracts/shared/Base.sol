@@ -15,7 +15,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-only
 
-pragma solidity 0.8.11;
+pragma solidity 0.8.12;
 
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -68,9 +68,9 @@ library Base {
         uint256 allowance = IERC20(token).allowance(address(this), spender);
         if (allowance < amount) {
             if (allowance > uint256(0)) {
-                IERC20(token).approve(spender, uint256(0));
+                SafeERC20.safeApprove(IERC20(token), spender, uint256(0));
             }
-            IERC20(token).approve(spender, type(uint256).max);
+            SafeERC20.safeApprove(IERC20(token), spender, type(uint256).max);
         }
     }
 
