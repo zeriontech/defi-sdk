@@ -82,7 +82,7 @@ describe('SignatureVerifier', () => {
       },
       domain: {
         name: 'Zerion Router',
-        version: '2',
+        version: '3',
         chainId: 31337,
         verifyingContract: router.address,
       },
@@ -240,7 +240,7 @@ describe('SignatureVerifier', () => {
       },
       domain: {
         name: 'Zerion Router',
-        version: '2',
+        version: '3',
         chainId: 31337,
         verifyingContract: router.address,
       },
@@ -394,7 +394,7 @@ describe('SignatureVerifier', () => {
       },
       domain: {
         name: 'Zerion Router',
-        version: '2',
+        version: '3',
         chainId: 31337,
         verifyingContract: router.address,
       },
