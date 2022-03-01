@@ -72,7 +72,7 @@ contract Router is
     IRouter,
     Ownable,
     TokensHandler,
-    SignatureVerifier("Zerion Router", "2"),
+    SignatureVerifier("Zerion Router", "3"),
     ProtocolFee,
     ReentrancyGuard
 {
