@@ -32,6 +32,9 @@ const config: HardhatUserConfig = {
       url: "http://localhost:24012/rpc"
     }
   },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
+  },
   docgen: {
     path: "./docs",
     clear: false,
