@@ -4,6 +4,9 @@ try {
   (async () => {
     const Contract = await ethers.getContractFactory('Router');
     const contract = await Contract.attach(deploymentAddresses.router);
+    const chainId = await hre.network.provider.request({ method: 'eth_chainId' });
+
+    console.log(`Working with chainId ${parseInt(chainId, 10)}`);
 
     const feeSignerTx = await contract.functions.setProtocolFeeSigner(
       '0x1e126951a7CB895543E4E4c7B2D1398b3C3d09fC',
@@ -13,7 +16,7 @@ try {
     const feeDefaultTx = await contract.functions.setProtocolFeeDefault(
       [
         '5000000000000000',
-        '0xFEeAcCE884bc21B53DBe79Abc5279029f78D1B44',
+        deploymentAddresses.feeBeneficiaries[parseInt(chainId, 10)],
       ],
     );
     console.log(`Setting fee defaults tx hash: ${feeDefaultTx.hash}`);
