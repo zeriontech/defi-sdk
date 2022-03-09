@@ -18,7 +18,7 @@ const zeroFee = [ethers.BigNumber.from('0'), AddressZero];
 const zeroPermit = ['0', EMPTY_BYTES];
 const zeroSignature = ['0', EMPTY_BYTES];
 
-describe.only('SignatureVerifier', () => {
+describe('SignatureVerifier', () => {
   let owner;
   let notOwner;
   let Router;
