@@ -18,7 +18,7 @@ const zeroFee = [ethers.BigNumber.from('0'), AddressZero];
 const zeroPermit = ['0', EMPTY_BYTES];
 const zeroSignature = ['0', EMPTY_BYTES];
 
-describe('SignatureVerifier', () => {
+describe.only('SignatureVerifier', () => {
   let owner;
   let notOwner;
   let Router;
@@ -81,7 +81,7 @@ describe('SignatureVerifier', () => {
       },
       domain: {
         name: 'Zerion Router',
-        version: '3',
+        version: '4',
         chainId: 31337,
         verifyingContract: router.address,
       },
@@ -141,7 +141,7 @@ describe('SignatureVerifier', () => {
     //   // double usage protection param
     //   salt,
     // );
-    const hashedData = '0x6edf1a14d3705f62cb7332b84e6d2e8729ce94830961f171e832b996c10e47fd';
+    const hashedData = '0x8a306c44e3f06758947bb3e1feecb87ac2b93575dd1b3fa6aec92b407e18eee1';
 
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;
@@ -239,7 +239,7 @@ describe('SignatureVerifier', () => {
       },
       domain: {
         name: 'Zerion Router',
-        version: '3',
+        version: '4',
         chainId: 31337,
         verifyingContract: router.address,
       },
@@ -299,7 +299,7 @@ describe('SignatureVerifier', () => {
     //   // double usage protection param
     //   salt,
     // );
-    const hashedData = '0x7833eb9a8dbbd183f5405922a845d4018cd1b79ee67a585d4390149c4f0a2fa6';
+    const hashedData = '0xd0c8a8bff8af12582d0ecc2669022bbcce1ff9d32a563e2a1ab39de4546f2dc6';
 
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;
@@ -393,7 +393,7 @@ describe('SignatureVerifier', () => {
       },
       domain: {
         name: 'Zerion Router',
-        version: '3',
+        version: '4',
         chainId: 31337,
         verifyingContract: router.address,
       },

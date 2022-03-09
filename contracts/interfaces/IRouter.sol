@@ -66,7 +66,7 @@ interface IRouter is ITokensHandler, ISignatureVerifier {
      *     to be returned to the account address
      * @dev `address(0)` may be used as output token address,
      *     in this case no tokens will be returned to the user, no fees are applied
-     * @param swapDescription Swap description with the following elements:\n
+     * @param swapDescription Swap description with the following elements:
      *     - Whether the inputs or outputs are fixed
      *     - Protocol fee share and beneficiary address
      *     - Marketplace fee share and beneficiary address
@@ -78,6 +78,10 @@ interface IRouter is ITokensHandler, ISignatureVerifier {
      * @param protocolFeeSignature Signature for the discounted protocol fee
      *     (checks that current protocol fee signer is the one who actually did a signature),
      *     this signature may be reused multiple times until the deadline
+     * @return inputBalanceChange Actual amount of input tokens spent
+     * @return actualOutputAmount Actual amount of output tokens returned to the user
+     * @return protocolFeeAmount Actual amount of output tokens charged as protocol fee
+     * @return marketplaceFeeAmount Actual amount of output tokens charged as marketplace fee
      */
     function execute(
         Input calldata input,
@@ -85,25 +89,33 @@ interface IRouter is ITokensHandler, ISignatureVerifier {
         SwapDescription calldata swapDescription,
         AccountSignature calldata accountSignature,
         ProtocolFeeSignature calldata protocolFeeSignature
-    ) external payable;
-
-    /**
-     * @notice Main function estimating the swaps
-     * @notice All the parameters are described in `execute()` function
-     * @dev Reverts at the end of execution with `Estimate` error
-     * @dev Returns all the balance changes and gas estimation in revert message
-     */
-    function estimate(
-        Input calldata input,
-        AbsoluteTokenAmount calldata absoluteOutput,
-        SwapDescription calldata swapDescription,
-        AccountSignature calldata accountSignature,
-        ProtocolFeeSignature calldata protocolFeeSignature
-    ) external payable;
+    ) external payable
+        returns (
+            uint256 inputBalanceChange,
+            uint256 actualOutputAmount,
+            uint256 protocolFeeAmount,
+            uint256 marketplaceFeeAmount
+        );
 
     /**
      * @notice Function for the account signature cancellation
-     * @notice See `execute()` function for params descriptions
+     * @param input Token and amount (relative or absolute) to be taken from the account address,
+     *     also, permit type and call data may provided if required
+     * @dev `address(0)` may be used as input token address,
+     *     in this case no tokens will be taken from the user
+     * @param absoluteOutput Token and absolute amount requirement
+     *     to be returned to the account address
+     * @dev `address(0)` may be used as output token address,
+     *     in this case no tokens will be returned to the user, no fees are applied
+     * @param swapDescription Swap description with the following elements:
+     *     - Whether the inputs or outputs are fixed
+     *     - Protocol fee share and beneficiary address
+     *     - Marketplace fee share and beneficiary address
+     *     - Address of the account executing the swap
+     *     - Address of the Caller contract to be called
+     *     - Calldata for the call to the Caller contract
+     * @param accountSignature Signature for the relayed transaction
+     *     (checks that account address is the one who actually did a signature)
      */
     function cancelAccountSignature(
         Input calldata input,

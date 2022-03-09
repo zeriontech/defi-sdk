@@ -1,5 +1,5 @@
 const deploymentAddresses = {
-  router: '0xD832Cc2D05b42C687a1190c548395E8Fa34011a1',
+  router: '0xd7F1Dd5D49206349CaE8b585fcB0Ce3D96f1696F',
   simpleCaller: '0xC629Bf86f02ef13E8F1f5F75adE8a8165587998F',
   feeBeneficiaries: {
     10: '0x7d20Ab6D8aF50d87A5E8DeF46e48F4d7dC2Ea5c7',

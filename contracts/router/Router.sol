@@ -39,7 +39,6 @@ import {
     BadFeeBeneficiary,
     BadFeeShare,
     BadFeeSignature,
-    Estimate,
     ExceedingDelimiterAmount,
     ExceedingLimitFee,
     HighInputBalanceChange,
@@ -72,7 +71,7 @@ contract Router is
     IRouter,
     Ownable,
     TokensHandler,
-    SignatureVerifier("Zerion Router", "3"),
+    SignatureVerifier("Zerion Router", "4"),
     ProtocolFee,
     ReentrancyGuard
 {
@@ -102,42 +101,19 @@ contract Router is
         SwapDescription calldata swapDescription,
         AccountSignature calldata accountSignature,
         ProtocolFeeSignature calldata protocolFeeSignature
-    ) external payable override nonReentrant {
-        validateProtocolFeeSignature(input, output, swapDescription, protocolFeeSignature);
-        validateAndExpireAccountSignature(input, output, swapDescription, accountSignature);
-
-        execute(input, output, swapDescription);
-    }
-
-    /**
-     * @inheritdoc IRouter
-     */
-    function estimate(
-        Input calldata input,
-        AbsoluteTokenAmount calldata output,
-        SwapDescription calldata swapDescription,
-        AccountSignature calldata accountSignature,
-        ProtocolFeeSignature calldata protocolFeeSignature
-    ) external payable override {
-        uint256 initialGas = gasleft();
-
-        validateProtocolFeeSignature(input, output, swapDescription, protocolFeeSignature);
-        validateAndExpireAccountSignature(input, output, swapDescription, accountSignature);
-
-        (
+    )
+        external payable override nonReentrant
+        returns (
             uint256 inputBalanceChange,
-            uint256 returnedAmount,
+            uint256 actualOutputAmount,
             uint256 protocolFeeAmount,
             uint256 marketplaceFeeAmount
-        ) = execute(input, output, swapDescription);
+        )
+    {
+        validateProtocolFeeSignature(input, output, swapDescription, protocolFeeSignature);
+        validateAndExpireAccountSignature(input, output, swapDescription, accountSignature);
 
-        revert Estimate(
-            inputBalanceChange,
-            returnedAmount,
-            protocolFeeAmount,
-            marketplaceFeeAmount,
-            initialGas - gasleft()
-        );
+        return execute(input, output, swapDescription);
     }
 
     /**

@@ -6,7 +6,7 @@ try {
     const contract = await Contract.attach(deploymentAddresses.router);
     const chainId = await hre.network.provider.request({ method: 'eth_chainId' });
 
-    console.log(`Working with chainId ${parseInt(chainId, 10)}`);
+    console.log(`Working with chainId ${chainId}`);
 
     const feeSignerTx = await contract.functions.setProtocolFeeSigner(
       '0x1e126951a7CB895543E4E4c7B2D1398b3C3d09fC',
@@ -16,7 +16,7 @@ try {
     const feeDefaultTx = await contract.functions.setProtocolFeeDefault(
       [
         '5000000000000000',
-        deploymentAddresses.feeBeneficiaries[parseInt(chainId, 10)],
+        deploymentAddresses.feeBeneficiaries[parseInt(chainId.toString(), 16).toString()],
       ],
     );
     console.log(`Setting fee defaults tx hash: ${feeDefaultTx.hash}`);

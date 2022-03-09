@@ -33,13 +33,6 @@ error BadLength(uint256 length, uint256 requiredLength);
 error BadMsgSender(address msgSender, address requiredMsgSender);
 error BadProtocolAdapterName(bytes32 protocolAdapterName);
 error BadToken(address token);
-error Estimate(
-    uint256 inputBalanceChange,
-    uint256 returnedAmount,
-    uint256 protocolFeeAmount,
-    uint256 marketplaceFeeAmount,
-    uint256 gasEstimation
-);
 error ExceedingDelimiterAmount(uint256 amount);
 error ExceedingLimitFee(uint256 feeShare, uint256 feeLimit);
 error FailedEtherTransfer(address to);
