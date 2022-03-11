@@ -1,4 +1,5 @@
 import signTypedData from '../helpers/signTypedData';
+import hashTypedData from '../helpers/hashTypedData';
 import { ethAddress } from '../helpers/tokens';
 
 const { expect } = require('chai');
@@ -141,7 +142,7 @@ describe('SignatureVerifier', () => {
     //   // double usage protection param
     //   salt,
     // );
-    const hashedData = '0x8a306c44e3f06758947bb3e1feecb87ac2b93575dd1b3fa6aec92b407e18eee1';
+    const hashedData = await hashTypedData(typedData);
 
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;
@@ -299,7 +300,7 @@ describe('SignatureVerifier', () => {
     //   // double usage protection param
     //   salt,
     // );
-    const hashedData = '0xd0c8a8bff8af12582d0ecc2669022bbcce1ff9d32a563e2a1ab39de4546f2dc6';
+    const hashedData = await hashTypedData(typedData);
 
     // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;
