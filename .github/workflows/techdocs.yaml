@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - add-docs
+      - interactive-new
     paths:
       - "docs/**"
       - "mkdocs.yml"
