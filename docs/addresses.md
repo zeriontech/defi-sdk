@@ -1,9 +1,16 @@
 # Addresses 
 
-## AdapterRegistry
-AdapterRegistry address is [0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672](https://etherscan.io/address/0x06fe76b2f432fdfecaef1a7d4f6c3d41b5861672){target=_blank}
+## Router
 
-## Protocol Adapters
+Router address is [0xd7F1Dd5D49206349CaE8b585fcB0Ce3D96f1696F](https://blockscan.com/address/0xd7F1Dd5D49206349CaE8b585fcB0Ce3D96f1696F){target=_blank} on all the supported chains.
+
+## AdapterRegistry
+
+AdapterRegistry address for read-only adapters is [0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672](https://etherscan.io/address/0x06fe76b2f432fdfecaef1a7d4f6c3d41b5861672){target=_blank}.
+
+AdapterRegistry address for interactive adapters is [0xaDfc6460233221eCa99daC25d00f98d32eA3989e](https://etherscan.io/address/0xaDfc6460233221eCa99daC25d00f98d32eA3989e){target=_blank}.
+
+## Read-only Protocol Adapters
 
 | Contract Name | Address |
 | :------------ | :------ |
@@ -51,3 +58,37 @@ AdapterRegistry address is [0x06FE76B2f432fdfEcAEf1a7d4f6C3d41B5861672](https://
 | UniswapV1TokenAdapter | [0xb260687cc277c0BFF48c9C482c16BC62f4eBa927](https://etherscan.io/address/0xb260687cc277c0BFF48c9C482c16BC62f4eBa927){target=_blank} |
 | ERC20TokenAdapter | [0x85609AfE45eE16e52aCB33b8AD103531fC959647](https://etherscan.io/address/0x85609AfE45eE16e52aCB33b8AD103531fC959647){target=_blank} |
 
+## Interactive Adapters
+
+| Contract Name | Address |
+| :------------ | :------ |
+| WETHAssetAdapter | [0x445830226347ef75867502e00e8D663842114F19](https://etherscan.io/address/0x445830226347ef75867502e00e8D663842114F19){target=_blank} |
+| UniswapAssetAdapter | [0xE1F28c0D8527eb28784bA15F6FF0A4371d7598E1](https://etherscan.io/address/0xE1F28c0D8527eb28784bA15F6FF0A4371d7598E1){target=_blank} |
+| UniswapExchangeAdapter | [0xE1F28c0D8527eb28784bA15F6FF0A4371d7598E1](https://etherscan.io/address/0xE1F28c0D8527eb28784bA15F6FF0A4371d7598E1){target=_blank} |
+| SushiSwapExchangeAdapter | [0x3b862d6f9ef92D3fF2142EC80A8968895B09127F](https://etherscan.io/address/0x3b862d6f9ef92D3fF2142EC80A8968895B09127F){target=_blank} |
+| CompoundAssetAdapter | [0xb8d9Ee15858799f9205a8d119C5050540feED6A5](https://etherscan.io/address/0xb8d9Ee15858799f9205a8d119C5050540feED6A5){target=_blank} |
+| AaveAssetAdapter | [0x77515760f30121Ea22D1cB9Fedcd5DD1BD8d3f15](https://etherscan.io/address/0x77515760f30121Ea22D1cB9Fedcd5DD1BD8d3f15){target=_blank} |
+| AaveV2AssetAdapter | [0x30EC4Ba79d951FA780b3B09158002854B6067847](https://etherscan.io/address/0x30EC4Ba79d951FA780b3B09158002854B6067847){target=_blank} |
+| CurveAssetAdapter | [0x1CeeA546AB6A3A3ee7Bc24cB1fac9e9Fe39a7368](https://etherscan.io/address/0x1CeeA546AB6A3A3ee7Bc24cB1fac9e9Fe39a7368){target=_blank} |
+| CurveExchangeAdapter | [0x8Da0A907a1bdbB440D1fdb450672a8C003bc4f3A](https://etherscan.io/address/0x8Da0A907a1bdbB440D1fdb450672a8C003bc4f3A){target=_blank} |
+| BalancerAssetAdapter | [0xD893569CEf4AE3603bb7d688ca9d9C7111706cb3](https://etherscan.io/address/0xD893569CEf4AE3603bb7d688ca9d9C7111706cb3){target=_blank} |
+| BalancerV2AssetAdapter | [0x6E02147cef2f078Da89f5913363C90420D934799](https://etherscan.io/address/0x6E02147cef2f078Da89f5913363C90420D934799){target=_blank} |
+| YEarnAssetAdapter | [0x3516CA4cB19ECcc401a9C0D13C7fDb6b73990979](https://etherscan.io/address/0x3516CA4cB19ECcc401a9C0D13C7fDb6b73990979){target=_blank} |
+| TokenSetRebalancingAssetAdapter | [0xab1C497D853296881FE65BeD48861eFD6CeB74Ee](https://etherscan.io/address/0xab1C497D853296881FE65BeD48861eFD6CeB74Ee){target=_blank} |
+| TokenSetNavAssetAdapter | [0x76Ee466c5957310cfB793AC21097FE5786665961](https://etherscan.io/address/0x76Ee466c5957310cfB793AC21097FE5786665961){target=_blank} |
+| TokenSetBasicAssetAdapter | [0xAd748736E9436C8CB155a1F37c725C5a5170ba4A](https://etherscan.io/address/0xAd748736E9436C8CB155a1F37c725C5a5170ba4A){target=_blank} |
+| BalancerMultiinputAssetAdapter | [0x0A1D55a66F89b683163FefC7AaCD83fECc9872B1](https://etherscan.io/address/0x0A1D55a66F89b683163FefC7AaCD83fECc9872B1){target=_blank} |
+| OneInchV2ExchangeAdapter | [0x2BcDedbEB99Fb3B9383Fd686faAbDb6172FC6503](https://etherscan.io/address/0x2BcDedbEB99Fb3B9383Fd686faAbDb6172FC6503){target=_blank} |
+| OneInchV3ExchangeAdapter | [0xe6189b3Ad3Fb3fAa87A336F00c93ECd3ac25d80d](https://etherscan.io/address/0xe6189b3Ad3Fb3fAa87A336F00c93ECd3ac25d80d){target=_blank} |
+| OneInchLPAssetAdapter | [0xD8f929FB13DAe09AAb49d812b8D0c80682d53696](https://etherscan.io/address/0xD8f929FB13DAe09AAb49d812b8D0c80682d53696){target=_blank} |
+| ZeroExExchangeAdapter | [0xe8C49A47f4385cCb6C90F5Fb0c0Aedc7E6e79EB0](https://etherscan.io/address/0xe8C49A47f4385cCb6C90F5Fb0c0Aedc7E6e79EB0){target=_blank} |
+| DodoAssetAdapter | [0xC9d30Ea2188eF0525b6328173FC9101539D2AA5A](https://etherscan.io/address/0xC9d30Ea2188eF0525b6328173FC9101539D2AA5A){target=_blank} |
+| DodoV2AssetAdapter | [0x278e57924Cd50cbE436586b35b8a1D5df9181165](https://etherscan.io/address/0x278e57924Cd50cbE436586b35b8a1D5df9181165){target=_blank} |
+| OUSDAssetAdapter | [0xAA048b52c765222008072472c5C2c2D47C02b4f1](https://etherscan.io/address/0xAA048b52c765222008072472c5C2c2D47C02b4f1){target=_blank} |
+| AlphaHomoraV2AssetAdapter | [0x31eb370a944213482B1B8990dC5A196d06b63F84](https://etherscan.io/address/0x31eb370a944213482B1B8990dC5A196d06b63F84){target=_blank} |
+| AmunBasketAssetAdapter | [0xe07C8e0f18083E66C65522Befc29887231ca3629](https://etherscan.io/address/0xe07C8e0f18083E66C65522Befc29887231ca3629){target=_blank} |
+| AmunLendingAssetAdapter | [0x784d97c29Ef870eB5D94c90B146d86d829384FC6](https://etherscan.io/address/0x784d97c29Ef870eB5D94c90B146d86d829384FC6){target=_blank} |
+| AmunLiquidityAssetAdapter | [0xc63e807bC6D65b84971b0A8CF8A673e551C9F85a](https://etherscan.io/address/0xc63e807bC6D65b84971b0A8CF8A673e551C9F85a){target=_blank} |
+| ZeroExOrdersV2ExchangeAdapter | [0x288C14e3C6ECC8EeeCb5DDAb9a600591b7aD966E](https://etherscan.io/address/0x288C14e3C6ECC8EeeCb5DDAb9a600591b7aD966E){target=_blank} |
+| GUniAssetAdapter | [0x57551aba668a66d07Ffed72f4c09c2dA5223E4e4](https://etherscan.io/address/0x57551aba668a66d07Ffed72f4c09c2dA5223E4e4){target=_blank} |
+| UniswapV3ExchangeAdapter | [0xC65756160866FCB7644e9AaC6C4B5832Da3A1c4b](https://etherscan.io/address/0xC65756160866FCB7644e9AaC6C4B5832Da3A1c4b){target=_blank} |

@@ -7,8 +7,9 @@ nav:
   - examples.md
   - architecture.md
   - interacting.md
+  - reading.md
+  - router.md
   - Supported protocols:
-    - supported-protocols/adapter-registry.md
     - supported-protocols/read-only-adapters.md
     - supported-protocols/interactive-adapters.md
   - Creating your adapters:

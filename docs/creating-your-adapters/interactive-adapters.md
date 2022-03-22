@@ -5,14 +5,12 @@
 !!! note ""
     The current version of code for interactive adapters is placed in [`interactive-updates`](https://github.com/zeriontech/defi-sdk/tree/interactive-updates){target="_blank"} branch.
 
-
 To create new token adapter, one has to implement [**InteractiveAdapter**](https://github.com/zeriontech/defi-sdk/blob/interactive-updates/contracts/interactiveAdapters/InteractiveAdapter.sol){target="_blank"} interface. It inherits [**ProtocolAdapter**](https://github.com/zeriontech/defi-sdk/blob/interactive-updates/contracts/adapters/ProtocolAdapter.sol){target="_blank"}, so one has to implement it, too.
 
 **InteractiveAdapters** should implement 2 main functions: `deposit()` and `withdraw()`.
 
 !!! note ""
     **InteractiveAdapters** should not have any storage variables used within deposit and withdraw functions. Use `internal constant` or `immutable constant`.
-
 
 ```solidity
 function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
@@ -26,7 +24,6 @@ function deposit(TokenAmount[] calldata tokenAmounts, bytes calldata data)
 
 !!! note ""
     Add `require()` if length of `tokenAmounts` should be fixed. Use the abbreviation of the contract name to use in `revert()`/`require()` errors \(later referred to as ABBR\_OF\_NAME\).
-
 
 Usually, `tokenAmounts` are decomposed in `token` and `amount` like that:
 
@@ -70,4 +67,3 @@ Remove names of unused arguments.
 Use `npx prettier ./contracts/**/*.sol --write` to fix linter issues.
 
 Add tests for interactions it `test/` directory, use Uniswap, Weth, and other required adapters.
-

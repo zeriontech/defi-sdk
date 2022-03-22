@@ -15,6 +15,7 @@ To create new protocol adapter, one has to implement [ProtocolAdapter](https://g
 ```solidity
 adapterType() returns (string)
 ```
+
 The function has no arguments and MUST return type of the adapter:
 
 - "Asset" in case the adapter returns the amount of account's tokens held on the protocol;
@@ -34,8 +35,6 @@ getBalance(address token, address account) returns (int256)
 ```
 
 The function has two arguments of `address` type: the first one is token address and the second one is account address. The function MUST return balance of given asset held on the protocol for the given account.
-
----
 
 ### `TokenAdapter`
 
@@ -62,15 +61,10 @@ The function has the only argument – token address. The function MUST return a
 
 After the adapters are deployed and tested, one can contact Zerion team in order to add the adapters to **AdapterRegistry** contract.
 
----
-
 ### Tests
 
 To get a PR merged, one should write tests for all the functions implemented. Examples may be found in the [repo](https://github.com/zeriontech/defi-sdk/tree/master/test){target="_blank"}.
 
----
-
 ### Migrations scripts
 
 In case ProtocolAdapter should work with the short list of tokens, these tokens should be added to the list of supported tokens in ProtocolAdapterRegistry contract. In order to do that, one should add tokens in PR's comments.
-
