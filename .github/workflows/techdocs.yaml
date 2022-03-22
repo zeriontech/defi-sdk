@@ -1,0 +1,65 @@
+name: Publish Docs
+
+on:
+  push:
+    branches:
+      - master
+      - add-docs
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+
+jobs:
+  publish-techdocs-site:
+    runs-on: ubuntu-latest
+
+    env:
+      TECHDOCS_S3_BUCKET_NAME: ${{ secrets.TECHDOCS_S3_BUCKET_NAME }}
+      PUBLIC_S3_BUCKET_NAME: ${{ secrets.PUBLIC_S3_BUCKET_NAME }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ENTITY_NAMESPACE: 'default'
+      ENTITY_KIND: 'Domain'
+      ENTITY_NAME: 'defi-sdk'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+      - uses: actions/setup-python@v2
+
+      - name: setup java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+      - name: download, validate, install plantuml and its dependencies
+        run: |
+          curl -o plantuml.jar -L http://sourceforge.net/projects/plantuml/files/plantuml.1.2021.4.jar/download
+          echo "be498123d20eaea95a94b174d770ef94adfdca18  plantuml.jar" | sha1sum -c -
+          mv plantuml.jar /opt/plantuml.jar
+          mkdir -p "$HOME/.local/bin"
+          echo $'#!/bin/sh\n\njava -jar '/opt/plantuml.jar' ${@}' >> "$HOME/.local/bin/plantuml"
+          chmod +x "$HOME/.local/bin/plantuml"
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          sudo apt-get install -y graphviz
+
+      - name: Install techdocs-cli
+        run: sudo npm install -g @techdocs/cli
+
+      - name: Install mkdocs and mkdocs plugins
+        run: python -m pip install mkdocs-techdocs-core==0.*
+
+      - name: Generate docs site
+        run: techdocs-cli generate --no-docker --verbose
+
+      - name: Upload public docs
+        run:
+          aws s3 rm s3://$PUBLIC_S3_BUCKET_NAME/defi-sdk --recursive && aws s3 cp site/ s3://$PUBLIC_S3_BUCKET_NAME/defi-sdk --recursive
+      
+      - name: Upload techdocs
+        run:
+          techdocs-cli publish --publisher-type=awsS3 --storage-name=$TECHDOCS_S3_BUCKET_NAME --entity=$ENTITY_NAMESPACE/$ENTITY_KIND/$ENTITY_NAME
+
