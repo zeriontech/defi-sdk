@@ -1,19 +1,22 @@
 ![](https://i.ibb.co/7QCQKPD/MEDIUM-FINAL.png)
-[![Build status](https://github.com/zeriontech/protocol-wrappers/workflows/build/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:build)
-[![Test status](https://github.com/zeriontech/protocol-wrappers/workflows/test/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:test)
-[![Coverage status](https://github.com/zeriontech/protocol-wrappers/workflows/coverage/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:coverage)
-[![Lint status](https://github.com/zeriontech/protocol-wrappers/workflows/lint/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:lint)
+[![Build status](https://github.com/zeriontech/defi-sdk/workflows/build/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:build)
+[![Test status](https://github.com/zeriontech/defi-sdk/workflows/test/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:test)
+[![Coverage status](https://github.com/zeriontech/defi-sdk/workflows/coverage/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:coverage)
+[![Lint status](https://github.com/zeriontech/defi-sdk/workflows/lint/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:lint)
 [![License](https://badgen.net/github/license/zeriontech/defi-sdk)](https://www.gnu.org/licenses/lgpl-3.0.en.html)
 [![Discord](https://badgen.net/badge/zerion/Zerion?icon=discord&label=discord)](https://go.zerion.io/discord)
 [![Twitter Follow](https://badgen.net/twitter/follow/zerion_io?icon=twitter)](https://twitter.com/intent/follow?screen_name=zerion_io)
 
-**DeFi SDK** is an open-source system of smart contracts allows you to track balances on diffenert protocols and execute trades with ERC20 tokens.
+**DeFi SDK** is an open-source system of smart contracts allows you to execute trades with ERC20 tokens and track balances on different protocols.
 
 If you have any questions about DeFi SDK, feel free to reach out to us on our [Discord server](https://go.zerion.io/discord).
 
 ![](https://i.ibb.co/RC54SjL/defisdk.png)
 
 ## Features
+
+**💸Trade any ERC20 tokens on L2 chains using single Router contract**
+> See [How to swap ERC20 tokens using DeFi SDK Router](docs/router.md)
 
 **💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, dYdX*, etc.**
 > How much debt does `0xdead..beef` have on Compound?
@@ -24,73 +27,79 @@ If you have any questions about DeFi SDK, feel free to reach out to us on our [D
 **✨Interact with multiple DeFi protocols in a unified way**
 > See [How to interact with DeFi SDK contracts](docs/interacting.md)
 
-## Addresses
-
-**AdapterRegistry** contract is deployed to the mainnet and its source code is verified on [etherscan](https://etherscan.io/address/0x06fe76b2f432fdfecaef1a7d4f6c3d41b5861672#code).
-
-All the deployed contracts' addresses are available [here](docs/addresses.md).
-
-
-## How to Add Your Adapter
-
-The full instructions on how to add a custom adapter to the **AdapterRegistry** contract may be found in our [docs](docs/creating-your-adapters/index.md).
-
-If you have questions and/or want to add your adapter to Zerion reach out to us on our [Discord server](https://go.zerion.io/discord).
-
-
-## Trading
+## Trading Features
 
 * Trade any ERC20 token
 * Two types of amounts: absolute (usual amount) and relative (percentage of balance)
 * Three types of `permit()` functions for approving tokens in the same transaction (EIP2612, DAI-like, Yearn-like)
 * Two types of swaps: with fixed input amount or fixed output amount
 * Two types of fees:
-  * protocol fee managed by the Router contract owner with possibility of one-time discounts requiring signature of an address with the special role
-  * marketplace fee managed by the transaction creator
+  * **protocol fee** managed by the **Router** contract owner with possibility of one-time discounts requiring signature of an address with the special role
+  * **marketplace fee** managed by the transaction creator
 * Relayed transactions requiring just an EIP712 signature of the user
+
+## How to Add Your Adapter
+
+> Read-only and interactive adapters are maintained in [`master`](https://github.com/zeriontech/defi-sdk/tree/master) and [`interactive-updates`](https://github.com/zeriontech/defi-sdk/tree/interactive-updates) branches of **defi-sdk** repo respectively.
+
+The full instructions on how to add a custom adapters may be found in our [docs](docs/creating-your-adapters/index.md).
+
+If you have questions and/or want to add your adapter to Zerion reach out to us on our [Discord server](https://go.zerion.io/discord).
+
+## Addresses
+
+All the deployed contracts' addresses are available [here](docs/addresses.md).
 
 ## Security Vulnerabilities 🛡
 
 If you discover a security vulnerability within DeFi SDK, please send us an e-mail at inbox@zerion.io.
 All security vulnerabilities will be promptly addressed.
 
+The project uses [Slither](https://github.com/crytic/slither) for security analysis.
+It should be previously installed (e.g. via [pip](https://pypi.org/project/pip/)).
+
+Run `npm run slither` to run security checks.
+
 ## Dev Notes
 
-This project uses Hardhat, which runs tests extremely fast!
+We use [Hardhat](https://github.com/NomicFoundation/hardhat), which runs tests extremely fast!
 
-The project (Router contract and its dependencies) is fully covered with tests.
+Also, we use [Truffle Dashboard](https://trufflesuite.com/docs/truffle/getting-started/using-the-truffle-dashboard/) for secure deployment.
 
-Fees are applied so that return amount = actual output amount / (1 + fee percentage).
+### Installation
 
-### Set environment
+Run `npm install` to install all the dependencies.
 
-Rename `.env.sample` file to `.env`, and fill in the env variables.
+### Deployment
 
-`INFURA_API_KEY` is required for Router contract tests as it uses mainnet forking feature.
+Run `npm run truffle-dashboard` to start the Truffle Dashboard.
 
-### Compile contracts
+Run `npm run deploy:router:truffle-dashboard` to deploy the **Router** contract.
+Sign deployment transaction in your browser at `http://localhost:24012/`.
 
-`npm run compile`
+Fill in address of newly deployed contract to `scripts/deployment.js`.
 
-### Run tests
+The same instruction applies to the **SimpleCaller** contract with `deploy:sc:truffle-dashboard` command.
 
-`npm run test`
+After filling in fee beneficiary for the chosen network in `scripts/deployment.js`, `initialize:router:truffle-dashboard` command may be run.
 
-### Run Solidity code coverage
+Run `npm run verify` to verify contract on any block explorer.
+The respective `<BLOCK_EXPLORER>_API_KEY` filled in `.env` file is required for this step.
+See the `hardhat.config.ts` file for the details (`etherscan` field of `config` variable uses these API keys).
 
-`npm run coverage`
+### Testing & Coverage
 
-Currently, unsupported files are ignored.
+The **Router** contract and its dependencies is fully covered with tests.
 
-### Run Solidity and JS linters
+Run `npm run test` and `npm run coverage` to run tests or coverage respectively.
+`INFURA_API_KEY` filled in `.env` file is required for this step.
+`REPORT_GAS` filled in `.env` file enables/disables gas reports during tests.
 
-`npm run lint`
+### Linting
 
-Currently, unsupported files are ignored.
+Run `npm run lint` for both JS and Solidity linters.
 
-### Run all the migrations scripts
-
-`npm run deploy:network`, `network` is either `development` or `mainnet`.
+Run `npm run lint:eslint` and `npm run lint:solhint` to run linter for JS and Solidity separately.
 
 ### Serve docs
 
@@ -98,4 +107,4 @@ Currently, unsupported files are ignored.
 
 ## License
 
-All smart contracts are released under GNU LGPLv3.
+All smart contracts are released under GNU LGPLv3 license.
