@@ -1,6 +1,6 @@
 # DeFi SDK
 
-**DeFi SDK** is an open-source system of smart contracts allows you to execute trades with ERC20 tokens and track balances on different protocols.
+**DeFi SDK** is an open-source system of smart contracts that allows you to execute trades with ERC20 tokens and track balances on different protocols.
 
 If you have any questions about DeFi SDK, feel free to reach out to us on our [Discord server](https://go.zerion.io/discord){target=_blank}.
 
@@ -9,7 +9,7 @@ If you have any questions about DeFi SDK, feel free to reach out to us on our [D
 ## Features
 
 **💸Trade any ERC20 tokens on L2 chains using single Router contract**
-> See [How swap ERC20 tokens using DeFi SDK Router](docs/router.md)
+> See [How to swap ERC20 tokens using DeFi SDK Router](docs/router.md)
 
 **💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, dYdX*, etc.**
 > How much debt does `0xdead..beef` have on Compound?
