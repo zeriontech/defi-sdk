@@ -24,12 +24,13 @@ import { TokenAmount } from "../../shared/Structs.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { StableMaster } from "../../interfaces/StableMaster.sol";
+import { StakeDaoAngleVault } from "../../interfaces/StakeDaoAngleVault.sol";
 
 /**
  * @title Interactive adapter for Angle Stable Master.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
-contract AngleStableMasterInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
+contract StakeDaoAngleVaultInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     /**
@@ -37,9 +38,8 @@ contract AngleStableMasterInteractiveAdapter is InteractiveAdapter, ERC20Protoco
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * underlying token address, underlying token amount to be deposited, and amount type.
      * @param data ABI-encoded additional parameters:
-     *     - StableMaster - StableMaster address.
-     *     - poolManager - PoolManager address.
-     *     - lpToken - sanLp token address from Angle Protocol
+     *     - liquidityGauge - address of the Stakedao LiquidityGauge which will be tokens that represents stake
+     *     - angleVault - StakeDao's related Angle Vault address
      * @return tokensToBeWithdrawn Array with ane element - staking token address.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -49,27 +49,23 @@ contract AngleStableMasterInteractiveAdapter is InteractiveAdapter, ERC20Protoco
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "YVAIA: should be 1 tokenAmount[1]");
+        require(tokenAmounts.length == 1, "SAVIA: should be 1 tokenAmount[1]");
 
-        (address stableMaster, address poolManager, address lpToken) = abi.decode(
-            data,
-            (address, address, address)
-        );
+        (address liquidityGauge, address angleVault) = abi.decode(data, (address, address));
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = lpToken;
+        tokensToBeWithdrawn[0] = liquidityGauge;
 
-        ERC20(token).safeApprove(stableMaster, amount, "YVAIA");
-        // solhint-disable-next-line no-empty-blocks
-        try StableMaster(stableMaster).deposit(amount, address(this), poolManager) {} catch Error(
+        ERC20(token).safeApprove(angleVault, amount, "SAVIA");
+        try StakeDaoAngleVault(angleVault).deposit(address(this), amount, false) {} catch Error(
             string memory reason
         ) {
             revert(reason);
         } catch {
-            revert("YVAIA: deposit fail");
+            revert("SAVIA: deposit fail");
         }
     }
 
@@ -77,37 +73,28 @@ contract AngleStableMasterInteractiveAdapter is InteractiveAdapter, ERC20Protoco
      * @notice Withdraws tokens from the StableMaster.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * lp token address address, lp token amount to be redeemed, and amount type.
-     * @param data ABI-encoded additional parameters:
-     *     - tokenToWithdraw - address of the returned token from stable master
-     *     - StableMaster - StableMaster address.
-     *     - poolManager - PoolManager address.
      * @return tokensToBeWithdrawn Array with one element - underlying token.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata data)
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "YVAIA: should be 1 tokenAmount[2]");
+        require(tokenAmounts.length == 1, "SAVIA: should be 1 tokenAmount[2]");
 
-        (address tokenToWithdraw, address stableMaster, address poolManager) = abi.decode(
-            data,
-            (address, address, address)
-        );
+        address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = tokenToWithdraw;
+        tokensToBeWithdrawn[0] = StakeDaoAngleVault(token).token();
 
         // solhint-disable-next-line no-empty-blocks
-        try
-            StableMaster(stableMaster).withdraw(amount, address(this), address(this), poolManager)
-        {} catch Error(string memory reason) {
+        try StakeDaoAngleVault(token).withdraw(amount) {} catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("YVAIA: withdraw fail");
+            revert("SAVIA: deposit fail");
         }
     }
 }
