@@ -27,14 +27,14 @@ import { StableMaster } from "../../interfaces/StableMaster.sol";
 import { StakeDaoAngleVault } from "../../interfaces/StakeDaoAngleVault.sol";
 
 /**
- * @title Interactive adapter for Angle Stable Master.
+ * @title Interactive adapter for Stakedao Angle Strategy Vault.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
 contract StakeDaoAngleVaultInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
 
     /**
-     * @notice Deposits tokens to the StableMaster of Angle.
+     * @notice Deposits tokens to the Stakedao's Angle strategy Vault
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * underlying token address, underlying token amount to be deposited, and amount type.
      * @param data ABI-encoded additional parameters:
@@ -70,7 +70,7 @@ contract StakeDaoAngleVaultInteractiveAdapter is InteractiveAdapter, ERC20Protoc
     }
 
     /**
-     * @notice Withdraws tokens from the StableMaster.
+     * @notice Withdraws tokens from the Stakedao's Angle strategy vault.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * lp token address address, lp token amount to be redeemed, and amount type.
      * @return tokensToBeWithdrawn Array with one element - underlying token.
