@@ -3,8 +3,8 @@ name: Publish Docs
 on:
   push:
     branches:
-      - master
-      - interactive-new
+      - router
+      - interactive
     paths:
       - "docs/**"
       - "mkdocs.yml"
