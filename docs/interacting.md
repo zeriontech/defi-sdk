@@ -6,7 +6,7 @@
 ## Using InteractiveAdapter for interaction with different protocols
 
 Using interactive adapters is not encouraged.
-Interactive adapters should be used via interaction with the [Router](https://etherscan.io/address/0xB2BE281e8b11b47FeC825973fc8BB95332022A54){target=_blank} contract.
+Interactive adapters should be used via interaction with the [Router](https://etherscan.io/address/0xB2BE281e8b11b47FeC825973fc8BB95332022A54){target=_blank} contract as it implements the required security checks.
 
 Overall, we highly recommend using our Transaction Builder [API](https://transactions.zerion.io/docs#/){target="_blank"}.
 
