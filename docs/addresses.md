@@ -1,4 +1,4 @@
-# Addresses 
+# Addresses
 
 ## Router
 
@@ -62,6 +62,7 @@ AdapterRegistry address for interactive adapters is [0xaDfc6460233221eCa99daC25d
 
 | Contract Name | Address |
 | :------------ | :------ |
+| Router | [0xB2BE281e8b11b47FeC825973fc8BB95332022A54](https://etherscan.io/address/0xB2BE281e8b11b47FeC825973fc8BB95332022A54){target=_blank} |
 | WETHAssetAdapter | [0x445830226347ef75867502e00e8D663842114F19](https://etherscan.io/address/0x445830226347ef75867502e00e8D663842114F19){target=_blank} |
 | UniswapAssetAdapter | [0xE1F28c0D8527eb28784bA15F6FF0A4371d7598E1](https://etherscan.io/address/0xE1F28c0D8527eb28784bA15F6FF0A4371d7598E1){target=_blank} |
 | UniswapExchangeAdapter | [0xE1F28c0D8527eb28784bA15F6FF0A4371d7598E1](https://etherscan.io/address/0xE1F28c0D8527eb28784bA15F6FF0A4371d7598E1){target=_blank} |
