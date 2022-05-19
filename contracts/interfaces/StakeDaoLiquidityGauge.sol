@@ -18,12 +18,11 @@
 pragma solidity 0.7.6;
 
 /**
- * @dev Angle StableMaster contract interface.
- * The StableMaster contract is available here
- * https://github.com/AngleProtocol/angle-core/blob/main/contracts/stableMaster/StableMasterFront.sol
+ * @dev StakeDAO Liquidity Gauge contract interface.
+ * The StakeDAO contract is available here
  */
-interface StableMaster {
-    function deposit(uint256, address, address) external;
+interface StakeDaoLiquidityGauge {
+    function staking_token() external view returns (address);
 
-    function withdraw(uint256, address, address, address) external;
+    function vault() external view returns (address);
 }

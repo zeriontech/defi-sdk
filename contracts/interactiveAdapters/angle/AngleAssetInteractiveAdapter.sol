@@ -23,22 +23,24 @@ import { SafeERC20 } from "../../shared/SafeERC20.sol";
 import { TokenAmount } from "../../shared/Structs.sol";
 import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
+import { PoolManager } from "../../interfaces/PoolManager.sol";
 import { StableMaster } from "../../interfaces/StableMaster.sol";
+import { SanToken } from "../../interfaces/SanToken.sol";
 
 /**
- * @title Interactive adapter for Angle Stable Master.
+ * @title Interactive adapter for Angle San tokens.
  * @dev Implementation of InteractiveAdapter abstract contract.
  */
-contract AngleStableMasterInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
+contract AngleAssetInteractiveAdapter is InteractiveAdapter, ERC20ProtocolAdapter {
     using SafeERC20 for ERC20;
+
+    address internal constant STABLE_MASTER = 0x5adDc89785D75C86aB939E9e15bfBBb7Fc086A87;
 
     /**
      * @notice Deposits tokens to the StableMaster of Angle.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * underlying token address, underlying token amount to be deposited, and amount type.
      * @param data ABI-encoded additional parameters:
-     *     - StableMaster - StableMaster address.
-     *     - poolManager - PoolManager address.
      *     - lpToken - sanLp token address from Angle Protocol
      * @return tokensToBeWithdrawn Array with ane element - staking token address.
      * @dev Implementation of InteractiveAdapter function.
@@ -49,27 +51,26 @@ contract AngleStableMasterInteractiveAdapter is InteractiveAdapter, ERC20Protoco
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "YVAIA: should be 1 tokenAmount[1]");
+        require(tokenAmounts.length == 1, "ASMIA: should be 1 tokenAmount[1]");
 
-        (address stableMaster, address poolManager, address lpToken) = abi.decode(
-            data,
-            (address, address, address)
-        );
+        (address sanToken) = abi.decode(data, (address));
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = lpToken;
+        tokensToBeWithdrawn[0] = sanToken;
 
-        ERC20(token).safeApprove(stableMaster, amount, "YVAIA");
+        ERC20(token).safeApproveMax(STABLE_MASTER, amount, "ASMIA");
+        address poolManager = SanToken(sanToken).poolManager();
+
         // solhint-disable-next-line no-empty-blocks
-        try StableMaster(stableMaster).deposit(amount, address(this), poolManager) {} catch Error(
+        try StableMaster(STABLE_MASTER).deposit(amount, address(this), poolManager) {} catch Error(
             string memory reason
         ) {
             revert(reason);
         } catch {
-            revert("YVAIA: deposit fail");
+            revert("ASMIA: deposit fail");
         }
     }
 
@@ -77,37 +78,32 @@ contract AngleStableMasterInteractiveAdapter is InteractiveAdapter, ERC20Protoco
      * @notice Withdraws tokens from the StableMaster.
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * lp token address address, lp token amount to be redeemed, and amount type.
-     * @param data ABI-encoded additional parameters:
-     *     - tokenToWithdraw - address of the returned token from stable master
-     *     - StableMaster - StableMaster address.
-     *     - poolManager - PoolManager address.
      * @return tokensToBeWithdrawn Array with one element - underlying token.
      * @dev Implementation of InteractiveAdapter function.
      */
-    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata data)
+    function withdraw(TokenAmount[] calldata tokenAmounts, bytes calldata)
         external
         payable
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "YVAIA: should be 1 tokenAmount[2]");
+        require(tokenAmounts.length == 1, "ASMIA: should be 1 tokenAmount[2]");
 
-        (address tokenToWithdraw, address stableMaster, address poolManager) = abi.decode(
-            data,
-            (address, address, address)
-        );
+        address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
+        address poolManager = SanToken(token).poolManager();
+
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = tokenToWithdraw;
+        tokensToBeWithdrawn[0] = PoolManager(poolManager).token();
 
         // solhint-disable-next-line no-empty-blocks
         try
-            StableMaster(stableMaster).withdraw(amount, address(this), address(this), poolManager)
+            StableMaster(STABLE_MASTER).withdraw(amount, address(this), address(this), poolManager)
         {} catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("YVAIA: withdraw fail");
+            revert("ASMIA: withdraw fail");
         }
     }
 }

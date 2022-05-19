@@ -22,13 +22,7 @@ pragma solidity 0.7.6;
  * The StakeDAO contract is available here
  */
 interface StakeDaoAngleVault {
-    function deposit(
-        address _staker,
-        uint256 _amount,
-        bool _earn
-    ) external;
-
-    function token() external view returns (address);
+    function deposit(address, uint256, bool) external;
 
     function withdraw(uint256 _shares) external;
 }

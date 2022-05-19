@@ -18,12 +18,8 @@
 pragma solidity 0.7.6;
 
 /**
- * @dev Angle StableMaster contract interface.
- * The StableMaster contract is available here
- * https://github.com/AngleProtocol/angle-core/blob/main/contracts/stableMaster/StableMasterFront.sol
+ * @dev Angle SanToken contract interface.
  */
-interface StableMaster {
-    function deposit(uint256, address, address) external;
-
-    function withdraw(uint256, address, address, address) external;
+interface SanToken {
+    function poolManager() external view returns (address);
 }
