@@ -25,6 +25,7 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
 import { ERC20ProtocolAdapter } from "../../adapters/ERC20ProtocolAdapter.sol";
 import { StableMaster } from "../../interfaces/StableMaster.sol";
 import { StakeDaoAngleVault } from "../../interfaces/StakeDaoAngleVault.sol";
+import { StakeDaoLiquidityGauge } from "../../interfaces/StakeDaoLiquidityGauge.sol";
 
 /**
  * @title Interactive adapter for Stakedao Angle Strategy Vault.
@@ -38,8 +39,8 @@ contract StakeDaoAngleVaultInteractiveAdapter is InteractiveAdapter, ERC20Protoc
      * @param tokenAmounts Array with one element - TokenAmount struct with
      * underlying token address, underlying token amount to be deposited, and amount type.
      * @param data ABI-encoded additional parameters:
-     *     - liquidityGauge - address of the Stakedao LiquidityGauge which will be tokens that represents stake
-     *     - angleVault - StakeDao's related Angle Vault address
+     *     - liquidityGauge - address of the Stakedao liquidity gauge,
+     * which will be tokens that represent stake
      * @return tokensToBeWithdrawn Array with ane element - staking token address.
      * @dev Implementation of InteractiveAdapter function.
      */
@@ -49,9 +50,9 @@ contract StakeDaoAngleVaultInteractiveAdapter is InteractiveAdapter, ERC20Protoc
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "SAVIA: should be 1 tokenAmount[1]");
+        require(tokenAmounts.length == 1, "SDAVIA: should be 1 tokenAmount[1]");
 
-        (address liquidityGauge, address angleVault) = abi.decode(data, (address, address));
+        (address liquidityGauge) = abi.decode(data, (address));
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountDeposit(tokenAmounts[0]);
@@ -59,13 +60,14 @@ contract StakeDaoAngleVaultInteractiveAdapter is InteractiveAdapter, ERC20Protoc
         tokensToBeWithdrawn = new address[](1);
         tokensToBeWithdrawn[0] = liquidityGauge;
 
-        ERC20(token).safeApprove(angleVault, amount, "SAVIA");
+        address angleVault = StakeDaoLiquidityGauge(liquidityGauge).vault();
+        ERC20(token).safeApproveMax(angleVault, amount, "SDAVIA");
         try StakeDaoAngleVault(angleVault).deposit(address(this), amount, false) {} catch Error(
             string memory reason
         ) {
             revert(reason);
         } catch {
-            revert("SAVIA: deposit fail");
+            revert("SDAVIA: deposit fail");
         }
     }
 
@@ -82,19 +84,20 @@ contract StakeDaoAngleVaultInteractiveAdapter is InteractiveAdapter, ERC20Protoc
         override
         returns (address[] memory tokensToBeWithdrawn)
     {
-        require(tokenAmounts.length == 1, "SAVIA: should be 1 tokenAmount[2]");
+        require(tokenAmounts.length == 1, "SDAVIA: should be 1 tokenAmount[2]");
 
         address token = tokenAmounts[0].token;
         uint256 amount = getAbsoluteAmountWithdraw(tokenAmounts[0]);
 
         tokensToBeWithdrawn = new address[](1);
-        tokensToBeWithdrawn[0] = StakeDaoAngleVault(token).token();
+        tokensToBeWithdrawn[0] = StakeDaoLiquidityGauge(token).staking_token();
 
+        address angleVault = StakeDaoLiquidityGauge(token).vault();
         // solhint-disable-next-line no-empty-blocks
-        try StakeDaoAngleVault(token).withdraw(amount) {} catch Error(string memory reason) {
+        try StakeDaoAngleVault(angleVault).withdraw(amount) {} catch Error(string memory reason) {
             revert(reason);
         } catch {
-            revert("SAVIA: deposit fail");
+            revert("SDAVIA: withdraw fail");
         }
     }
 }
