@@ -5,7 +5,7 @@ const ProtocolAdapter = artifacts.require('KeeperDaoV2AssetAdapter');
 const TokenAdapter = artifacts.require('KeeperDaoV2TokenAdapter');
 const ERC20TokenAdapter = artifacts.require('ERC20TokenAdapter');
 
-contract.only('KeeperDaoV2AssetAdapter', () => {
+contract('KeeperDaoV2AssetAdapter', () => {
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   const wethAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const kETHAddress = '0x179212cb86D0eE6A4dfb2AbB1CF6A09feE0A9525';
