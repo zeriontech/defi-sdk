@@ -9,7 +9,7 @@
 
 **DeFi SDK** is an open-source system of smart contracts designed for precise DeFi portfolio accounting. To put it simply, DeFi SDK is the on-chain *balanceOf* for DeFi protocols.
 
-If you have any questions about DeFi SDK, feel free to reach out to us on our [Discord server](https://go.zerion.io/discord).
+If you have any questions about DeFi SDK, feel free to reach out to us on our [Discord server](https://zerion.io/discord).
 
 ## Features
 
