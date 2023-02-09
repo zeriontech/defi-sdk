@@ -30,7 +30,7 @@
   "license": "LGPL-3.0-only",
   "repository": "https://github.com/zeriontech/defi-sdk",
   "dependencies": {
-    "@openzeppelin/contracts": "4.4.0"
+    "@openzeppelin/contracts": "4.7.3"
   },
   "devDependencies": {
     "@babel/core": "7.17.5",
