@@ -12,7 +12,7 @@ const EIP2612Artifacts = require('../../artifacts/contracts/interfaces/IEIP2612.
 const YearnArtifacts = require('../../artifacts/contracts/interfaces/IYearnPermit.sol/IYearnPermit.json');
 
 const { deployMockContract } = waffle; // provider
-const { AddressZero } = ethers.constants; // MaxUint256
+const { AddressZero } = ethers.constants;
 
 const AMOUNT_RELATIVE = 1;
 const AMOUNT_ABSOLUTE = 2;

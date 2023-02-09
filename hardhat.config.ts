@@ -42,6 +42,9 @@ const config: HardhatUserConfig = {
       url: 'http://localhost:24012/rpc',
       timeout: 400000,
     },
+    mainnet: {
+      url: 'https://cloudflare-eth.com/',
+    },
     xdai: {
       url: 'https://rpc.gnosischain.com/',
     },
@@ -66,13 +69,14 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
-      polygon: process.env.POLYGON_API_KEY,
-      optimisticEthereum: process.env.OPTIMISM_API_KEY,
-      arbitrumOne: process.env.ARBITRUM_API_KEY,
-      bsc: process.env.BSC_API_KEY,
-      aurora: 'no',
-      xdai: 'no',
-      avalanche: process.env.AVALANCHE_API_KEY,
+      'mainnet': process.env.ETHEREUM_API_KEY ? process.env.ETHEREUM_API_KEY.toString() : '',
+      'polygon': process.env.POLYGON_API_KEY ? process.env.POLYGON_API_KEY.toString() : '',
+      'optimisticEthereum': process.env.OPTIMISM_API_KEY ? process.env.OPTIMISM_API_KEY.toString() : '',
+      'arbitrumOne': process.env.ARBITRUM_API_KEY ? process.env.ARBITRUM_API_KEY.toString() : '',
+      'bsc': process.env.BSC_API_KEY ? process.env.BSC_API_KEY.toString() : '',
+      'aurora': 'no',
+      'gnosis': process.env.GNOSIS_API_KEY ? process.env.GNOSIS_API_KEY.toString() : '',
+      'avalanche': process.env.AVALANCHE_API_KEY ? process.env.AVALANCHE_API_KEY.toString() : '',
     },
   },
   docgen: {
