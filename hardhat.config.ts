@@ -43,13 +43,13 @@ const config: HardhatUserConfig = {
       timeout: 400000,
     },
     mainnet: {
-      url: 'https://cloudflare-eth.com/',
+      url: 'https://cloudflare-eth.com',
     },
     xdai: {
-      url: 'https://rpc.gnosischain.com/',
+      url: 'https://rpc.gnosischain.com',
     },
     bsc: {
-      url: 'https://bsc-dataseed.binance.org/',
+      url: 'https://bsc-dataseed.binance.org',
     },
     avalanche: {
       url: 'https://api.avax.network/ext/bc/C/rpc',
@@ -66,6 +66,9 @@ const config: HardhatUserConfig = {
     aurora: {
       url: 'https://mainnet.aurora.dev',
     },
+    fantom: {
+      url: 'https://rpc.ftm.tools',
+    },
   },
   etherscan: {
     apiKey: {
@@ -77,6 +80,7 @@ const config: HardhatUserConfig = {
       'aurora': 'no',
       'gnosis': process.env.GNOSIS_API_KEY ? process.env.GNOSIS_API_KEY.toString() : '',
       'avalanche': process.env.AVALANCHE_API_KEY ? process.env.AVALANCHE_API_KEY.toString() : '',
+      'opera': process.env.FANTOM_API_KEY ? process.env.FANTOM_API_KEY.toString() : '',
     },
   },
   docgen: {
