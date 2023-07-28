@@ -3,8 +3,9 @@ import deploymentAddresses from './deployment';
 try {
   (async () => {
     const Router = await ethers.getContractFactory('Router');
-    const router = await Router.attach(deploymentAddresses.router);
-    const chainId = await hre.network.provider.request({ method: 'eth_chainId' });
+    const chainIdHex = await hre.network.provider.request({ method: 'eth_chainId' });
+    const chainId = [parseInt(chainIdHex.toString(), 16).toString()];
+    const router = await Router.attach(deploymentAddresses.router[chainId]);
 
     console.log(`Working with chainId ${chainId}`);
 
@@ -16,7 +17,7 @@ try {
     const feeDefaultTx = await router.functions.setProtocolFeeDefault(
       [
         '5000000000000000',
-        deploymentAddresses.feeBeneficiaries[parseInt(chainId.toString(), 16).toString()],
+        deploymentAddresses.feeBeneficiaries[chainId],
       ],
     );
     console.log(`Setting fee defaults tx hash: ${feeDefaultTx.hash}`);

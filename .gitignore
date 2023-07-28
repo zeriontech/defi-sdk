@@ -4,8 +4,8 @@ node_modules/
 build/
 site/
 coverage
-artifacts
-cache
+artifacts*
+cache*
 coverage.json
 .log
 .env

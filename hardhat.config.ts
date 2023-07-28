@@ -4,10 +4,14 @@ require('regenerator-runtime/runtime');
 require('dotenv').config();
 import { HardhatUserConfig } from 'hardhat/config';
 import '@nomiclabs/hardhat-waffle';
-import '@nomiclabs/hardhat-etherscan';
+import '@nomicfoundation/hardhat-verify';
 import 'hardhat-tracer';
 import 'hardhat-docgen';
 import 'solidity-coverage';
+import '@matterlabs/hardhat-zksync-deploy';
+import '@matterlabs/hardhat-zksync-solc';
+import '@matterlabs/hardhat-zksync-verify';
+
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -19,7 +23,17 @@ const config: HardhatUserConfig = {
       },
     },
   },
+  zksolc: {
+    version: "latest", // Uses latest available in https://github.com/matter-labs/zksolc-bin/
+    settings: {},
+  },
   networks: {
+    zkSyncEra: {
+      zksync: true,
+      url: 'https://mainnet.era.zksync.io',
+      ethNetwork: 'mainnet',
+      verifyURL: 'https://explorer.zksync.io/contracts/verify',
+    },
     hardhat: {
       forking: {
         url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -56,9 +70,11 @@ const config: HardhatUserConfig = {
     },
     optimisticEthereum: {
       url: 'https://mainnet.optimism.io',
+      zksync: false,
     },
     arbitrumOne: {
       url: 'https://arb1.arbitrum.io/rpc',
+      zksync: false,
     },
     polygon: {
       url: 'https://polygon-rpc.com',
