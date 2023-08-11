@@ -8,9 +8,9 @@ import '@nomicfoundation/hardhat-verify';
 import 'hardhat-tracer';
 import 'hardhat-docgen';
 import 'solidity-coverage';
-import '@matterlabs/hardhat-zksync-deploy';
-import '@matterlabs/hardhat-zksync-solc';
-import '@matterlabs/hardhat-zksync-verify';
+// import '@matterlabs/hardhat-zksync-deploy';
+// import '@matterlabs/hardhat-zksync-solc';
+// import '@matterlabs/hardhat-zksync-verify';
 
 
 const config: HardhatUserConfig = {
@@ -23,17 +23,17 @@ const config: HardhatUserConfig = {
       },
     },
   },
-  zksolc: {
-    version: "latest", // Uses latest available in https://github.com/matter-labs/zksolc-bin/
-    settings: {},
-  },
+  // zksolc: {
+  //   version: "latest", // Uses latest available in https://github.com/matter-labs/zksolc-bin/
+  //   settings: {},
+  // },
   networks: {
-    zkSyncEra: {
-      zksync: true,
-      url: 'https://mainnet.era.zksync.io',
-      ethNetwork: 'mainnet',
-      verifyURL: 'https://explorer.zksync.io/contracts/verify',
-    },
+    // zkSyncEra: {
+    //   zksync: true,
+    //   url: 'https://mainnet.era.zksync.io',
+    //   ethNetwork: 'mainnet',
+    //   verifyURL: 'https://explorer.zksync.io/contracts/verify',
+    // },
     hardhat: {
       forking: {
         url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
@@ -62,6 +62,9 @@ const config: HardhatUserConfig = {
     xdai: {
       url: 'https://rpc.gnosischain.com',
     },
+    base: {
+      url: 'https://mainnet.base.org',
+    },
     bsc: {
       url: 'https://bsc-dataseed.binance.org',
     },
@@ -70,11 +73,9 @@ const config: HardhatUserConfig = {
     },
     optimisticEthereum: {
       url: 'https://mainnet.optimism.io',
-      zksync: false,
     },
     arbitrumOne: {
       url: 'https://arb1.arbitrum.io/rpc',
-      zksync: false,
     },
     polygon: {
       url: 'https://polygon-rpc.com',
@@ -88,15 +89,16 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
-      'mainnet': process.env.ETHEREUM_API_KEY ? process.env.ETHEREUM_API_KEY.toString() : '',
-      'polygon': process.env.POLYGON_API_KEY ? process.env.POLYGON_API_KEY.toString() : '',
-      'optimisticEthereum': process.env.OPTIMISM_API_KEY ? process.env.OPTIMISM_API_KEY.toString() : '',
-      'arbitrumOne': process.env.ARBITRUM_API_KEY ? process.env.ARBITRUM_API_KEY.toString() : '',
-      'bsc': process.env.BSC_API_KEY ? process.env.BSC_API_KEY.toString() : '',
-      'aurora': 'no',
-      'gnosis': process.env.GNOSIS_API_KEY ? process.env.GNOSIS_API_KEY.toString() : '',
-      'avalanche': process.env.AVALANCHE_API_KEY ? process.env.AVALANCHE_API_KEY.toString() : '',
-      'opera': process.env.FANTOM_API_KEY ? process.env.FANTOM_API_KEY.toString() : '',
+      mainnet: process.env.ETHEREUM_API_KEY ? process.env.ETHEREUM_API_KEY.toString() : '',
+      polygon: process.env.POLYGON_API_KEY ? process.env.POLYGON_API_KEY.toString() : '',
+      optimisticEthereum: process.env.OPTIMISM_API_KEY ? process.env.OPTIMISM_API_KEY.toString() : '',
+      arbitrumOne: process.env.ARBITRUM_API_KEY ? process.env.ARBITRUM_API_KEY.toString() : '',
+      base: process.env.BASE_API_KEY ? process.env.BASE_API_KEY.toString() : '',
+      bsc: process.env.BSC_API_KEY ? process.env.BSC_API_KEY.toString() : '',
+      aurora: 'no',
+      gnosis: process.env.GNOSIS_API_KEY ? process.env.GNOSIS_API_KEY.toString() : '',
+      avalanche: process.env.AVALANCHE_API_KEY ? process.env.AVALANCHE_API_KEY.toString() : '',
+      opera: process.env.FANTOM_API_KEY ? process.env.FANTOM_API_KEY.toString() : '',
     },
   },
   docgen: {

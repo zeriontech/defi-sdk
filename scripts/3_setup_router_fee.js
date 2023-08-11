@@ -4,7 +4,7 @@ try {
   (async () => {
     const Router = await ethers.getContractFactory('Router');
     const chainIdHex = await hre.network.provider.request({ method: 'eth_chainId' });
-    const chainId = [parseInt(chainIdHex.toString(), 16).toString()];
+    const chainId = parseInt(chainIdHex.toString(), 16).toString();
     const router = await Router.attach(deploymentAddresses.router[chainId]);
 
     console.log(`Working with chainId ${chainId}`);
