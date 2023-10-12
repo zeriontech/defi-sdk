@@ -24,7 +24,7 @@ const config: HardhatUserConfig = {
     },
   },
   // zksolc: {
-  //   version: "latest", // Uses latest available in https://github.com/matter-labs/zksolc-bin/
+  //   version: 'latest', // Uses latest available in https://github.com/matter-labs/zksolc-bin/
   //   settings: {},
   // },
   networks: {
@@ -56,11 +56,14 @@ const config: HardhatUserConfig = {
       url: 'http://localhost:24012/rpc',
       timeout: 400000,
     },
-    mainnet: {
-      url: 'https://cloudflare-eth.com',
+    arbitrumOne: {
+      url: 'https://arb1.arbitrum.io/rpc',
     },
-    xdai: {
-      url: 'https://rpc.gnosischain.com',
+    aurora: {
+      url: 'https://mainnet.aurora.dev',
+    },
+    avalanche: {
+      url: 'https://api.avax.network/ext/bc/C/rpc',
     },
     base: {
       url: 'https://mainnet.base.org',
@@ -68,38 +71,49 @@ const config: HardhatUserConfig = {
     bsc: {
       url: 'https://bsc-dataseed.binance.org',
     },
-    avalanche: {
-      url: 'https://api.avax.network/ext/bc/C/rpc',
+    celo: {
+      url: 'https://1rpc.io/celo',
+    },
+    gnosis: {
+      url: 'https://rpc.gnosischain.com',
+    },
+    mainnet: {
+      url: 'https://cloudflare-eth.com',
+    },
+    opera: {
+      url: 'https://rpc.ftm.tools',
     },
     optimisticEthereum: {
       url: 'https://mainnet.optimism.io',
     },
-    arbitrumOne: {
-      url: 'https://arb1.arbitrum.io/rpc',
-    },
     polygon: {
       url: 'https://polygon-rpc.com',
-    },
-    aurora: {
-      url: 'https://mainnet.aurora.dev',
-    },
-    fantom: {
-      url: 'https://rpc.ftm.tools',
     },
   },
   etherscan: {
     apiKey: {
-      mainnet: process.env.ETHEREUM_API_KEY ? process.env.ETHEREUM_API_KEY.toString() : '',
-      polygon: process.env.POLYGON_API_KEY ? process.env.POLYGON_API_KEY.toString() : '',
-      optimisticEthereum: process.env.OPTIMISM_API_KEY ? process.env.OPTIMISM_API_KEY.toString() : '',
       arbitrumOne: process.env.ARBITRUM_API_KEY ? process.env.ARBITRUM_API_KEY.toString() : '',
+      aurora: 'no',
+      avalanche: process.env.AVALANCHE_API_KEY ? process.env.AVALANCHE_API_KEY.toString() : '',
       base: process.env.BASE_API_KEY ? process.env.BASE_API_KEY.toString() : '',
       bsc: process.env.BSC_API_KEY ? process.env.BSC_API_KEY.toString() : '',
-      aurora: 'no',
+      celo: process.env.CELO_API_KEY ? process.env.CELO_API_KEY.toString() : '',
       gnosis: process.env.GNOSIS_API_KEY ? process.env.GNOSIS_API_KEY.toString() : '',
-      avalanche: process.env.AVALANCHE_API_KEY ? process.env.AVALANCHE_API_KEY.toString() : '',
+      mainnet: process.env.ETHEREUM_API_KEY ? process.env.ETHEREUM_API_KEY.toString() : '',
       opera: process.env.FANTOM_API_KEY ? process.env.FANTOM_API_KEY.toString() : '',
+      optimisticEthereum: process.env.OPTIMISM_API_KEY ? process.env.OPTIMISM_API_KEY.toString() : '',
+      polygon: process.env.POLYGON_API_KEY ? process.env.POLYGON_API_KEY.toString() : '',
     },
+    customChains: [
+      {
+        network: 'celo',
+        chainId: 42220,
+        urls: {
+          apiURL: 'https://api.celoscan.io/api',
+          browserURL: 'https://celoscan.io/'
+        },
+      },
+    ],
   },
   docgen: {
     path: './docs',
