@@ -57,37 +57,40 @@ const config: HardhatUserConfig = {
       timeout: 400000,
     },
     arbitrumOne: {
-      url: 'https://arb1.arbitrum.io/rpc',
+      url: 'https://rpc.zerion.io/v1/arbitrum',
     },
     aurora: {
-      url: 'https://mainnet.aurora.dev',
+      url: 'https://rpc.zerion.io/v1/aurora',
     },
     avalanche: {
-      url: 'https://api.avax.network/ext/bc/C/rpc',
+      url: 'https://rpc.zerion.io/v1/avalanche',
     },
     base: {
-      url: 'https://mainnet.base.org',
+      url: 'https://rpc.zerion.io/v1/base',
+    },
+    blast: {
+      url: 'https://rpc.zerion.io/v1/blast',
     },
     bsc: {
-      url: 'https://bsc-dataseed.binance.org',
+      url: 'https://rpc.zerion.io/v1/binance-smart-chain',
     },
     celo: {
-      url: 'https://1rpc.io/celo',
+      url: 'https://rpc.zerion.io/v1/celo',
     },
     gnosis: {
-      url: 'https://rpc.gnosischain.com',
+      url: 'https://rpc.zerion.io/v1/xdai',
     },
     mainnet: {
-      url: 'https://cloudflare-eth.com',
+      url: 'https://rpc.zerion.io/v1/ethereum',
     },
     opera: {
-      url: 'https://rpc.ftm.tools',
+      url: 'https://rpc.zerion.io/v1/fantom',
     },
     optimisticEthereum: {
-      url: 'https://mainnet.optimism.io',
+      url: 'https://rpc.zerion.io/v1/optimism',
     },
     polygon: {
-      url: 'https://polygon-rpc.com',
+      url: 'https://rpc.zerion.io/v1/polygon',
     },
   },
   etherscan: {
@@ -96,6 +99,7 @@ const config: HardhatUserConfig = {
       aurora: 'no',
       avalanche: process.env.AVALANCHE_API_KEY ? process.env.AVALANCHE_API_KEY.toString() : '',
       base: process.env.BASE_API_KEY ? process.env.BASE_API_KEY.toString() : '',
+      blast: process.env.BLAST_API_KEY ? process.env.BLAST_API_KEY.toString() : '',
       bsc: process.env.BSC_API_KEY ? process.env.BSC_API_KEY.toString() : '',
       celo: process.env.CELO_API_KEY ? process.env.CELO_API_KEY.toString() : '',
       gnosis: process.env.GNOSIS_API_KEY ? process.env.GNOSIS_API_KEY.toString() : '',
@@ -111,6 +115,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: 'https://api.celoscan.io/api',
           browserURL: 'https://celoscan.io/'
+        },
+      },
+      {
+        network: 'blast',
+        chainId: 81457,
+        urls: {
+          apiURL: 'https://api.blastscan.io/api',
+          browserURL: 'https://blastscan.io/'
         },
       },
     ],

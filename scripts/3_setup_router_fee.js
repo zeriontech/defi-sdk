@@ -16,7 +16,7 @@ try {
 
     const feeDefaultTx = await router.functions.setProtocolFeeDefault(
       [
-        '5000000000000000',
+        '8000000000000000',
         deploymentAddresses.feeBeneficiaries[chainId],
       ],
     );
