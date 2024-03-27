@@ -25,22 +25,14 @@ import { IUniswapV2Pair } from "../interfaces/IUniswapV2Pair.sol";
 import { IWETH9 } from "../interfaces/IWETH9.sol";
 import { Base } from "../shared/Base.sol";
 import { SwapType } from "../shared/Enums.sol";
-import {
-    BadToken,
-    InconsistentPairsAndDirectionsLengths,
-    InputSlippage,
-    LowReserve,
-    ZeroAmountIn,
-    ZeroAmountOut,
-    ZeroLength
-} from "../shared/Errors.sol";
+import { BadToken, InconsistentPairsAndDirectionsLengths, InsufficientBalance, LowReserve, ZeroAmountIn, ZeroAmountOut, ZeroLength } from "../shared/Errors.sol";
 import { TokensHandler } from "../shared/TokensHandler.sol";
 import { Weth } from "../shared/Weth.sol";
 
 /**
  * @title Uniswap caller that executes swaps on UniswapV2-like pools
  */
-contract UniswapCaller is ICaller, TokensHandler, Weth {
+contract UniswapV2SinglePoolCaller is ICaller, TokensHandler, Weth {
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
@@ -57,65 +49,44 @@ contract UniswapCaller is ICaller, TokensHandler, Weth {
      * @param callerCallData ABI-encoded parameters:
      *     - inputToken Address of the token that should be spent
      *     - outputToken Address of the token that should be returned
-     *     - pairs Array of uniswap-like pairs
-     *     - directions Array of exchange directions (`true` means `token0` -> `token1`)
+     *     - pair Uniswap V2 like pair
      *     - swapType Whether input or output amount is fixed
      *     - fixedSideAmount Amount of the token which is fixed (see `swapType`)
-     *     - unwrap Bool indicating whether Wrapped Ether should be unwrapped to Ether
      * @dev Implementation of Caller interface function
      */
     function callBytes(bytes calldata callerCallData) external override {
         (
             address inputToken,
             address outputToken,
-            address[] memory pairs,
-            bool[] memory directions,
+            address pair,
             SwapType swapType,
             uint256 fixedSideAmount
-        ) = abi.decode(callerCallData, (address, address, address[], bool[], SwapType, uint256));
+        ) = abi.decode(callerCallData, (address, address, address, SwapType, uint256));
 
-        uint256 length = pairs.length;
-        if (length == uint256(0)) revert ZeroLength();
-        if (directions.length != length)
-            revert InconsistentPairsAndDirectionsLengths(length, directions.length);
+        address inputTokenERC20 = (inputToken == ETH) ? getWeth() : inputToken;
+        // Positive direction means `inputTokenERC20 == token0`
+        bool direction = (inputTokenERC20 == IUniswapV2Pair(pair).token0());
 
-        uint256[] memory amounts = (swapType == SwapType.FixedInputs)
-            ? getAmountsOut(fixedSideAmount, pairs, directions)
-            : getAmountsIn(fixedSideAmount, pairs, directions);
+        (uint256 inputTokenAmount, uint256 outputTokenAmount) = swapType == SwapType.FixedInputs
+            ? (fixedSideAmount, getAmountOut(fixedSideAmount, pair, direction))
+            : (getAmountIn(fixedSideAmount, pair, direction), fixedSideAmount);
 
-        // Take input tokens and transfer to the first pair
+        // Transfer input tokens to the pair
         {
-            address token = directions[0]
-                ? IUniswapV2Pair(pairs[0]).token0()
-                : IUniswapV2Pair(pairs[0]).token1();
+            uint256 balance = Base.getBalance(inputToken);
+            if (balance < inputTokenAmount) revert InsufficientBalance(balance, inputTokenAmount);
 
-            if (inputToken == ETH) {
-                depositEth(amounts[0]);
-            }
-
-            uint256 balance = IERC20(token).balanceOf(address(this));
-            if (amounts[0] > balance) revert InputSlippage(balance, amounts[0]);
-
-            SafeERC20.safeTransfer(IERC20(token), pairs[0], amounts[0]);
+            if (inputToken == ETH) depositEth(inputTokenAmount);
+            SafeERC20.safeTransfer(IERC20(inputTokenERC20), pair, inputTokenAmount);
         }
 
-        // Do the swaps via the given pairs
-        {
-            address destination = (outputToken == ETH) ? address(this) : msg.sender;
-
-            for (uint256 i = 0; i < length; i++) {
-                uint256 next = i + 1;
-                (uint256 amount0Out, uint256 amount1Out) = directions[i]
-                    ? (uint256(0), amounts[next])
-                    : (amounts[next], uint256(0));
-                IUniswapV2Pair(pairs[i]).swap(
-                    amount0Out,
-                    amount1Out,
-                    next < length ? pairs[next] : destination,
-                    bytes("")
-                );
-            }
-        }
+        // Do the swap via the given pair
+        IUniswapV2Pair(pair).swap(
+            direction ? uint256(0) : outputTokenAmount,
+            direction ? outputTokenAmount : uint256(0),
+            (outputToken == ETH) ? address(this) : msg.sender,
+            bytes("")
+        );
 
         // Unwrap weth if necessary
         if (outputToken == ETH) withdrawEth();
@@ -129,11 +100,11 @@ contract UniswapCaller is ICaller, TokensHandler, Weth {
 
     /**
      * @notice Wraps Ether
-     * @param amount Amount of Ether to be wrapped
      */
     function depositEth(uint256 amount) internal {
         address weth = getWeth();
-        IWETH9(weth).deposit{ value: amount }();
+
+        if (amount > 0) IWETH9(weth).deposit{ value: amount }();
     }
 
     /**
@@ -144,57 +115,6 @@ contract UniswapCaller is ICaller, TokensHandler, Weth {
         uint256 wethBalance = IERC20(weth).balanceOf(address(this));
         // The check always passes, however, left for unusual cases
         if (wethBalance > uint256(0)) IWETH9(weth).withdraw(wethBalance);
-    }
-
-    /**
-     * @notice Calculates the required amounts for multiple swaps in case of fixed output amount
-     * @param amountOut Amount of tokens returned after the last swap
-     * @param pairs Array of uniswap-like pairs
-     * @param directions Array of exchange directions (`true` means token0 -> token1)
-     * @return amountsIn Amounts required for the multiple swaps
-     * @dev Performs chained getAmountIn calculations
-     */
-    function getAmountsIn(
-        uint256 amountOut,
-        address[] memory pairs,
-        bool[] memory directions
-    ) internal view returns (uint256[] memory amountsIn) {
-        uint256 length = pairs.length;
-
-        amountsIn = new uint256[](length + 1);
-        amountsIn[length] = amountOut;
-
-        for (uint256 i = length; i > uint256(0); i--) {
-            uint256 prev = i - 1;
-            amountsIn[prev] = getAmountIn(amountsIn[i], pairs[prev], directions[prev]);
-        }
-
-        return amountsIn;
-    }
-
-    /**
-     * @notice Calculates the return amounts for multiple swaps in case of fixed input amount
-     * @param amountIn Amount of tokens provided for the first swap
-     * @param pairs Array of uniswap-like pairs
-     * @param directions Array of exchange directions (`true` means token0 -> token1)
-     * @return amountsOut Amounts returned after the multiple swaps
-     * @dev Performs chained getAmountOut calculations
-     */
-    function getAmountsOut(
-        uint256 amountIn,
-        address[] memory pairs,
-        bool[] memory directions
-    ) internal view returns (uint256[] memory amountsOut) {
-        uint256 length = pairs.length;
-
-        amountsOut = new uint256[](length + 1);
-        amountsOut[0] = amountIn;
-
-        for (uint256 i = 0; i < length; i++) {
-            amountsOut[i + 1] = getAmountOut(amountsOut[i], pairs[i], directions[i]);
-        }
-
-        return amountsOut;
     }
 
     /**
@@ -252,11 +172,10 @@ contract UniswapCaller is ICaller, TokensHandler, Weth {
      * @return reserveIn Pool reserve for input token
      * @return reserveOut Pool reserve for output token
      */
-    function getReserves(address pair, bool direction)
-        internal
-        view
-        returns (uint256 reserveIn, uint256 reserveOut)
-    {
+    function getReserves(
+        address pair,
+        bool direction
+    ) internal view returns (uint256 reserveIn, uint256 reserveOut) {
         (uint256 reserve0, uint256 reserve1, ) = IUniswapV2Pair(pair).getReserves();
         (reserveIn, reserveOut) = direction ? (reserve0, reserve1) : (reserve1, reserve0);
 

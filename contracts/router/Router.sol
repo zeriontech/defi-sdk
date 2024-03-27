@@ -30,37 +30,9 @@ import { IRouter } from "../interfaces/IRouter.sol";
 import { IYearnPermit } from "../interfaces/IYearnPermit.sol";
 import { Base } from "../shared/Base.sol";
 import { AmountType, PermitType, SwapType } from "../shared/Enums.sol";
-import {
-    BadAmount,
-    BadAccount,
-    BadAccountSignature,
-    BadAmountType,
-    BadFeeAmount,
-    BadFeeBeneficiary,
-    BadFeeShare,
-    BadFeeSignature,
-    ExceedingDelimiterAmount,
-    ExceedingLimitFee,
-    HighInputBalanceChange,
-    InsufficientAllowance,
-    InsufficientMsgValue,
-    LowActualOutputAmount,
-    NoneAmountType,
-    NonePermitType,
-    NoneSwapType,
-    PassedDeadline
-} from "../shared/Errors.sol";
+import { BadAmount, BadAccount, BadAccountSignature, BadAmountType, BadFeeAmount, BadFeeBeneficiary, BadFeeShare, BadFeeSignature, ExceedingDelimiterAmount, ExceedingLimitFee, HighInputBalanceChange, InsufficientAllowance, InsufficientMsgValue, LowActualOutputAmount, NoneAmountType, NonePermitType, NoneSwapType, PassedDeadline } from "../shared/Errors.sol";
 import { Ownable } from "../shared/Ownable.sol";
-import {
-    AbsoluteTokenAmount,
-    AccountSignature,
-    Fee,
-    ProtocolFeeSignature,
-    Input,
-    Permit,
-    SwapDescription,
-    TokenAmount
-} from "../shared/Structs.sol";
+import { AbsoluteTokenAmount, AccountSignature, Fee, ProtocolFeeSignature, Input, Permit, SwapDescription, TokenAmount } from "../shared/Structs.sol";
 import { TokensHandler } from "../shared/TokensHandler.sol";
 
 import { ProtocolFee } from "./ProtocolFee.sol";
@@ -102,7 +74,10 @@ contract Router is
         AccountSignature calldata accountSignature,
         ProtocolFeeSignature calldata protocolFeeSignature
     )
-        external payable override nonReentrant
+        external
+        payable
+        override
+        nonReentrant
         returns (
             uint256 inputBalanceChange,
             uint256 actualOutputAmount,
@@ -150,7 +125,7 @@ contract Router is
         uint256 initialOutputBalance = Base.getBalance(output.token);
 
         // Transfer tokens to the caller
-        Base.transfer(inputToken, swapDescription.caller, absoluteInputAmount);
+        Base.transfer(inputToken, swapDescription.caller, absoluteInputAmount); // In order to support FoT, fix `absoluteInputAmount` here
 
         // Call caller's `callBytes()` function with the provided calldata
         Address.functionCall(
@@ -277,6 +252,7 @@ contract Router is
             );
         }
 
+        // if (balance < amount) revert InsufficientBalance(balance, amount);
         SafeERC20.safeTransferFrom(IERC20(token), account, address(this), amount);
     }
 
@@ -405,11 +381,10 @@ contract Router is
      * @param account Address of the account to transfer token from
      * @return absoluteTokenAmount Absolute token amount
      */
-    function getAbsoluteInputAmount(TokenAmount calldata tokenAmount, address account)
-        internal
-        view
-        returns (uint256 absoluteTokenAmount)
-    {
+    function getAbsoluteInputAmount(
+        TokenAmount calldata tokenAmount,
+        address account
+    ) internal view returns (uint256 absoluteTokenAmount) {
         AmountType amountType = tokenAmount.amountType;
         address token = tokenAmount.token;
         uint256 amount = tokenAmount.amount;
@@ -456,11 +431,7 @@ contract Router is
     )
         internal
         pure
-        returns (
-            uint256 returnedAmount,
-            uint256 protocolFeeAmount,
-            uint256 marketplaceFeeAmount
-        )
+        returns (uint256 returnedAmount, uint256 protocolFeeAmount, uint256 marketplaceFeeAmount)
     {
         if (swapType == SwapType.None) revert NoneSwapType();
 
@@ -487,7 +458,7 @@ contract Router is
             ? output.absoluteAmount
             : ((outputBalanceChange * DELIMITER) / (DELIMITER + totalFeeShare)) + uint256(1);
 
-        uint256 totalFeeAmount = outputBalanceChange - returnedAmount;
+        uint256 totalFeeAmount = outputBalanceChange - returnedAmount; //! not safe to distract
         // This check is important in fixed outputs case as we never actually check that
         // total fee amount is not too large and should always just pass in fixed inputs case
         if (totalFeeAmount * DELIMITER > totalFeeShare * returnedAmount)

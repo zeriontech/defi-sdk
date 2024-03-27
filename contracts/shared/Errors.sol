@@ -40,6 +40,7 @@ error HighInputBalanceChange(uint256 inputBalanceChange, uint256 requiredInputBa
 error InconsistentPairsAndDirectionsLengths(uint256 pairsLength, uint256 directionsLength);
 error InputSlippage(uint256 amount, uint256 requiredAmount);
 error InsufficientAllowance(uint256 allowance, uint256 requiredAllowance);
+error InsufficientBalance(uint256 balance, uint256 requiredBalance);
 error InsufficientMsgValue(uint256 msgValue, uint256 requiredMsgValue);
 error LowActualOutputAmount(uint256 actualOutputAmount, uint256 requiredActualOutputAmount);
 error LowReserve(uint256 reserve, uint256 requiredReserve);
