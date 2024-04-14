@@ -311,7 +311,7 @@ describe('Router', () => {
     ).to.be.reverted;
   });
 
-  it('should execute with relative amount equal to delimeter', async () => {
+  it('should execute with relative amount equal to delimiter', async () => {
     await mockToken.mock.balanceOf.returns(1000);
     await mockToken.mock.allowance.returns(1000);
     await router.functions.execute(
