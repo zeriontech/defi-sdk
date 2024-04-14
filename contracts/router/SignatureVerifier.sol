@@ -172,7 +172,7 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
     /**
      * @param typehash The required signature typehash
      * @param input Input described in `hashDada()` function
-     * @param output Outut described in `hashDada()` function
+     * @param output Output described in `hashDada()` function
      * @param swapDescription Swap parameters described in `hashDada()` function
      * @param saltOrDeadline Salt/deadline parameter preventing double-spending
      * @return `execute()` function data hashed

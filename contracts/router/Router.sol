@@ -221,7 +221,7 @@ contract Router is
     }
 
     /**
-     * @dev In ERC20 token case, transfers input token from the accound address to this contract,
+     * @dev In ERC20 token case, transfers input token from the account address to this contract,
      *     calls `permit()` function if allowance is not enough and permit call data is provided
      * @dev Checks `msg.value` in Ether case
      * @dev Does nothing in zero input token address case
@@ -252,7 +252,7 @@ contract Router is
     }
 
     /**
-     * @dev Transfers input token from the accound address to this contract,
+     * @dev Transfers input token from the account address to this contract,
      *     calls `permit()` function if allowance is not enough and permit call data is provided
      * @param token Token to be taken from the account address
      * @param amount Input token absolute amount to be taken from the account
