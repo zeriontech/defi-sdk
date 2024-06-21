@@ -5,7 +5,7 @@
 [![Lint status](https://github.com/zeriontech/defi-sdk/workflows/lint/badge.svg)](https://github.com/zeriontech/defi-sdk/actions?query=workflow:lint)
 [![License](https://badgen.net/github/license/zeriontech/defi-sdk)](https://www.gnu.org/licenses/lgpl-3.0.en.html)
 [![Discord](https://badgen.net/badge/zerion/Zerion?icon=discord&label=discord)](https://zerion.io/discord)
-[![Twitter Follow](https://badgen.net/twitter/follow/zerion_io?icon=twitter)](https://twitter.com/intent/follow?screen_name=zerion_io)
+[![Twitter Follow](https://img.shields.io/twitter/follow/easyaspython?label=Follow&style=social)](https://twitter.com/intent/follow?screen_name=zerion_io)
 
 **DeFi SDK** is an open-source system of smart contracts that allows you to execute trades with ERC20 tokens and track balances on different protocols.
 
