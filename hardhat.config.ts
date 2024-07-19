@@ -80,6 +80,9 @@ const config: HardhatUserConfig = {
     gnosis: {
       url: 'https://rpc.zerion.io/v1/xdai',
     },
+    linea: {
+      url: 'https://rpc.zerion.io/v1/linea',
+    },
     mainnet: {
       url: 'https://rpc.zerion.io/v1/ethereum',
     },
@@ -92,6 +95,15 @@ const config: HardhatUserConfig = {
     polygon: {
       url: 'https://rpc.zerion.io/v1/polygon',
     },
+    'polygon-zkevm': {
+      url: 'https://rpc.zerion.io/v1/polygon-zkevm',
+    },
+    scroll: {
+      url: 'https://rpc.zerion.io/v1/scroll',
+    },
+    zora: {
+      url: 'https://rpc.zora.energy',
+    },
   },
   etherscan: {
     apiKey: {
@@ -103,10 +115,14 @@ const config: HardhatUserConfig = {
       bsc: process.env.BSC_API_KEY ? process.env.BSC_API_KEY.toString() : '',
       celo: process.env.CELO_API_KEY ? process.env.CELO_API_KEY.toString() : '',
       gnosis: process.env.GNOSIS_API_KEY ? process.env.GNOSIS_API_KEY.toString() : '',
+      linea: process.env.LINEA_API_KEY ? process.env.LINEA_API_KEY.toString() : '',
       mainnet: process.env.ETHEREUM_API_KEY ? process.env.ETHEREUM_API_KEY.toString() : '',
       opera: process.env.FANTOM_API_KEY ? process.env.FANTOM_API_KEY.toString() : '',
       optimisticEthereum: process.env.OPTIMISM_API_KEY ? process.env.OPTIMISM_API_KEY.toString() : '',
       polygon: process.env.POLYGON_API_KEY ? process.env.POLYGON_API_KEY.toString() : '',
+      'polygon-zkevm': process.env.POLYGON_ZKEVM_API_KEY ? process.env.POLYGON_ZKEVM_API_KEY.toString() : '',
+      scroll: process.env.SCROLL_API_KEY ? process.env.SCROLL_API_KEY.toString() : '',
+      zora: "zora",
     },
     customChains: [
       {
@@ -124,6 +140,38 @@ const config: HardhatUserConfig = {
           apiURL: 'https://api.blastscan.io/api',
           browserURL: 'https://blastscan.io/'
         },
+      },
+      {
+        network: 'scroll',
+        chainId: 534352,
+        urls: {
+          apiURL: 'https://api.scrollscan.com/api',
+          browserURL: 'https://scrollscan.com/'
+        },
+      },
+      {
+        network: 'linea',
+        chainId: 59144,
+        urls: {
+          apiURL: 'https://api.lineascan.build/api',
+          browserURL: 'https://api.lineascan.build/'
+        },
+      },
+      {
+        network: 'polygon-zkevm',
+        chainId: 1101,
+        urls: {
+          apiURL: 'https://api-zkevm.polygonscan.com/api',
+          browserURL: 'https://api-zkevm.polygonscan.com/'
+        },
+      },
+      {
+        network: "zora",
+        chainId: 7777777,
+        urls: {
+          apiURL: "https://api.routescan.io/v2/network/mainnet/evm/7777777/etherscan",
+          browserURL: "https://zorascan.xyz"
+        }
       },
     ],
   },

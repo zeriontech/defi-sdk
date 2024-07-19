@@ -2,6 +2,8 @@ import deploymentAddresses from './deployment';
 
 try {
   (async () => {
+    console.log('Make sure 0x161b29D1919D4E06b53eE449376181B5082b30B9 is used and nonce is 1 and 2');
+
     const Router = await ethers.getContractFactory('Router');
     const chainIdHex = await hre.network.provider.request({ method: 'eth_chainId' });
     const chainId = parseInt(chainIdHex.toString(), 16).toString();
