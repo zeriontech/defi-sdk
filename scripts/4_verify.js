@@ -10,6 +10,12 @@ try {
     await hre.run('verify:verify', {
       address: deploymentAddresses.simpleCaller[chainId],
     });
+    await hre.run('verify:verify', {
+      address: deploymentAddresses.uniswapV2Caller[chainId],
+      constructorArguments: [
+        deploymentAddresses.weth[chainId],
+      ],
+    });
   })();
 } catch (error) {
   console.error(error);

@@ -25,15 +25,7 @@ import { IUniswapV2Pair } from "../interfaces/IUniswapV2Pair.sol";
 import { IWETH9 } from "../interfaces/IWETH9.sol";
 import { Base } from "../shared/Base.sol";
 import { SwapType } from "../shared/Enums.sol";
-import {
-    BadToken,
-    InconsistentPairsAndDirectionsLengths,
-    InputSlippage,
-    LowReserve,
-    ZeroAmountIn,
-    ZeroAmountOut,
-    ZeroLength
-} from "../shared/Errors.sol";
+import { BadToken, InconsistentPairsAndDirectionsLengths, InputSlippage, LowReserve, ZeroAmountIn, ZeroAmountOut, ZeroLength } from "../shared/Errors.sol";
 import { TokensHandler } from "../shared/TokensHandler.sol";
 import { Weth } from "../shared/Weth.sol";
 
@@ -252,11 +244,10 @@ contract UniswapCaller is ICaller, TokensHandler, Weth {
      * @return reserveIn Pool reserve for input token
      * @return reserveOut Pool reserve for output token
      */
-    function getReserves(address pair, bool direction)
-        internal
-        view
-        returns (uint256 reserveIn, uint256 reserveOut)
-    {
+    function getReserves(
+        address pair,
+        bool direction
+    ) internal view returns (uint256 reserveIn, uint256 reserveOut) {
         (uint256 reserve0, uint256 reserve1, ) = IUniswapV2Pair(pair).getReserves();
         (reserveIn, reserveOut) = direction ? (reserve0, reserve1) : (reserve1, reserve0);
 

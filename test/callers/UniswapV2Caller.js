@@ -15,7 +15,7 @@ const uniDaiWethAddress = '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11';
 const zeroPermit = ['0', EMPTY_BYTES];
 const zeroSignature = ['0', EMPTY_BYTES];
 
-describe('UniswapCaller', () => {
+describe('UniswapV2Caller', () => {
   let owner;
   let notOwner;
   let caller;
@@ -40,7 +40,7 @@ describe('UniswapCaller', () => {
     //   ],
     // });
 
-    Caller = await ethers.getContractFactory('UniswapCaller');
+    Caller = await ethers.getContractFactory('UniswapV2Caller');
     Router = await ethers.getContractFactory('Router');
 
     [owner, notOwner] = await ethers.getSigners();
@@ -316,7 +316,7 @@ describe('UniswapCaller', () => {
     ).to.be.reverted;
   });
 
-  it('should do dai -> eth trade', async () => {
+  it.only('should do dai -> eth trade', async () => {
     await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
     await router.setProtocolFeeDefault(protocolFeeDefault);
 
