@@ -36,7 +36,8 @@ const config: HardhatUserConfig = {
     // },
     hardhat: {
       forking: {
-        url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+        // url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+        url: "https://rpc.zerion.io/v1/ethereum"
       },
       blockGasLimit: 10000000,
       gas: 10000000,
