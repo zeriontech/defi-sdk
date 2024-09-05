@@ -17,7 +17,7 @@
 
 pragma solidity 0.8.12;
 
-import { ActionType, AmountType, PermitType, SwapType } from "./Enums.sol";
+import { AmountType } from "./Enums.sol";
 import { Fee } from "./Structs.sol";
 
 error BadAccount(address account, address expectedAccount);

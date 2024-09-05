@@ -17,17 +17,9 @@
 
 pragma solidity 0.8.12;
 
-import {
-    AbsoluteTokenAmount,
-    Input,
-    SwapDescription,
-    AccountSignature,
-    ProtocolFeeSignature,
-    Fee
-} from "../shared/Structs.sol";
-
-import { ITokensHandler } from "./ITokensHandler.sol";
+import { AbsoluteTokenAmount, Input, SwapDescription, AccountSignature, ProtocolFeeSignature } from "../shared/Structs.sol";
 import { ISignatureVerifier } from "./ISignatureVerifier.sol";
+import { ITokensHandler } from "./ITokensHandler.sol";
 
 interface IRouter is ITokensHandler, ISignatureVerifier {
     /**
@@ -89,7 +81,9 @@ interface IRouter is ITokensHandler, ISignatureVerifier {
         SwapDescription calldata swapDescription,
         AccountSignature calldata accountSignature,
         ProtocolFeeSignature calldata protocolFeeSignature
-    ) external payable
+    )
+        external
+        payable
         returns (
             uint256 inputBalanceChange,
             uint256 actualOutputAmount,

@@ -270,6 +270,23 @@ describe('Router', () => {
     ).to.be.reverted;
   });
 
+  it('should not execute with bad amount type', async () => {
+    await expect(
+      router.functions.execute(
+        // input
+        [[AddressZero, ethers.utils.parseUnits('0', 18), '0'], zeroPermit],
+        // output
+        [ethAddress, '0'],
+        // swap description
+        [SWAP_FIXED_INPUTS, zeroFee, zeroFee, owner.address, mockCaller.address, EMPTY_BYTES],
+        // account signature
+        zeroSignature,
+        // fee signature
+        zeroSignature,
+      ),
+    ).to.be.reverted;
+  });
+
   it('should not execute with relative amount for ETH', async () => {
     await expect(
       router.functions.execute(

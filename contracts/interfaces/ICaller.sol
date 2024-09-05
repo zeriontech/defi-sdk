@@ -17,8 +17,6 @@
 
 pragma solidity 0.8.12;
 
-import { AbsoluteTokenAmount } from "../shared/Structs.sol";
-
 import { ITokensHandler } from "./ITokensHandler.sol";
 
 interface ICaller is ITokensHandler {

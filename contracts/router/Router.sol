@@ -18,8 +18,8 @@
 pragma solidity 0.8.12;
 
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
@@ -34,7 +34,6 @@ import { BadAmount, BadAccount, BadAccountSignature, BadAmountType, BadFeeAmount
 import { Ownable } from "../shared/Ownable.sol";
 import { AbsoluteTokenAmount, AccountSignature, Fee, ProtocolFeeSignature, Input, Permit, SwapDescription, TokenAmount } from "../shared/Structs.sol";
 import { TokensHandler } from "../shared/TokensHandler.sol";
-
 import { ProtocolFee } from "./ProtocolFee.sol";
 import { SignatureVerifier } from "./SignatureVerifier.sol";
 
@@ -58,8 +57,9 @@ contract Router is
         SwapDescription calldata swapDescription,
         AccountSignature calldata accountSignature
     ) external override nonReentrant {
-        if (msg.sender != swapDescription.account)
+        if (msg.sender != swapDescription.account) {
             revert BadAccount(msg.sender, swapDescription.account);
+        }
 
         validateAndExpireAccountSignature(input, output, swapDescription, accountSignature);
     }
@@ -139,8 +139,9 @@ contract Router is
         uint256 outputBalanceChange = Base.getBalance(output.token) - initialOutputBalance;
 
         // Check input requirements, prevent the underflow
-        if (inputBalanceChange > absoluteInputAmount)
+        if (inputBalanceChange > absoluteInputAmount) {
             revert HighInputBalanceChange(inputBalanceChange, absoluteInputAmount);
+        }
 
         // Calculate the refund amount
         uint256 refundAmount = absoluteInputAmount - inputBalanceChange;
@@ -155,8 +156,9 @@ contract Router is
         );
 
         // Check output requirements, prevent revert on transfers
-        if (actualOutputAmount < output.absoluteAmount)
+        if (actualOutputAmount < output.absoluteAmount) {
             revert LowActualOutputAmount(actualOutputAmount, output.absoluteAmount);
+        }
 
         // Transfer the refund back to the user,
         // do nothing in zero input token case as `refundAmount` is zero
@@ -242,8 +244,9 @@ contract Router is
     ) internal {
         uint256 allowance = IERC20(token).allowance(account, address(this));
         if (allowance < amount) {
-            if (permit.permitCallData.length == uint256(0))
+            if (permit.permitCallData.length == uint256(0)) {
                 revert InsufficientAllowance(allowance, amount);
+            }
 
             Address.functionCall(
                 token,
@@ -303,8 +306,9 @@ contract Router is
         AccountSignature calldata accountSignature
     ) internal {
         if (accountSignature.signature.length == uint256(0)) {
-            if (msg.sender != swapDescription.account)
+            if (msg.sender != swapDescription.account) {
                 revert BadAccount(msg.sender, swapDescription.account);
+            }
             return;
         }
         bytes32 hashedAccountSignatureData = hashAccountSignatureData(
@@ -342,15 +346,18 @@ contract Router is
         Fee memory protocolFee = swapDescription.protocolFee;
 
         if (protocolFeeSignature.signature.length == uint256(0)) {
-            if (protocolFee.share != baseProtocolFee.share)
+            if (protocolFee.share != baseProtocolFee.share) {
                 revert BadFeeShare(protocolFee.share, baseProtocolFee.share);
-            if (protocolFee.beneficiary != baseProtocolFee.beneficiary)
+            }
+            if (protocolFee.beneficiary != baseProtocolFee.beneficiary) {
                 revert BadFeeBeneficiary(protocolFee.beneficiary, baseProtocolFee.beneficiary);
+            }
             return;
         }
 
-        if (protocolFee.share > baseProtocolFee.share)
+        if (protocolFee.share > baseProtocolFee.share) {
             revert ExceedingLimitFee(protocolFee.share, baseProtocolFee.share);
+        }
 
         bytes32 hashedProtocolFeeSignatureData = hashProtocolFeeSignatureData(
             input,
@@ -368,8 +375,9 @@ contract Router is
         ) revert BadFeeSignature();
 
         // solhint-disable not-rely-on-time
-        if (block.timestamp > protocolFeeSignature.deadline)
+        if (block.timestamp > protocolFeeSignature.deadline) {
             revert PassedDeadline(block.timestamp, protocolFeeSignature.deadline);
+        }
         // solhint-enable not-rely-on-time
     }
 
@@ -395,8 +403,9 @@ contract Router is
 
         if (amountType == AmountType.Absolute) return amount;
 
-        if (token == ETH || token == address(0))
+        if (token == ETH || token == address(0)) {
             revert BadAmountType(amountType, AmountType.Absolute);
+        }
 
         if (amount > DELIMITER) revert ExceedingDelimiterAmount(amount);
 
@@ -437,8 +446,9 @@ contract Router is
 
         uint256 outputAbsoluteAmount = output.absoluteAmount;
         if (output.token == address(0)) {
-            if (outputAbsoluteAmount > uint256(0))
+            if (outputAbsoluteAmount > uint256(0)) {
                 revert BadAmount(outputAbsoluteAmount, uint256(0));
+            }
             return (uint256(0), uint256(0), uint256(0));
         }
 
@@ -461,8 +471,9 @@ contract Router is
         uint256 totalFeeAmount = outputBalanceChange - returnedAmount; //! not safe to distract
         // This check is important in fixed outputs case as we never actually check that
         // total fee amount is not too large and should always just pass in fixed inputs case
-        if (totalFeeAmount * DELIMITER > totalFeeShare * returnedAmount)
+        if (totalFeeAmount * DELIMITER > totalFeeShare * returnedAmount) {
             revert BadFeeAmount(totalFeeAmount, (returnedAmount * totalFeeShare) / DELIMITER);
+        }
 
         protocolFeeAmount = (totalFeeAmount * protocolFee.share) / totalFeeShare;
         marketplaceFeeAmount = totalFeeAmount - protocolFeeAmount;
