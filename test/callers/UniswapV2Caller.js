@@ -1,4 +1,5 @@
 import buyTokenOnUniswap from '../helpers/buyTokenOnUniswap';
+import logChange from '../helpers/logger';
 import { wethAddress, ethAddress, daiAddress } from '../helpers/tokens';
 
 const { expect } = require('chai');
@@ -27,6 +28,21 @@ describe('UniswapV2Caller', () => {
   let protocolFeeDefault;
   const logger = new ethers.utils.Logger('1');
   const abiCoder = new ethers.utils.AbiCoder();
+
+  async function execute(i, out, sp, as, fs, opt = {}) {
+    const ethBefore = await owner.getBalance();
+    const daiBefore = await dai.balanceOf(owner.address);
+    const wethBefore = await weth.balanceOf(owner.address);
+
+    const tx = await router.functions.execute(i, out, sp, as, fs, opt);
+    const receipt = await tx.wait();
+
+    logger.info(`Called router for ${receipt.gasUsed} gas`);
+
+    logChange(logger, 'eth', ethBefore, (await owner.getBalance()).add(receipt.gasUsed.mul(receipt.effectiveGasPrice)));
+    logChange(logger, 'dai', daiBefore, await dai.balanceOf(owner.address));
+    logChange(logger, 'weth', wethBefore, await weth.balanceOf(owner.address));
+  }
 
   before(async () => {
     // await network.provider.request({
@@ -70,11 +86,11 @@ describe('UniswapV2Caller', () => {
 
   beforeEach(async () => {
     router = await Router.deploy();
+    await router.setProtocolFeeDefault(protocolFeeDefault);
   });
 
   it('should not do weth -> dai trade with high slippage', async () => {
     await weth.approve(router.address, ethers.utils.parseUnits('1', 18));
-    await router.setProtocolFeeDefault(protocolFeeDefault);
 
     await expect(
       router.functions.execute(
@@ -111,15 +127,8 @@ describe('UniswapV2Caller', () => {
 
   it('should do weth -> dai trade', async () => {
     await weth.approve(router.address, ethers.utils.parseUnits('1', 18));
-    await router.setProtocolFeeDefault(protocolFeeDefault);
 
-    logger.info(
-      `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
-    );
-    logger.info(
-      `weth balance is ${ethers.utils.formatUnits(await weth.balanceOf(owner.address), 18)}`,
-    );
-    const tx = await router.functions.execute(
+    await execute(
       // input
       [[weth.address, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
       // output
@@ -148,22 +157,10 @@ describe('UniswapV2Caller', () => {
       // fee signature
       zeroSignature,
     );
-    logger.info(`Called router for ${(await tx.wait()).gasUsed} gas`);
-    logger.info(
-      `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
-    );
-    logger.info(
-      `weth balance is ${ethers.utils.formatUnits(await weth.balanceOf(owner.address), 18)}`,
-    );
   });
 
   it('should do eth -> dai trade', async () => {
-    await router.setProtocolFeeDefault(protocolFeeDefault);
-
-    logger.info(
-      `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
-    );
-    const tx = await router.functions.execute(
+    await execute(
       // input
       [[ethAddress, ethers.utils.parseUnits('1', 18), AMOUNT_ABSOLUTE], zeroPermit],
       // output
@@ -195,15 +192,9 @@ describe('UniswapV2Caller', () => {
         value: ethers.utils.parseEther('1'),
       },
     );
-    logger.info(`Called router for ${(await tx.wait()).gasUsed} gas`);
-    logger.info(
-      `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
-    );
   });
 
   it('should not do eth -> dai trade with too large marketplace fee', async () => {
-    await router.setProtocolFeeDefault(protocolFeeDefault);
-
     await expect(
       router.functions.execute(
         // input
@@ -241,8 +232,6 @@ describe('UniswapV2Caller', () => {
   });
 
   it('should not do eth -> dai trade with high slippage', async () => {
-    await router.setProtocolFeeDefault(protocolFeeDefault);
-
     await expect(
       router.functions.execute(
         // input
@@ -279,9 +268,8 @@ describe('UniswapV2Caller', () => {
     ).to.be.reverted;
   });
 
-  it('should do dai -> eth trade with 0 input', async () => {
+  it('should not do dai -> eth trade with 0 input', async () => {
     await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
-    await router.setProtocolFeeDefault(protocolFeeDefault);
 
     await expect(
       router.functions.execute(
@@ -318,12 +306,8 @@ describe('UniswapV2Caller', () => {
 
   it.only('should do dai -> eth trade', async () => {
     await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
-    await router.setProtocolFeeDefault(protocolFeeDefault);
 
-    logger.info(
-      `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
-    );
-    const tx = await router.functions.execute(
+    await execute(
       // input
       [[daiAddress, ethers.utils.parseUnits('500', 18), AMOUNT_ABSOLUTE], zeroPermit],
       // output
@@ -352,15 +336,10 @@ describe('UniswapV2Caller', () => {
       // fee signature
       zeroSignature,
     );
-    logger.info(`Called router for ${(await tx.wait()).gasUsed} gas`);
-    logger.info(
-      `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
-    );
   });
 
-  it('should do dai -> weth trade with 0 output', async () => {
+  it('should not do dai -> weth trade with 0 output', async () => {
     await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
-    await router.setProtocolFeeDefault(protocolFeeDefault);
 
     await expect(
       router.functions.execute(
@@ -397,7 +376,6 @@ describe('UniswapV2Caller', () => {
 
   it('should not do dai -> weth trade with empty path', async () => {
     await dai.approve(router.address, ethers.utils.parseUnits('1', 18));
-    await router.setProtocolFeeDefault(protocolFeeDefault);
 
     await expect(
       router.functions.execute(
@@ -434,7 +412,6 @@ describe('UniswapV2Caller', () => {
 
   it('should not do dai -> weth trade with bad directions length', async () => {
     await dai.approve(router.address, ethers.utils.parseUnits('5000', 18));
-    await router.setProtocolFeeDefault(protocolFeeDefault);
 
     await expect(
       router.functions.execute(
@@ -471,7 +448,6 @@ describe('UniswapV2Caller', () => {
 
   it('should not do dai -> weth trade with huge fee', async () => {
     await dai.approve(router.address, ethers.utils.parseUnits('5000', 18));
-    await router.setProtocolFeeDefault(protocolFeeDefault);
 
     await expect(
       router.functions.execute(
@@ -508,15 +484,8 @@ describe('UniswapV2Caller', () => {
 
   it('should do dai -> weth trade', async () => {
     await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
-    await router.setProtocolFeeDefault(protocolFeeDefault);
 
-    logger.info(
-      `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
-    );
-    logger.info(
-      `weth balance is ${ethers.utils.formatUnits(await weth.balanceOf(owner.address), 18)}`,
-    );
-    const tx = await router.functions.execute(
+    await execute(
       // input
       [[daiAddress, ethers.utils.parseUnits('500', 18), AMOUNT_ABSOLUTE], zeroPermit],
       // output
@@ -545,18 +514,10 @@ describe('UniswapV2Caller', () => {
       // fee signature
       zeroSignature,
     );
-    logger.info(`Called router for ${(await tx.wait()).gasUsed} gas`);
-    logger.info(
-      `dai balance is ${ethers.utils.formatUnits(await dai.balanceOf(owner.address), 18)}`,
-    );
-    logger.info(
-      `weth balance is ${ethers.utils.formatUnits(await weth.balanceOf(owner.address), 18)}`,
-    );
   });
 
   it('should not do dai -> weth trade with high token slippage', async () => {
     await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
-    await router.setProtocolFeeDefault(protocolFeeDefault);
 
     await expect(
       router.functions.execute(
@@ -593,7 +554,6 @@ describe('UniswapV2Caller', () => {
 
   it('should not do dai -> weth trade with not enough liquidity', async () => {
     await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
-    await router.setProtocolFeeDefault(protocolFeeDefault);
 
     await expect(
       router.functions.execute(

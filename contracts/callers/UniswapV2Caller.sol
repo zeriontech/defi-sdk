@@ -25,7 +25,7 @@ import { IUniswapV2Pair } from "../interfaces/IUniswapV2Pair.sol";
 import { IWETH9 } from "../interfaces/IWETH9.sol";
 import { Base } from "../shared/Base.sol";
 import { SwapType } from "../shared/Enums.sol";
-import { BadToken, InconsistentPairsAndDirectionsLengths, InputSlippage, LowReserve, ZeroAmountIn, ZeroAmountOut, ZeroLength } from "../shared/Errors.sol";
+import { InconsistentPairsAndDirectionsLengths, InputSlippage, LowReserve, ZeroAmountIn, ZeroAmountOut, ZeroLength } from "../shared/Errors.sol";
 import { TokensHandler } from "../shared/TokensHandler.sol";
 import { Weth } from "../shared/Weth.sol";
 
@@ -68,8 +68,9 @@ contract UniswapV2Caller is ICaller, TokensHandler, Weth {
 
         uint256 length = pairs.length;
         if (length == uint256(0)) revert ZeroLength();
-        if (directions.length != length)
+        if (directions.length != length) {
             revert InconsistentPairsAndDirectionsLengths(length, directions.length);
+        }
 
         uint256[] memory amounts = (swapType == SwapType.FixedInputs)
             ? getAmountsOut(fixedSideAmount, pairs, directions)

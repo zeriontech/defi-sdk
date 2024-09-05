@@ -21,9 +21,7 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { ICaller } from "../interfaces/ICaller.sol";
 import { Base } from "../shared/Base.sol";
-import { ActionType } from "../shared/Enums.sol";
-import { HighInputBalanceChange, ZeroTarget } from "../shared/Errors.sol";
-import { AbsoluteTokenAmount } from "../shared/Structs.sol";
+import { ZeroTarget } from "../shared/Errors.sol";
 import { TokensHandler } from "../shared/TokensHandler.sol";
 
 /**

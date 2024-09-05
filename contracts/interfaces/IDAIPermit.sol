@@ -31,5 +31,5 @@ interface IDAIPermit is IERC20 {
         bytes32 s
     ) external;
 
-    function nonces(address holder) external view returns (uint256);
+    function nonces(address holder) external view returns (uint256 nonce);
 }

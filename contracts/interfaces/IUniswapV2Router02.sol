@@ -24,9 +24,9 @@ pragma solidity 0.8.12;
  */
 interface IUniswapV2Router02 {
     function swapExactETHForTokens(
-        uint256,
-        address[] calldata,
-        address,
-        uint256
+        uint256 amountOutMin,
+        address[] calldata path,
+        address to,
+        uint256 deadline
     ) external payable;
 }
