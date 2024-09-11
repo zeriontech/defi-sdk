@@ -101,6 +101,9 @@ const config: HardhatUserConfig = {
     scroll: {
       url: 'https://rpc.zerion.io/v1/scroll',
     },
+    taiko: {
+      url: 'https://rpc.zerion.io/v1/taiko',
+    },
     zora: {
       url: 'https://rpc.zora.energy',
     },
@@ -122,6 +125,7 @@ const config: HardhatUserConfig = {
       polygon: process.env.POLYGON_API_KEY ? process.env.POLYGON_API_KEY.toString() : '',
       'polygon-zkevm': process.env.POLYGON_ZKEVM_API_KEY ? process.env.POLYGON_ZKEVM_API_KEY.toString() : '',
       scroll: process.env.SCROLL_API_KEY ? process.env.SCROLL_API_KEY.toString() : '',
+      taiko: process.env.TAIKO_API_KEY ? process.env.TAIKO_API_KEY.toString() : '',
       zora: "zora",
     },
     customChains: [
@@ -171,6 +175,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://api.routescan.io/v2/network/mainnet/evm/7777777/etherscan",
           browserURL: "https://zorascan.xyz"
+        }
+      },
+      {
+        network: "taiko",
+        chainId: 167000,
+        urls: {
+          apiURL: "https://api.taikoscan.io/api",
+          browserURL: "https://taikoscan.io"
         }
       },
     ],
