@@ -10,10 +10,10 @@ try {
     console.log(`Working with chainId ${chainId}`);
 
     // We get the contract to deploy
-    const Contract = await ethers.getContractFactory('UniswapCaller');
+    const Contract = await ethers.getContractFactory('UniswapV2Caller');
     const contract = await Contract.deploy(deploymentAddresses.weth[chainId]);
 
-    console.log(`${'UniswapCaller'} deployed to: ${contract.address}`);
+    console.log(`${'UniswapV2Caller'} deployed to: ${contract.address}`);
 
     return contract.address;
   })();
