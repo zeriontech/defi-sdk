@@ -32,7 +32,7 @@ import { Weth } from "../shared/Weth.sol";
 /**
  * @title Uniswap caller that executes swaps on UniswapV2-like pools
  */
-contract UniswapCaller is ICaller, TokensHandler, Weth {
+contract UniswapV2Caller is ICaller, TokensHandler, Weth {
     address internal constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
     /**
