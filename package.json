@@ -19,7 +19,7 @@
     "deploy:router:truffle-dashboard": "npx hardhat run scripts/1_deploy_router.js --network truffle-dashboard",
     "initialize:router:truffle-dashboard": "npx hardhat run scripts/2_setup_router_fee.js --network truffle-dashboard",
     "deploy:univ2caller:truffle-dashboard": "npx hardhat run scripts/3_deploy_uniswap_v2_caller.js --network truffle-dashboard",
-    "verify": "npx hardhat run scripts/4_verify.js --network zora",
+    "verify": "npx hardhat run scripts/4_verify.js --network taiko",
     "docs:serve": "npx @techdocs/cli serve:mkdocs -p 3333"
   },
   "lint-staged": {

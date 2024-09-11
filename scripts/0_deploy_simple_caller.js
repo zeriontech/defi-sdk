@@ -1,7 +1,7 @@
 import deployContract from './deployContract';
 
 try {
-  console.log('Make sure 0x014040C6A9cd6366f8fa858535b7DdfAc507dB20 is used and nonce is 1');
+  console.log('Make sure 0x161b29D1919D4E06b53eE449376181B5082b30B9 is used and nonce is 3');
   deployContract('SimpleCaller');
 } catch (error) {
   console.error(error);
