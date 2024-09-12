@@ -15,11 +15,11 @@
     "lint": "npm run lint:solhint && npm run lint:eslint",
     "slither": "slither . --filter-paths \"node_modules\"",
     "truffle-dashboard": "npx truffle dashboard",
-    "deploy:sc:truffle-dashboard": "npx hardhat run scripts/0_deploy_simple_caller.js --network truffle-dashboard",
-    "deploy:router:truffle-dashboard": "npx hardhat run scripts/1_deploy_router.js --network truffle-dashboard",
-    "initialize:router:truffle-dashboard": "npx hardhat run scripts/2_setup_router_fee.js --network truffle-dashboard",
-    "deploy:univ2caller:truffle-dashboard": "npx hardhat run scripts/3_deploy_uniswap_v2_caller.js --network truffle-dashboard",
-    "verify": "npx hardhat run scripts/4_verify.js --network taiko",
+    "deploy:router": "npx hardhat run scripts/1_deploy_router.js --network truffle-dashboard",
+    "deploy:sc": "npx hardhat run scripts/0_deploy_simple_caller.js --network truffle-dashboard",
+    "deploy:univ2caller": "npx hardhat run scripts/3_deploy_uniswap_v2_caller.js --network truffle-dashboard",
+    "initialize:router": "npx hardhat run scripts/2_setup_router_fee.js --network truffle-dashboard",
+    "verify": "npx hardhat run scripts/4_verify.js --network mantle",
     "docs:serve": "npx @techdocs/cli serve:mkdocs -p 3333"
   },
   "lint-staged": {
