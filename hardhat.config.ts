@@ -89,6 +89,9 @@ const config: HardhatUserConfig = {
     mantle: {
       url: 'https://rpc.zerion.io/v1/mantle',
     },
+    mode: {
+      url: 'https://rpc.zerion.io/v1/mode',
+    },
     opera: {
       url: 'https://rpc.zerion.io/v1/fantom',
     },
@@ -124,6 +127,7 @@ const config: HardhatUserConfig = {
       linea: process.env.LINEA_API_KEY ? process.env.LINEA_API_KEY.toString() : '',
       mainnet: process.env.ETHEREUM_API_KEY ? process.env.ETHEREUM_API_KEY.toString() : '',
       mantle: process.env.MANTLE_API_KEY ? process.env.MANTLE_API_KEY.toString() : '',
+      mode: 'mode',
       opera: process.env.FANTOM_API_KEY ? process.env.FANTOM_API_KEY.toString() : '',
       optimisticEthereum: process.env.OPTIMISM_API_KEY ? process.env.OPTIMISM_API_KEY.toString() : '',
       polygon: process.env.POLYGON_API_KEY ? process.env.POLYGON_API_KEY.toString() : '',
@@ -195,6 +199,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://api.mantlescan.xyz/api",
           browserURL: "https://mantlescan.xyz"
+        }
+      },
+      {
+        network: "mode",
+        chainId: 34443,
+        urls: {
+          apiURL: "https://explorer.mode.network/api",
+          browserURL: "https://explorer.mode.network"
         }
       },
     ],
