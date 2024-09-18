@@ -304,7 +304,7 @@ describe('UniswapV2Caller', () => {
     ).to.be.reverted;
   });
 
-  it.only('should do dai -> eth trade', async () => {
+  it('should do dai -> eth trade', async () => {
     await dai.approve(router.address, ethers.utils.parseUnits('500', 18));
 
     await execute(
