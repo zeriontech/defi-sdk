@@ -61,6 +61,9 @@ const deploymentAddresses = {
     7777777: '0xe76BA87E04555e1a5afcCb0c8c5AC4d0b29e3dBE',
     666666666: '0xe76BA87E04555e1a5afcCb0c8c5AC4d0b29e3dBE',
   },
+  uniswapV3Caller: {
+    8453: '0x05Bdc1AED3f648424efA4b76a96d6294b788f416',
+  },
   weth: {
     56: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
     100: '0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d',
