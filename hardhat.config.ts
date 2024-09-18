@@ -36,7 +36,8 @@ const config: HardhatUserConfig = {
     // },
     hardhat: {
       forking: {
-        url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+        // url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+        url: "https://rpc.zerion.io/v1/ethereum"
       },
       blockGasLimit: 10000000,
       gas: 10000000,
@@ -123,7 +124,7 @@ const config: HardhatUserConfig = {
       blast: process.env.BLAST_API_KEY ? process.env.BLAST_API_KEY.toString() : '',
       bsc: process.env.BSC_API_KEY ? process.env.BSC_API_KEY.toString() : '',
       celo: process.env.CELO_API_KEY ? process.env.CELO_API_KEY.toString() : '',
-      gnosis: process.env.GNOSIS_API_KEY ? process.env.GNOSIS_API_KEY.toString() : '',
+      xdai: process.env.GNOSIS_API_KEY ? process.env.GNOSIS_API_KEY.toString() : '',
       linea: process.env.LINEA_API_KEY ? process.env.LINEA_API_KEY.toString() : '',
       mainnet: process.env.ETHEREUM_API_KEY ? process.env.ETHEREUM_API_KEY.toString() : '',
       mantle: process.env.MANTLE_API_KEY ? process.env.MANTLE_API_KEY.toString() : '',

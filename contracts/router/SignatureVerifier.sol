@@ -21,16 +21,7 @@ import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/draft-EIP712.
 
 import { ISignatureVerifier } from "../interfaces/ISignatureVerifier.sol";
 import { UsedHash } from "../shared/Errors.sol";
-import {
-    AbsoluteTokenAmount,
-    AccountSignature,
-    ProtocolFeeSignature,
-    Fee,
-    Input,
-    Permit,
-    SwapDescription,
-    TokenAmount
-} from "../shared/Structs.sol";
+import { AbsoluteTokenAmount, Fee, Input, Permit, SwapDescription, TokenAmount } from "../shared/Structs.sol";
 
 contract SignatureVerifier is ISignatureVerifier, EIP712 {
     mapping(bytes32 => bool) private isHashUsed_;
@@ -175,7 +166,7 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
      * @param output Outut described in `hashDada()` function
      * @param swapDescription Swap parameters described in `hashDada()` function
      * @param saltOrDeadline Salt/deadline parameter preventing double-spending
-     * @return `execute()` function data hashed
+     * @return hashedData `execute()` function data hashed
      */
     function hash(
         bytes32 typehash,
@@ -183,7 +174,7 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
         AbsoluteTokenAmount memory output,
         SwapDescription memory swapDescription,
         uint256 saltOrDeadline
-    ) internal pure returns (bytes32) {
+    ) internal pure returns (bytes32 hashedData) {
         return
             keccak256(
                 abi.encode(
@@ -198,17 +189,19 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
 
     /**
      * @param input Input struct to be hashed
-     * @return Hashed Input structs array
+     * @return hashedInput Hashed Input structs array
      */
-    function hash(Input memory input) internal pure returns (bytes32) {
+    function hash(Input memory input) internal pure returns (bytes32 hashedInput) {
         return keccak256(abi.encode(INPUT_TYPEHASH, hash(input.tokenAmount), hash(input.permit)));
     }
 
     /**
      * @param tokenAmount TokenAmount struct to be hashed
-     * @return Hashed TokenAmount struct
+     * @return hashedTokenAmount Hashed TokenAmount struct
      */
-    function hash(TokenAmount memory tokenAmount) internal pure returns (bytes32) {
+    function hash(
+        TokenAmount memory tokenAmount
+    ) internal pure returns (bytes32 hashedTokenAmount) {
         return
             keccak256(
                 abi.encode(
@@ -222,9 +215,9 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
 
     /**
      * @param permit Permit struct to be hashed
-     * @return Hashed Permit struct
+     * @return hashedPermit Hashed Permit struct
      */
-    function hash(Permit memory permit) internal pure returns (bytes32) {
+    function hash(Permit memory permit) internal pure returns (bytes32 hashedPermit) {
         return
             keccak256(
                 abi.encode(
@@ -237,9 +230,11 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
 
     /**
      * @param absoluteTokenAmount AbsoluteTokenAmount struct to be hashed
-     * @return Hashed AbsoluteTokenAmount struct
+     * @return hashedAbsoluteTokenAmount Hashed AbsoluteTokenAmount struct
      */
-    function hash(AbsoluteTokenAmount memory absoluteTokenAmount) internal pure returns (bytes32) {
+    function hash(
+        AbsoluteTokenAmount memory absoluteTokenAmount
+    ) internal pure returns (bytes32 hashedAbsoluteTokenAmount) {
         return
             keccak256(
                 abi.encode(
@@ -252,9 +247,11 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
 
     /**
      * @param swapDescription SwapDescription struct to be hashed
-     * @return Hashed SwapDescription struct
+     * @return hashedSwapDescription Hashed SwapDescription struct
      */
-    function hash(SwapDescription memory swapDescription) internal pure returns (bytes32) {
+    function hash(
+        SwapDescription memory swapDescription
+    ) internal pure returns (bytes32 hashedSwapDescription) {
         return
             keccak256(
                 abi.encode(
@@ -271,9 +268,9 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
 
     /**
      * @param fee Fee struct to be hashed
-     * @return Hashed Fee struct
+     * @return hashedFee Hashed Fee struct
      */
-    function hash(Fee memory fee) internal pure returns (bytes32) {
+    function hash(Fee memory fee) internal pure returns (bytes32 hashedFee) {
         return keccak256(abi.encode(FEE_TYPEHASH, fee.share, fee.beneficiary));
     }
 }

@@ -16,6 +16,12 @@ try {
         deploymentAddresses.weth[chainId],
       ],
     });
+    await hre.run('verify:verify', {
+      address: deploymentAddresses.uniswapV3Caller[chainId],
+      constructorArguments: [
+        deploymentAddresses.weth[chainId],
+      ],
+    });
   })();
 } catch (error) {
   console.error(error);

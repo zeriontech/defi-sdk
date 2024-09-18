@@ -21,14 +21,14 @@ pragma solidity 0.8.12;
  * @title Abstract contract storing Wrapped Ether address for the current chain
  */
 abstract contract Weth {
-    address private immutable weth_;
+    address private immutable WETH;
 
     /**
      * @notice Sets Wrapped Ether address for the current chain
      * @param weth Wrapped Ether address
      */
     constructor(address weth) {
-        weth_ = weth;
+        WETH = weth;
     }
 
     /**
@@ -36,6 +36,6 @@ abstract contract Weth {
      * @return weth Wrapped Ether address
      */
     function getWeth() public view returns (address weth) {
-        return weth_;
+        return WETH;
     }
 }

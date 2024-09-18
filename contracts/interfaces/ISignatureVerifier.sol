@@ -17,9 +17,6 @@
 
 pragma solidity 0.8.12;
 
-import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
-import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-
 import { AbsoluteTokenAmount, Input, SwapDescription } from "../shared/Structs.sol";
 
 interface ISignatureVerifier {

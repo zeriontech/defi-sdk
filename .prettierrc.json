@@ -1,4 +1,5 @@
 {
+  "plugins": ["prettier-plugin-solidity"],
   "overrides": [
     {
       "files": "*.sol",
@@ -8,7 +9,6 @@
         "useTabs": false,
         "singleQuote": false,
         "bracketSpacing": true,
-        "explicitTypes": "always",
         "trailingComma": "none"
       }
     },
