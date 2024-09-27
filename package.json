@@ -20,7 +20,7 @@
     "deploy:univ2caller": "npx hardhat run scripts/deploy_uniswap_v2_caller.js --network truffle-dashboard",
     "deploy:univ3caller": "npx hardhat run scripts/deploy_uniswap_v3_caller.js --network truffle-dashboard",
     "initialize:router": "npx hardhat run scripts/setup_router_fee.js --network truffle-dashboard",
-    "verify": "npx hardhat run scripts/verify.js --network base",
+    "verify": "npx hardhat run scripts/verify.js --network xlayer",
     "docs:serve": "npx @techdocs/cli serve:mkdocs -p 3333"
   },
   "lint-staged": {

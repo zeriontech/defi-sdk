@@ -111,6 +111,9 @@ const config: HardhatUserConfig = {
     taiko: {
       url: 'https://rpc.zerion.io/v1/taiko',
     },
+    xlayer: {
+      url: 'https://rpc.zerion.io/v1/okbchain',
+    },
     zora: {
       url: 'https://rpc.zora.energy',
     },
@@ -135,6 +138,7 @@ const config: HardhatUserConfig = {
       'polygon-zkevm': process.env.POLYGON_ZKEVM_API_KEY ? process.env.POLYGON_ZKEVM_API_KEY.toString() : '',
       scroll: process.env.SCROLL_API_KEY ? process.env.SCROLL_API_KEY.toString() : '',
       taiko: process.env.TAIKO_API_KEY ? process.env.TAIKO_API_KEY.toString() : '',
+      xlayer: process.env.XLAYER_API_KEY ? process.env.XLAYER_API_KEY.toString() : '',
       zora: "zora",
     },
     customChains: [
@@ -208,6 +212,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://explorer.mode.network/api",
           browserURL: "https://explorer.mode.network"
+        }
+      },
+      {
+        network: "xlayer",
+        chainId: 196,
+        urls: {
+          apiURL: "https://www.oklink.com/api/v5/explorer/contract/verify-source-code-plugin/XLAYER",
+          browserURL: "https://www.okx.com/web3/explorer/xlayer"
         }
       },
     ],
