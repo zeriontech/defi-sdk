@@ -2,7 +2,7 @@
 
 ## How to add your protocol to DeFi SDK
 
-Once a protocol is added to **ProtocolAdapterRegistry** contract, it will immediately appear in all the interfaces that use DeFi SDK \(including Zerion\). In order to add protocol to to DeFi SDK one has to implement the following contracts.
+Once a protocol is added to **ProtocolAdapterRegistry** contract, it will immediately appear in all the interfaces that use DeFi SDK \(including Zerion\). In order to add protocol to the DeFi SDK one has to implement the following contracts.
 
 ### `ProtocolAdapter`
 
