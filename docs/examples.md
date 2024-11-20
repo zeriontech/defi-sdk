@@ -66,7 +66,7 @@ on the [api.zerion.eth](https://etherscan.io/address/0x06fe76b2f432fdfecaef1a7d4
 }]
 ```
 
-## Make sense of tokens like `UNI-V1 ETH-cDAI`
+## Make sense of tokens like `UNI-V1` and `ETH-cDAI`
 
 <p align="center">
   <img src="https://i.ibb.co/ZHq39S3/derivatives.png" width="650">
@@ -79,7 +79,7 @@ Sometimes, a DeFi token contains several other tokens, and to calculate their pr
 getFinalFullTokenBalance('0x34E89740adF97C3A9D3f63Cc2cE4a914382c230b', "Uniswap V1 Pool Token")
 ```
 
- and fetch the decomposition of UNI-token into ERC20 tokens, like `ETH` and `DAI`
+ and fetch the decomposition of UNI token into ERC20 tokens, like `ETH` and `DAI`
 
 ```javascript
 0.98 ETH
@@ -95,7 +95,7 @@ In case you want to get account balances across all supported DeFi protocols, yo
 getBalances('0x0ef51b7dac3933b8109482e7d910c21848e45da0f') 
 ```
 
-and obtain all balances for a given account. The response from the smart-contract will contain information about each of the protocols
+and obtain all balances for a given account. The response from the smart contract will contain information about each of the protocols
 
 ```javascript
 100 DAI // collateral on Compound
