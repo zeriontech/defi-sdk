@@ -66,4 +66,4 @@ Remove names of unused arguments.
 
 Use `npx prettier ./contracts/**/*.sol --write` to fix linter issues.
 
-Add tests for interactions it `test/` directory, use Uniswap, Weth, and other required adapters.
+Add tests for interactions in `test/` directory, use Uniswap, WETH, and other required adapters.
