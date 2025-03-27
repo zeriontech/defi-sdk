@@ -1,7 +1,7 @@
 import { Wallet } from "zksync-web3";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 
-async function deployAsyncZkSyncEra(hre, path, contractName) {
+async function deployAsyncZkSyncEra(hre, path, contractName, args) {
   // // load wallet private key from env file
   const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "";
 
@@ -12,7 +12,7 @@ async function deployAsyncZkSyncEra(hre, path, contractName) {
   const deployer = new Deployer(hre, wallet);
   const artifact = await deployer.loadArtifact(contractName);
 
-  const contract = await deployer.deploy(artifact);
+  const contract = await deployer.deploy(artifact, args);
 
   console.log(`${contractName} deployed to: ${contract.address}`);
 
@@ -23,15 +23,15 @@ async function deployAsyncZkSyncEra(hre, path, contractName) {
   await hre.run("verify:verify", {
     address: contract.address,
     contract: contractFullyQualifedName,
-    constructorArguments: [],
+    constructorArguments: args,
     bytecode: artifact.bytecode,
   });
 
   return contract.address;
 }
 
-const deployContractZkSyncEra = (hre, path, contractName) => {
-  return deployAsyncZkSyncEra(hre, path, contractName);
+const deployContractZkSyncEra = (hre, path, contractName, args = []) => {
+  return deployAsyncZkSyncEra(hre, path, contractName, args);
 };
 
 export default deployContractZkSyncEra;

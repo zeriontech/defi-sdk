@@ -11,7 +11,7 @@ import * as ContractArtifact from "../artifacts-zk/contracts/router/Router.sol/R
 export default async function (hre: HardhatRuntimeEnvironment) {
   try {
     // @ts-ignore
-    const provider = new Provider(hre.userConfig.networks?.zkSyncEra?.url);
+    const provider = new Provider(hre.userConfig.networks?.zero?.url);
 
     const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "";
     const signer = new ethers.Wallet(PRIVATE_KEY, provider);
@@ -27,15 +27,16 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     );
 
     console.log(`Working with chainId ${chainId}`);
+    console.log(`RPC URL is ${hre.userConfig.networks?.zero?.url}`);
 
-    const feeSignerTx = await router.functions.setProtocolFeeSigner(
-      '0x1e126951a7CB895543E4E4c7B2D1398b3C3d09fC',
-    );
-    console.log(`Setting fee signer tx hash: ${feeSignerTx.hash}`);
+    // const feeSignerTx = await router.functions.setProtocolFeeSigner(
+    //   '0x1e126951a7CB895543E4E4c7B2D1398b3C3d09fC',
+    // );
+    // console.log(`Setting fee signer tx hash: ${feeSignerTx.hash}`);
 
     const feeDefaultTx = await router.functions.setProtocolFeeDefault(
       [
-        '5000000000000000',
+        '8000000000000000',
         deploymentAddresses.feeBeneficiaries[chainId],
       ],
     );
