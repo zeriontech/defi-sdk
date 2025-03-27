@@ -8,9 +8,9 @@ import '@nomicfoundation/hardhat-verify';
 import 'hardhat-tracer';
 import 'hardhat-docgen';
 import 'solidity-coverage';
-// import '@matterlabs/hardhat-zksync-deploy';
-// import '@matterlabs/hardhat-zksync-solc';
-// import '@matterlabs/hardhat-zksync-verify';
+import '@matterlabs/hardhat-zksync-deploy';
+import '@matterlabs/hardhat-zksync-solc';
+import '@matterlabs/hardhat-zksync-verify';
 
 
 const config: HardhatUserConfig = {
@@ -23,20 +23,30 @@ const config: HardhatUserConfig = {
       },
     },
   },
-  // zksolc: {
-  //   version: 'latest', // Uses latest available in https://github.com/matter-labs/zksolc-bin/
-  //   settings: {},
-  // },
+  zksolc: {
+    version: '1.5.6', // Uses latest available in https://github.com/matter-labs/zksolc-bin/
+    settings: {},
+  },
   networks: {
-    // zkSyncEra: {
-    //   zksync: true,
-    //   url: 'https://mainnet.era.zksync.io',
-    //   ethNetwork: 'mainnet',
-    //   verifyURL: 'https://explorer.zksync.io/contracts/verify',
-    // },
+    zkSyncEra: {
+      zksync: true,
+      url: 'https://mainnet.era.zksync.io',
+      ethNetwork: 'mainnet',
+      verifyURL: 'https://zksync2-mainnet-explorer.zksync.io/contract_verification',
+    },
+    abstract: {
+      zksync: true,
+      url: 'https://rpc.zerion.io/v1/abstract',
+      ethNetwork: 'mainnet',
+      verifyURL: 'https://api.abscan.org/api',
+    },
+    zero: {
+      zksync: true,
+      url: 'https://rpc.zerion.io/v1/zero',
+      ethNetwork: 'mainnet',
+    },
     hardhat: {
       forking: {
-        // url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
         url: "https://rpc.zerion.io/v1/ethereum"
       },
       blockGasLimit: 10000000,
@@ -69,6 +79,9 @@ const config: HardhatUserConfig = {
     base: {
       url: 'https://rpc.zerion.io/v1/base',
     },
+    berachain: {
+      url: 'https://rpc.zerion.io/v1/berachain',
+    },
     blast: {
       url: 'https://rpc.zerion.io/v1/blast',
     },
@@ -80,6 +93,9 @@ const config: HardhatUserConfig = {
     },
     gnosis: {
       url: 'https://rpc.zerion.io/v1/xdai',
+    },
+    ink: {
+      url: 'https://rpc.zerion.io/v1/ink',
     },
     linea: {
       url: 'https://rpc.zerion.io/v1/linea',
@@ -108,26 +124,35 @@ const config: HardhatUserConfig = {
     scroll: {
       url: 'https://rpc.zerion.io/v1/scroll',
     },
+    soneium: {
+      url: 'https://rpc.zerion.io/v1/soneium',
+    },
     taiko: {
       url: 'https://rpc.zerion.io/v1/taiko',
+    },
+    unichain: {
+      url: 'https://rpc.zerion.io/v1/unichain',
     },
     xlayer: {
       url: 'https://rpc.zerion.io/v1/okbchain',
     },
     zora: {
-      url: 'https://rpc.zora.energy',
+      url: 'https://rpc.zerion.io/v1/zora',
     },
   },
   etherscan: {
     apiKey: {
+      abstract: process.env.ABSTRACT_API_KEY ? process.env.ABSTRACT_API_KEY.toString() : '',
       arbitrumOne: process.env.ARBITRUM_API_KEY ? process.env.ARBITRUM_API_KEY.toString() : '',
       aurora: 'no',
       avalanche: process.env.AVALANCHE_API_KEY ? process.env.AVALANCHE_API_KEY.toString() : '',
       base: process.env.BASE_API_KEY ? process.env.BASE_API_KEY.toString() : '',
+      berachain: process.env.BERACHAIN_API_KEY ? process.env.BERACHAIN_API_KEY.toString() : '',
       blast: process.env.BLAST_API_KEY ? process.env.BLAST_API_KEY.toString() : '',
       bsc: process.env.BSC_API_KEY ? process.env.BSC_API_KEY.toString() : '',
       celo: process.env.CELO_API_KEY ? process.env.CELO_API_KEY.toString() : '',
       xdai: process.env.GNOSIS_API_KEY ? process.env.GNOSIS_API_KEY.toString() : '',
+      ink: 'ink',
       linea: process.env.LINEA_API_KEY ? process.env.LINEA_API_KEY.toString() : '',
       mainnet: process.env.ETHEREUM_API_KEY ? process.env.ETHEREUM_API_KEY.toString() : '',
       mantle: process.env.MANTLE_API_KEY ? process.env.MANTLE_API_KEY.toString() : '',
@@ -137,9 +162,12 @@ const config: HardhatUserConfig = {
       polygon: process.env.POLYGON_API_KEY ? process.env.POLYGON_API_KEY.toString() : '',
       'polygon-zkevm': process.env.POLYGON_ZKEVM_API_KEY ? process.env.POLYGON_ZKEVM_API_KEY.toString() : '',
       scroll: process.env.SCROLL_API_KEY ? process.env.SCROLL_API_KEY.toString() : '',
+      soneium: 'soneium',
       taiko: process.env.TAIKO_API_KEY ? process.env.TAIKO_API_KEY.toString() : '',
       xlayer: process.env.XLAYER_API_KEY ? process.env.XLAYER_API_KEY.toString() : '',
-      zora: "zora",
+      unichain: 'unichain',
+      zora: 'zora',
+      zero: 'zero',
     },
     customChains: [
       {
@@ -147,7 +175,7 @@ const config: HardhatUserConfig = {
         chainId: 42220,
         urls: {
           apiURL: 'https://api.celoscan.io/api',
-          browserURL: 'https://celoscan.io/'
+          browserURL: 'https://celoscan.io'
         },
       },
       {
@@ -155,7 +183,7 @@ const config: HardhatUserConfig = {
         chainId: 81457,
         urls: {
           apiURL: 'https://api.blastscan.io/api',
-          browserURL: 'https://blastscan.io/'
+          browserURL: 'https://blastscan.io'
         },
       },
       {
@@ -163,7 +191,7 @@ const config: HardhatUserConfig = {
         chainId: 534352,
         urls: {
           apiURL: 'https://api.scrollscan.com/api',
-          browserURL: 'https://scrollscan.com/'
+          browserURL: 'https://scrollscan.com'
         },
       },
       {
@@ -171,7 +199,7 @@ const config: HardhatUserConfig = {
         chainId: 59144,
         urls: {
           apiURL: 'https://api.lineascan.build/api',
-          browserURL: 'https://api.lineascan.build/'
+          browserURL: 'https://lineascan.build'
         },
       },
       {
@@ -179,7 +207,7 @@ const config: HardhatUserConfig = {
         chainId: 1101,
         urls: {
           apiURL: 'https://api-zkevm.polygonscan.com/api',
-          browserURL: 'https://api-zkevm.polygonscan.com/'
+          browserURL: 'https://zkevm.polygonscan.com'
         },
       },
       {
@@ -220,6 +248,54 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://www.oklink.com/api/v5/explorer/contract/verify-source-code-plugin/XLAYER",
           browserURL: "https://www.okx.com/web3/explorer/xlayer"
+        }
+      },
+      {
+        network: "zero",
+        chainId: 543210,
+        urls: {
+          apiURL: "https://zero-network.calderaexplorer.xyz/verification/contract_verification",
+          browserURL: "https://zero-network.calderaexplorer.xyz"
+        }
+      },
+      {
+        network: "abstract",
+        chainId: 2741,
+        urls: {
+          apiURL: "https://api.abscan.org/api",
+          browserURL: "https://abscan.org"
+        }
+      },
+      {
+        network: "berachain",
+        chainId: 80094,
+        urls: {
+          apiURL: "https://api.berascan.com/api",
+          browserURL: "https://berascan.com"
+        }
+      },
+      {
+        network: "unichain",
+        chainId: 130,
+        urls: {
+          apiURL: "https://unichain.blockscout.com/api",
+          browserURL: "https://unichain.blockscout.com"
+        }
+      },
+      {
+        network: "soneium",
+        chainId: 1868,
+        urls: {
+          apiURL: "https://soneium.blockscout.com/api",
+          browserURL: "https://soneium.blockscout.com"
+        }
+      },
+      {
+        network: "ink",
+        chainId: 57073,
+        urls: {
+          apiURL: "https://explorer.inkonchain.com/api",
+          browserURL: "https://explorer.inkonchain.com"
         }
       },
     ],

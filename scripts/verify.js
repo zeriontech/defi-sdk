@@ -9,6 +9,10 @@ try {
     });
     await hre.run('verify:verify', {
       address: deploymentAddresses.simpleCaller[chainId],
+      constructorArguments: [
+        deploymentAddresses.universalRouter[chainId],
+        deploymentAddresses.permit2[chainId],
+      ],
     });
     await hre.run('verify:verify', {
       address: deploymentAddresses.uniswapV2Caller[chainId],
