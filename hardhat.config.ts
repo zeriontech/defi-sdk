@@ -127,6 +127,9 @@ const config: HardhatUserConfig = {
     soneium: {
       url: 'https://rpc.zerion.io/v1/soneium',
     },
+    sonic: {
+      url: 'https://rpc.zerion.io/v1/sonic',
+    },
     taiko: {
       url: 'https://rpc.zerion.io/v1/taiko',
     },
@@ -163,6 +166,7 @@ const config: HardhatUserConfig = {
       'polygon-zkevm': process.env.POLYGON_ZKEVM_API_KEY ? process.env.POLYGON_ZKEVM_API_KEY.toString() : '',
       scroll: process.env.SCROLL_API_KEY ? process.env.SCROLL_API_KEY.toString() : '',
       soneium: 'soneium',
+      sonic: process.env.SONIC_API_KEY ? process.env.SONIC_API_KEY.toString() : '',
       taiko: process.env.TAIKO_API_KEY ? process.env.TAIKO_API_KEY.toString() : '',
       xlayer: process.env.XLAYER_API_KEY ? process.env.XLAYER_API_KEY.toString() : '',
       unichain: 'unichain',
@@ -288,6 +292,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://soneium.blockscout.com/api",
           browserURL: "https://soneium.blockscout.com"
+        }
+      },
+      {
+        network: "sonic",
+        chainId: 146,
+        urls: {
+          apiURL: "https://api.sonicscan.org/api",
+          browserURL: "https://sonicscan.org"
         }
       },
       {
