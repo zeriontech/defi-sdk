@@ -1,0 +1,48 @@
+name: Automated Contract Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: 'Network name for deployment'
+        required: false
+        default: 'truffle-dashboard'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile contracts
+        run: npm run compile
+
+      - name: Deploy Router
+        run: npm run deploy:router -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }}
+
+      - name: Deploy SimpleCaller
+        run: npm run deploy:sc -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }}
+
+      - name: Deploy UniswapV2Caller
+        run: npm run deploy:univ2caller -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }}
+
+      - name: Deploy Safe Proxy
+        run: npm run deploy:safe -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }}
+
+      - name: Deploy SimpleCallerWithPermit2
+        run: npm run deploy:scwp2 -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }}
+
+      - name: Initialize Router
+        run: npm run initialize:router -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }}
+
+      - name: Verify Contracts
+        run: npm run verify -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }} 

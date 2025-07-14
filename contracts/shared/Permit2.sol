@@ -25,7 +25,7 @@ abstract contract Permit2 {
     address private immutable PERMIT2;
 
     /**
-     * @notice Sets Wrapped Ether address for the current chain
+     * @notice Sets Universal Router and Permit2 addresses for the current chain
      * @param universalRouter Universal Router address
      * @param permit2 Permit2 address
      */
