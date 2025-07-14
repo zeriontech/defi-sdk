@@ -2,13 +2,12 @@
   "extends": "solhint:all",
   "plugins": ["prettier"],
   "rules": {
-    "mark-callable-contracts": ["off"],
     "reason-string": ["error", { "maxLength": 50 }],
     "function-max-lines": ["error", 99],
-    "max-line-length": ["off"],
+    "max-line-length": "off",
     "compiler-version": ["error", "0.8.12"],
-    "private-vars-leading-underscore": ["off"],
-    "const-name-snakecase": ["off"],
+    "private-vars-leading-underscore": "off",
+    "const-name-snakecase": "off",
     "func-visibility": [
       "warn",
       {
@@ -16,13 +15,14 @@
       }
     ],
     "prettier/prettier": "warn",
-    "comprehensive-interface": ["off"],
-    "foundry-test-functions": ["off"],
-    "gas-small-strings": ["off"],
-    "gas-increment-by-one": ["off"],
-    "func-named-parameters": ["off"],
-    "gas-custom-errors": ["off"],
-    "named-parameters-mapping": ["off"],
-    "gas-indexed-events": ["off"]
+    "comprehensive-interface": "off",
+    "foundry-test-functions": "off",
+    "gas-small-strings": "off",
+    "gas-increment-by-one": "off",
+    "func-named-parameters": "off",
+    "gas-custom-errors": "off",
+    "named-parameters-mapping": "off",
+    "gas-indexed-events": "off",
+    "use-natspec": "off"
   }
 }
