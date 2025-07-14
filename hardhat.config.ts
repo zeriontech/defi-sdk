@@ -2,15 +2,15 @@ require('@babel/register');
 require('core-js');
 require('regenerator-runtime/runtime');
 require('dotenv').config();
-import { HardhatUserConfig } from 'hardhat/config';
 import '@nomiclabs/hardhat-waffle';
 import '@nomicfoundation/hardhat-verify';
 import 'hardhat-tracer';
 import 'hardhat-docgen';
 import 'solidity-coverage';
-import '@matterlabs/hardhat-zksync-deploy';
-import '@matterlabs/hardhat-zksync-solc';
-import '@matterlabs/hardhat-zksync-verify';
+import { HardhatUserConfig } from 'hardhat/config';
+// import '@matterlabs/hardhat-zksync-deploy';
+// import '@matterlabs/hardhat-zksync-solc';
+// import '@matterlabs/hardhat-zksync-verify';
 
 
 const config: HardhatUserConfig = {
@@ -23,28 +23,28 @@ const config: HardhatUserConfig = {
       },
     },
   },
-  zksolc: {
-    version: '1.5.6', // Uses latest available in https://github.com/matter-labs/zksolc-bin/
-    settings: {},
-  },
+  // zksolc: {
+  //   version: '1.5.6', // Uses latest available in https://github.com/matter-labs/zksolc-bin/
+  //   settings: {},
+  // },
   networks: {
-    zkSyncEra: {
-      zksync: true,
-      url: 'https://mainnet.era.zksync.io',
-      ethNetwork: 'mainnet',
-      verifyURL: 'https://zksync2-mainnet-explorer.zksync.io/contract_verification',
-    },
-    abstract: {
-      zksync: true,
-      url: 'https://rpc.zerion.io/v1/abstract',
-      ethNetwork: 'mainnet',
-      verifyURL: 'https://api.abscan.org/api',
-    },
-    zero: {
-      zksync: true,
-      url: 'https://rpc.zerion.io/v1/zero',
-      ethNetwork: 'mainnet',
-    },
+    // zkSyncEra: {
+    //   zksync: true,
+    //   url: 'https://mainnet.era.zksync.io',
+    //   ethNetwork: 'mainnet',
+    //   verifyURL: 'https://zksync2-mainnet-explorer.zksync.io/contract_verification',
+    // },
+    // abstract: {
+    //   zksync: true,
+    //   url: 'https://rpc.zerion.io/v1/abstract',
+    //   ethNetwork: 'mainnet',
+    //   verifyURL: 'https://api.abscan.org/api',
+    // },
+    // zero: {
+    //   zksync: true,
+    //   url: 'https://rpc.zerion.io/v1/zero',
+    //   ethNetwork: 'mainnet',
+    // },
     hardhat: {
       forking: {
         url: "https://rpc.zerion.io/v1/ethereum"

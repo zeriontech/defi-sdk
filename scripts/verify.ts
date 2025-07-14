@@ -1,14 +1,19 @@
-import deploymentAddresses from './deployment';
+import hre from 'hardhat';
+// @ts-ignore
+import deploymentAddresses from './deployment.json';
 
-try {
-  (async () => {
+(async () => {
+  try {
     const chainIdHex = await hre.network.provider.request({ method: 'eth_chainId' });
-    const chainId = parseInt(chainIdHex.toString(), 16).toString();
+    const chainId = parseInt(String(chainIdHex), 16).toString();
     await hre.run('verify:verify', {
       address: deploymentAddresses.router[chainId],
     });
     await hre.run('verify:verify', {
       address: deploymentAddresses.simpleCaller[chainId],
+    });
+    await hre.run('verify:verify', {
+      address: deploymentAddresses.simpleCallerWithPermit2[chainId],
       constructorArguments: [
         deploymentAddresses.universalRouter[chainId],
         deploymentAddresses.permit2[chainId],
@@ -26,8 +31,8 @@ try {
         deploymentAddresses.weth[chainId],
       ],
     });
-  })();
-} catch (error) {
-  console.error(error);
-  process.exit(1);
-}
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+})(); 

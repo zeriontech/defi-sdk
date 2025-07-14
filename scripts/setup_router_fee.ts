@@ -1,15 +1,21 @@
-import deploymentAddresses from './deployment';
+import hre from 'hardhat';
+// @ts-ignore
+import deploymentAddresses from './deployment.json';
 
-try {
-  (async () => {
-    console.log('Make sure 0x161b29D1919D4E06b53eE449376181B5082b30B9 is used and nonce is 6-7');
-
-    const Router = await ethers.getContractFactory('Router');
+(async () => {
+  try {
+    const Router = await hre.ethers.getContractFactory('Router');
     const chainIdHex = await hre.network.provider.request({ method: 'eth_chainId' });
-    const chainId = parseInt(chainIdHex.toString(), 16).toString();
-    const router = await Router.attach(deploymentAddresses.router[chainId]);
+    const chainId = parseInt(String(chainIdHex), 16).toString();
 
     console.log(`Working with chainId ${chainId}`);
+
+    if (!deploymentAddresses.router[chainId]) {
+      console.error(`No router deployment found for chainId ${chainId}`);
+      return;
+    }
+
+    const router = await Router.attach(deploymentAddresses.router[chainId]);
 
     const feeSignerTx = await router.functions.setProtocolFeeSigner(
       '0x1e126951a7CB895543E4E4c7B2D1398b3C3d09fC',
@@ -23,8 +29,8 @@ try {
       ],
     );
     console.log(`Setting fee defaults tx hash: ${feeDefaultTx.hash}`);
-  })();
-} catch (error) {
-  console.error(error);
-  process.exit(1);
-}
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+})(); 
