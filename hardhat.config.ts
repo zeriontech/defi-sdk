@@ -2,11 +2,10 @@ require('@babel/register');
 require('core-js');
 require('regenerator-runtime/runtime');
 require('dotenv').config();
-import '@nomiclabs/hardhat-waffle';
-import '@nomicfoundation/hardhat-verify';
-import 'hardhat-tracer';
+import '@nomicfoundation/hardhat-toolbox';
+// import 'hardhat-tracer';
 import 'hardhat-docgen';
-import 'solidity-coverage';
+// import 'solidity-coverage';
 import { HardhatUserConfig } from 'hardhat/config';
 // import '@matterlabs/hardhat-zksync-deploy';
 // import '@matterlabs/hardhat-zksync-solc';
@@ -59,6 +58,10 @@ const config: HardhatUserConfig = {
         },
         {
           privateKey: '0x473acc210edb35998de9dc65495bafbf0a3804950482cd2b48af7bba7046d7de',
+          balance: '10000000000000000000000',
+        },
+        {
+          privateKey: '0x473acc210edb35998de9dc65495bafbf0a3804950482cd2b48af7bba7046d7df',
           balance: '10000000000000000000000',
         },
       ]

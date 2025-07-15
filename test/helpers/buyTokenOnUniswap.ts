@@ -1,6 +1,8 @@
+import { ethers } from 'hardhat';
+import type { Signer } from 'ethers';
 import { wethAddress } from './tokens';
 
-const buyTokenOnUniswap = async (signer, tokenAddress) => {
+const buyTokenOnUniswap = async (signer: Signer, tokenAddress: string): Promise<void> => {
   const uniswapRouterAddress = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D';
   const FUTURE_TIMESTAMP = 1893456000;
   const uniswapRouter = await ethers.getContractAt(
@@ -11,12 +13,12 @@ const buyTokenOnUniswap = async (signer, tokenAddress) => {
   await uniswapRouter.swapExactETHForTokens(
     '0',
     [wethAddress, tokenAddress],
-    signer.address,
+    await signer.getAddress(),
     FUTURE_TIMESTAMP,
     {
-      value: ethers.utils.parseUnits('1', 18),
+      value: ethers.parseEther('1'),
     },
   );
 };
 
-export default buyTokenOnUniswap;
+export default buyTokenOnUniswap; 
