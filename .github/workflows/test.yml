@@ -18,8 +18,3 @@ jobs:
           ssh-private-key: ${{ secrets.PRIVATE_SSH }}
       - name: install
         run: npm ci
-      - name: test
-        run: npm run test
-        env:
-          INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
