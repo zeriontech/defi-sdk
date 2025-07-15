@@ -55,6 +55,7 @@ const config: HardhatUserConfig = {
       forking: {
         url: "https://rpc.zerion.io/v1/ethereum"
       },
+      initialBaseFeePerGas: 0,
       blockGasLimit: 10000000,
       gas: 10000000,
       allowUnlimitedContractSize: true,
