@@ -13,7 +13,7 @@ module.exports = {
         balance: '0x56BC75E2D63100000',
       },
     ],
-    fork: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    fork: `https://rpc.zerion.io/v1/ethereum`,
     gasLimit: 0x1fffffffffffff,
   },
   mocha: {
