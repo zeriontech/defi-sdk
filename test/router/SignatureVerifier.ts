@@ -1,40 +1,34 @@
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+import type { Signer } from 'ethers';
 import signTypedData from '../helpers/signTypedData';
 import hashTypedData from '../helpers/hashTypedData';
 import { ethAddress } from '../helpers/tokens';
-
-const { expect } = require('chai');
-
-const { waffle, ethers } = require('hardhat');
-const CallerArtifacts = require('../../artifacts/contracts/callers/SimpleCaller.sol/SimpleCaller.json');
-
-const { deployMockContract, provider } = waffle;
-const { AddressZero } = ethers.constants;
+import hre from 'hardhat';
 
 const AMOUNT_ABSOLUTE = 2;
 const SWAP_FIXED_INPUTS = 1;
 const EMPTY_BYTES = '0x';
 const FUTURE_TIMESTAMP = 1893456000;
 
-const zeroFee = [ethers.BigNumber.from('0'), AddressZero];
+const zeroProtocolFee = [ethers.getBigInt('0'), ethers.ZeroAddress];
+const zeroMarketplaceFee = [ethers.getBigInt('0'), ethers.ZeroAddress];
 const zeroPermit = ['0', EMPTY_BYTES];
 const zeroSignature = ['0', EMPTY_BYTES];
 
 describe('SignatureVerifier', () => {
-  let owner;
-  let notOwner;
-  let Router;
-  let mockCaller;
-  let router;
-  let wallet;
+  let owner: Signer;
+  let notOwner: Signer;
+  let Router: any;
+  let mockCaller: any;
+  let router: any;
+  let wallet: any;
 
   before(async () => {
-    [owner, notOwner] = await ethers.getSigners();
-
-    [wallet] = provider.getWallets();
+    [owner, notOwner, wallet] = await ethers.getSigners();
     Router = await ethers.getContractFactory('Router', owner);
-
-    mockCaller = await deployMockContract(owner, CallerArtifacts.abi);
-    await mockCaller.mock.callBytes.returns();
+    const MockCaller = await ethers.getContractFactory('MockCaller');
+    mockCaller = await MockCaller.deploy();
   });
 
   beforeEach(async () => {
@@ -42,6 +36,9 @@ describe('SignatureVerifier', () => {
   });
 
   it('should be correct account signature', async () => {
+    const routerAddr = await router.getAddress();
+    const walletAddr = await wallet.getAddress();
+    const mockCallerAddr = await mockCaller.getAddress();
     const typedData = {
       types: {
         AccountSignature: [
@@ -84,7 +81,7 @@ describe('SignatureVerifier', () => {
         name: 'Zerion Router',
         version: '4',
         chainId: 31337,
-        verifyingContract: router.address,
+        verifyingContract: routerAddr,
       },
       message: {
         input: {
@@ -106,14 +103,14 @@ describe('SignatureVerifier', () => {
           swapType: SWAP_FIXED_INPUTS,
           protocolFee: {
             share: '0',
-            beneficiary: AddressZero,
+            beneficiary: ethers.ZeroAddress,
           },
           marketplaceFee: {
             share: '0',
-            beneficiary: AddressZero,
+            beneficiary: ethers.ZeroAddress,
           },
-          account: wallet.address,
-          caller: mockCaller.address,
+          account: walletAddr,
+          caller: mockCallerAddr,
           callerCallData: EMPTY_BYTES,
         },
         salt: 0,
@@ -125,10 +122,10 @@ describe('SignatureVerifier', () => {
     const output = [ethAddress, '0'];
     const swapDescription = [
       SWAP_FIXED_INPUTS,
-      zeroFee,
-      zeroFee,
-      wallet.address,
-      mockCaller.address,
+      zeroProtocolFee,
+      zeroMarketplaceFee,
+      walletAddr,
+      mockCallerAddr,
       EMPTY_BYTES,
     ];
 
@@ -144,13 +141,13 @@ describe('SignatureVerifier', () => {
     // );
     const hashedData = await hashTypedData(typedData);
 
-    // eslint-disable-next-line no-unused-expressions
+     
     expect(await router.isHashUsed(hashedData)).to.be.false;
 
-    const accountSignature = [salt, ethers.utils.joinSignature(signature)];
+    const accountSignature = [salt, ethers.Signature.from(signature).serialized];
 
     // signature is valid the first time
-    await router.connect(notOwner).execute(
+    await router.execute(
       // input
       input,
       // output
@@ -163,12 +160,12 @@ describe('SignatureVerifier', () => {
       zeroSignature,
     );
 
-    // eslint-disable-next-line no-unused-expressions
+     
     expect(await router.isHashUsed(hashedData)).to.be.true;
 
     // signature is not valid twice
     await expect(
-      router.connect(notOwner).execute(
+      router.execute(
         // input
         input,
         // output
@@ -184,7 +181,7 @@ describe('SignatureVerifier', () => {
 
     // signature is not valid if change double usage protection param
     await expect(
-      router.connect(notOwner).execute(
+      router.execute(
         // input
         input,
         // output
@@ -200,6 +197,9 @@ describe('SignatureVerifier', () => {
   });
 
   it('should be correct account signature cancellation', async () => {
+    const routerAddr = await router.getAddress();
+    const walletAddr = await wallet.getAddress();
+    const mockCallerAddr = await mockCaller.getAddress();
     const typedData = {
       types: {
         AccountSignature: [
@@ -242,7 +242,7 @@ describe('SignatureVerifier', () => {
         name: 'Zerion Router',
         version: '4',
         chainId: 31337,
-        verifyingContract: router.address,
+        verifyingContract: routerAddr,
       },
       message: {
         input: {
@@ -264,52 +264,50 @@ describe('SignatureVerifier', () => {
           swapType: SWAP_FIXED_INPUTS,
           protocolFee: {
             share: '0',
-            beneficiary: AddressZero,
+            beneficiary: ethers.ZeroAddress,
           },
           marketplaceFee: {
             share: '0',
-            beneficiary: AddressZero,
+            beneficiary: ethers.ZeroAddress,
           },
-          account: wallet.address,
-          caller: mockCaller.address,
+          account: walletAddr,
+          caller: mockCallerAddr,
           callerCallData: EMPTY_BYTES,
         },
         salt: 1,
       },
     };
-    const salt = '1';
     const signature = await signTypedData(wallet, typedData);
-    const input = [[ethAddress, '0', AMOUNT_ABSOLUTE], zeroPermit];
-    const output = [ethAddress, '0'];
-    const swapDescription = [
-      SWAP_FIXED_INPUTS,
-      zeroFee,
-      zeroFee,
-      wallet.address,
-      mockCaller.address,
-      EMPTY_BYTES,
-    ];
-
-    // const hashedData = await router.hashAccountSignatureData(
-    //   // input
-    //   input,
-    //   // output
-    //   output,
-    //   // swap description
-    //   swapDescription,
-    //   // double usage protection param
-    //   salt,
-    // );
+    // Use struct objects, not arrays, for input/output/swapDescription
+    const input = {
+      tokenAmount: {
+        token: ethAddress,
+        amount: '0',
+        amountType: AMOUNT_ABSOLUTE,
+      },
+      permit: {
+        permitType: 0,
+        permitCallData: EMPTY_BYTES,
+      },
+    };
+    const output = {
+      token: ethAddress,
+      absoluteAmount: '0',
+    };
+    const swapDescription = {
+      swapType: SWAP_FIXED_INPUTS,
+      protocolFee: { share: 0n, beneficiary: ethers.ZeroAddress },
+      marketplaceFee: { share: 0n, beneficiary: ethers.ZeroAddress },
+      account: walletAddr,
+      caller: mockCallerAddr,
+      callerCallData: EMPTY_BYTES,
+    };
     const hashedData = await hashTypedData(typedData);
-
-    // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.false;
-
-    const accountSignature = [salt, ethers.utils.joinSignature(signature)];
-
+    const accountSignature = { salt: 1n, signature: ethers.Signature.from(signature).serialized };
     // signature cancellation is not possible by the owner
     await expect(
-      router.connect(notOwner).cancelAccountSignature(
+      router.cancelAccountSignature(
         // input
         input,
         // output
@@ -320,7 +318,6 @@ describe('SignatureVerifier', () => {
         accountSignature,
       ),
     ).to.be.reverted;
-
     // signature cancellation is possible only by the wallet
     await router.connect(wallet).cancelAccountSignature(
       // input
@@ -332,28 +329,24 @@ describe('SignatureVerifier', () => {
       // account signature
       accountSignature,
     );
-
-    // eslint-disable-next-line no-unused-expressions
     expect(await router.isHashUsed(hashedData)).to.be.true;
-
     // should not execute after cancellation
     await expect(
       router.connect(notOwner).execute(
-        // input
         input,
-        // output
         output,
-        // swap description
         swapDescription,
-        // account signature
         accountSignature,
-        // protocol fee signature
         zeroSignature,
       ),
     ).to.be.reverted;
   });
 
   it('should be correct protocol fee signature', async () => {
+    const routerAddr = await router.getAddress();
+    const ownerAddr = await owner.getAddress();
+    const walletAddr = await wallet.getAddress();
+    const mockCallerAddr = await mockCaller.getAddress();
     const typedData = {
       types: {
         ProtocolFeeSignature: [
@@ -396,7 +389,7 @@ describe('SignatureVerifier', () => {
         name: 'Zerion Router',
         version: '4',
         chainId: 31337,
-        verifyingContract: router.address,
+        verifyingContract: routerAddr,
       },
       message: {
         input: {
@@ -418,14 +411,14 @@ describe('SignatureVerifier', () => {
           swapType: SWAP_FIXED_INPUTS,
           protocolFee: {
             share: '1',
-            beneficiary: owner.address,
+            beneficiary: ownerAddr,
           },
           marketplaceFee: {
             share: '0',
-            beneficiary: AddressZero,
+            beneficiary: ethers.ZeroAddress,
           },
-          account: wallet.address,
-          caller: mockCaller.address,
+          account: walletAddr,
+          caller: mockCallerAddr,
           callerCallData: EMPTY_BYTES,
         },
         deadline: FUTURE_TIMESTAMP,
@@ -434,17 +427,17 @@ describe('SignatureVerifier', () => {
     const signature = await signTypedData(wallet, typedData);
     const input = [[ethAddress, '0', AMOUNT_ABSOLUTE], zeroPermit];
     const output = [ethAddress, '0'];
-    const protocolFee = [ethers.BigNumber.from('1'), owner.address];
+    const protocolFee = [ethers.getBigInt('1'), ownerAddr];
     const swapDescription = [
       SWAP_FIXED_INPUTS,
       protocolFee,
-      zeroFee,
-      wallet.address,
-      mockCaller.address,
+      zeroMarketplaceFee,
+      walletAddr,
+      mockCallerAddr,
       EMPTY_BYTES,
     ];
 
-    const protocolFeeSignature = [FUTURE_TIMESTAMP, ethers.utils.joinSignature(signature)];
+    const protocolFeeSignature = [FUTURE_TIMESTAMP, signature.serialized];
 
     // signature is not valid if exceeds limit fee
     await expect(
@@ -460,7 +453,7 @@ describe('SignatureVerifier', () => {
         // protocol fee signature
         protocolFeeSignature,
       ),
-    ).to.be.revertedWith('ExceedingLimitFee(1, 0)');
+    ).to.be.revertedWithCustomError(router, 'ExceedingLimitFee').withArgs(1, 0);
 
     await router.setProtocolFeeDefault(protocolFee);
     expect(await router.getProtocolFeeDefault()).to.deep.equal(protocolFee);
@@ -479,13 +472,13 @@ describe('SignatureVerifier', () => {
         // protocol fee signature
         protocolFeeSignature,
       ),
-    ).to.be.revertedWith('BadFeeSignature()');
+    ).to.be.revertedWithCustomError(router, 'BadFeeSignature');
 
-    await router.setProtocolFeeSigner(wallet.address);
-    expect(await router.getProtocolFeeSigner()).to.be.equal(wallet.address);
+    await router.setProtocolFeeSigner(walletAddr);
+    expect(await router.getProtocolFeeSigner()).to.be.equal(walletAddr);
 
     // signature is valid the first time
-    await router.execute(
+    await router.connect(wallet).execute(
       // input
       input,
       // output
@@ -499,7 +492,7 @@ describe('SignatureVerifier', () => {
     );
 
     // signature is valid twice
-    await router.execute(
+    await router.connect(wallet).execute(
       // input
       input,
       // output
@@ -514,7 +507,7 @@ describe('SignatureVerifier', () => {
 
     // signature is not valid if change timestamp
     await expect(
-      router.execute(
+      router.connect(wallet).execute(
         // input
         input,
         // output
@@ -526,7 +519,7 @@ describe('SignatureVerifier', () => {
         // protocol fee signature
         [FUTURE_TIMESTAMP + 1, protocolFeeSignature[1]],
       ),
-    ).to.be.revertedWith('BadFeeSignature()');
+    ).to.be.revertedWithCustomError(router, 'BadFeeSignature');
 
     // skip time to future timestamp
     await hre.network.provider.request({
@@ -548,6 +541,6 @@ describe('SignatureVerifier', () => {
         // protocol fee signature
         protocolFeeSignature,
       ),
-    ).to.be.revertedWith('PassedDeadline');
+    ).to.be.revertedWithCustomError(router, 'PassedDeadline');
   });
-});
+}); 

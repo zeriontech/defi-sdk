@@ -1,4 +1,5 @@
 node_modules/
+typechain-types/
 .idea/
 .vscode/
 build/
