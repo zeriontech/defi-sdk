@@ -59,6 +59,27 @@ jobs:
         env:
           WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
 
+      - name: Set up Git user
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Action"
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Checkout current branch
+        run: git checkout ${{ github.ref_name }}
+
+      - name: Add and commit deployment.json
+        run: |
+          git add scripts/deployment.json
+          git commit -m "Update deployment.json [skip ci]" || echo "No changes to commit"
+
+      - name: Push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: git push origin ${{ github.ref_name }}
+
       - name: Verify Contracts
         run: npm run verify -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }} 
         env:
