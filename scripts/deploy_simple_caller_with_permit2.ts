@@ -29,7 +29,6 @@ import deployContract from './deployContract';
       console.error('SimpleCallerWithPermit2 deployment failed.');
       return;
     }
-    console.log(`SimpleCallerWithPermit2 deployed to: ${address}`);
 
     updateDeploymentAddress('simpleCallerWithPermit2', chainId, address);
   } catch (error) {

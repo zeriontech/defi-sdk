@@ -4,7 +4,7 @@ export default async function deployContract(contractName: string, constructorAr
   const Contract = await ethers.getContractFactory(contractName);
   const contract = await Contract.deploy(...constructorArgs);
 
-  console.log(`${contractName} deployed to: ${contract.address}`);
+  console.log(`${contractName} deployed to: ${await contract.getAddress()}`);
 
-  return contract.address;
+  return await contract.getAddress();
 } 
