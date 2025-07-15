@@ -28,7 +28,6 @@ import deployContract from './deployContract';
       console.error('UniswapV2Caller deployment failed.');
       return;
     }
-    console.log(`UniswapV2Caller deployed to: ${address}`);
 
     updateDeploymentAddress('uniswapV2Caller', chainId, address);
   } catch (error) {
