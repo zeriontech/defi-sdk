@@ -5,8 +5,11 @@ on:
     inputs:
       network:
         description: 'Network name for deployment'
-        required: false
-        default: 'truffle-dashboard'
+        required: true
+      block_explorer_api_key:
+        description: 'Block explorer API key (use default value for Blockscout)'
+        required: true
+        default: 'no'
 
 jobs:
   deploy:
@@ -28,21 +31,35 @@ jobs:
 
       - name: Deploy Router
         run: npm run deploy:router -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }}
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
 
       - name: Deploy SimpleCaller
         run: npm run deploy:sc -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }}
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
 
       - name: Deploy UniswapV2Caller
         run: npm run deploy:univ2caller -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }}
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
 
       - name: Deploy Safe Proxy
         run: npm run deploy:safe -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }}
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
 
       - name: Deploy SimpleCallerWithPermit2
         run: npm run deploy:scwp2 -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }}
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
 
       - name: Initialize Router
         run: npm run initialize:router -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }}
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WALLET_PRIVATE_KEY }}
 
       - name: Verify Contracts
         run: npm run verify -- --network ${{ github.event.inputs.network || 'truffle-dashboard' }} 
+        env:
+          BLOCK_EXPLORER_API_KEY: ${{ github.event.inputs.block_explorer_api_key }}
