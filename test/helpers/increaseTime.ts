@@ -1,28 +1,29 @@
+import { ethers } from 'hardhat';
 import latestTime from './latestTime';
 
 // Increases ganache time by the passed duration in seconds
-function increaseTime(duration) {
+function increaseTime(duration: number): Promise<any> {
   const id = Date.now();
 
   return new Promise((resolve, reject) => {
-    web3.currentProvider.send(
+    (ethers.provider as any).send(
       {
         jsonrpc: '2.0',
         method: 'evm_increaseTime',
         params: [duration],
         id,
       },
-      (err1) => {
+      (err1: any) => {
         if (err1) {
           return reject(err1);
         }
-        return web3.currentProvider.send(
+        return (ethers.provider as any).send(
           {
             jsonrpc: '2.0',
             method: 'evm_mine',
             id: id + 1,
           },
-          (err2, res) => (err2 ? reject(err2) : resolve(res)),
+          (err2: any, res: any) => (err2 ? reject(err2) : resolve(res)),
         );
       },
     );
@@ -36,7 +37,7 @@ function increaseTime(duration) {
  *
  * @param target time in seconds
  */
-async function increaseTimeTo(target) {
+async function increaseTimeTo(target: number): Promise<any> {
   const now = await latestTime();
 
   if (target < now) {
@@ -47,24 +48,24 @@ async function increaseTimeTo(target) {
 }
 
 const duration = {
-  seconds(val) {
+  seconds(val: number): number {
     return val;
   },
-  minutes(val) {
+  minutes(val: number): number {
     return val * this.seconds(60);
   },
-  hours(val) {
+  hours(val: number): number {
     return val * this.minutes(60);
   },
-  days(val) {
+  days(val: number): number {
     return val * this.hours(24);
   },
-  weeks(val) {
+  weeks(val: number): number {
     return val * this.days(7);
   },
-  years(val) {
+  years(val: number): number {
     return val * this.days(365);
   },
 };
 
-export { increaseTimeTo, increaseTime, duration };
+export { increaseTimeTo, increaseTime, duration }; 

@@ -92,7 +92,6 @@ See the `hardhat.config.ts` file for the details (`etherscan` field of `config` 
 The **Router** contract and its dependencies is fully covered with tests.
 
 Run `npm run test` and `npm run coverage` to run tests or coverage respectively.
-`INFURA_API_KEY` filled in `.env` file is required for this step.
 `REPORT_GAS` filled in `.env` file enables/disables gas reports during tests.
 
 ### Linting

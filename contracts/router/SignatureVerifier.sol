@@ -24,8 +24,6 @@ import { UsedHash } from "../shared/Errors.sol";
 import { AbsoluteTokenAmount, Fee, Input, Permit, SwapDescription, TokenAmount } from "../shared/Structs.sol";
 
 contract SignatureVerifier is ISignatureVerifier, EIP712 {
-    mapping(bytes32 => bool) private isHashUsed_;
-
     bytes32 internal constant ACCOUNT_SIGNATURE_TYPEHASH =
         keccak256(
             abi.encodePacked(
@@ -104,6 +102,8 @@ contract SignatureVerifier is ISignatureVerifier, EIP712 {
         keccak256(abi.encodePacked("Permit(uint8 permitType,bytes permitCallData)"));
     bytes32 internal constant TOKEN_AMOUNT_TYPEHASH =
         keccak256(abi.encodePacked("TokenAmount(address token,uint256 amount,uint8 amountType)"));
+
+    mapping(bytes32 => bool) private isHashUsed_;
 
     /**
      * @param name String with EIP712 name.

@@ -1,4 +1,4 @@
-name: Automated Contract Deployment
+name: deploy
 
 on:
   workflow_dispatch:

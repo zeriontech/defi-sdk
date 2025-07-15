@@ -1,16 +1,22 @@
 require('@babel/register');
 require('core-js');
 require('regenerator-runtime/runtime');
-require('dotenv').config();
-import '@nomiclabs/hardhat-waffle';
-import '@nomicfoundation/hardhat-verify';
-import 'hardhat-tracer';
+import * as dotenv from 'dotenv';
+import '@nomicfoundation/hardhat-toolbox';
+// import 'hardhat-tracer';
 import 'hardhat-docgen';
-import 'solidity-coverage';
+// import 'solidity-coverage';
 import { HardhatUserConfig } from 'hardhat/config';
 // import '@matterlabs/hardhat-zksync-deploy';
 // import '@matterlabs/hardhat-zksync-solc';
 // import '@matterlabs/hardhat-zksync-verify';
+
+
+dotenv.config();
+
+const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY
+  ? '0x' + process.env.WALLET_PRIVATE_KEY
+  : undefined;
 
 
 const config: HardhatUserConfig = {
@@ -49,6 +55,7 @@ const config: HardhatUserConfig = {
       forking: {
         url: "https://rpc.zerion.io/v1/ethereum"
       },
+      initialBaseFeePerGas: 0,
       blockGasLimit: 10000000,
       gas: 10000000,
       allowUnlimitedContractSize: true,
@@ -61,6 +68,10 @@ const config: HardhatUserConfig = {
           privateKey: '0x473acc210edb35998de9dc65495bafbf0a3804950482cd2b48af7bba7046d7de',
           balance: '10000000000000000000000',
         },
+        {
+          privateKey: '0x473acc210edb35998de9dc65495bafbf0a3804950482cd2b48af7bba7046d7df',
+          balance: '10000000000000000000000',
+        },
       ]
     },
     'truffle-dashboard': {
@@ -69,78 +80,103 @@ const config: HardhatUserConfig = {
     },
     arbitrumOne: {
       url: 'https://rpc.zerion.io/v1/arbitrum',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     aurora: {
       url: 'https://rpc.zerion.io/v1/aurora',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     avalanche: {
       url: 'https://rpc.zerion.io/v1/avalanche',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     base: {
       url: 'https://rpc.zerion.io/v1/base',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     berachain: {
       url: 'https://rpc.zerion.io/v1/berachain',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     blast: {
       url: 'https://rpc.zerion.io/v1/blast',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     bsc: {
       url: 'https://rpc.zerion.io/v1/binance-smart-chain',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     celo: {
       url: 'https://rpc.zerion.io/v1/celo',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     gnosis: {
       url: 'https://rpc.zerion.io/v1/xdai',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     ink: {
       url: 'https://rpc.zerion.io/v1/ink',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     linea: {
       url: 'https://rpc.zerion.io/v1/linea',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     mainnet: {
       url: 'https://rpc.zerion.io/v1/ethereum',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     mantle: {
       url: 'https://rpc.zerion.io/v1/mantle',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     mode: {
       url: 'https://rpc.zerion.io/v1/mode',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     opera: {
       url: 'https://rpc.zerion.io/v1/fantom',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     optimisticEthereum: {
       url: 'https://rpc.zerion.io/v1/optimism',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     polygon: {
       url: 'https://rpc.zerion.io/v1/polygon',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     'polygon-zkevm': {
       url: 'https://rpc.zerion.io/v1/polygon-zkevm',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     scroll: {
       url: 'https://rpc.zerion.io/v1/scroll',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     soneium: {
       url: 'https://rpc.zerion.io/v1/soneium',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     sonic: {
       url: 'https://rpc.zerion.io/v1/sonic',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     taiko: {
       url: 'https://rpc.zerion.io/v1/taiko',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     unichain: {
       url: 'https://rpc.zerion.io/v1/unichain',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     xlayer: {
       url: 'https://rpc.zerion.io/v1/okbchain',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     zora: {
       url: 'https://rpc.zerion.io/v1/zora',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
   },
   etherscan: {
