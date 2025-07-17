@@ -9,7 +9,7 @@ If you have any questions about DeFi SDK, feel free to reach out to us on our [D
 ## Features
 
 **💸Trade any ERC20 tokens on L2 chains using single Router contract**
-> See [How to swap ERC20 tokens using DeFi SDK Router](docs/router.md)
+> See [How to swap ERC20 tokens using DeFi SDK Router](router.md)
 
 **💥Query user assets and debt deposited in DeFi protocols like *Maker, Aave, dYdX*, etc.**
 > How much debt does `0xdead..beef` have on Compound?
