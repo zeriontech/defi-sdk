@@ -150,6 +150,10 @@ const config: HardhatUserConfig = {
       url: 'https://rpc.zerion.io/v1/polygon-zkevm',
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
+    'plasma': {
+      url: 'https://rpc.zerion.io/v1/plasma',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+    },
     scroll: {
       url: 'https://rpc.zerion.io/v1/scroll',
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
@@ -316,6 +320,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://explorer.inkonchain.com/api",
           browserURL: "https://explorer.inkonchain.com"
+        }
+      },
+      {
+        network: "plasma",
+        chainId: 9745,
+        urls: {
+          apiURL: "https://api.routescan.io/v2/network/mainnet/evm/9745/etherscan/api",
+          browserURL: "https://plasmascan.to"
         }
       },
     ],
