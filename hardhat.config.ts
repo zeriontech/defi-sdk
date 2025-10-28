@@ -53,7 +53,7 @@ const config: HardhatUserConfig = {
     // },
     hardhat: {
       forking: {
-        url: "https://rpc.zerion.io/v1/ethereum"
+        url: 'https://rpc.zerion.io/v1/ethereum'
       },
       initialBaseFeePerGas: 0,
       blockGasLimit: 10000000,
@@ -188,29 +188,30 @@ const config: HardhatUserConfig = {
     },
   },
   etherscan: {
+    enabled: process.env.BLOCK_EXPLORER_API_KEY ? process.env.BLOCK_EXPLORER_API_KEY.toString() !== 'no' : true,
     apiKey: process.env.BLOCK_EXPLORER_API_KEY ? process.env.BLOCK_EXPLORER_API_KEY.toString() : '',
     customChains: [
       {
-        network: "abstract",
+        network: 'abstract',
         chainId: 2741,
         urls: {
-          apiURL: "https://api.abscan.org/api",
-          browserURL: "https://abscan.org"
+          apiURL: 'https://api.etherscan.io/v2/api?chainid=2741',
+          browserURL: 'https://abscan.org'
         }
       },
       {
-        network: "berachain",
+        network: 'berachain',
         chainId: 80094,
         urls: {
-          apiURL: "https://api.berascan.com/api",
-          browserURL: "https://berascan.com"
+          apiURL: 'https://api.etherscan.io/v2/api?chainid=80094',
+          browserURL: 'https://berascan.com'
         }
       },
       {
         network: 'blast',
         chainId: 81457,
         urls: {
-          apiURL: 'https://api.blastscan.io/api',
+          apiURL: 'https://api.etherscan.io/v2/api?chainid=81457',
           browserURL: 'https://blastscan.io'
         },
       },
@@ -218,128 +219,117 @@ const config: HardhatUserConfig = {
         network: 'celo',
         chainId: 42220,
         urls: {
-          apiURL: 'https://api.celoscan.io/api',
+          apiURL: 'https://api.etherscan.io/v2/api?chainid=42220',
           browserURL: 'https://celoscan.io'
         },
-      },
-      {
-        network: "hyperevm",
-        chainId: 999,
-        urls: {
-          apiURL: "https://www.hyperscan.com/api/v2",
-          browserURL: "https://www.hyperscan.com"
-        }
-      },
-      {
-        network: "ink",
-        chainId: 57073,
-        urls: {
-          apiURL: "https://explorer.inkonchain.com/api",
-          browserURL: "https://explorer.inkonchain.com"
-        }
       },
       {
         network: 'linea',
         chainId: 59144,
         urls: {
-          apiURL: 'https://api.lineascan.build/api',
+          apiURL: 'https://api.etherscan.io/v2/api?chainid=59144',
           browserURL: 'https://lineascan.build'
         },
       },
       {
-        network: "mantle",
+        network: 'mantle',
         chainId: 5000,
         urls: {
-          apiURL: "https://api.mantlescan.xyz/api",
-          browserURL: "https://mantlescan.xyz"
+          apiURL: 'https://api.etherscan.io/v2/api?chainid=5000',
+          browserURL: 'https://mantlescan.xyz'
         }
-      },
-      {
-        network: "mode",
-        chainId: 34443,
-        urls: {
-          apiURL: "https://explorer.mode.network/api",
-          browserURL: "https://explorer.mode.network"
-        }
-      },
-      {
-        network: "plasma",
-        chainId: 9745,
-        urls: {
-          apiURL: "https://api.routescan.io/v2/network/mainnet/evm/9745/etherscan/api",
-          browserURL: "https://plasmascan.to"
-        }
-      },
-      {
-        network: 'polygon-zkevm',
-        chainId: 1101,
-        urls: {
-          apiURL: 'https://api-zkevm.polygonscan.com/api',
-          browserURL: 'https://zkevm.polygonscan.com'
-        },
       },
       {
         network: 'scroll',
         chainId: 534352,
         urls: {
-          apiURL: 'https://api.scrollscan.com/api',
+          apiURL: 'https://api.etherscan.io/v2/api?chainid=534352',
           browserURL: 'https://scrollscan.com'
         },
       },
       {
-        network: "soneium",
-        chainId: 1868,
-        urls: {
-          apiURL: "https://soneium.blockscout.com/api",
-          browserURL: "https://soneium.blockscout.com"
-        }
-      },
-      {
-        network: "sonic",
+        network: 'sonic',
         chainId: 146,
         urls: {
-          apiURL: "https://api.sonicscan.org/api",
-          browserURL: "https://sonicscan.org"
+          apiURL: 'https://api.etherscan.io/v2/api?chainid=146',
+          browserURL: 'https://sonicscan.org'
         }
       },
       {
-        network: "taiko",
+        network: 'taiko',
         chainId: 167000,
         urls: {
-          apiURL: "https://api.taikoscan.io/api",
-          browserURL: "https://taikoscan.io"
+          apiURL: 'https://api.etherscan.io/v2/api?chainid=167000',
+          browserURL: 'https://taikoscan.io'
+        }
+      },
+    ],
+  },
+  blockscout: {
+    enabled: process.env.BLOCK_EXPLORER_API_KEY ? process.env.BLOCK_EXPLORER_API_KEY.toString() === 'no' : false,
+    customChains: [
+      {
+        network: 'hyperevm',
+        chainId: 999,
+        urls: {
+          apiURL: 'https://www.hyperscan.com/api/v2',
+          browserURL: 'https://www.hyperscan.com'
         }
       },
       {
-        network: "unichain",
+        network: 'mode',
+        chainId: 34443,
+        urls: {
+          apiURL: 'https://explorer.mode.network/api',
+          browserURL: 'https://explorer.mode.network'
+        }
+      },
+      {
+        network: 'plasma',
+        chainId: 9745,
+        urls: {
+          apiURL: 'https://api.routescan.io/v2/network/mainnet/evm/9745/etherscan/api',
+          browserURL: 'https://plasmascan.to'
+        }
+      },
+      {
+        network: 'soneium',
+        chainId: 1868,
+        urls: {
+          apiURL: 'https://soneium.blockscout.com/api',
+          browserURL: 'https://soneium.blockscout.com'
+        }
+      },
+      {
+        network: 'unichain',
         chainId: 130,
         urls: {
-          apiURL: "https://unichain.blockscout.com/api",
-          browserURL: "https://unichain.blockscout.com"
+          apiURL: 'https://unichain.blockscout.com/api',
+          browserURL: 'https://unichain.blockscout.com'
         }
       },
       {
-        network: "xlayer",
+        network: 'xlayer',
         chainId: 196,
         urls: {
-          apiURL: "https://www.oklink.com/api/v5/explorer/contract/verify-source-code-plugin/XLAYER",
-          browserURL: "https://www.okx.com/web3/explorer/xlayer"
+          apiURL: 'https://www.oklink.com/api/v5/explorer/contract/verify-source-code-plugin/XLAYER',
+          browserURL: 'https://www.okx.com/web3/explorer/xlayer'
         }
       },
       {
-        network: "zero",
+        network: 'zero',
         chainId: 543210,
         urls: {
-          apiURL: "https://zero-network.calderaexplorer.xyz/verification/contract_verification",
-          browserURL: "https://zero-network.calderaexplorer.xyz"
+          apiURL: 'https://zero-network.calderaexplorer.xyz/verification/contract_verification',
+          browserURL: 'https://zero-network.calderaexplorer.xyz'
         }
       },
       {
-        network: "zora",
+        network: 'zora',
         chainId: 7777777,
         urls: {
-          apiURL: "https://api.routescan.io/v2/network/mainnet/evm/7777777/etherscan",
-          browserURL: "https://zorascan.xyz"
+          apiURL: 'https://api.routescan.io/v2/network/mainnet/evm/7777777/etherscan',
+          browserURL: 'https://zorascan.xyz'
         }
       },
     ],
