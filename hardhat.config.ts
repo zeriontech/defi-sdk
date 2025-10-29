@@ -122,6 +122,10 @@ const config: HardhatUserConfig = {
       url: 'https://rpc.zerion.io/v1/ink',
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
+    katana: {
+      url: 'https://rpc.zerion.io/v1/katana',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+    },
     linea: {
       url: 'https://rpc.zerion.io/v1/linea',
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
@@ -221,6 +225,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: 'https://api.etherscan.io/v2/api?chainid=42220',
           browserURL: 'https://celoscan.io'
+        },
+      },
+      {
+        network: 'katana',
+        chainId: 747474,
+        urls: {
+          apiURL: 'https://api.etherscan.io/v2/api?chainid=747474',
+          browserURL: 'https://katanascan.com'
         },
       },
       {
