@@ -142,6 +142,10 @@ const config: HardhatUserConfig = {
       url: 'https://rpc.zerion.io/v1/mode',
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
+    monad: {
+      url: 'https://rpc.zerion.io/v1/monad',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+    },
     opera: {
       url: 'https://rpc.zerion.io/v1/fantom',
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
