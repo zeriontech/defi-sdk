@@ -138,6 +138,10 @@ const config: HardhatUserConfig = {
       url: 'https://rpc.zerion.io/v1/mantle',
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
+    megaeth: {
+      url: 'https://rpc.zerion.io/v1/megaeth',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+    },
     mode: {
       url: 'https://rpc.zerion.io/v1/mode',
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
@@ -168,6 +172,10 @@ const config: HardhatUserConfig = {
     },
     scroll: {
       url: 'https://rpc.zerion.io/v1/scroll',
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+    },
+    somnia: {
+      url: 'https://rpc.zerion.io/v1/somnia',
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
     soneium: {
@@ -288,8 +296,16 @@ const config: HardhatUserConfig = {
         network: 'hyperevm',
         chainId: 999,
         urls: {
-          apiURL: 'https://www.hyperscan.com/api/v2',
+          apiURL: 'https://www.hyperscan.com/api',
           browserURL: 'https://www.hyperscan.com'
+        }
+      },
+      {
+        network: 'megaeth',
+        chainId: 4326,
+        urls: {
+          apiURL: 'https://megaeth.blockscout.com/api',
+          browserURL: 'https://megaeth.blockscout.com'
         }
       },
       {
@@ -306,6 +322,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: 'https://api.routescan.io/v2/network/mainnet/evm/9745/etherscan/api',
           browserURL: 'https://plasmascan.to'
+        }
+      },
+      {
+        network: 'somnia',
+        chainId: 5031,
+        urls: {
+          apiURL: 'https://mainnet.somnia.w3us.site/api',
+          browserURL: 'https://explorer.somnia.network'
         }
       },
       {
