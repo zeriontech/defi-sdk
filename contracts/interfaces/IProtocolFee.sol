@@ -22,7 +22,7 @@ import { Fee } from "../shared/Structs.sol";
 interface IProtocolFee {
     /**
      * @notice Sets protocol fee default value
-     * @param protocolFeeDefault New base fee defaul value
+     * @param protocolFeeDefault New base fee default value
      * @dev Can be called only by the owner
      */
     function setProtocolFeeDefault(Fee calldata protocolFeeDefault) external;
