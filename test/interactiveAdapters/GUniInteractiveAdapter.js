@@ -36,7 +36,7 @@ const Core = artifacts.require('./Core');
 const Router = artifacts.require('./Router');
 const ERC20 = artifacts.require('./ERC20');
 
-contract.only('GUniInteractiveAdapter', () => {
+contract('GUniInteractiveAdapter', () => {
   const daiAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   const daiFraxAddress = '0xb1Cfdc7370550f5e421E1bf0BF3CADFaDF3C4141';
   const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
