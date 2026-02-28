@@ -3,7 +3,7 @@
 ## Using AdapterManager contract with supported adapters
 
 The main contract for interaction is **AdapterRegistry**.
-It allows to check balances and exchange rates for tokens used in the different protocols.
+It allows you to check balances and exchange rates for tokens used in different protocols.
 
 Please, read the [Notes](#notes) before using this contract.
 
