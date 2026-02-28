@@ -136,7 +136,7 @@ getFullTokenBalance(string tokenType, address token) returns (FullTokenBalance)
 getFinalFullTokenBalance(string tokenType, address token) returns (FullTokenBalance)
 ```
 
-Both functions returns the representation of the token's full share (1e18) in the underlying tokens.
+Both functions return the representation of the token's full share (1e18) in the underlying tokens.
 The first one will show the real underlying tokens (e.g. cDAI and cUSDC for Curve Compound pool).
 The second will try to recover the "deepest" underlying tokens (e.g. DAI and USDC for Curve Compound pool).
 
