@@ -17,11 +17,11 @@
 
 pragma solidity 0.8.12;
 
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
-import { FailedEtherTransfer, ZeroReceiver } from "./Errors.sol";
+import { ZeroReceiver } from "./Errors.sol";
 
 /**
  * @title Library unifying transfer, approval, and getting balance for ERC20 tokens and Ether
@@ -38,11 +38,7 @@ library Base {
      * @dev Reverts on zero `receiver`, does nothing for zero amount
      * @dev Should not be used with zero token address
      */
-    function transfer(
-        address token,
-        address receiver,
-        uint256 amount
-    ) internal {
+    function transfer(address token, address receiver, uint256 amount) internal {
         if (amount == uint256(0)) return;
         if (receiver == address(0)) revert ZeroReceiver();
 
@@ -60,11 +56,7 @@ library Base {
      * @param amount Tokens amount to be approved
      * @dev Should not be used with zero or `ETH` token address
      */
-    function safeApproveMax(
-        address token,
-        address spender,
-        uint256 amount
-    ) internal {
+    function safeApproveMax(address token, address spender, uint256 amount) internal {
         uint256 allowance = IERC20(token).allowance(address(this), spender);
         if (allowance < amount) {
             if (allowance > uint256(0)) {
@@ -80,7 +72,7 @@ library Base {
      * @param account Address of the account
      * @dev Should not be used with zero token address
      */
-    function getBalance(address token, address account) internal view returns (uint256) {
+    function getBalance(address token, address account) internal view returns (uint256 balance) {
         if (token == ETH) return account.balance;
 
         return IERC20(token).balanceOf(account);
@@ -91,7 +83,7 @@ library Base {
      * @param token Address of the token
      * @dev Returns `0` for zero token address in order to handle empty token case
      */
-    function getBalance(address token) internal view returns (uint256) {
+    function getBalance(address token) internal view returns (uint256 balance) {
         if (token == address(0)) return uint256(0);
 
         return Base.getBalance(token, address(this));
