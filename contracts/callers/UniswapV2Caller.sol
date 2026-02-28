@@ -25,7 +25,7 @@ import { IUniswapV2Pair } from "../interfaces/IUniswapV2Pair.sol";
 import { IWETH9 } from "../interfaces/IWETH9.sol";
 import { Base } from "../shared/Base.sol";
 import { SwapType } from "../shared/Enums.sol";
-import { BadToken, InconsistentPairsAndDirectionsLengths, InsufficientBalance, LowReserve, ZeroAmountIn, ZeroAmountOut, ZeroLength } from "../shared/Errors.sol";
+import { InconsistentPairsAndDirectionsLengths, InputSlippage, LowReserve, ZeroAmountIn, ZeroAmountOut, ZeroLength } from "../shared/Errors.sol";
 import { TokensHandler } from "../shared/TokensHandler.sol";
 import { Weth } from "../shared/Weth.sol";
 
@@ -53,6 +53,7 @@ contract UniswapV2Caller is ICaller, TokensHandler, Weth {
      *     - directions Array of exchange directions (`true` means `token0` -> `token1`)
      *     - swapType Whether input or output amount is fixed
      *     - fixedSideAmount Amount of the token which is fixed (see `swapType`)
+     *     - unwrap Bool indicating whether Wrapped Ether should be unwrapped to Ether
      * @dev Implementation of Caller interface function
      */
     function callBytes(bytes calldata callerCallData) external override {
@@ -67,8 +68,9 @@ contract UniswapV2Caller is ICaller, TokensHandler, Weth {
 
         uint256 length = pairs.length;
         if (length == uint256(0)) revert ZeroLength();
-        if (directions.length != length)
+        if (directions.length != length) {
             revert InconsistentPairsAndDirectionsLengths(length, directions.length);
+        }
 
         uint256[] memory amounts = (swapType == SwapType.FixedInputs)
             ? getAmountsOut(fixedSideAmount, pairs, directions)
@@ -76,16 +78,18 @@ contract UniswapV2Caller is ICaller, TokensHandler, Weth {
 
         // Take input tokens and transfer to the first pair
         {
-            address inputTokenERC20 = inputToken;
+            address token = directions[0]
+                ? IUniswapV2Pair(pairs[0]).token0()
+                : IUniswapV2Pair(pairs[0]).token1();
+
             if (inputToken == ETH) {
                 depositEth(amounts[0]);
-                inputTokenERC20 = getWeth();
             }
 
-            uint256 balance = IERC20(inputTokenERC20).balanceOf(address(this));
-            if (balance < amounts[0]) revert InsufficientBalance(balance, amounts[0]);
+            uint256 balance = IERC20(token).balanceOf(address(this));
+            if (amounts[0] > balance) revert InputSlippage(balance, amounts[0]);
 
-            SafeERC20.safeTransfer(IERC20(inputTokenERC20), pairs[0], amounts[0]);
+            SafeERC20.safeTransfer(IERC20(token), pairs[0], amounts[0]);
         }
 
         // Do the swaps via the given pairs
