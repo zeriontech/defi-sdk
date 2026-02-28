@@ -29,7 +29,7 @@ import { InteractiveAdapter } from "../InteractiveAdapter.sol";
  * Only the functions required for AkroStakingAdapter contract are added.
  */
 interface AdelStaking {
-    function stake(uint256 amout, bytes calldata _data) external;
+    function stake(uint256 amount, bytes calldata _data) external;
 
     function stakeFor(
         address _user,
