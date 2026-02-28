@@ -1,11 +1,12 @@
 node_modules/
+typechain-types/
 .idea/
 .vscode/
 build/
 site/
 coverage
-artifacts
-cache
+artifacts*
+cache*
 coverage.json
 .log
 .env

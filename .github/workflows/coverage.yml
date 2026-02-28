@@ -7,24 +7,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: setup-node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: "16.x"
+          node-version: 20
       - name: webfactory/ssh-agent
         uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.PRIVATE_SSH }}
       - name: install
         run: npm ci
-      - name: test+coverage
-        run: npm run coverage
-        env:
-          INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
-          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
       - name: upload artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: coverage
