@@ -14,7 +14,7 @@ getBalances(address account) returns (ProtocolBalance[])
 
 The function takes account address as the only parameter.
 
-It iterates over supported protocols, all their adapters and supported tokens and return balances of the tokens locked on the supported protocols.
+It iterates over supported protocols, all their adapters and supported tokens, and returns balances of the tokens locked on the supported protocols.
 
 The function returns an array of the `ProtocolBalance` structs.
 Its exact definition may be found in [Structs.sol](https://github.com/zeriontech/defi-sdk/blob/master/contracts/Structs.sol){target=_blank}.
