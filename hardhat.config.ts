@@ -59,20 +59,7 @@ const config: HardhatUserConfig = {
       blockGasLimit: 10000000,
       gas: 10000000,
       allowUnlimitedContractSize: true,
-      accounts: [
-        {
-          privateKey: '0xbe5d6e330de6c44c137f8fb45fa44dada079fb8bc29d290cadd8f882035dd189',
-          balance: '10000000000000000000000',
-        },
-        {
-          privateKey: '0x473acc210edb35998de9dc65495bafbf0a3804950482cd2b48af7bba7046d7de',
-          balance: '10000000000000000000000',
-        },
-        {
-          privateKey: '0x473acc210edb35998de9dc65495bafbf0a3804950482cd2b48af7bba7046d7df',
-          balance: '10000000000000000000000',
-        },
-      ]
+
     },
     'truffle-dashboard': {
       url: 'http://localhost:24012/rpc',
