@@ -125,7 +125,7 @@ contract Router is
         uint256 initialOutputBalance = Base.getBalance(output.token);
 
         // Transfer tokens to the caller
-        Base.transfer(inputToken, swapDescription.caller, absoluteInputAmount);
+        Base.transfer(inputToken, swapDescription.caller, absoluteInputAmount); // In order to support FoT, fix `absoluteInputAmount` here
 
         // Call caller's `callBytes()` function with the provided calldata
         Address.functionCall(
@@ -255,6 +255,7 @@ contract Router is
             );
         }
 
+        // if (balance < amount) revert InsufficientBalance(balance, amount);
         SafeERC20.safeTransferFrom(IERC20(token), account, address(this), amount);
     }
 
@@ -467,7 +468,7 @@ contract Router is
             ? output.absoluteAmount
             : ((outputBalanceChange * DELIMITER) / (DELIMITER + totalFeeShare)) + uint256(1);
 
-        uint256 totalFeeAmount = outputBalanceChange - returnedAmount;
+        uint256 totalFeeAmount = outputBalanceChange - returnedAmount; //! not safe to distract
         // This check is important in fixed outputs case as we never actually check that
         // total fee amount is not too large and should always just pass in fixed inputs case
         if (totalFeeAmount * DELIMITER > totalFeeShare * returnedAmount) {
